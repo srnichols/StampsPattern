@@ -121,8 +121,15 @@ GEO: Europe
 ### 4️⃣ **Cross-Cutting Layers**
 
 #### **Geodes Layer** (`geodesLayer.bicep`)
-- **🚪 API Management**: Per-geography API gateway
-- **🌌 Global Control Plane Cosmos DB**: Multi-region write replication
+- **🚪 API Management Premium**: Enterprise-grade multi-region API gateway with:
+  - **Tenant-specific rate limiting**: Different quotas per tenant tier (Basic: 10K/hour, Premium: 50K/hour)
+  - **API versioning**: Side-by-side v1/v2 API deployment capabilities
+  - **Developer portals**: Self-service API documentation and key management
+  - **Advanced security**: JWT validation, IP filtering, custom policies
+  - **Multi-region active-active**: Global load balancing with automatic failover
+  - **Request/response transformation**: Tenant-specific data format handling
+  - **Comprehensive analytics**: Per-tenant API usage insights and SLA monitoring
+- **🌌 Global Control Plane Cosmos DB**: Multi-region write replication for tenant routing
 
 #### **Monitoring Layer** (`monitoringLayer.bicep`)
 - **📈 Regional Log Analytics Workspaces**: Compliance and data residency
@@ -138,20 +145,30 @@ GEO: Europe
     ↓
 [Traffic Manager] → DNS-based geography routing
     ↓
-[Regional Application Gateway] → Regional load balancing
+[API Management (APIM)] → Enterprise API gateway, tenant policies, rate limiting
+    ↓
+[Regional Application Gateway] → Regional load balancing, SSL offloading
     ↓
 [CELL Container Apps] → Tenant-isolated application
 ```
 
-### 🔍 Tenant Resolution Flow
+### 🔍 Enhanced Tenant Resolution Flow
 ```
-[Tenant Request] 
+[Tenant API Request] 
+    ↓
+[Front Door] → Global CDN and edge security
+    ↓
+[Traffic Manager] → Route to optimal geography
+    ↓
+[APIM Gateway] → Apply tenant-specific policies and rate limits
     ↓
 [Global Function: GetTenantCellFunction] → Query Global Cosmos DB
     ↓
-[Route to Specific CELL] → Based on tenant metadata
+[Route to Specific CELL] → Based on tenant metadata and SLA tier
     ↓
-[CELL-specific Resources] → Isolated SQL DB, Storage, etc.
+[Application Gateway] → Regional SSL termination and WAF
+    ↓
+[CELL-specific Resources] → Isolated SQL DB, Storage, Container Apps
 ```
 
 ## 🏗️ Deployment Architecture

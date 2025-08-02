@@ -28,6 +28,7 @@ journey
 |------|----------|---------|---------------|
 | **1** | 📄 [**README.md**](./README.md) | Project overview, quick start, business value | 10 minutes |
 | **2** | 🏗️ [**ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Deep technical architecture, design decisions | 30 minutes |
+| **2.5** | 🚪 [**APIM_INTEGRATION_SUMMARY.md**](./APIM_INTEGRATION_SUMMARY.md) | API Management integration and enterprise features | 15 minutes |
 | **3** | 📋 [**NAMING_CONVENTIONS.md**](./NAMING_CONVENTIONS.md) | Naming standards and best practices | 15 minutes |
 | **4** | 🚀 [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
 | **5** | 🛡️ [**SECURITY_GUIDE.md**](./SECURITY_GUIDE.md) | Security baseline and compliance | 30 minutes |
@@ -87,6 +88,7 @@ graph TB
     subgraph "🌍 Global Layer"
         FD[Azure Front Door<br/>Global CDN + WAF]
         TM[Traffic Manager<br/>DNS Routing]
+        APIM[API Management<br/>Enterprise Gateway]
         GC[Global Cosmos DB<br/>Multi-master]
         AF[Azure Functions<br/>Control Plane]
     end
@@ -116,8 +118,9 @@ graph TB
     end
     
     FD --> TM
-    TM --> AGW1
-    TM --> AGW2
+    TM --> APIM
+    APIM --> AGW1
+    APIM --> AGW2
     AGW1 --> CA1
     AGW1 --> CA2
     AGW2 --> CA1
@@ -131,6 +134,9 @@ graph TB
 - ✅ **🛡️ Enterprise Security**: Multi-layer WAF, encryption, compliance-ready
 - ✅ **📈 Unlimited Growth**: Add tenants and regions without architectural changes
 - ✅ **💰 Cost Optimization**: Pay only for what you use with auto-scaling
+- ✅ **🚪 Enterprise API Management**: Multi-tenant rate limiting, versioning, and analytics
+- ✅ **📊 Advanced Monitoring**: Per-tenant API analytics and SLA tracking
+- ✅ **🔐 Developer Self-Service**: API portals, documentation, and key management
 
 ## 🚀 **Quick Start - Get Running in 10 Minutes**
 
@@ -263,7 +269,9 @@ After successful deployment, you'll receive comprehensive endpoints and configur
   "trafficManagerFqdn": "stamps-tm-global.trafficmanager.net",
   "frontDoorEndpointHostname": "stamps-fd-global-abcd1234.azurefd.net",
   "globalCosmosDbEndpoint": "https://cosmos-stamps-global.documents.azure.com:443/",
-  "apimGatewayUrl": "https://apim-stamps-global.azure-api.net"
+  "apimGatewayUrl": "https://stamps-apim-global.azure-api.net",
+  "apimDeveloperPortalUrl": "https://stamps-apim-global.developer.azure-api.net",
+  "apimManagementApiUrl": "https://stamps-apim-global.management.azure-api.net"
 }
 ```
 
@@ -294,7 +302,7 @@ After successful deployment, you'll receive comprehensive endpoints and configur
 |-----------|---------|---------------|--------|
 | **Global CDN** | Content delivery, SSL termination | Azure Front Door Premium | 99.99% SLA |
 | **DNS Routing** | Geographic traffic distribution | Traffic Manager | 99.99% SLA |
-| **Global API Gateway** | Cross-region API management | API Management Premium | Active-Active |
+| **Enterprise API Gateway** | Multi-tenant API management, rate limiting | API Management Premium | Active-Active Multi-Region |
 | **Control Plane DB** | Global routing metadata | Cosmos DB (Multi-master) | 99.999% SLA |
 | **Global Functions** | Tenant routing logic | Azure Functions Premium | Zone redundant |
 
@@ -444,10 +452,12 @@ az security assessment list \
 | Issue | Symptom | Solution |
 |-------|---------|----------|
 | **Resource Naming Conflicts** | Deployment fails with naming error | Update `resourcePrefix` parameter |
-| **API Management Timeout** | Deployment hangs at APIM | APIM takes 45-60 minutes - wait or use existing |
+| **API Management Timeout** | Deployment hangs at APIM | Premium APIM takes 45-60 minutes - be patient |
+| **APIM Multi-Region Setup** | Additional regions not deploying | Ensure Premium SKU and check regional quotas |
 | **SQL Password Complexity** | SQL deployment fails | Ensure password meets complexity requirements |
 | **Region Service Availability** | Service not available error | Check service availability in target region |
 | **Certificate Issues** | SSL/TLS errors | Verify Key Vault certificate configuration |
+| **APIM Policy Validation** | API calls rejected | Check tenant-specific policies and rate limits |
 
 ### 🔧 **Diagnostic Commands**
 ```bash
@@ -479,12 +489,14 @@ az deployment group show \
 |-----------|-------------|------------|------------|
 | **Traffic Manager** | $5 | $25 | $100 |
 | **Front Door** | $35 | $200 | $500 |
-| **API Management** | $15 | $750 | $2,800 |
+| **API Management** | $15 (Developer) | $750 (Premium) | $2,800 (Premium Multi-Region) |
 | **Container Apps** | $50 | $300 | $1,200 |
 | **SQL Database** | $25 | $400 | $1,600 |
 | **Storage** | $10 | $100 | $400 |
 | **Cosmos DB** | $25 | $200 | $800 |
 | **Total Estimate** | **$165** | **$1,975** | **$7,400** |
+
+> **💡 Note**: Enterprise tier includes APIM Premium with multi-region deployment, advanced security policies, and unlimited API calls. The cost reflects the enterprise-grade capabilities including 99.95% SLA, developer portals, and advanced analytics.
 
 ## 🤝 **Contributing**
 

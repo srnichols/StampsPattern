@@ -47,18 +47,22 @@ This guide provides comprehensive operational procedures for managing, monitorin
     ├─ Cross-region performance metrics
     ├─ Global routing health status  
     ├─ DNS resolution performance
-    └─ Front Door cache efficiency
+    ├─ Front Door cache efficiency
+    ├─ APIM gateway health and latency
+    └─ API usage analytics per tenant
          ↓
 🏢 Regional Monitoring  
     ├─ Application Gateway health
     ├─ Regional resource utilization
     ├─ Key Vault access patterns
+    ├─ APIM regional endpoint status
     └─ Automation Account execution
          ↓
 🏠 CELL Monitoring
     ├─ Container App performance
     ├─ SQL Database metrics
     ├─ Storage utilization
+    ├─ API response times per tenant
     └─ Tenant-specific KPIs
 ```
 
@@ -75,18 +79,23 @@ This guide provides comprehensive operational procedures for managing, monitorin
     },
     "latency": {
       "target": "< 100ms",
-      "measurement": "DNS resolution + Front Door response",
+      "measurement": "DNS resolution + Front Door + APIM response",
       "alertThreshold": "> 150ms"
     },
-    "throughput": {
-      "target": "10,000 requests/minute",
-      "measurement": "Cross-region aggregate",
-      "alertThreshold": "< 8,000 requests/minute"
+    "apiThroughput": {
+      "target": "50,000 requests/minute",
+      "measurement": "Cross-region APIM aggregate",
+      "alertThreshold": "< 40,000 requests/minute"
     },
     "errorRate": {
       "target": "< 0.1%",
       "measurement": "Global error percentage",
       "alertThreshold": "> 0.5%"
+    },
+    "apiLatency": {
+      "target": "< 50ms",
+      "measurement": "APIM gateway response time",
+      "alertThreshold": "> 100ms"
     }
   }
 }
@@ -185,6 +194,156 @@ az monitor metrics alert create \
     --severity 2 \
     --action $ACTION_GROUP \
     --description "Container Apps memory usage above 1GB"
+
+# API Management Gateway Latency
+az monitor metrics alert create \
+    --name "APIM-Gateway-High-Latency" \
+    --resource-group $RESOURCE_GROUP \
+    --scopes $(az apim show --name apim-stamps --resource-group $RESOURCE_GROUP --query id -o tsv) \
+    --condition "avg staticThreshold greaterThan Gateway.Duration" \
+    --threshold 1000 \
+    --aggregation Average \
+    --period "PT5M" \
+    --frequency "PT1M" \
+    --severity 1 \
+    --action $ACTION_GROUP \
+    --description "APIM Gateway latency exceeds 1 second"
+
+# API Management Request Rate
+az monitor metrics alert create \
+    --name "APIM-High-Request-Rate" \
+    --resource-group $RESOURCE_GROUP \
+    --scopes $(az apim show --name apim-stamps --resource-group $RESOURCE_GROUP --query id -o tsv) \
+    --condition "avg staticThreshold greaterThan Gateway.Requests" \
+    --threshold 10000 \
+    --aggregation Total \
+    --period "PT1M" \
+    --frequency "PT1M" \
+    --severity 2 \
+    --action $ACTION_GROUP \
+    --description "APIM request rate exceeds 10K per minute"
+```
+
+---
+
+## 🚪 **API Management Operations**
+
+### 📊 **Tenant Management via APIM**
+
+#### **Adding New Tenant Subscriptions**
+```bash
+# Create new tenant subscription with appropriate tier
+az apim product subscription create \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --product-id premium-tier \
+    --subscription-id tenant-banking-premium \
+    --display-name "Banking Tenant - Premium Tier" \
+    --user-id banking-tenant-user
+
+# Set custom rate limits for specific tenant
+az apim policy create \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --policy-format xml \
+    --value @tenant-banking-policy.xml \
+    --subscription-id tenant-banking-premium
+```
+
+#### **Monitoring Tenant API Usage**
+```bash
+# Get tenant API usage analytics
+az monitor metrics list \
+    --resource $(az apim show --name apim-stamps --resource-group $RESOURCE_GROUP --query id -o tsv) \
+    --metric "Gateway.Requests" \
+    --aggregation Total \
+    --start-time "2024-01-01T00:00:00Z" \
+    --end-time "2024-01-31T23:59:59Z" \
+    --filter "SubscriptionId eq 'tenant-banking-premium'"
+
+# Check tenant rate limit violations
+az monitor metrics list \
+    --resource $(az apim show --name apim-stamps --resource-group $RESOURCE_GROUP --query id -o tsv) \
+    --metric "Gateway.Failed" \
+    --aggregation Total \
+    --filter "ResponseCode eq '429' and SubscriptionId eq 'tenant-banking-premium'"
+```
+
+#### **APIM Health Checks**
+```bash
+# Verify APIM gateway status across regions
+az apim show \
+    --name apim-stamps \
+    --resource-group $RESOURCE_GROUP \
+    --query "{name:name, status:provisioningState, gatewayUrl:gatewayUrl, regions:additionalLocations[].{location:location,status:provisioningState}}"
+
+# Test API endpoint health
+curl -H "Ocp-Apim-Subscription-Key: $SUBSCRIPTION_KEY" \
+     -H "X-Tenant-ID: banking-tenant" \
+     https://api.contoso.com/tenant/health
+
+# Check APIM policy compilation
+az apim policy show \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --policy-id global
+```
+
+### 🔧 **Tenant Onboarding Automation**
+```bash
+#!/bin/bash
+# Automated tenant onboarding script
+
+TENANT_ID=$1
+TIER=$2  # basic or premium
+TENANT_EMAIL=$3
+
+# Create tenant user in APIM
+az apim user create \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --user-id "${TENANT_ID}-admin" \
+    --email $TENANT_EMAIL \
+    --first-name "Tenant" \
+    --last-name "Administrator" \
+    --confirmation "signup"
+
+# Create tenant subscription
+az apim product subscription create \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --product-id "${TIER}-tier" \
+    --subscription-id "${TENANT_ID}-subscription" \
+    --display-name "${TENANT_ID} - ${TIER} tier" \
+    --user-id "${TENANT_ID}-admin" \
+    --state "active"
+
+# Create custom rate limiting policy
+cat > "${TENANT_ID}-policy.xml" << EOF
+<policies>
+  <inbound>
+    <rate-limit calls="$([ "$TIER" = "premium" ] && echo "50000" || echo "10000")" renewal-period="3600" />
+    <quota calls="$([ "$TIER" = "premium" ] && echo "1000000" || echo "100000")" renewal-period="86400" />
+    <set-header name="X-Tenant-ID" exists-action="override">
+      <value>$TENANT_ID</value>
+    </set-header>
+  </inbound>
+  <backend>
+    <forward-request />
+  </backend>
+  <outbound />
+  <on-error />
+</policies>
+EOF
+
+az apim policy create \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --policy-format xml \
+    --value "@${TENANT_ID}-policy.xml" \
+    --subscription-id "${TENANT_ID}-subscription"
+
+echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 ```
 
 ### 📊 **Custom Dashboards**

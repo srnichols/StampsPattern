@@ -82,7 +82,36 @@ pwsh --version
     "publisherName": { "value": "Contoso Corp" },
     "sqlAdminUsername": { "value": "sqladmin" },
     "sqlAdminPassword": { "value": "YourSecurePassword123!" },
-    "baseDomain": { "value": "contoso.com" }
+    "baseDomain": { "value": "contoso.com" },
+    "enablePremiumApim": { "value": false }
+  }
+}
+```
+
+#### Enterprise Configuration (`traffic-routing.parameters.enterprise.json`):
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": { "value": "prod" },
+    "location": { "value": "eastus" },
+    "resourcePrefix": { "value": "stamps-enterprise" },
+    "publisherEmail": { "value": "api-admin@contoso.com" },
+    "publisherName": { "value": "Contoso Enterprise" },
+    "sqlAdminUsername": { "value": "sqladmin" },
+    "sqlAdminPassword": { "value": "P@ssw0rd123!" },
+    "baseDomain": { "value": "contoso.com" },
+    "enablePremiumApim": { "value": true },
+    "apimAdditionalRegions": { 
+      "value": [
+        {
+          "location": "westeurope",
+          "capacity": 2,
+          "zones": ["1", "2", "3"]
+        }
+      ]
+    }
   }
 }
 ```
@@ -177,6 +206,89 @@ az deployment group create \
   --template-file main.bicep \
   --parameters @main.parameters.json \
   --verbose
+```
+
+---
+
+## 🚪 **Enterprise API Management Deployment**
+
+### 🎯 **APIM Deployment Considerations**
+
+> **⏱️ Deployment Time**: Premium APIM takes 45-60 minutes to deploy
+> **💰 Cost Impact**: Premium tier costs $2,800-7,400/month but provides enterprise features
+> **🌍 Multi-Region**: Automatic active-active deployment across specified regions
+
+### 📋 **APIM-Specific Prerequisites**
+
+```bash
+# Register required resource providers
+az provider register --namespace Microsoft.ApiManagement --wait
+
+# Verify APIM Premium quota in target regions
+az vm list-usage --location eastus --query "[?name.value=='PremiumV2Skus']"
+az vm list-usage --location westeurope --query "[?name.value=='PremiumV2Skus']"
+
+# Pre-create custom domains (optional)
+az network dns zone create \
+    --resource-group rg-stamps-global-prod \
+    --name api.contoso.com
+```
+
+### 🚀 **Enterprise APIM Deployment**
+
+```bash
+# Deploy with Premium APIM enabled
+az deployment group create \
+  --resource-group rg-stamps-global-prod \
+  --template-file traffic-routing.bicep \
+  --parameters @traffic-routing.parameters.enterprise.json \
+  --verbose \
+  --timeout 3600  # Allow 60 minutes for APIM Premium deployment
+
+# Monitor deployment progress
+az deployment group show \
+  --resource-group rg-stamps-global-prod \
+  --name traffic-routing \
+  --query "properties.provisioningState"
+
+# Verify APIM multi-region deployment
+az apim show \
+  --name stamps-enterprise-apim-eus-prod \
+  --resource-group rg-stamps-global-prod \
+  --query "{name:name, status:provisioningState, regions:additionalLocations[].{location:location,status:provisioningState}}"
+```
+
+### 🔧 **Post-Deployment APIM Configuration**
+
+```bash
+# Configure custom domain (if applicable)
+az apim hostname bind \
+  --resource-group rg-stamps-global-prod \
+  --service-name stamps-enterprise-apim-eus-prod \
+  --hostname api.contoso.com \
+  --hostname-type Gateway \
+  --certificate-path ./api-contoso-com.pfx \
+  --certificate-password $CERT_PASSWORD
+
+# Import tenant management APIs
+az apim api import \
+  --resource-group rg-stamps-global-prod \
+  --service-name stamps-enterprise-apim-eus-prod \
+  --path tenant \
+  --api-id tenant-management \
+  --specification-format OpenApi \
+  --specification-url https://raw.githubusercontent.com/your-repo/tenant-api-spec.json
+
+# Create tenant subscription tiers
+az apim product create \
+  --resource-group rg-stamps-global-prod \
+  --service-name stamps-enterprise-apim-eus-prod \
+  --product-id enterprise-tier \
+  --display-name "Enterprise Tier" \
+  --description "Enterprise tier with SLA guarantees" \
+  --subscription-required true \
+  --approval-required true \
+  --state published
 ```
 
 ## 🔧 Deployment Methods

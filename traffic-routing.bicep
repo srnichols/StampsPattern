@@ -33,6 +33,18 @@ param baseDomain string = 'contoso.com'
 @description('Log Analytics Workspace ID for monitoring')
 param logAnalyticsWorkspaceId string = '/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/myLogAnalyticsWorkspace'
 
+@description('Enable APIM Premium tier for enterprise features')
+param enablePremiumApim bool = true
+
+@description('Additional regions for APIM multi-region deployment')
+param apimAdditionalRegions array = [
+  {
+    location: 'westeurope'
+    capacity: 1
+    zones: ['1', '2']
+  }
+]
+
 // Variables
 // Region mapping for short names
 var regionShortNames = {
@@ -123,42 +135,33 @@ resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2023-05-01' = {
   }
 }
   
-resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
-  name: apimName
-  location: location
-  sku: {
-    name: 'Developer'
-    capacity: 1
-  }
-  properties: {
-    publisherEmail: publisherEmail
-    publisherName: publisherName
-  }
-}
-  
-resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
-  name: cosmosDbName
-  location: location
-  properties: {
-    databaseAccountOfferType: 'Standard'
-    consistencyPolicy: {
-      defaultConsistencyLevel: 'Session'
+// Enhanced Geodes Layer with Enterprise APIM
+module geodesLayer './AzureArchitecture/geodesLayer.bicep' = {
+  name: 'geodesLayer'
+  params: {
+    location: location
+    apimName: apimName
+    apimPublisherEmail: publisherEmail
+    apimPublisherName: publisherName
+    apimAdditionalRegions: enablePremiumApim ? apimAdditionalRegions : []
+    customDomain: 'api.${baseDomain}'
+    tags: {
+      environment: environment
+      solution: 'stamps-pattern'
+      purpose: 'api-management'
     }
-    locations: [
-      {
-        locationName: location
-        failoverPriority: 0
-        isZoneRedundant: false
-      }
+    globalLogAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    globalControlCosmosDbName: cosmosDbName
+    primaryLocation: location
+    additionalLocations: enablePremiumApim ? [
       {
         locationName: location == 'eastus' ? 'westus' : 'eastus'
         failoverPriority: 1
-        isZoneRedundant: false
       }
-    ]
+    ] : []
   }
 }
-  
+
 // Application Gateway - Simplified version
 // Note: Requires virtual network and public IP to be created separately
 resource appGateway 'Microsoft.Network/applicationGateways@2023-05-01' = {
@@ -326,10 +329,13 @@ output trafficManagerFqdn string = trafficManager.properties.dnsConfig.fqdn
 output frontDoorEndpointHostname string = frontDoorEndpoint.properties.hostName
 
 @description('API Management gateway URL')
-output apimGatewayUrl string = apim.properties.gatewayUrl
+output apimGatewayUrl string = geodesLayer.outputs.apimGatewayUrl
+
+@description('API Management developer portal URL')
+output apimDeveloperPortalUrl string = geodesLayer.outputs.apimDeveloperPortalUrl
 
 @description('Cosmos DB endpoint')
-output cosmosDbEndpoint string = cosmosDb.properties.documentEndpoint
+output cosmosDbEndpoint string = geodesLayer.outputs.globalControlCosmosDbEndpoint
 
 @description('Application Insights instrumentation key')
 output appInsightsInstrumentationKey string = monitoring.properties.InstrumentationKey

@@ -44,8 +44,9 @@ This guide establishes security baselines and best practices for the Azure Stamp
 
 ```
 🌍 Global Security Layer
-    ├─ Azure Front Door WAF
+    ├─ Azure Front Door WAF (OWASP Rules + Custom)
     ├─ Traffic Manager DDoS Protection  
+    ├─ API Management Security Policies
     └─ DNS Security Policies
          ↓
 🏢 Regional Security Layer
@@ -60,6 +61,61 @@ This guide establishes security baselines and best practices for the Azure Stamp
     ├─ Storage Account Access Controls
     └─ Managed Identity Authentication
 ```
+
+### 🚪 **API Management Security**
+
+#### **Enterprise Security Policies**
+```xml
+<!-- Global APIM Security Policy -->
+<policies>
+  <inbound>
+    <!-- Security Headers -->
+    <set-header name="X-Frame-Options" exists-action="override">
+      <value>DENY</value>
+    </set-header>
+    <set-header name="X-Content-Type-Options" exists-action="override">
+      <value>nosniff</value>
+    </set-header>
+    <set-header name="Strict-Transport-Security" exists-action="override">
+      <value>max-age=31536000; includeSubDomains</value>
+    </set-header>
+    
+    <!-- JWT Validation -->
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401">
+      <openid-config url="${environment().authentication.loginEndpoint}common/v2.0/.well-known/openid_configuration" />
+      <required-claims>
+        <claim name="aud"><value>api://stamps-pattern</value></claim>
+      </required-claims>
+    </validate-jwt>
+    
+    <!-- Rate Limiting by Tenant -->
+    <rate-limit-by-key calls="1000" renewal-period="60" 
+                       counter-key="@(context.Request.Headers.GetValueOrDefault("X-Tenant-ID","anonymous"))" />
+    
+    <!-- IP Filtering -->
+    <ip-filter action="allow">
+      <address-range from="10.0.0.0" to="10.255.255.255" />
+      <address-range from="172.16.0.0" to="172.31.255.255" />
+      <address-range from="192.168.0.0" to="192.168.255.255" />
+    </ip-filter>
+  </inbound>
+  <backend>
+    <forward-request />
+  </backend>
+  <outbound>
+    <!-- Remove sensitive headers -->
+    <set-header name="Server" exists-action="delete" />
+    <set-header name="X-Powered-By" exists-action="delete" />
+  </outbound>
+</policies>
+```
+
+#### **Tenant Isolation Security**
+- **Subscription-based access**: Each tenant gets unique API keys
+- **Custom policies per tier**: Different security rules for Basic vs Premium
+- **Request validation**: Schema validation and payload inspection
+- **Response filtering**: Sanitize responses based on tenant permissions
+- **Audit logging**: All API calls logged with tenant correlation
 
 ## 🔐 Identity & Access Management
 
