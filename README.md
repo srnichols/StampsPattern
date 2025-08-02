@@ -28,6 +28,12 @@ This pattern is particularly powerful for **mixed tenant portfolios** where you 
 - **Cost Optimization**: Provides recommendations for CELL consolidation and efficiency
 - **Analytics Dashboard**: Real-time capacity, utilization, and cost optimization insights
 
+### 🔄 **Availability Zone Resilience** 
+- **Configurable Zones**: Deploy CELLs across 0-3 availability zones based on SLA requirements
+- **Zone-Aware Naming**: CELL names include zone configuration (e.g., `shared-smb-z3`, `dedicated-bank-z2`)
+- **Flexible SLA Tiers**: Standard (z0/z1), 99.95% (z2), 99.99% (z3) availability options
+- **Cost-Aware Zones**: Zone configuration affects pricing (+20% for z2, +40% for z3)
+
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2Fmain%2Ftraffic-routing.json)
 
 ## 📚 **Complete Learning Path**
@@ -186,11 +192,12 @@ Deploy both shared and dedicated CELLs for maximum flexibility.
 git clone <repository-url>
 cd StampsPattern
 
-# 2️⃣ Deploy mixed tenancy model
+# 2️⃣ Deploy mixed tenancy model with 3 zones for maximum resilience
 .\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-prod" `
   -Location "eastus" `
   -TenancyModel "mixed" `
+  -AvailabilityZones "3" `
   -Environment "prod"
 ```
 

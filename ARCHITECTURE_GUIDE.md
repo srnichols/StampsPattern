@@ -23,7 +23,8 @@ This solution implements a sophisticated **GEO → Region → CELL** hierarchy u
 
 - **🏠 Flexible Tenant Isolation**: Support both shared and dedicated CELL models based on business needs
 - **🌍 Global Distribution**: Multi-geography deployment with regional failover
-- **📈 Unlimited Scalability**: Add CELLs and regions without architectural changes
+- **� Availability Zone Resilience**: Configurable AZ deployment (0-3 zones) per CELL for regional HA/DR
+- **�📈 Unlimited Scalability**: Add CELLs and regions without architectural changes
 - **🔒 Defense in Depth**: Multi-layer security with WAF, NSG, and identity controls
 - **📊 Operational Excellence**: Comprehensive monitoring with per-tenant visibility
 - **💰 Cost Optimization**: Right-sized resources with automated scaling
@@ -95,9 +96,115 @@ GEO: Europe
 | **Regulated Industries** | Dedicated CELL | Complete data isolation, audit trails | Healthcare, finance, government |
 | **High-Growth** | Start Shared → Migrate to Dedicated | Cost optimization with growth path | Scaling businesses |
 
+## 🔄 **Availability Zone Architecture**
+
+Azure Availability Zones provide **intra-region high availability** by distributing resources across physically separate datacenters within the same region. Each CELL can be configured with 0-3 Availability Zones based on business requirements.
+
+### 🏗️ **Zone Configuration Models**
+
+| Zone Config | CELL Naming | Use Case | Availability SLA | Cost Impact |
+|-------------|-------------|----------|------------------|-------------|
+| **0 Zones** | `shared-smb-z0` | Development, testing | Standard SLA | Lowest cost |
+| **1 Zone** | `dedicated-bank-z1` | Single zone deployment | Standard SLA | Standard cost |
+| **2 Zones** | `shared-retail-z2` | Basic HA with failover | 99.95% SLA | +20% cost |
+| **3 Zones** | `dedicated-health-z3` | Maximum resilience | 99.99% SLA | +40% cost |
+
+### 🏛️ **Regional Architecture with Availability Zones**
+
+```mermaid
+graph TD
+    subgraph "🌍 GEO: United States"
+        subgraph "🏢 Region: eastus"
+            subgraph "Zone 1"
+                Z1_C1[shared-smb-z3<br/>Zone 1 Resources]
+                Z1_C2[dedicated-bank-z3<br/>Zone 1 Resources]
+            end
+            subgraph "Zone 2"
+                Z2_C1[shared-smb-z3<br/>Zone 2 Resources]
+                Z2_C2[dedicated-bank-z3<br/>Zone 2 Resources]
+            end
+            subgraph "Zone 3"
+                Z3_C1[shared-smb-z3<br/>Zone 3 Resources]
+                Z3_C2[dedicated-bank-z3<br/>Zone 3 Resources]
+            end
+            
+            AG[Application Gateway<br/>Zone-Redundant]
+            AG --> Z1_C1
+            AG --> Z1_C2
+            AG --> Z2_C1
+            AG --> Z2_C2
+            AG --> Z3_C1
+            AG --> Z3_C2
+        end
+    end
+    
+    TM[Traffic Manager<br/>Global DNS] --> AG
+```
+
+### 📊 **Zone-Aware Service Configuration**
+
+#### **Zone-Redundant Services (Recommended)**
+- **🔄 Application Gateway**: Automatically distributes across zones
+- **🗄️ Azure SQL Database**: Zone-redundant database option
+- **📊 Azure Cosmos DB**: Zone-redundant writes and reads
+- **🔐 Azure Key Vault**: Zone-redundant by default in supported regions
+
+#### **Zone-Pinned Services (CELL-Specific)**
+- **🏗️ Container Apps Environment**: Pin to specific zones per CELL
+- **💾 Storage Accounts**: Zone-redundant storage (ZRS) or specific zone
+- **📦 Container Registry**: Zone-redundant with geo-replication
+
+### 🎯 **CELL Zone Assignment Strategy**
+
+```json
+// Example CELL configuration with zones
+{
+  "cells": [
+    {
+      "cellName": "shared-smb-z3",
+      "tenancyModel": "shared",
+      "availabilityZones": ["1", "2", "3"],
+      "maxTenants": 100,
+      "slaLevel": "Premium"
+    },
+    {
+      "cellName": "dedicated-bank-z2", 
+      "tenancyModel": "dedicated",
+      "availabilityZones": ["1", "2"],
+      "maxTenants": 1,
+      "slaLevel": "Enterprise"
+    },
+    {
+      "cellName": "shared-dev-z0",
+      "tenancyModel": "shared", 
+      "availabilityZones": [],
+      "maxTenants": 50,
+      "slaLevel": "Basic"
+    }
+  ]
+}
+```
+
+### 🚨 **Zone Failure Scenarios**
+
+#### **Single Zone Failure (zones 1-3 configuration)**
+- **Impact**: 33% capacity reduction
+- **Response**: Traffic automatically redistributes to healthy zones
+- **Recovery**: Auto-healing within remaining zones
+
+#### **Multi-Zone Failure (zones 1-3 configuration)**  
+- **Impact**: 66% capacity reduction
+- **Response**: Regional failover triggers
+- **Recovery**: Cross-region disaster recovery
+
+#### **Complete Regional Failure**
+- **Impact**: 100% regional capacity loss
+- **Response**: Traffic Manager routes to backup region
+- **Recovery**: Geo-disaster recovery procedures
+
 This solution implements a sophisticated **GEO → Region → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution.
 
-### 🌍 **Hierarchical Structure**
+### 🌍 **Hierarchical Structure with Availability Zones**
 
 ```mermaid
 graph TD
@@ -114,39 +221,56 @@ graph TD
         G2 --> R4[northeurope]
     end
     
+    subgraph "🔄 Availability Zone Layer"
+        R1 --> AZ1[Zone 1]
+        R1 --> AZ2[Zone 2] 
+        R1 --> AZ3[Zone 3]
+        R3 --> AZ4[Zone 1]
+        R3 --> AZ5[Zone 2]
+        R3 --> AZ6[Zone 3]
+    end
+    
     subgraph "🏠 CELL Layer"
-        R1 --> C1[tenant-banking]
-        R1 --> C2[tenant-healthcare]
-        R1 --> C3[tenant-retail]
-        R3 --> C4[tenant-banking-eu]
-        R3 --> C5[tenant-fintech]
+        AZ1 --> C1[shared-banking-z3<br/>Zone 1 Instance]
+        AZ2 --> C2[shared-banking-z3<br/>Zone 2 Instance]
+        AZ3 --> C3[shared-banking-z3<br/>Zone 3 Instance]
+        AZ1 --> C4[dedicated-health-z2<br/>Zone 1 Instance]
+        AZ2 --> C5[dedicated-health-z2<br/>Zone 2 Instance]
+        AZ4 --> C6[shared-retail-z1<br/>Zone 1 Instance]
     end
 ```
 
 **📐 Architecture Dimensions:**
-- **Depth**: 3 layers (GEO → Region → CELL)
+- **Depth**: 4 layers (GEO → Region → Zone → CELL)
 - **Width**: Unlimited expansion at each layer
-- **Isolation**: Complete resource isolation per CELL
-- **Redundancy**: Cross-region and cross-geo replication
+- **Zone Resilience**: 0-3 zones per CELL based on SLA requirements
+- **Isolation**: Complete resource isolation per CELL with zone distribution
+- **Redundancy**: Cross-zone, cross-region, and cross-geo replication
 
-### 🔄 **Real-World Example**
+### 🔄 **Real-World Example with Zone Configuration**
 
 ```
 GEO: UnitedStates
-  ├─ Region: eastus
-  │    ├─ CELL: tenant-banking
-  │    ├─ CELL: tenant-healthcare
-  │    └─ CELL: tenant-retail
-  └─ Region: westus
-       ├─ CELL: tenant-banking-dr
-       └─ CELL: tenant-retail-dr
+  ├─ Region: eastus (3 Availability Zones)
+  │    ├─ CELL: shared-banking-z3 (Zones 1,2,3 - 99.99% SLA)
+  │    │    ├─ Zone 1: Container Apps, SQL replica, Storage
+  │    │    ├─ Zone 2: Container Apps, SQL replica, Storage  
+  │    │    └─ Zone 3: Container Apps, SQL replica, Storage
+  │    ├─ CELL: dedicated-healthcare-z2 (Zones 1,2 - 99.95% SLA)
+  │    │    ├─ Zone 1: Dedicated resources
+  │    │    └─ Zone 2: Dedicated resources
+  │    └─ CELL: shared-retail-z1 (Zone 1 - Standard SLA)
+  │         └─ Zone 1: Single zone deployment
+  └─ Region: westus (DR Site)
+       ├─ CELL: shared-banking-z3-dr (Zones 1,2,3)
+       └─ CELL: dedicated-healthcare-z2-dr (Zones 1,2)
 
-GEO: Europe
-  ├─ Region: westeurope
-  │    ├─ CELL: tenant-banking-eu
-  │    └─ CELL: tenant-fintech
-  └─ Region: northeurope
-       └─ CELL: tenant-banking-eu-dr
+GEO: Europe  
+  ├─ Region: westeurope (3 Availability Zones)
+  │    ├─ CELL: shared-banking-eu-z3 (Zones 1,2,3)
+  │    └─ CELL: dedicated-fintech-z3 (Zones 1,2,3 - Maximum resilience)
+  └─ Region: northeurope (DR Site)
+       └─ CELL: dedicated-fintech-z3-dr (Zones 1,2,3)
 ```
 
 ## 🏛️ Architecture Layers
@@ -176,20 +300,26 @@ GEO: Europe
 - **📊 Regional Log Analytics**: Regional monitoring and compliance
 
 ### 3️⃣ **CELL Layer** (`deploymentStampLayer.bicep`)
-**Purpose**: Flexible tenant application instances supporting both shared and dedicated models
+**Purpose**: Flexible tenant application instances supporting both shared and dedicated models with configurable zone resilience
 
 **Components**:
-- **🏗️ Container Apps Environment**: Kubernetes-based application hosting with tenant routing
-- **🗄️ Azure SQL Database**: Configurable for shared schemas or dedicated databases per tenant
-- **💾 Storage Account**: Tenant-specific blob containers with optional dedicated accounts
-- **🌌 CELL Cosmos DB**: Tenant data with configurable isolation levels
-- **📦 Container Registry**: Application container images with multi-tenant support
-- **🔍 Diagnostic Settings**: CELL-level monitoring with tenant correlation
+- **🏗️ Container Apps Environment**: Kubernetes-based application hosting with tenant routing and zone distribution
+- **🗄️ Azure SQL Database**: Configurable for shared schemas or dedicated databases per tenant with zone-redundant options
+- **💾 Storage Account**: Tenant-specific blob containers with zone-redundant storage (ZRS) or zone-pinned options
+- **🌌 CELL Cosmos DB**: Tenant data with configurable isolation levels and zone-redundant writes
+- **📦 Container Registry**: Application container images with multi-tenant support and zone replication
+- **🔍 Diagnostic Settings**: CELL-level monitoring with tenant correlation and zone-aware metrics
 
 **Tenancy Flexibility**:
 - **Shared Model**: Multiple tenants (10-100) share CELL resources with application-level isolation
 - **Dedicated Model**: Single enterprise tenant gets complete CELL resource isolation
 - **Hybrid Model**: Mix of shared and dedicated CELLs within the same region
+
+**Zone Configuration**:
+- **0 Zones (z0)**: Single zone deployment for development/testing
+- **1 Zone (z1)**: Standard deployment in single zone
+- **2 Zones (z2)**: Basic high availability with 99.95% SLA
+- **3 Zones (z3)**: Maximum resilience with 99.99% SLA
 
 ### 4️⃣ **Cross-Cutting Layers**
 

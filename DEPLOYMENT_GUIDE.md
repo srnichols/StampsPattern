@@ -61,29 +61,32 @@ graph TD
 
 #### **Shared Tenancy Deployment**
 ```powershell
-# Cost-optimized for SMBs (multiple tenants per CELL)
-./deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod
+# Cost-optimized for SMBs (multiple tenants per CELL) with basic HA
+./deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod -AvailabilityZones 2
 
-# Expected costs: $8-16 per tenant per month
-# Best for: Development, testing, cost-sensitive workloads
+# Expected costs: $8-16 per tenant per month (+20% for zone redundancy)
+# SLA: 99.95% availability
+# Best for: Development, testing, cost-sensitive workloads with basic HA
 ```
 
 #### **Dedicated Tenancy Deployment**
 ```powershell
-# Enterprise-grade isolation (one tenant per CELL)
-./deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod
+# Enterprise-grade isolation (one tenant per CELL) with maximum resilience
+./deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod -AvailabilityZones 3
 
-# Expected costs: $3200+ per tenant per month  
+# Expected costs: $3200+ per tenant per month (+40% for 3-zone redundancy)
+# SLA: 99.99% availability  
 # Best for: Compliance, security-sensitive, high-performance workloads
 ```
 
 #### **Mixed Tenancy Deployment**
 ```powershell
-# Intelligent assignment based on tenant requirements
-./deploy-stamps.ps1 -TenancyModel mixed -Location eastus -Environment prod
+# Intelligent assignment based on tenant requirements with maximum resilience
+./deploy-stamps.ps1 -TenancyModel mixed -Location eastus -Environment prod -AvailabilityZones 3
 
 # Dynamic cost optimization with automatic tenant placement
-# Best for: Multi-tier platforms with diverse tenant needs
+# SLA: 99.99% availability for all CELLs
+# Best for: Multi-tier platforms with diverse tenant needs and high availability requirements
 ```
 
 ### Option B: Legacy Shell Deployment
