@@ -64,6 +64,20 @@ This guide establishes security baselines and best practices for the Azure Stamp
 
 ### 🚪 **API Management Security**
 
+#### **Flexible Tenancy Security Models**
+
+**🏠 Shared CELL Security**:
+- **Application-level isolation**: Tenant ID validation in all API calls
+- **Schema-based database access**: Row-level security (RLS) for tenant data separation
+- **Container-based storage**: Tenant-specific blob containers with SAS tokens
+- **API rate limiting**: Per-tenant quotas within shared infrastructure
+
+**🏢 Dedicated CELL Security**:
+- **Infrastructure-level isolation**: Complete network and resource separation
+- **Dedicated databases**: Individual SQL instances with private endpoints
+- **Isolated storage**: Dedicated storage accounts with private networking
+- **Custom security policies**: Tenant-specific WAF rules and access controls
+
 #### **Enterprise Security Policies**
 ```xml
 <!-- Global APIM Security Policy -->
@@ -110,12 +124,33 @@ This guide establishes security baselines and best practices for the Azure Stamp
 </policies>
 ```
 
-#### **Tenant Isolation Security**
-- **Subscription-based access**: Each tenant gets unique API keys
-- **Custom policies per tier**: Different security rules for Basic vs Premium
-- **Request validation**: Schema validation and payload inspection
-- **Response filtering**: Sanitize responses based on tenant permissions
-- **Audit logging**: All API calls logged with tenant correlation
+#### **Tenant Isolation Security Models**
+
+##### **🏠 Shared CELL Security**
+- **Application-Level Tenant Validation**: Every API call validates tenant context
+- **Row-Level Security (RLS)**: Database policies enforce tenant data isolation
+  ```sql
+  CREATE SECURITY POLICY tenant_security_policy
+  ADD FILTER PREDICATE tenant_id = SESSION_CONTEXT('tenant_id')
+  ON dbo.customer_data;
+  ```
+- **Tenant-Scoped Storage**: SAS tokens with tenant-specific permissions
+- **API Rate Limiting**: Per-tenant quotas within shared infrastructure
+- **Audit Trail**: Comprehensive logging with tenant correlation IDs
+
+##### **🏢 Dedicated CELL Security**
+- **Infrastructure Isolation**: Complete network and resource separation
+- **Private Endpoints**: Dedicated SQL and storage with private connectivity
+- **Custom NSG Rules**: Tenant-specific network security groups
+- **Dedicated WAF Policies**: Enterprise-specific application firewall rules
+- **Compliance-Ready**: Meets regulatory requirements (HIPAA, SOX, PCI-DSS)
+
+##### **Security Policy Enforcement**
+- **Subscription-based access**: Each tenant gets unique API keys and policies
+- **Dynamic policy application**: Different security rules based on tenant tier
+- **Request validation**: Schema validation and payload inspection per tenant type
+- **Response filtering**: Data sanitization based on tenant permissions and compliance requirements
+- **Multi-level audit logging**: All API calls logged with tenant correlation and security context
 
 ## 🔐 Identity & Access Management
 

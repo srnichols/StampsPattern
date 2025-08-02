@@ -26,11 +26,18 @@ User → Front Door → Traffic Manager → APIM (Premium) → Application Gatew
 - **Request/Response Sanitization**: Remove sensitive information from responses
 
 ### 📊 **Multi-Tenant Management**
-- **Tenant Subscription Tiers**: Basic, Premium, and Enterprise tiers with different SLAs
+- **Flexible Tenancy Models**: Support both shared CELLs (10-100 tenants) and dedicated CELLs (single tenant)
+- **Tenant Subscription Tiers**: Basic (shared), Premium (shared/dedicated), Enterprise (dedicated)
 - **API Versioning**: Side-by-side deployment of API versions (v1, v2, etc.)
-- **Developer Portals**: Self-service API documentation and key management
-- **Usage Analytics**: Per-tenant API usage tracking and billing insights
-- **Custom Policies**: Tenant-specific transformation and routing rules
+- **Developer Portals**: Self-service API documentation and key management for all tenant types
+- **Usage Analytics**: Per-tenant API usage tracking and billing insights across deployment models
+- **Custom Policies**: Tenant-specific transformation and routing rules based on tenancy model
+
+### 🏗️ **Tenancy Model Integration**
+- **Shared CELL Support**: API policies route multiple tenants within shared infrastructure
+- **Dedicated CELL Integration**: Direct API routing to dedicated tenant infrastructure
+- **Migration Support**: Seamless tenant migration from shared to dedicated CELLs
+- **Cost Optimization**: Tenant-appropriate API quotas and rate limiting based on deployment model
 
 ### 🌍 **Global Scale**
 - **Multi-Region Active-Active**: Automatic deployment across multiple Azure regions

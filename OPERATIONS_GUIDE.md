@@ -228,26 +228,99 @@ az monitor metrics alert create \
 
 ## 🚪 **API Management Operations**
 
-### 📊 **Tenant Management via APIM**
+### 📊 **Flexible Tenant Management Operations**
 
-#### **Adding New Tenant Subscriptions**
+#### **🏠 Shared CELL Tenant Onboarding**
 ```bash
-# Create new tenant subscription with appropriate tier
+# 1. Check shared CELL capacity before adding tenants
+SHARED_CELL="shared-smb-eastus"
+az monitor metrics list \
+    --resource "/subscriptions/$SUBSCRIPTION/resourceGroups/rg-stamps-$SHARED_CELL" \
+    --metric "cpu_percent" "memory_percent" \
+    --aggregation Average
+
+# 2. Add tenant to shared CELL (no new infrastructure needed)
 az apim product subscription create \
     --resource-group $RESOURCE_GROUP \
     --service-name apim-stamps \
-    --product-id premium-tier \
-    --subscription-id tenant-banking-premium \
-    --display-name "Banking Tenant - Premium Tier" \
-    --user-id banking-tenant-user
+    --product-id basic-shared-tier \
+    --subscription-id tenant-startup-basic \
+    --display-name "Startup Tenant - Shared Basic Tier"
 
-# Set custom rate limits for specific tenant
+# 3. Configure application-level tenant isolation
+# Update tenant routing in Global Cosmos DB
+az cosmosdb sql container create \
+    --account-name cosmos-global-stamps \
+    --database-name globaldb \
+    --name tenants \
+    --resource-group $RESOURCE_GROUP \
+    --partition-key-path "/tenantId"
+```
+
+#### **🏢 Dedicated CELL Tenant Deployment**
+```bash
+# 1. Deploy dedicated infrastructure for enterprise tenant
+ENTERPRISE_TENANT="banking-corp"
+az deployment group create \
+    --resource-group rg-stamps-production \
+    --template-file traffic-routing.bicep \
+    --parameters @traffic-routing.parameters.json \
+    --parameters enableDedicatedCell=true \
+                 dedicatedTenantName=$ENTERPRISE_TENANT \
+                 dedicatedCellSku=premium
+
+# 2. Configure dedicated APIM subscription with custom policies
+az apim product subscription create \
+    --resource-group $RESOURCE_GROUP \
+    --service-name apim-stamps \
+    --product-id enterprise-dedicated-tier \
+    --subscription-id tenant-$ENTERPRISE_TENANT-enterprise \
+    --display-name "$ENTERPRISE_TENANT - Enterprise Dedicated Tier"
+
+# 3. Set enterprise-specific rate limits and security policies
 az apim policy create \
     --resource-group $RESOURCE_GROUP \
     --service-name apim-stamps \
     --policy-format xml \
-    --value @tenant-banking-policy.xml \
-    --subscription-id tenant-banking-premium
+    --value @enterprise-$ENTERPRISE_TENANT-policy.xml \
+    --subscription-id tenant-$ENTERPRISE_TENANT-enterprise
+```
+
+#### **🔄 Tenant Migration: Shared → Dedicated**
+```bash
+# 1. Deploy new dedicated CELL for growing tenant
+GROWING_TENANT="fintech-scale"
+az deployment group create \
+    --resource-group rg-stamps-production \
+    --template-file traffic-routing.bicep \
+    --parameters tenantMigration=true \
+                 sourceTenant=$GROWING_TENANT \
+                 targetModel=dedicated
+
+# 2. Data migration (implement zero-downtime migration)
+# Export tenant data from shared SQL schema
+sqlcmd -S shared-sql-server.database.windows.net \
+       -d shared-database \
+       -Q "SELECT * FROM tenant_data WHERE tenant_id='$GROWING_TENANT'" \
+       -o /tmp/tenant-migration-$GROWING_TENANT.sql
+
+# Import to dedicated SQL database
+sqlcmd -S dedicated-$GROWING_TENANT-sql.database.windows.net \
+       -d dedicated-database \
+       -i /tmp/tenant-migration-$GROWING_TENANT.sql
+
+# 3. Update routing in Global Cosmos DB
+az cosmosdb sql container item replace \
+    --account-name cosmos-global-stamps \
+    --database-name globaldb \
+    --container-name tenants \
+    --item-id $GROWING_TENANT \
+    --body "{\"tenantId\":\"$GROWING_TENANT\",\"cellType\":\"dedicated\",\"cellBackendPool\":\"dedicated-$GROWING_TENANT-backend\"}"
+
+# 4. Validate migration and performance
+curl -H "X-Tenant-ID: $GROWING_TENANT" \
+     -H "Ocp-Apim-Subscription-Key: $NEW_SUBSCRIPTION_KEY" \
+     https://api.contoso.com/tenant/health
 ```
 
 #### **Monitoring Tenant API Usage**

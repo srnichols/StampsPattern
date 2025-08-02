@@ -145,19 +145,25 @@ journey
 🌍 Global Layer    → DNS, Traffic Manager, Front Door, Global Functions
 🚪 Geodes Layer    → API Management (APIM), Global Control Plane Cosmos DB
 🏢 Regional Layer  → Application Gateway, Key Vault, Automation Account
-🏠 CELL Layer      → Container Apps, SQL Database, Storage Account
+🏠 CELL Layer      → Flexible: Shared (10-100 tenants) or Dedicated (1 tenant)
 ```
 
 #### **🔄 Traffic Flow**
 ```
-User → Front Door → Traffic Manager → APIM Gateway → App Gateway → Container Apps → SQL Database
+User → Front Door → Traffic Manager → APIM Gateway → App Gateway → CELL (Shared/Dedicated) → SQL/Storage
 ```
+
+#### **🏠 Tenancy Models**
+- **Shared CELL**: 10-100 small tenants, cost-optimized, application-level isolation
+- **Dedicated CELL**: Single enterprise tenant, compliance-ready, infrastructure-level isolation
+- **Mixed Deployment**: Optimize costs with tenant segmentation strategy
 
 #### **📊 Key Metrics**
 - **Availability Target**: 99.95% global uptime
-- **Performance Target**: <100ms global response time
-- **Scale Target**: Unlimited tenants per region
-- **Security Target**: Zero-trust architecture
+- **Performance Target**: <100ms global response time  
+- **Scale Target**: Unlimited tenants per region (shared or dedicated)
+- **Cost Efficiency**: $16/tenant (shared) to $3,200/tenant (dedicated)
+- **Security Target**: Zero-trust architecture with flexible isolation levels
 
 ---
 

@@ -21,12 +21,79 @@ This solution implements a sophisticated **GEO → Region → CELL** hierarchy u
 
 ### 🎯 **Key Design Principles**
 
-- **🏠 Tenant Isolation**: Complete resource isolation per tenant (CELL)
+- **🏠 Flexible Tenant Isolation**: Support both shared and dedicated CELL models based on business needs
 - **🌍 Global Distribution**: Multi-geography deployment with regional failover
 - **📈 Unlimited Scalability**: Add CELLs and regions without architectural changes
 - **🔒 Defense in Depth**: Multi-layer security with WAF, NSG, and identity controls
 - **📊 Operational Excellence**: Comprehensive monitoring with per-tenant visibility
 - **💰 Cost Optimization**: Right-sized resources with automated scaling
+
+## 🏗️ **Flexible Tenancy Models**
+
+The Azure Stamps Pattern supports **multiple tenancy models** within the same architecture, providing maximum flexibility for different business requirements:
+
+### 🏠 **Shared CELL Tenancy** (Multi-tenant per CELL)
+**Use Case**: Cost-effective hosting for smaller tenants, startups, and standardized workloads
+
+**Characteristics**:
+- **10-100 smaller clients** can share a single CELL
+- **Application-level isolation** within shared CELL resources
+- **Shared infrastructure costs** across tenants in the same CELL
+- **Standardized configurations** and shared resource pools
+- **Cost-effective** for price-sensitive customers
+
+**Isolation Strategy**:
+- **Database schemas**: Separate schemas per tenant in shared SQL DB
+- **Storage containers**: Tenant-specific blob containers within shared storage
+- **API Management**: Tenant-specific rate limiting and access policies
+- **Application routing**: Tenant ID-based data segregation
+
+### 🏢 **Dedicated CELL Tenancy** (Single tenant per CELL)
+**Use Case**: Enterprise clients, regulated industries, high-compliance requirements
+
+**Characteristics**:
+- **Large enterprise clients** get their own dedicated CELL
+- **Complete infrastructure isolation** - separate SQL database, storage, container apps
+- **Custom configurations** and performance guarantees
+- **Regulatory compliance** ready for healthcare, financial services, government
+- **Premium SLA** with dedicated resources and monitoring
+
+**Isolation Strategy**:
+- **Infrastructure-level**: Completely separate Azure resources per tenant
+- **Network isolation**: Dedicated VNets and subnets
+- **Separate databases**: Individual SQL databases per tenant
+- **Dedicated monitoring**: Tenant-specific dashboards and alerts
+
+### 📊 **Mixed Deployment Example**
+
+```
+GEO: UnitedStates
+  ├─ Region: eastus
+  │    ├─ CELL: shared-small-business (100 small tenants) 
+  │    ├─ CELL: shared-mid-market (25 mid-size tenants)
+  │    ├─ CELL: enterprise-bank-corp (1 dedicated tenant)
+  │    └─ CELL: healthcare-system-a (1 dedicated tenant)
+  └─ Region: westus
+       ├─ CELL: shared-startups (50 startup tenants)
+       └─ CELL: government-agency-x (1 dedicated tenant)
+
+GEO: Europe
+  ├─ Region: westeurope
+  │    ├─ CELL: shared-eu-smb (75 small tenants)
+  │    └─ CELL: fintech-enterprise-b (1 dedicated tenant)
+  └─ Region: northeurope
+       └─ CELL: banking-enterprise-eu-dr (1 dedicated tenant)
+```
+
+### 🎯 **Tenant Decision Matrix**
+
+| Tenant Profile | Recommended Model | Primary Benefits | Use Cases |
+|----------------|------------------|------------------|-----------|
+| **Startups/SMB** | Shared CELL | Lower cost, shared infrastructure | Cost-sensitive, standard features |
+| **Mid-Market** | Shared or Dedicated | Flexible scaling options | Growing businesses, mixed needs |
+| **Enterprise** | Dedicated CELL | Performance guarantees, customization | High volume, custom requirements |
+| **Regulated Industries** | Dedicated CELL | Complete data isolation, audit trails | Healthcare, finance, government |
+| **High-Growth** | Start Shared → Migrate to Dedicated | Cost optimization with growth path | Scaling businesses |
 
 This solution implements a sophisticated **GEO → Region → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution.
 
@@ -109,15 +176,20 @@ GEO: Europe
 - **📊 Regional Log Analytics**: Regional monitoring and compliance
 
 ### 3️⃣ **CELL Layer** (`deploymentStampLayer.bicep`)
-**Purpose**: Isolated tenant application instances
+**Purpose**: Flexible tenant application instances supporting both shared and dedicated models
 
 **Components**:
-- **🏗️ Container Apps Environment**: Kubernetes-based application hosting
-- **🗄️ Azure SQL Database**: Isolated tenant database
-- **💾 Storage Account**: Tenant-specific blob and file storage
-- **🌌 CELL Cosmos DB**: Tenant data with regional scope
-- **📦 Container Registry**: Application container images
-- **🔍 Diagnostic Settings**: CELL-level monitoring and logging
+- **🏗️ Container Apps Environment**: Kubernetes-based application hosting with tenant routing
+- **🗄️ Azure SQL Database**: Configurable for shared schemas or dedicated databases per tenant
+- **💾 Storage Account**: Tenant-specific blob containers with optional dedicated accounts
+- **🌌 CELL Cosmos DB**: Tenant data with configurable isolation levels
+- **📦 Container Registry**: Application container images with multi-tenant support
+- **🔍 Diagnostic Settings**: CELL-level monitoring with tenant correlation
+
+**Tenancy Flexibility**:
+- **Shared Model**: Multiple tenants (10-100) share CELL resources with application-level isolation
+- **Dedicated Model**: Single enterprise tenant gets complete CELL resource isolation
+- **Hybrid Model**: Mix of shared and dedicated CELLs within the same region
 
 ### 4️⃣ **Cross-Cutting Layers**
 
@@ -164,12 +236,19 @@ GEO: Europe
 [APIM Gateway] → Apply tenant-specific policies and rate limits
     ↓
 [Global Function: GetTenantCellFunction] → Query Global Cosmos DB
+    ↓                                      ├─ Tenant Type: Shared or Dedicated
+    ↓                                      ├─ SLA Tier: Basic, Premium, Enterprise
+    ↓                                      └─ Compliance Requirements
+[Route to Appropriate CELL] → Based on tenant metadata and deployment model
     ↓
-[Route to Specific CELL] → Based on tenant metadata and SLA tier
+    ├─ Shared CELL: Application-level tenant routing
+    └─ Dedicated CELL: Direct infrastructure access
     ↓
 [Application Gateway] → Regional SSL termination and WAF
     ↓
-[CELL-specific Resources] → Isolated SQL DB, Storage, Container Apps
+[CELL-specific Resources] → Tenant-appropriate isolation level
+    ├─ Shared: Schema-based SQL isolation, container-based storage
+    └─ Dedicated: Complete resource isolation per tenant
 ```
 
 ## 🏗️ Deployment Architecture
@@ -306,21 +385,51 @@ CELL Level: Tenant-specific metrics, application performance
 ## 🌱 Scaling Strategies
 
 ### ➕ Adding New Tenants (CELLs)
-1. Update `geos` array with new CELL name
-2. Deploy updated template
-3. Configure routing in Global Cosmos DB
-4. Update Application Gateway path rules
+
+#### **Shared CELL Onboarding**
+1. Check existing CELL capacity (recommended: 10-100 tenants per shared CELL)
+2. Add tenant to shared CELL via Global Cosmos DB routing
+3. Configure application-level tenant isolation (schemas, containers)
+4. Update API Management policies for new tenant tier
+
+#### **Dedicated CELL Deployment**
+1. Update `geos` array with new dedicated CELL name
+2. Deploy updated template with dedicated resources
+3. Configure dedicated monitoring and alerting
+4. Update Application Gateway with dedicated backend pool
+
+### 🔄 **Tenancy Model Migration**
+
+#### **Shared → Dedicated Migration**
+```bash
+# 1. Deploy new dedicated CELL
+az deployment group create \
+  --resource-group rg-stamps-production \
+  --template-file traffic-routing.bicep \
+  --parameters enableDedicatedCell=true tenantName=enterprise-client
+
+# 2. Migrate tenant data
+# Export from shared SQL schema
+# Import to dedicated SQL database
+
+# 3. Update routing in Global Cosmos DB
+# Change tenant.cellBackendPool to dedicated CELL
+
+# 4. Update DNS and validate migration
+```
 
 ### 🌍 Geographic Expansion
 1. Add new GEO to `geos` array
 2. Configure DNS for new geography
 3. Deploy regional infrastructure
 4. Update Traffic Manager with new endpoints
+5. **Consider tenancy models** for new geography (shared vs dedicated mix)
 
-### 📈 CELL Scaling
-- **Horizontal**: Add more CELLs per region
-- **Vertical**: Upgrade CELL resources (SQL tier, storage class)
-- **Geographic**: Replicate CELLs across regions
+### 📈 CELL Scaling Models
+- **Horizontal Shared**: Add more shared CELLs as tenant count grows
+- **Horizontal Dedicated**: Deploy dedicated CELLs for enterprise clients
+- **Vertical**: Upgrade CELL resources (SQL tier, storage class) based on tenant requirements
+- **Geographic**: Replicate tenant CELLs across regions for DR and performance
 
 ## 🚨 Disaster Recovery
 
