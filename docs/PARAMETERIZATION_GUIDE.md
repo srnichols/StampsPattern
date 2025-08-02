@@ -202,6 +202,6 @@ az deployment group validate `
 
 ## 📚 Related Documentation
 
-- [NAMING_CONVENTIONS.md](../NAMING_CONVENTIONS.md) - Zone-aware naming patterns
-- [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) - Deployment procedures
+- [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) - Zone-aware naming patterns
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Deployment procedures
 - [Azure Naming Conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)

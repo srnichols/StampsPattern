@@ -1,6 +1,9 @@
 # 🌍 Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Score)
 
-The **Azure Stamps Pattern** represents a **gold-standard enterprise architecture** achieving **94/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
+The **Azure Sta| **5** | 📋 [**PARAMETERIZATION_GUI|| 🚀 **Deployment Guide** | Step-by-step deployment with governance automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |📋 **Parameterization Guide** | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |E.md**](./docs/PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
+| **6** | 🚀 [**DEPLOYMENT_GUIDE.md**](./docs/DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
+| **7** | 🛡️ [**SECURITY_GUIDE.md**](./docs/SECURITY_GUIDE.md) | Security baseline and zero-trust architecture | 30 minutes |
+| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./docs/OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |attern** represents a **gold-standard enterprise architecture** achieving **94/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
 
 **🏆 Enterprise Excellence:** This implementation showcases **world-class architectural practices** with zero-trust security, AI-driven operations, automated governance, and intelligent cost optimization. The pattern implements a hierarchical **GEO → Region → CELL** structure supporting both **shared CELLs** (10-100 small tenants) and **dedicated CELLs** (single enterprise tenant) with **automated tenant assignment**, **Azure Policy as Code governance**, and **seamless migration capabilities**.
 
@@ -15,7 +18,7 @@ The **Azure Stamps Pattern** represents a **gold-standard enterprise architectur
 
 This pattern is particularly powerful for **regulated industries** (healthcare, financial services, government) where dedicated isolation and comprehensive compliance aren't just preferred—they're mandatory for regulatory adherence.
 
-> **📚 DOCUMENTATION SITEMAP**: New to this architecture? Start with our comprehensive **[📋 Documentation Sitemap](./DOCS.md)** for guided navigation through all guides, role-based learning paths, and quick-start options. This master index helps you find exactly what you need based on your role and requirements.
+> **📚 DOCUMENTATION SITEMAP**: New to this architecture? Start with our comprehensive **[📋 Documentation Sitemap](./docs/DOCS.md)** for guided navigation through all guides, role-based learning paths, and quick-start options. This master index helps you find exactly what you need based on your role and requirements.
 
 ## ✨ **Enterprise Features - CAF/WAF Compliant**
 
@@ -98,10 +101,10 @@ journey
 | Step | Document | Purpose | Time Required |
 |------|----------|---------|---------------|
 | **1** | 📄 [**README.md**](./README.md) | Project overview, quick start, business value | 10 minutes |
-| **2** | 🏗️ [**ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Deep technical architecture, design decisions | 30 minutes |
-| **3** | 🏆 [**CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | **CAF/WAF Compliance Scorecard (94/100)** | 20 minutes |
-| **4** | 📋 [**NAMING_CONVENTIONS.md**](./NAMING_CONVENTIONS.md) | Naming standards and best practices | 15 minutes |
-| **5** | 📋 [**PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
+| **2** | 🏗️ [**ARCHITECTURE_GUIDE.md**](./docs/ARCHITECTURE_GUIDE.md) | Deep technical architecture, design decisions | 30 minutes |
+| **3** | 🏆 [**CAF_WAF_COMPLIANCE_ANALYSIS.md**](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) | **CAF/WAF Compliance Scorecard (94/100)** | 20 minutes |
+| **4** | 📋 [**NAMING_CONVENTIONS.md**](./docs/NAMING_CONVENTIONS.md) | Naming standards and best practices | 15 minutes |
+| **5** | 📋 [**PARAMETERIZATION_GUIDE.md**](./docs/PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
 | **5** | � [**PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
 | **6** | �🚀 [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
 | **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
@@ -111,34 +114,34 @@ journey
 ### 🎯 **Role-Based Quick Start**
 
 #### 👨‍💼 **For Decision Makers & Architects**
-1. **Compliance Scorecard**: [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md#-executive-summary) 
+1. **Compliance Scorecard**: [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md#-executive-summary) 
 2. **Business Case**: [README - Enterprise Features](#-enterprise-features---cafwaf-compliant)
-3. **Technical Architecture**: [ARCHITECTURE_GUIDE - Overview](./ARCHITECTURE_GUIDE.md#-architecture-overview)
-4. **Security Posture**: [SECURITY_GUIDE - Zero-Trust Strategy](./SECURITY_GUIDE.md#-defense-in-depth-strategy)
+3. **Technical Architecture**: [ARCHITECTURE_GUIDE - Overview](./docs/ARCHITECTURE_GUIDE.md#-architecture-overview)
+4. **Security Posture**: [SECURITY_GUIDE - Zero-Trust Strategy](./docs/SECURITY_GUIDE.md#-defense-in-depth-strategy)
 
 #### 👨‍💻 **For Developers & DevOps Engineers**
 1. **Quick Deploy**: [Deployment Path 1](#-path-1-developmenttesting-2-regions-2-tenants) ⏱️ 10 minutes
 2. **Governance Policies**: [Azure Policy as Code](./AzureArchitecture/policyAsCode.bicep)
 3. **Monitoring Setup**: [Enhanced Dashboards](./AzureArchitecture/monitoringDashboards.bicep)
-4. **Production Deployment**: [DEPLOYMENT_GUIDE - Enterprise](./DEPLOYMENT_GUIDE.md#-option-2-global-multi-geo-setup-production)
+4. **Production Deployment**: [DEPLOYMENT_GUIDE - Enterprise](./docs/DEPLOYMENT_GUIDE.md#-option-2-global-multi-geo-setup-production)
 
 #### 👨‍🔧 **For Platform & Operations Teams**
-1. **Compliance Framework**: [CAF/WAF Analysis - Implementation Status](./CAF_WAF_COMPLIANCE_ANALYSIS.md#-implementation-status)
-2. **AI-Driven Monitoring**: [OPERATIONS_GUIDE - Intelligence](./OPERATIONS_GUIDE.md#-monitoring--observability)
-3. **Zero-Trust Security**: [SECURITY_GUIDE - Network Security](./SECURITY_GUIDE.md#-identity--access-management)
+1. **Compliance Framework**: [CAF/WAF Analysis - Implementation Status](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md#-implementation-status)
+2. **AI-Driven Monitoring**: [OPERATIONS_GUIDE - Intelligence](./docs/OPERATIONS_GUIDE.md#-monitoring--observability)
+3. **Zero-Trust Security**: [SECURITY_GUIDE - Network Security](./docs/SECURITY_GUIDE.md#-identity--access-management)
 4. **Cost Optimization**: [Cost Intelligence Workbooks](./AzureArchitecture/costOptimization.bicep)
 
 ### 📖 **Documentation Reference**
 
 | 📖 Guide | 🎯 Purpose | 👥 Audience | 🔗 Link |
 |----------|------------|-------------|----------|
-| 🏆 **CAF/WAF Compliance** | **Enterprise compliance scorecard and framework alignment** | **C-Level, Enterprise Architects** | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) |
-| 🏗️ **Architecture Guide** | Technical deep-dive: layers, traffic flow, zero-trust security | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) |
+| 🏆 **CAF/WAF Compliance** | **Enterprise compliance scorecard and framework alignment** | **C-Level, Enterprise Architects** | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) |
+| 🏗️ **Architecture Guide** | Technical deep-dive: layers, traffic flow, zero-trust security | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./docs/ARCHITECTURE_GUIDE.md) |
 | � **Parameterization Guide** | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md) |
 | �🚀 **Deployment Guide** | Step-by-step deployment with governance automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) |
-| ⚙️ **Operations Guide** | AI-driven monitoring, predictive analytics, incident response | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md) |
-| 🛡️ **Security Guide** | Zero-trust architecture, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) |
-| 📋 **Naming Conventions** | Resource naming standards and policy enforcement | All Teams | [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) |
+| ⚙️ **Operations Guide** | AI-driven monitoring, predictive analytics, incident response | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
+| 🛡️ **Security Guide** | Zero-trust architecture, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./docs/SECURITY_GUIDE.md) |
+| 📋 **Naming Conventions** | Resource naming standards and policy enforcement | All Teams | [NAMING_CONVENTIONS.md](./docs/NAMING_CONVENTIONS.md) |
 
 ### 🎯 **Enterprise Components Reference**
 
@@ -248,7 +251,7 @@ git clone <repository-url>
 cd StampsPattern
 
 # 2️⃣ Deploy mixed tenancy model with 3 zones for maximum resilience
-.\deploy-stamps.ps1 `
+.\scripts\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-prod" `
   -Location "eastus" `
   -TenancyModel "mixed" `
@@ -265,7 +268,7 @@ Optimize for cost with shared CELLs for small-medium tenants.
 
 ```powershell
 # Deploy shared tenancy model
-.\deploy-stamps.ps1 `
+.\scripts\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-shared" `
   -Location "eastus" `
   -TenancyModel "shared" `
@@ -281,7 +284,7 @@ Maximum isolation for enterprise and compliance-focused clients.
 
 ```powershell
 # Deploy dedicated tenancy model
-.\deploy-stamps.ps1 `
+.\scripts\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-enterprise" `
   -Location "eastus" `
   -TenancyModel "dedicated" `
@@ -297,7 +300,7 @@ Pre-configured with compliance features for regulated industries.
 
 ```powershell
 # Deploy with compliance features
-.\deploy-stamps.ps1 `
+.\scripts\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-healthcare" `
   -Location "eastus" `
   -TenancyModel "mixed" `
@@ -313,8 +316,8 @@ Pre-configured with compliance features for regulated industries.
 
 | Method | Best For | Command |
 |--------|----------|---------|
-| 🐧 **Bash Script** | Linux/macOS developers | `./deploy-stamps.sh` |
-| 🪟 **PowerShell** | **NEW** - Intelligent tenancy | `.\deploy-stamps.ps1` |
+| 🐧 **Bash Script** | Linux/macOS developers | `./scripts/deploy-stamps.sh` |
+| 🪟 **PowerShell** | Intelligent tenancy | `.\scripts\deploy-stamps.ps1` |
 | 🌐 **Azure Portal** | GUI-based deployment | [![Deploy](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2Fmain%2Ftraffic-routing.json) |
 | 🤖 **CI/CD Pipeline** | Automated deployments | See [Deployment Guide](./DEPLOYMENT_GUIDE.md#automation) |
 

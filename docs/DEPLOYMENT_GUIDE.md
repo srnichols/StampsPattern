@@ -65,10 +65,10 @@ flowchart TD
     B -->|Cost-Optimized<br/>SMB Focus| D[Shared Tenancy<br/>Shared CELLs Only<br/>⏱️ 30 min]
     B -->|Enterprise<br/>Compliance| E[Dedicated Tenancy<br/>Dedicated CELLs Only<br/>⏱️ 60 min]
     B -->|Legacy<br/>Testing| F[Simple Setup<br/>Traditional Approach<br/>⏱️ 45 min]
-    C --> G[deploy-stamps.ps1<br/>-TenancyModel mixed]
-    D --> H[deploy-stamps.ps1<br/>-TenancyModel shared]
-    E --> I[deploy-stamps.ps1<br/>-TenancyModel dedicated]
-    F --> J[deploy-stamps.sh<br/>Legacy Script]
+    C --> G[../scripts/deploy-stamps.ps1<br/>-TenancyModel mixed]
+    D --> H[../scripts/deploy-stamps.ps1<br/>-TenancyModel shared]
+    E --> I[../scripts/deploy-stamps.ps1<br/>-TenancyModel dedicated]
+    F --> J[../scripts/deploy-stamps.sh<br/>Legacy Script]
     G --> K[Production Ready<br/>All Tenant Types]
     H --> L[Cost-Optimized<br/>SMB Platform]
     I --> M[Enterprise-Grade<br/>Compliance Ready]
@@ -93,9 +93,9 @@ graph TD
     B -->|Enterprise Security| D[Dedicated Tenancy]
     B -->|Mixed Platform| E[Hybrid Tenancy]
     
-    C --> F[./deploy-stamps.ps1 -TenancyModel shared]
-    D --> G[./deploy-stamps.ps1 -TenancyModel dedicated]
-    E --> H[./deploy-stamps.ps1 -TenancyModel mixed]
+    C --> F[../scripts/deploy-stamps.ps1 -TenancyModel shared]
+    D --> G[../scripts/deploy-stamps.ps1 -TenancyModel dedicated]
+    E --> H[../scripts/deploy-stamps.ps1 -TenancyModel mixed]
     
     F --> I[Shared CELLs<br/>$8-16/tenant/month]
     G --> J[Dedicated CELLs<br/>$3200+/tenant/month]
@@ -105,10 +105,10 @@ graph TD
 #### **Shared Tenancy Deployment**
 ```powershell
 # Cost-optimized for SMBs (multiple tenants per CELL) with basic HA
-./deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod -AvailabilityZones 2
+../scripts/deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod -AvailabilityZones 2
 
 # Example with custom organization parameters:
-./deploy-stamps.ps1 `
+../scripts/deploy-stamps.ps1 `
   -TenancyModel shared `
   -Location eastus `
   -Environment prod `
@@ -127,10 +127,10 @@ graph TD
 #### **Dedicated Tenancy Deployment**
 ```powershell
 # Enterprise-grade isolation (one tenant per CELL) with maximum resilience
-./deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod -AvailabilityZones 3
+../scripts/deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod -AvailabilityZones 3
 
 # Example with custom organization parameters:
-./deploy-stamps.ps1 `
+../scripts/deploy-stamps.ps1 `
   -TenancyModel dedicated `
   -Location eastus `
   -Environment prod `
@@ -149,10 +149,11 @@ graph TD
 #### **Mixed Tenancy Deployment**
 ```powershell
 # Intelligent assignment based on tenant requirements with maximum resilience
-./deploy-stamps.ps1 -TenancyModel mixed -Location eastus -Environment prod -AvailabilityZones 3
+# Alternative: PowerShell approach
+..\scripts\deploy-stamps.ps1 -Environment "dev" -Region "eastus" -TenantId "contoso" -StampName "stamp1"
 
 # Example with European deployment:
-./deploy-stamps.ps1 `
+../scripts/deploy-stamps.ps1 `
   -TenancyModel mixed `
   -Location northeurope `
   -Environment prod `
@@ -226,8 +227,8 @@ The deployment script supports **organization-specific parameters** for true mul
 ### Option B: Legacy Shell Deployment
 ```bash
 # Traditional deployment (single tenancy model)
-chmod +x deploy-stamps.sh
-./deploy-stamps.sh
+chmod +x ../scripts/deploy-stamps.sh
+../scripts/deploy-stamps.sh
 ```
 
 ---

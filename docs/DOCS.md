@@ -55,7 +55,7 @@ The Azure Stamps Pattern provides a comprehensive, enterprise-ready infrastructu
 
 | 📚 Guide | 🎯 Purpose | 👥 Primary Audience | 📊 Complexity | ⏱️ Read Time |
 |----------|------------|---------------------|---------------|--------------|
-| [📄 **README.md**](./README.md) | Project overview, quick start, business value | All stakeholders | ⭐⭐ | 10 min |
+| [📄 **README.md**](../README.md) | Project overview, quick start, business value | All stakeholders | ⭐⭐ | 10 min |
 | [� **CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | **NEW** - Enterprise compliance showcase (94/100) | Decision Makers, Compliance Officers | ⭐⭐⭐ | 25 min |
 | [�🏗️ **ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Technical deep-dive, system design, traffic flow | Solution Architects, DevOps Engineers | ⭐⭐⭐⭐ | 30 min |
 | [🚀 **DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | DevOps Engineers, Platform Engineers | ⭐⭐⭐ | 45 min |
@@ -83,7 +83,7 @@ journey
 ```
 
 **📋 Recommended Path:**
-1. **📄 [README.md](./README.md)** - Business value and project overview *(10 minutes)*
+1. **📄 [README.md](../README.md)** - Business value and project overview *(10 minutes)*
 2. **� [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
 3. **�🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#%EF%B8%8F-architecture-overview)** - High-level architecture *(15 minutes)*
 4. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md#-security-overview)** - Security and compliance posture *(15 minutes)*
@@ -129,7 +129,7 @@ journey
 ```
 
 **📋 Recommended Path:**
-1. **📄 [README.md](./README.md)** - Quick start and prerequisites *(10 minutes)*
+1. **📄 [README.md](../README.md)** - Quick start and prerequisites *(10 minutes)*
 2. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment *(45 minutes)*
 3. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Multi-org template customization *(20 minutes)*
 4. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Naming standards *(15 minutes)*
@@ -269,7 +269,7 @@ If you find gaps or areas for improvement in this documentation:
 
 ---
 
-**🎯 Start Here**: Begin with [README.md](./README.md)
+**🎯 Start Here**: Begin with [README.md](../README.md)
 
 **⚡ Quick Deploy**: Ready to deploy? Jump to [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
