@@ -184,12 +184,13 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 ### **Mandatory Tags**
 ```json
 {
-  "environment": "dev|test|prod",
+  "environment": "dev|test|staging|prod",
   "geo": "us|eu|asia",
   "region": "eastus|westus|northeurope",
   "cell": "banking|retail|healthcare",
   "availabilityZones": "0|1|2|3",
   "tenancyModel": "shared|dedicated",
+  "maxTenantCount": "1|50|100",
   "workload": "stamps-pattern",
   "costCenter": "IT-Infrastructure",
   "owner": "platform-team@contoso.com"

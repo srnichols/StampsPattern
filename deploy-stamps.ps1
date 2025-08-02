@@ -47,6 +47,31 @@ param(
     [ValidateSet("dev", "staging", "prod")]
     [string]$Environment = "dev",
     
+    # Organization Parameters
+    [Parameter(Mandatory = $false)]
+    [string]$OrganizationDomain = "contoso.com",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$OrganizationName = "contoso",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$Department = "IT",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$ProjectName = "StampsPattern",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$WorkloadName = "stamps-pattern",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$OwnerEmail = "platform-team@contoso.com",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$GeoName = "northamerica",
+    
+    [Parameter(Mandatory = $false)]
+    [string]$BaseDnsZoneName = "stamps",
+    
     [Parameter(Mandatory = $false)]
     [ValidateSet("shared", "dedicated", "mixed")]
     [string]$TenancyModel = "mixed",
@@ -204,6 +229,14 @@ function Get-DeploymentParameters {
     # Base parameters
     $parameters = @{
         "environment" = $Environment
+        "organizationDomain" = $OrganizationDomain
+        "organizationName" = $OrganizationName
+        "department" = $Department
+        "projectName" = $ProjectName
+        "workloadName" = $WorkloadName
+        "ownerEmail" = $OwnerEmail
+        "geoName" = $GeoName
+        "baseDnsZoneName" = $BaseDnsZoneName
         "tenancyModel" = $TenancyModel
         "maxSharedTenantsPerCell" = $MaxSharedTenantsPerCell
         "enableAutoScaling" = $EnableAutoScaling.IsPresent
@@ -218,94 +251,94 @@ function Get-DeploymentParameters {
     switch ($TenancyModel) {
         "shared" {
             $regions += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cells = @("shared-smb-z$AvailabilityZones", "shared-startup-z$AvailabilityZones")
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
                 keyVaultName = "kv-stamps-shared-$Location"
                 logAnalyticsWorkspaceName = "law-stamps-shared-$Location"
             }
             
             # Add shared CELLs
             $cells += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cellName = "shared-smb-z$AvailabilityZones"
                 cellType = "Shared"
                 availabilityZones = $ZoneConfig[$AvailabilityZones].ZoneArray
                 maxTenantCount = $MaxSharedTenantsPerCell
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
             }
             $cells += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cellName = "shared-startup-z$AvailabilityZones"
                 cellType = "Shared"
                 availabilityZones = $ZoneConfig[$AvailabilityZones].ZoneArray
                 maxTenantCount = $MaxSharedTenantsPerCell
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
             }
         }
         
         "dedicated" {
             $regions += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cells = @("dedicated-enterprise-z$AvailabilityZones")
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
                 keyVaultName = "kv-stamps-ent-$Location"
                 logAnalyticsWorkspaceName = "law-stamps-ent-$Location"
             }
             
             # Add dedicated CELL
             $cells += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cellName = "dedicated-enterprise-z$AvailabilityZones"
                 cellType = "Dedicated"
                 availabilityZones = $ZoneConfig[$AvailabilityZones].ZoneArray
                 maxTenantCount = 1
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
             }
         }
         
         "mixed" {
             $regions += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cells = @("shared-smb-z$AvailabilityZones", "shared-startup-z$AvailabilityZones", "dedicated-enterprise-z$AvailabilityZones")
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
                 keyVaultName = "kv-stamps-mixed-$Location"
                 logAnalyticsWorkspaceName = "law-stamps-mixed-$Location"
             }
             
             # Add mixed CELLs
             $cells += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cellName = "shared-smb-z$AvailabilityZones"
                 cellType = "Shared"
                 availabilityZones = $ZoneConfig[$AvailabilityZones].ZoneArray
                 maxTenantCount = $MaxSharedTenantsPerCell
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
             }
             $cells += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cellName = "shared-startup-z$AvailabilityZones"
                 cellType = "Shared"
                 availabilityZones = $ZoneConfig[$AvailabilityZones].ZoneArray
                 maxTenantCount = 50  # Smaller capacity for startup tier
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
             }
             $cells += @{
-                geoName = "northamerica"
+                geoName = $GeoName
                 regionName = $Location
                 cellName = "dedicated-enterprise-z$AvailabilityZones"
                 cellType = "Dedicated"
                 availabilityZones = $ZoneConfig[$AvailabilityZones].ZoneArray
                 maxTenantCount = 1
-                baseDomain = "$Location.stamps.contoso.com"
+                baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
             }
         }
     }

@@ -2,6 +2,8 @@
 
 > **🎯 Purpose**: Step-by-step guide for deploying the Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
 
+> **🆕 Recent Updates**: The templates are now **fully parameterized** for organization reusability! All hardcoded domains (`contoso.com`), geography names (`northamerica`), and organizational metadata are now configurable parameters. Deploy for any organization without code changes.
+
 ## 📋 **Quick Navigation**
 
 | Section | Description | Time Required |
@@ -64,6 +66,18 @@ graph TD
 # Cost-optimized for SMBs (multiple tenants per CELL) with basic HA
 ./deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod -AvailabilityZones 2
 
+# Example with custom organization parameters:
+./deploy-stamps.ps1 `
+  -TenancyModel shared `
+  -Location eastus `
+  -Environment prod `
+  -AvailabilityZones 2 `
+  -OrganizationDomain "fabrikam.com" `
+  -OrganizationName "fabrikam" `
+  -OwnerEmail "platform@fabrikam.com" `
+  -Department "Engineering" `
+  -ProjectName "MicroservicesPlatform"
+
 # Expected costs: $8-16 per tenant per month (+20% for zone redundancy)
 # SLA: 99.95% availability
 # Best for: Development, testing, cost-sensitive workloads with basic HA
@@ -73,6 +87,18 @@ graph TD
 ```powershell
 # Enterprise-grade isolation (one tenant per CELL) with maximum resilience
 ./deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod -AvailabilityZones 3
+
+# Example with custom organization parameters:
+./deploy-stamps.ps1 `
+  -TenancyModel dedicated `
+  -Location eastus `
+  -Environment prod `
+  -AvailabilityZones 3 `
+  -OrganizationDomain "healthcare.org" `
+  -GeoName "northamerica" `
+  -BaseDnsZoneName "portal" `
+  -OwnerEmail "devops@healthcare.org" `
+  -Department "IT-Security"
 
 # Expected costs: $3200+ per tenant per month (+40% for 3-zone redundancy)
 # SLA: 99.99% availability  
@@ -84,9 +110,76 @@ graph TD
 # Intelligent assignment based on tenant requirements with maximum resilience
 ./deploy-stamps.ps1 -TenancyModel mixed -Location eastus -Environment prod -AvailabilityZones 3
 
+# Example with European deployment:
+./deploy-stamps.ps1 `
+  -TenancyModel mixed `
+  -Location northeurope `
+  -Environment prod `
+  -AvailabilityZones 3 `
+  -OrganizationDomain "eurobank.eu" `
+  -GeoName "europe" `
+  -BaseDnsZoneName "banking" `
+  -OwnerEmail "platform@eurobank.eu" `
+  -Department "Digital-Platform"
+
 # Dynamic cost optimization with automatic tenant placement
 # SLA: 99.99% availability for all CELLs
 # Best for: Multi-tier platforms with diverse tenant needs and high availability requirements
+```
+
+### 🏢 **Organization Parameters** (NEW)
+
+The enhanced deployment script now supports **organization-specific parameters** for true multi-tenant reusability:
+
+#### **Core Organization Parameters**
+| Parameter | Description | Default | Example Values |
+|-----------|-------------|---------|----------------|
+| `OrganizationDomain` | Your organization's domain | `contoso.com` | `fabrikam.com`, `healthcare.org` |
+| `OrganizationName` | Organization name for tagging | `contoso` | `fabrikam`, `acmecorp` |
+| `Department` | Department responsible | `IT` | `Engineering`, `Platform`, `DevOps` |
+| `ProjectName` | Project name for tagging | `StampsPattern` | `MicroservicesPlatform`, `APIGateway` |
+| `WorkloadName` | Workload identifier | `stamps-pattern` | `api-platform`, `tenant-services` |
+| `OwnerEmail` | Owner email for tagging | `platform-team@contoso.com` | `devops@company.com` |
+
+#### **Geography Parameters**
+| Parameter | Description | Default | Example Values |
+|-----------|-------------|---------|----------------|
+| `GeoName` | Geographic region name | `northamerica` | `europe`, `asia`, `australia` |
+| `BaseDnsZoneName` | Base DNS zone name | `stamps` | `portal`, `api`, `services` |
+
+#### **Usage Examples by Industry**
+
+**Healthcare Organization:**
+```powershell
+./deploy-stamps.ps1 `
+  -OrganizationDomain "healthsystem.org" `
+  -Department "IT-Security" `
+  -ProjectName "PatientPortal" `
+  -OwnerEmail "platform@healthsystem.org" `
+  -BaseDnsZoneName "portal"
+# Results in DNS: portal.healthsystem.org
+```
+
+**Financial Services:**
+```powershell
+./deploy-stamps.ps1 `
+  -OrganizationDomain "globalbank.com" `
+  -Department "Digital-Banking" `
+  -ProjectName "OpenBanking" `
+  -GeoName "europe" `
+  -BaseDnsZoneName "api"
+# Results in DNS: api.globalbank.com
+```
+
+**SaaS Platform:**
+```powershell
+./deploy-stamps.ps1 `
+  -OrganizationDomain "saasprovider.io" `
+  -Department "Platform-Engineering" `
+  -ProjectName "MultiTenantPlatform" `
+  -WorkloadName "tenant-services" `
+  -BaseDnsZoneName "services"
+# Results in DNS: services.saasprovider.io
 ```
 
 ### Option B: Legacy Shell Deployment
@@ -161,6 +254,30 @@ pwsh --version
 }
 ```
 
+#### NEW: Enhanced Main Template Configuration (`AzureArchitecture/main-corrected.parameters.json`):
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": { "value": "dev" },
+    "organizationDomain": { "value": "contoso.com" },
+    "organizationName": { "value": "contoso" },
+    "department": { "value": "IT" },
+    "projectName": { "value": "StampsPattern" },
+    "workloadName": { "value": "stamps-pattern" },
+    "ownerEmail": { "value": "platform-team@contoso.com" },
+    "geoName": { "value": "northamerica" },
+    "baseDnsZoneName": { "value": "stamps" },
+    "primaryLocation": { "value": "eastus" },
+    "additionalLocations": { "value": ["westus2"] },
+    "functionAppRegions": { "value": ["eastus", "westus2"] },
+    "sqlAdminUsername": { "value": "sqladmin" },
+    "sqlAdminPassword": { "value": "P@ssw0rd123!" }
+  }
+}
+```
+
 #### Enterprise Configuration (`traffic-routing.parameters.enterprise.json`):
 ```json
 {
@@ -191,11 +308,17 @@ pwsh --version
 
 #### Deployment:
 ```bash
-# Option A: Automated Script (Recommended)
-chmod +x deploy-stamps.sh
-./deploy-stamps.sh
+# Option A: Enhanced PowerShell Script (Recommended)
+./deploy-stamps.ps1 -TenancyModel mixed -Environment prod -AvailabilityZones 3
 
-# Option B: Manual Azure CLI
+# Option B: Manual Azure CLI with Enhanced Template
+az group create --name rg-stamps-eus-prod --location eastus
+az deployment group create \
+  --resource-group rg-stamps-eus-prod \
+  --template-file AzureArchitecture/main-corrected.bicep \
+  --parameters @AzureArchitecture/main-corrected.parameters.json
+
+# Option C: Legacy Template (Simple Setup)
 az group create --name rg-stamps-eus-dev --location eastus
 az deployment group create \
   --resource-group rg-stamps-eus-dev \
@@ -205,49 +328,50 @@ az deployment group create \
 
 ### 🌍 **Option 2: Global Multi-GEO Setup** (Advanced Manual Deployment)
 
-#### Configuration (`AzureArchitecture/main.parameters.json`):
+#### Configuration (`AzureArchitecture/main-corrected.parameters.json`):
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dnsZoneName": { "value": "stamps.contoso.com" },
-    "trafficManagerName": { "value": "tm-stamps-global" },
-    "frontDoorName": { "value": "fd-stamps-global" },
-    "globalLogAnalyticsLocation": { "value": "eastus" },
-    "globalLogAnalyticsWorkspaceName": { "value": "law-stamps-global" },
-    "cellCount": { "value": 3 },
-    "sqlAdminPassword": { "value": "YourSecurePassword123!" },
-    "postgresAdminPassword": { "value": "YourSecurePassword123!" },
-    "functionAppNamePrefix": { "value": "func-stamps" },
-    "functionStorageNamePrefix": { "value": "stfunc" },
-    "geos": {
-      "value": [
-        {
-          "geoName": "UnitedStates",
-          "regions": [
-            {
-              "regionName": "eastus",
-              "keyVaultName": "kv-stamps-us-east",
-              "cells": ["tenant-banking", "tenant-retail", "tenant-healthcare"],
-              "logAnalyticsWorkspaceName": "law-stamps-us-east",
-              "baseDomain": "us-east.contoso.com"
-            },
-            {
-              "regionName": "westus",
-              "keyVaultName": "kv-stamps-us-west",
-              "cells": ["tenant-banking-dr", "tenant-retail-dr"],
-              "logAnalyticsWorkspaceName": "law-stamps-us-west",
-              "baseDomain": "us-west.contoso.com"
-            }
-          ]
-        },
-        {
-          "geoName": "Europe",
-          "regions": [
-            {
-              "regionName": "westeurope",
-              "keyVaultName": "kv-stamps-eu-west",
+    "environment": { "value": "prod" },
+    "organizationDomain": { "value": "contoso.com" },
+    "organizationName": { "value": "contoso" },
+    "department": { "value": "IT" },
+    "projectName": { "value": "StampsPattern" },
+    "workloadName": { "value": "stamps-pattern" },
+    "ownerEmail": { "value": "platform-team@contoso.com" },
+    "geoName": { "value": "northamerica" },
+    "baseDnsZoneName": { "value": "stamps" },
+    "primaryLocation": { "value": "eastus" },
+    "additionalLocations": { "value": ["westus2"] },
+    "functionAppRegions": { "value": ["eastus", "westus2"] },
+    "sqlAdminUsername": { "value": "sqladmin" },
+    "sqlAdminPassword": { "value": "YourSecurePassword123!" }
+  }
+}
+```
+
+> **💡 Note**: The new parameterized approach automatically constructs region-specific domains:
+> - `eastus.stamps.contoso.com` (computed from parameters)
+> - `westus2.stamps.contoso.com` (computed from parameters)
+> - DNS zone: `stamps.contoso.com` (computed from `baseDnsZoneName.organizationDomain`)
+
+#### Enterprise Multi-Geography Example:
+```json
+{
+  "environment": { "value": "prod" },
+  "organizationDomain": { "value": "globalcorp.com" },
+  "geoName": { "value": "europe" },
+  "baseDnsZoneName": { "value": "api" },
+  "ownerEmail": { "value": "platform@globalcorp.com" },
+  "primaryLocation": { "value": "westeurope" },
+  "additionalLocations": { "value": ["northeurope"] }
+}
+```
+This results in:
+- DNS Zone: `api.globalcorp.com`
+- Regional domains: `westeurope.api.globalcorp.com`, `northeurope.api.globalcorp.com`
               "cells": ["tenant-banking-eu", "tenant-fintech"],
               "logAnalyticsWorkspaceName": "law-stamps-eu-west",
               "baseDomain": "eu-west.contoso.com"
@@ -301,10 +425,15 @@ az provider register --namespace Microsoft.ApiManagement --wait
 az vm list-usage --location eastus --query "[?name.value=='PremiumV2Skus']"
 az vm list-usage --location westeurope --query "[?name.value=='PremiumV2Skus']"
 
-# Pre-create custom domains (optional)
+# Pre-create custom domains (optional - example with default domain)
 az network dns zone create \
     --resource-group rg-stamps-global-prod \
-    --name api.contoso.com
+    --name stamps.contoso.com
+
+# Example with custom organization domain
+az network dns zone create \
+    --resource-group rg-stamps-global-prod \
+    --name api.yourcompany.com
 ```
 
 ### 🚀 **Enterprise APIM Deployment**
@@ -334,13 +463,22 @@ az apim show \
 ### 🔧 **Post-Deployment APIM Configuration**
 
 ```bash
-# Configure custom domain (if applicable)
+# Configure custom domain (example with parameterized domain)
+# Default example:
 az apim hostname bind \
   --resource-group rg-stamps-global-prod \
   --service-name stamps-enterprise-apim-eus-prod \
-  --hostname api.contoso.com \
+  --hostname stamps.contoso.com \
   --hostname-type Gateway \
-  --certificate-path ./api-contoso-com.pfx \
+  --certificate-path ./stamps-contoso-com.pfx \
+
+# Custom organization example:
+az apim hostname bind \
+  --resource-group rg-stamps-global-prod \
+  --service-name stamps-enterprise-apim-eus-prod \
+  --hostname api.yourcompany.com \
+  --hostname-type Gateway \
+  --certificate-path ./api-yourcompany-com.pfx \
   --certificate-password $CERT_PASSWORD
 
 # Import tenant management APIs

@@ -55,6 +55,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
     name: 'Standard'
   }
   properties: {}
+  tags: tags
 }
 
 // Front Door backend pools
@@ -138,6 +139,7 @@ resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
     enableMultipleWriteLocations: false
     databaseAccountOfferType: 'Standard'
   }
+  tags: tags
 }
 
 // Diagnostic settings for Cosmos DB
@@ -170,6 +172,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
   kind: 'StorageV2'
   properties: {}
+  tags: tags
 }
 
 // Diagnostic settings for Storage Account

@@ -4,8 +4,39 @@
 targetScope = 'resourceGroup'
 
 // ============ PARAMETERS ============
+// Organization Parameters
+@description('The organization domain (e.g., contoso.com)')
+param organizationDomain string = 'contoso.com'
+
+@description('The organization name for resource naming')
+param organizationName string = 'contoso'
+
+@description('The department responsible for the deployment')
+param department string = 'IT'
+
+@description('The project name for resource tagging and naming')
+param projectName string = 'StampsPattern'
+
+@description('The workload name for resource tagging')
+param workloadName string = 'stamps-pattern'
+
+@description('The owner email for resource tagging')
+param ownerEmail string = 'platform-team@contoso.com'
+
+// Geography Parameters
+@description('The geography name (e.g., northamerica, europe, asia)')
+param geoName string = 'northamerica'
+
+@description('The base DNS zone name (without domain)')
+param baseDnsZoneName string = 'stamps'
+
+// Deployment Parameters
+@description('Environment name for deployment')
+@allowed(['dev', 'test', 'staging', 'prod'])
+param environment string = 'dev'
+
 @description('Name of the DNS Zone')
-param dnsZoneName string = 'stamps.contoso.com'
+param dnsZoneName string = '${baseDnsZoneName}.${organizationDomain}'
 
 @description('Name of the Traffic Manager profile')
 param trafficManagerName string = 'tm-stamps-global'
@@ -42,18 +73,18 @@ param sqlAdminPassword string
 @description('Array of regions to deploy stamps to')
 param regions array = [
   {
-    geoName: 'northamerica'
+    geoName: geoName
     regionName: 'eastus'
     cells: ['cell1', 'cell2']
-    baseDomain: 'eastus.stamps.contoso.com'
+    baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
     keyVaultName: 'kv-stamps-na-eus'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
-    geoName: 'northamerica'
+    geoName: geoName
     regionName: 'westus2'
     cells: ['cell1', 'cell2']
-    baseDomain: 'westus2.stamps.contoso.com'
+    baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
     keyVaultName: 'kv-stamps-na-wus2'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
@@ -62,34 +93,46 @@ param regions array = [
 @description('Array of cells (deployment stamps) to deploy')
 param cells array = [
   {
-    geoName: 'northamerica'
+    geoName: geoName
     regionName: 'eastus'
-    cellName: 'cell1'
-    baseDomain: 'eastus.stamps.contoso.com'
+    cellName: 'shared-smb-z2'
+    cellType: 'Shared'
+    availabilityZones: ['1', '2']
+    maxTenantCount: 100
+    baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
     keyVaultName: 'kv-stamps-na-eus'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
-    geoName: 'northamerica'
+    geoName: geoName
     regionName: 'eastus'
-    cellName: 'cell2'
-    baseDomain: 'eastus.stamps.contoso.com'
+    cellName: 'dedicated-enterprise-z3'
+    cellType: 'Dedicated'
+    availabilityZones: ['1', '2', '3']
+    maxTenantCount: 1
+    baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
     keyVaultName: 'kv-stamps-na-eus'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
-    geoName: 'northamerica'
+    geoName: geoName
     regionName: 'westus2'
-    cellName: 'cell1'
-    baseDomain: 'westus2.stamps.contoso.com'
+    cellName: 'shared-startup-z2'
+    cellType: 'Shared'
+    availabilityZones: ['1', '2']
+    maxTenantCount: 50
+    baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
     keyVaultName: 'kv-stamps-na-wus2'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
   {
-    geoName: 'northamerica'
+    geoName: geoName
     regionName: 'westus2'
-    cellName: 'cell2'
-    baseDomain: 'westus2.stamps.contoso.com'
+    cellName: 'dedicated-healthcare-z3'
+    cellType: 'Dedicated'
+    availabilityZones: ['1', '2', '3']
+    maxTenantCount: 1
+    baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
     keyVaultName: 'kv-stamps-na-wus2'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
@@ -97,10 +140,12 @@ param cells array = [
 
 // ============ VARIABLES ============
 var baseTags = {
-  environment: 'demo'
-  department: 'IT'
-  project: 'StampsPattern'
+  environment: environment
+  department: department
+  project: projectName
   deployedBy: 'Bicep'
+  workload: workloadName
+  owner: ownerEmail
 }
 
 // ============ GLOBAL LAYER ============
@@ -146,7 +191,7 @@ module regionalLayers './regionalLayer.bicep' = [
       appGatewayName: 'agw-${region.geoName}-${region.regionName}'
       subnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Network/virtualNetworks/vnet-${region.geoName}-${region.regionName}/subnets/subnet-agw'
       publicIpId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Network/publicIPAddresses/pip-agw-${region.geoName}-${region.regionName}'
-      sslCertSecretId: 'https://${region.keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/ssl-cert'
+      sslCertSecretId: 'https://${region.keyVaultName}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
       cellCount: length(region.cells)
       cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
       tags: union(baseTags, {
@@ -195,8 +240,13 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
         geo: cell.geoName
         region: cell.regionName
         cell: cell.cellName
+        availabilityZones: string(length(cell.availabilityZones))  // Convert zone count to string
+        tenancyModel: toLower(cell.cellType)   // 'Shared' -> 'shared', 'Dedicated' -> 'dedicated'
+        maxTenantCount: string(cell.maxTenantCount)
+        workload: 'stamps-pattern'
+        costCenter: 'IT-Infrastructure'
       })
-      zones: ['1', '2']
+      zones: cell.availabilityZones
       containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
       containerAppName: cell.cellName
       baseDomain: cell.baseDomain
