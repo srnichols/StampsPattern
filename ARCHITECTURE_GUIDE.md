@@ -275,6 +275,8 @@ GEO: Europe
 
 ## 🏛️ Architecture Layers
 
+The Azure Stamps Pattern is built using a carefully orchestrated five-layer architecture that provides clear separation of concerns while maintaining scalability and operational excellence. Each layer serves a specific purpose in the overall system, from global traffic distribution down to individual tenant workloads. This layered approach enables independent scaling, clear operational boundaries, and simplified troubleshooting.
+
 ### 1️⃣ **Global Layer** (`globalLayer.bicep`)
 **Purpose**: Worldwide traffic distribution and control plane
 
@@ -340,6 +342,8 @@ GEO: Europe
 
 ## 🚀 Traffic Flow Architecture
 
+Understanding how requests flow through the Azure Stamps Pattern is crucial for troubleshooting, performance optimization, and security analysis. The traffic flow follows a carefully designed path that ensures optimal performance, security enforcement at each layer, and intelligent tenant routing. This multi-tier approach provides redundancy, security, and observability while maintaining sub-second response times globally.
+
 ### 🌐 Global Traffic Flow
 ```
 [User Request] 
@@ -355,7 +359,7 @@ GEO: Europe
 [CELL Container Apps] → Tenant-isolated application
 ```
 
-### 🔍 Enhanced Tenant Resolution Flow
+### 🔍 Tenant Resolution Flow
 ```
 [Tenant API Request] 
     ↓
@@ -423,6 +427,8 @@ All environments configured through `geos` array in parameters:
 ```
 
 ## 🔒 Security Architecture
+
+Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth strategy that implements zero-trust principles across all architectural layers. Rather than relying on perimeter security alone, every component, network segment, and data flow is protected with multiple overlapping security controls. This approach ensures that even if one security layer is compromised, multiple additional layers continue to protect your tenants' data and applications.
 
 ### 🛡️ Multi-Layer Security Model
 

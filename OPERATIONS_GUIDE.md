@@ -50,6 +50,8 @@ This guide provides comprehensive operational procedures for managing, monitorin
 
 ## 📊 Monitoring & Observability
 
+Effective monitoring and observability in the Azure Stamps Pattern goes beyond traditional metrics collection to provide intelligent, AI-driven insights that enable proactive operations. The multi-layer monitoring strategy provides comprehensive visibility from global traffic patterns down to individual tenant performance, enabling rapid issue identification, intelligent capacity planning, and automated optimization. This approach transforms reactive operations into predictive, data-driven decision making.
+
 ### 🔍 **Multi-Layer Monitoring Strategy**
 
 ```
@@ -699,6 +701,8 @@ echo "✅ Infrastructure update completed"
 ```
 
 ## 🚨 Incident Response
+
+Incident response in the Azure Stamps Pattern leverages AI-driven detection and automated response workflows to minimize Mean Time to Detection (MTTD) and Mean Time to Resolution (MTTR). The intelligent incident response system automatically correlates signals across multiple monitoring layers, provides contextual information for faster diagnosis, and can execute predetermined response actions for common scenarios. This approach ensures that incidents are detected early, escalated appropriately, and resolved with minimal business impact.
 
 ### 📞 **Incident Classification**
 

@@ -1,6 +1,6 @@
 # 🌍 Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Score)
 
-The **Azure Stamps Pattern** represents a **gold-standard enterprise architecture** achieving **94/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
+The **Azure Stam|| **7** | 🛡️ [**SECURITY_GUIDE.md**](./SECURITY_GUIDE.md) | Security baseline and zero-trust architecture | 30 minutes |**6** | 🚀 [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |s Pattern** represents a **gold-standard enterprise architecture** achieving **94/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
 
 **🏆 Enterprise Excellence:** This implementation showcases **world-class architectural practices** with zero-trust security, AI-driven operations, automated governance, and intelligent cost optimization. The pattern implements a hierarchical **GEO → Region → CELL** structure supporting both **shared CELLs** (10-100 small tenants) and **dedicated CELLs** (single enterprise tenant) with **automated tenant assignment**, **Azure Policy as Code governance**, and **seamless migration capabilities**.
 
@@ -14,6 +14,8 @@ The **Azure Stamps Pattern** represents a **gold-standard enterprise architectur
 **Why choose this for enterprise SaaS?** The pattern solves critical enterprise challenges with **flexible tenancy models** while maintaining the highest security and compliance standards. You can optimize costs with shared CELLs for smaller clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance, custom configurations, or performance guarantees ($3,200/tenant/month).
 
 This pattern is particularly powerful for **regulated industries** (healthcare, financial services, government) where dedicated isolation and comprehensive compliance aren't just preferred—they're mandatory for regulatory adherence.
+
+> **📚 DOCUMENTATION SITEMAP**: New to this architecture? Start with our comprehensive **[📋 Documentation Sitemap](./DOCS.md)** for guided navigation through all guides, role-based learning paths, and quick-start options. This master index helps you find exactly what you need based on your role and requirements.
 
 ## ✨ **Enterprise Features - CAF/WAF Compliant**
 
@@ -97,12 +99,14 @@ journey
 |------|----------|---------|---------------|
 | **1** | 📄 [**README.md**](./README.md) | Project overview, quick start, business value | 10 minutes |
 | **2** | 🏗️ [**ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Deep technical architecture, design decisions | 30 minutes |
-| **2.5** | 🚪 [**APIM_INTEGRATION_SUMMARY.md**](./APIM_INTEGRATION_SUMMARY.md) | API Management integration and enterprise features | 15 minutes |
-| **3** | 📋 [**NAMING_CONVENTIONS.md**](./NAMING_CONVENTIONS.md) | Naming standards and best practices | 15 minutes |
-| **4** | 🏆 [**CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | **CAF/WAF Compliance Scorecard (94/100)** | 20 minutes |
-| **5** | 🚀 [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
-| **6** | 🛡️ [**SECURITY_GUIDE.md**](./SECURITY_GUIDE.md) | Security baseline and zero-trust architecture | 30 minutes |
-| **7** | ⚙️ [**OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
+| **3** | 🏆 [**CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | **CAF/WAF Compliance Scorecard (94/100)** | 20 minutes |
+| **4** | 📋 [**NAMING_CONVENTIONS.md**](./NAMING_CONVENTIONS.md) | Naming standards and best practices | 15 minutes |
+| **5** | 📋 [**PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
+| **5** | � [**PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
+| **6** | �🚀 [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
+| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
+| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
+| **9** | 🚪 [**APIM_INTEGRATION_SUMMARY.md**](./APIM_INTEGRATION_SUMMARY.md) | API Management integration and enterprise features | 15 minutes |
 
 ### 🎯 **Role-Based Quick Start**
 
@@ -130,7 +134,8 @@ journey
 |----------|------------|-------------|----------|
 | 🏆 **CAF/WAF Compliance** | **Enterprise compliance scorecard and framework alignment** | **C-Level, Enterprise Architects** | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) |
 | 🏗️ **Architecture Guide** | Technical deep-dive: layers, traffic flow, zero-trust security | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) |
-| 🚀 **Deployment Guide** | Step-by-step deployment with governance automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) |
+| � **Parameterization Guide** | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md) |
+| �🚀 **Deployment Guide** | Step-by-step deployment with governance automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) |
 | ⚙️ **Operations Guide** | AI-driven monitoring, predictive analytics, incident response | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md) |
 | 🛡️ **Security Guide** | Zero-trust architecture, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) |
 | 📋 **Naming Conventions** | Resource naming standards and policy enforcement | All Teams | [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) |
@@ -146,7 +151,7 @@ journey
 
 ### 📋 **Quick Reference**
 - **🏆 Compliance Score**: **94/100 CAF/WAF** - Industry-leading enterprise compliance
-- **📚 Complete Documentation Hub**: [DOCS.md](./DOCS.md) - Master documentation index
+- **📚 Documentation Sitemap**: [DOCS.md](./DOCS.md) - Complete navigation guide with role-based learning paths
 - **🚀 Quick Start**: See [deployment section](#-quick-start) below
 - **🏗️ Architecture Overview**: Multi-layer GEO→Region→CELL with zero-trust security
 - **🔐 Security**: Enterprise zero-trust architecture with automated governance
@@ -221,7 +226,7 @@ graph TB
 - ✅ **📊 Advanced Monitoring**: Per-tenant API analytics and SLA tracking across both deployment models
 - ✅ **🔐 Developer Self-Service**: API portals, documentation, and key management for all tenant types
 
-## 🚀 **Enhanced Quick Start - Choose Your Tenancy Model**
+## 🚀 **Quick Start - Choose Your Tenancy Model**
 
 ### 📋 **Before You Begin**
 Ensure you have these tools installed:
@@ -313,7 +318,7 @@ Pre-configured with compliance features for regulated industries.
 | 🌐 **Azure Portal** | GUI-based deployment | [![Deploy](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2Fmain%2Ftraffic-routing.json) |
 | 🤖 **CI/CD Pipeline** | Automated deployments | See [Deployment Guide](./DEPLOYMENT_GUIDE.md#automation) |
 
-### 🧪 **Testing Your Enhanced Implementation**
+### 🧪 **Testing Your Implementation**
 
 After deployment, test the intelligent tenancy features:
 
@@ -347,7 +352,8 @@ Expected CELL Type: Dedicated
 | 📖 Guide | 🎯 Purpose | � Audience | �🔗 Link |
 |----------|------------|-------------|----------|
 | 🏗️ **Architecture Guide** | Technical deep-dive: layers, traffic flow, security architecture | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) |
-| 🚀 **Deployment Guide** | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) |
+| � **Parameterization Guide** | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md) |
+| �🚀 **Deployment Guide** | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) |
 | ⚙️ **Operations Guide** | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md) |
 | 🛡️ **Security Guide** | Security baseline, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) |
 

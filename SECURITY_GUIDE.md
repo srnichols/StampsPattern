@@ -163,6 +163,8 @@ This guide establishes security baselines and best practices for the Azure Stamp
 
 ## 🔐 Identity & Access Management
 
+Identity and Access Management (IAM) forms the cornerstone of the zero-trust security model in the Azure Stamps Pattern. By implementing 100% managed identity adoption and sophisticated identity-based access controls, we eliminate password-based authentication vulnerabilities while ensuring seamless, secure access to resources. This approach provides granular control over who can access what resources, when they can access them, and under what conditions.
+
 ### 🎫 **Azure B2C Integration**
 
 #### Multi-Tenant Identity Architecture:
@@ -215,6 +217,8 @@ resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-
 ```
 
 ## 🌐 Network Security
+
+Network security in the Azure Stamps Pattern implements a sophisticated defense-in-depth strategy that creates multiple layers of protection from the edge to individual workloads. Through careful network segmentation, advanced threat protection, and intelligent traffic filtering, we ensure that malicious traffic is blocked at the earliest possible point while legitimate traffic flows efficiently to its destination. This approach significantly reduces the attack surface while maintaining high performance and availability.
 
 ### 🛡️ **Web Application Firewall (WAF)**
 
