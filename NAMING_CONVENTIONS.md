@@ -46,40 +46,54 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 
 ### **Compute Resources**
 ```bicep
-// Application Gateway
+// Application Gateway (Zone-Redundant)
 'agw-{geo}-{region-short}-{environment}'
-// Example: agw-us-eus-prod
+// Example: agw-us-eus-prod (automatically zone-redundant)
 
-// Container Apps  
-'ca-{cell-name}-{region-short}-{environment}'
-// Example: ca-banking-eus-prod
+// Container Apps (CELL-Specific with Zone Info)
+'ca-{cell-name}-z{zone-count}-{region-short}-{environment}'
+// Example: ca-shared-smb-z3-eus-prod, ca-dedicated-bank-z2-eus-prod
 
-// Function Apps
-'func-{purpose}-{region-short}-{environment}'
-// Example: func-tenant-mgmt-eus-prod
+// Container App Environment (Zone-Aware)
+'cae-{purpose}-z{zone-count}-{region-short}-{environment}'
+// Example: cae-stamps-z3-eus-prod
+
+// Function Apps (Zone-Aware)
+'func-{purpose}-z{zone-count}-{region-short}-{environment}'
+// Example: func-tenant-mgmt-z2-eus-prod
+
+// Azure SQL Database (Zone Configuration)
+'sqldb-{cell-name}-z{zone-count}-{region-short}-{environment}'
+// Example: sqldb-shared-smb-z3-eus-prod
 ```
+
+**Zone Count Convention**:
+- `z0`: Single zone (development/testing)
+- `z1`: Single zone deployment (standard)
+- `z2`: Two-zone deployment (99.95% SLA)
+- `z3`: Three-zone deployment (99.99% SLA)
 
 ### **Data Resources**
 ```bicep
-// SQL Server
+// SQL Server (Zone-Redundant)
 'sql-{geo}-{region-short}-{cell}-{environment}'
-// Example: sql-us-eus-banking-prod
+// Example: sql-us-eus-banking-prod (zone-redundant by default)
 
-// SQL Database
-'sqldb-{geo}-{region-short}-{cell}-{environment}'
-// Example: sqldb-us-eus-banking-prod
+// SQL Database (Zone-Aware)
+'sqldb-{cell-name}-z{zone-count}-{region-short}-{environment}'
+// Example: sqldb-shared-smb-z3-eus-prod, sqldb-dedicated-bank-z2-eus-prod
 
 // Cosmos DB (Global)
 'cosmos-{purpose}-global'
 // Example: cosmos-stamps-global
 
-// Cosmos DB (Cell)
-'cosmos-{geo}-{region-short}-{cell}-{environment}'
-// Example: cosmos-us-eus-banking-prod
+// Cosmos DB (CELL-Specific, Zone-Aware)
+'cosmos-{cell-name}-z{zone-count}-{region-short}-{environment}'
+// Example: cosmos-shared-smb-z3-eus-prod
 
-// Storage Account (24 char limit)
-'st{geo}{regionshort}{cell}{env}'
-// Example: stuseusbankingprd (23 chars)
+// Storage Account (24 char limit, Zone-Aware)
+'st{geo}{regshort}{cell}z{zcount}{env}'
+// Example: stuseusbankz3prd (17 chars), stuseusstartz2dev (17 chars)
 ```
 
 ### **Networking Resources**
@@ -126,13 +140,43 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 
 ### **Container Resources**
 ```bicep
-// Container Registry
+// Container Registry (Global/Regional)
 'acr{geo}{regionshort}{environment}'
 // Example: acruseusprod
+```
 
-// Container App Environment
-'cae-{purpose}-{region-short}-{environment}'
-// Example: cae-stamps-eus-prod
+## 🔄 **Zone-Aware Naming Considerations**
+
+### **When to Include Zone Information**
+- ✅ **CELL Resources**: All CELL-level resources should include zone count (ca-, sqldb-, cosmos-)
+- ✅ **Application Services**: Container Apps, Function Apps that are CELL-specific
+- ✅ **Data Services**: Databases and storage that are CELL-specific
+- ❌ **Global Resources**: Traffic Manager, Front Door, global Cosmos DB
+- ❌ **Zone-Redundant by Default**: Application Gateway, Key Vault (already zone-redundant)
+
+### **Zone Count Mapping**
+| Zone Config | Naming | Use Case | SLA | Cost Impact |
+|-------------|--------|----------|-----|-------------|
+| **0 Zones** | `z0` | Development, testing | Standard | Baseline |
+| **1 Zone** | `z1` | Single zone deployment | Standard | Baseline |
+| **2 Zones** | `z2` | Basic HA with failover | 99.95% | +20% |
+| **3 Zones** | `z3` | Maximum resilience | 99.99% | +40% |
+
+### **Examples by Tenancy Model**
+```bicep
+// Shared Tenancy Examples
+'ca-shared-smb-z3-eus-prod'           // Shared SMB CELL, 3 zones
+'sqldb-shared-startup-z2-wus-dev'     // Shared startup CELL, 2 zones
+'cosmos-shared-retail-z3-neu-prod'    // Shared retail CELL, 3 zones
+
+// Dedicated Tenancy Examples  
+'ca-dedicated-bank-z3-eus-prod'       // Dedicated banking CELL, 3 zones
+'sqldb-dedicated-health-z2-wus-prod'  // Dedicated healthcare CELL, 2 zones
+'cosmos-dedicated-gov-z3-cus-prod'    // Dedicated government CELL, 3 zones
+
+// Development/Testing Examples
+'ca-shared-dev-z0-eus-dev'            // Development CELL, no zone redundancy
+'sqldb-test-env-z1-wus-test'          // Test environment, single zone
 ```
 
 ## 🏷️ **Tagging Strategy**
@@ -144,6 +188,8 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
   "geo": "us|eu|asia",
   "region": "eastus|westus|northeurope",
   "cell": "banking|retail|healthcare",
+  "availabilityZones": "0|1|2|3",
+  "tenancyModel": "shared|dedicated",
   "workload": "stamps-pattern",
   "costCenter": "IT-Infrastructure",
   "owner": "platform-team@contoso.com"
@@ -175,10 +221,20 @@ var regionShortNames = {
   westeurope: 'weu'
 }
 
+// Zone configuration helper
+var zoneConfigMapping = {
+  0: { suffix: 'z0', description: 'Single zone (dev/test)' }
+  1: { suffix: 'z1', description: 'Single zone deployment' }
+  2: { suffix: 'z2', description: 'Basic HA (99.95% SLA)' }
+  3: { suffix: 'z3', description: 'Maximum resilience (99.99% SLA)' }
+}
+
 // Generate standardized names
 var regionShort = contains(regionShortNames, location) ? regionShortNames[location] : take(location, 3)
+var zoneConfig = zoneConfigMapping[availabilityZones]
 var resourceGroupName = 'rg-stamps-${regionShort}-${environment}'
-var sqlServerName = 'sql-${geoName}-${regionShort}-${cellName}-${environment}'
+var containerAppName = 'ca-${cellName}-${zoneConfig.suffix}-${regionShort}-${environment}'
+var sqlDatabaseName = 'sqldb-${cellName}-${zoneConfig.suffix}-${regionShort}-${environment}'
 ```
 
 ### **PowerShell Helper Function**
@@ -194,8 +250,31 @@ function Get-RegionShortName {
     return $RegionMap[$Location] ?? $Location.Substring(0, [Math]::Min(3, $Location.Length))
 }
 
+function Get-ZoneAwareName {
+    param(
+        [string]$ResourceType,
+        [string]$CellName,
+        [int]$AvailabilityZones,
+        [string]$Location,
+        [string]$Environment
+    )
+    
+    $RegionShort = Get-RegionShortName -Location $Location
+    $ZoneConfig = "z$AvailabilityZones"
+    
+    switch ($ResourceType) {
+        'ContainerApp' { return "ca-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+        'SqlDatabase' { return "sqldb-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+        'FunctionApp' { return "func-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+        'CosmosDb' { return "cosmos-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+        default { return "$ResourceType-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+    }
+}
+
+# Usage examples
 $RegionShort = Get-RegionShortName -Location $Location
 $ResourceGroupName = "rg-stamps-$RegionShort-$Environment"
+$ContainerAppName = Get-ZoneAwareName -ResourceType 'ContainerApp' -CellName $CellName -AvailabilityZones $AvailabilityZones -Location $Location -Environment $Environment
 ```
 
 ### **Bash Helper Function**
