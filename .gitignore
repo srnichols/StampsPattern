@@ -2,7 +2,7 @@
 *.json
 !*.parameters.json
 !*.parameters.json.example
-!azure-region-mapping.json
+!config/azure-region-mapping.json
 !traffic-routing.parameters.json
 
 # User-specific files
