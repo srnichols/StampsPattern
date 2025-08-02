@@ -1,194 +1,185 @@
-// --------------------------------------------------------------------------------------
-// Azure CELL Architecture: Main Orchestration Template
-// - Global Control Plane: DNS, Traffic Manager, Front Door, Log Analytics
-// - Regional Layer: Networking, Key Vault, Monitoring
-// - CELL Layer: Isolated app/data resources per region
-// - Explicit GEO grouping for clarity
-// - Explicit dependsOn for cross-layer dependencies
-// --------------------------------------------------------------------------------------
-
+// Azure Stamps Pattern - Main Orchestration Template
 targetScope = 'resourceGroup'
 
-// Parameters for global resources
-@description('Name of the DNS Zone')
-param dnsZoneName string
+@description('Global prefix for resource naming')
+param globalPrefix string = 'stamps'
 
-@description('Name of the Traffic Manager profile')
-param trafficManagerName string
+@description('Environment type')
+@allowed(['dev', 'test', 'prod'])
+param environmentType string = 'dev'
 
-@description('Name of the Front Door instance')
-param frontDoorName string
-
-@description('Location for the central Log Analytics Workspace')
-param globalLogAnalyticsLocation string
-
-@description('Name for the central Log Analytics Workspace')
-param globalLogAnalyticsWorkspaceName string
-
-@description('SQL admin username')
+@secure()
+@description('Administrator username for SQL Server')
 param sqlAdminUsername string
 
 @secure()
-@description('SQL admin password')
+@description('Administrator password for SQL Server')
 param sqlAdminPassword string
 
-@description('Prefix for Function App names')
-param functionAppNamePrefix string
+@description('Log retention in days')
+param logRetentionInDays int = 30
 
-@description('Prefix for Function App Storage accounts')
-param functionStorageNamePrefix string
-
-@description('Array of region objects for multi-region deployment')
-param geos array
-
-@description('Name for the APIM instance')
-param apimName string
-
-@description('Publisher email for APIM')
-param apimPublisherEmail string
-
-@description('Publisher name for APIM')
-param apimPublisherName string
-
-@description('Name for the global control plane Cosmos DB account')
-param globalControlCosmosDbName string
-
-@description('Primary location for the global Cosmos DB')
-param primaryLocation string
-
-@description('Additional locations for geo-replication (array of objects with locationName, failoverPriority)')
-param additionalLocations array
-
-// Base tags variable for DRY code
-var baseTags = {
-  environment: 'demo'
-  department: 'IT'
-}
-
-// Global Log Analytics Workspace
-resource globalLogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: globalLogAnalyticsWorkspaceName
-  location: globalLogAnalyticsLocation
-  properties: {
-    retentionInDays: 30
+@description('Array of regions to deploy to')
+param regions array = [
+  {
+    geoName: 'northamerica'
+    regionName: 'eastus'
+    cells: ['cell1', 'cell2']
+    baseDomain: 'eastus.contoso.com'
+    keyVaultName: 'kv-northamerica-eastus'
+    logAnalyticsWorkspaceName: 'law-northamerica-eastus'
   }
+]
+
+@description('Array of cells to deploy')
+param cells array = [
+  {
+    geoName: 'northamerica'
+    regionName: 'eastus'
+    cellName: 'cell1'
+    baseDomain: 'eastus.contoso.com'
+    keyVaultName: 'kv-northamerica-eastus'
+    logAnalyticsWorkspaceName: 'law-northamerica-eastus'
+  }
+  {
+    geoName: 'northamerica'
+    regionName: 'eastus'
+    cellName: 'cell2'
+    baseDomain: 'eastus.contoso.com'
+    keyVaultName: 'kv-northamerica-eastus'
+    logAnalyticsWorkspaceName: 'law-northamerica-eastus'
+  }
+]
+
+var baseTags = {
+  environment: environmentType
+  project: 'StampsPattern'
+  deployedBy: 'Bicep'
+  deploymentDate: utcNow('yyyy-MM-dd')
 }
 
-// Global Layer deployment
 module globalLayer './globalLayer.bicep' = {
   name: 'globalLayer'
   params: {
-    dnsZoneName: dnsZoneName
-    trafficManagerName: trafficManagerName
-    frontDoorName: frontDoorName
-    globalLogAnalyticsWorkspaceId: globalLogAnalyticsWorkspace.id
-    functionAppNamePrefix: functionAppNamePrefix
-    functionStorageNamePrefix: functionStorageNamePrefix
-    globalControlCosmosDbName: globalControlCosmosDbName
-    primaryLocation: primaryLocation
-    additionalLocations: additionalLocations
+    globalPrefix: globalPrefix
+    environmentType: environmentType
+    logRetentionInDays: logRetentionInDays
     tags: baseTags
   }
 }
 
-// Geodes Layer deployment (APIM + Global Cosmos DB)
-module geodesLayer './geodesLayer.bicep' = {
-  name: 'geodesLayer'
-  params: {
-    location: primaryLocation
-    apimName: apimName
-    apimPublisherEmail: apimPublisherEmail
-    apimPublisherName: apimPublisherName
-    globalControlCosmosDbName: globalControlCosmosDbName
-    primaryLocation: primaryLocation
-    additionalLocations: additionalLocations
-    tags: baseTags
-  }
-}
-
-// Regional deployments
-module regionalLayers './regionalLayer.bicep' = [
-  for (geo, geoIdx) in geos
-  for (region, regionIdx) in geo.regions: {
-    name: 'regionalLayer-${geo.geoName}-${region.regionName}'
-    params: {
-      location: region.regionName
-      appGatewayName: 'agw-${geo.geoName}-${region.regionName}'
-      subnetId: '...' // supply as needed
-      publicIpId: '...' // supply as needed
-      sslCertSecretId: '...' // supply as needed
-      cellCount: length(region.cells)
-      cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.regionName}.contoso.com']
-      tags: union(baseTags, {
-        geo: geo.geoName
-        region: region.regionName
-      })
-      healthProbePath: '/health'
-      automationAccountName: 'auto-${geo.geoName}-${region.regionName}'
-      automationAccountSkuName: 'Basic'
-    }
-  }
-]
-
-// Monitoring Layer deployments
-module monitoringLayers './monitoringLayer.bicep' = [
-  for (geo, geoIdx) in geos
-  for (region, regionIdx) in geo.regions: {
-    name: 'monitoringLayer-${geo.geoName}-${region.regionName}'
-    params: {
-      location: region.regionName
-      logAnalyticsWorkspaceName: region.logAnalyticsWorkspaceName
-      retentionInDays: 30
-      tags: union(baseTags, {
-        geo: geo.geoName
-        region: region.regionName
-      })
-    }
-  }
-]
-
-// CELL/Stamp Layer deployments
-module deploymentStampLayers './deploymentStampLayer.bicep' = [
-  for (geo, geoIdx) in geos
-  for (region, regionIdx) in geo.regions
-  for (cell, cellIdx) in region.cells: {
-    name: 'deploymentStampLayer-${geo.geoName}-${region.regionName}-${cell}'
-    params: {
-      location: region.regionName
-      sqlServerName: 'sql-${geo.geoName}-${region.regionName}-${cell}'
-      sqlAdminUsername: sqlAdminUsername
-      sqlAdminPassword: sqlAdminPassword
-      sqlDbName: 'sqldb-${geo.geoName}-${region.regionName}-${cell}'
-      storageAccountName: 'st${geo.geoName}${region.regionName}${cell}'
-      cosmosDbStampName: 'cosmos-${geo.geoName}-${region.regionName}-${cell}'
-      tags: union(baseTags, {
-        geo: geo.geoName
-        region: region.regionName
-        cell: cell
-      })
-      zones: ['1', '2']
-      containerRegistryName: 'acr${geo.geoName}${region.regionName}${cell}'
-      containerAppName: cell
-      baseDomain: region.baseDomain
-      globalLogAnalyticsWorkspaceId: globalLogAnalyticsWorkspace.id
-    }
-  }
-]
-
-// Key Vaults deployment - Using direct resource definitions
 module keyVaults './keyvault.bicep' = [
-  for (geo, geoIdx) in geos
-  for (region, regionIdx) in geo.regions: {
-    name: 'keyVault-${geo.geoName}-${region.regionName}'
+  for (region, index) in regions: {
+    name: 'keyVault-${region.geoName}-${region.regionName}'
     params: {
       name: region.keyVaultName
       location: region.regionName
       skuName: 'standard'
       tags: union(baseTags, {
-        geo: geo.geoName
+        geo: region.geoName
         region: region.regionName
       })
-      globalLogAnalyticsWorkspaceId: globalLogAnalyticsWorkspace.id
+      globalLogAnalyticsWorkspaceId: globalLayer.outputs.logAnalyticsWorkspaceId
     }
+  }
+]
+
+module regionalLayers './regionalLayer.bicep' = [
+  for (region, index) in regions: {
+    name: 'regionalLayer-${region.geoName}-${region.regionName}'
+    params: {
+      location: region.regionName
+      appGatewayName: 'agw-${region.geoName}-${region.regionName}'
+      subnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Network/virtualNetworks/vnet-${region.geoName}-${region.regionName}/subnets/subnet-agw'
+      publicIpId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Network/publicIPAddresses/pip-agw-${region.geoName}-${region.regionName}'
+      sslCertSecretId: 'https://${region.keyVaultName}.${environment().suffixes.keyvaultDns}/secrets/ssl-cert'
+      cellCount: length(region.cells)
+      cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
+      tags: union(baseTags, {
+        geo: region.geoName
+        region: region.regionName
+      })
+      healthProbePath: '/health'
+      automationAccountName: 'auto-${region.geoName}-${region.regionName}'
+      automationAccountSkuName: 'Basic'
+    }
+    dependsOn: [
+      keyVaults
+    ]
+  }
+]
+
+module monitoringLayers './monitoringLayer.bicep' = [
+  for (region, index) in regions: {
+    name: 'monitoringLayer-${region.geoName}-${region.regionName}'
+    params: {
+      location: region.regionName
+      logAnalyticsWorkspaceName: region.logAnalyticsWorkspaceName
+      applicationInsightsName: 'appi-${region.geoName}-${region.regionName}'
+      tags: union(baseTags, {
+        geo: region.geoName
+        region: region.regionName
+      })
+    }
+  }
+]
+
+module deploymentStampLayers './deploymentStampLayer.bicep' = [
+  for (cell, index) in cells: {
+    name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+    params: {
+      location: cell.regionName
+      sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+      sqlAdminUsername: sqlAdminUsername
+      sqlAdminPassword: sqlAdminPassword
+      sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+      storageAccountName: 'st${cell.geoName}${cell.regionName}${cell.cellName}'
+      cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+      tags: union(baseTags, {
+        geo: cell.geoName
+        region: cell.regionName
+        cell: cell.cellName
+      })
+      zones: ['1', '2']
+      containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
+      containerAppName: cell.cellName
+      baseDomain: cell.baseDomain
+      globalLogAnalyticsWorkspaceId: globalLayer.outputs.logAnalyticsWorkspaceId
+    }
+    dependsOn: [
+      regionalLayers
+      monitoringLayers
+    ]
+  }
+]
+
+output globalLayerOutputs object = globalLayer.outputs
+
+output keyVaultOutputs array = [
+  for (region, index) in regions: {
+    geoName: region.geoName
+    regionName: region.regionName
+    keyVaultId: keyVaults[index].outputs.id
+    keyVaultUri: keyVaults[index].outputs.uri
+  }
+]
+
+output regionalLayerOutputs array = [
+  for (region, index) in regions: {
+    geoName: region.geoName
+    regionName: region.regionName
+    applicationGatewayId: regionalLayers[index].outputs.applicationGatewayId
+    publicIpAddress: regionalLayers[index].outputs.publicIpAddress
+  }
+]
+
+output deploymentStampOutputs array = [
+  for (cell, index) in cells: {
+    geoName: cell.geoName
+    regionName: cell.regionName
+    cellName: cell.cellName
+    sqlServerFqdn: deploymentStampLayers[index].outputs.sqlServerFqdn
+    storageAccountName: deploymentStampLayers[index].outputs.storageAccountName
+    cosmosDbEndpoint: deploymentStampLayers[index].outputs.cosmosDbEndpoint
   }
 ]
