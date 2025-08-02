@@ -8,9 +8,6 @@ targetScope = 'resourceGroup'
 @description('The organization domain (e.g., contoso.com)')
 param organizationDomain string = 'contoso.com'
 
-@description('The organization name for resource naming')
-param organizationName string = 'contoso'
-
 @description('The department responsible for the deployment')
 param department string = 'IT'
 
@@ -200,7 +197,6 @@ module regionalLayers './regionalLayer.bicep' = [
       })
       healthProbePath: '/health'
       automationAccountName: 'auto-${region.geoName}-${region.regionName}'
-      automationAccountSkuName: 'Basic'
     }
     dependsOn: [
       keyVaults
@@ -247,7 +243,6 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
         workload: 'stamps-pattern'
         costCenter: 'IT-Infrastructure'
       })
-      zones: cell.availabilityZones
       containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
       containerAppName: cell.cellName
       baseDomain: cell.baseDomain

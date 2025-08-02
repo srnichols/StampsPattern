@@ -35,9 +35,6 @@ param cosmosDbStampName string
 @description('Tags for resources')
 param tags object = {}
 
-@description('Azure Availability Zones to use for this CELL/Stamp (e.g., [1,2])')
-param zones array = ['1', '2']
-
 @description('Name of the Azure Container Registry for this region')
 param containerRegistryName string
 
@@ -49,9 +46,6 @@ param baseDomain string
 
 @description('The resource ID of the central Log Analytics Workspace for diagnostics.')
 param globalLogAnalyticsWorkspaceId string
-
-@description('Virtual Network resource ID for private endpoints')
-param virtualNetworkId string = ''
 
 @description('Subnet resource ID for private endpoints')
 param privateEndpointSubnetId string = ''

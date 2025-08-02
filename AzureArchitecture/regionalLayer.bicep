@@ -36,9 +36,6 @@ param healthProbePath string = '/health'
 @description('The name of the Automation Account for this region')
 param automationAccountName string = '${appGatewayName}-automation'
 
-@description('The SKU for the Automation Account')
-param automationAccountSkuName string = 'Free'
-
 // Generate backend pools, http settings, and probes for each CELL
 var backendPools = [
   for i in range(0, cellCount): {
@@ -86,7 +83,7 @@ var probes = [
 ]
 
 // Application Gateway resource
-resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
+resource appGateway 'Microsoft.Network/applicationGateways@2023-05-01' = {
   name: appGatewayName
   location: location
   sku: {
@@ -94,7 +91,7 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
     tier: 'WAF_v2'
     capacity: 2
   }
-  zones: [1, 2] // Deploy Application Gateway across at least two zones
+  zones: ['1', '2'] // Deploy Application Gateway across at least two zones
   properties: {
     gatewayIPConfigurations: [
       {
@@ -204,12 +201,9 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
 }
 
 // Azure Automation Account for regional automation and runbooks
-resource automationAccount 'Microsoft.Automation/automationAccounts@2023-05-15' = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2020-01-13-preview' = {
   name: automationAccountName
   location: location
-  sku: {
-    name: automationAccountSkuName
-  }
   tags: tags
 }
 
