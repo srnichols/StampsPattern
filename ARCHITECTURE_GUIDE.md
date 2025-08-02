@@ -90,6 +90,7 @@ GEO: Europe
 **Components**:
 - **🌐 Azure Front Door**: Global CDN, SSL termination, Web Application Firewall
 - **📡 Traffic Manager**: DNS-based global load balancing with performance routing
+- **🚪 API Management**: Enterprise API gateway deployed per geography (see Geodes Layer)
 - **🌍 DNS Zone**: Custom domain management and DNS resolution
 - **🚀 Azure Functions**: Global control plane functions across multiple regions
   - `GetTenantCellFunction`: Routes tenants to appropriate CELL

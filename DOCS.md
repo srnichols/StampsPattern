@@ -143,13 +143,14 @@ journey
 #### **📐 System Layers**
 ```
 🌍 Global Layer    → DNS, Traffic Manager, Front Door, Global Functions
+🚪 Geodes Layer    → API Management (APIM), Global Control Plane Cosmos DB
 🏢 Regional Layer  → Application Gateway, Key Vault, Automation Account
 🏠 CELL Layer      → Container Apps, SQL Database, Storage Account
 ```
 
 #### **🔄 Traffic Flow**
 ```
-User → Front Door → Traffic Manager → App Gateway → Container Apps → SQL Database
+User → Front Door → Traffic Manager → APIM Gateway → App Gateway → Container Apps → SQL Database
 ```
 
 #### **📊 Key Metrics**
