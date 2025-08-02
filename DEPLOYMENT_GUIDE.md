@@ -1,14 +1,15 @@
-# 🚀 Azure Stamps Pattern - Complete Deployment Guide
+# 🚀 Azure Stamps Pattern - Enhanced Deployment Guide with Intelligent Tenancy
 
-> **🎯 Purpose**: Step-by-step guide for deploying the Azure Stamps Pattern from development testing to enterprise production. Choose your deployment path based on your requirements.
+> **🎯 Purpose**: Step-by-step guide for deploying the Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
 
 ## 📋 **Quick Navigation**
 
 | Section | Description | Time Required |
 |---------|-------------|---------------|
 | [📋 Prerequisites](#-prerequisites) | Required tools and access | 10 minutes |
-| [🌟 Option 1: Simple Setup](#-option-1-simple-two-region-setup-recommended-for-getting-started) | Development/testing deployment | 45 minutes |
-| [🌍 Option 2: Enterprise Setup](#-option-2-global-multi-geo-setup-production) | Production global deployment | 2-3 hours |
+| [🧠 Enhanced Deployment](#-enhanced-deployment-with-intelligent-tenancy-new) | **NEW** - Intelligent tenancy deployment | 45-75 minutes |
+| [🌟 Legacy Simple Setup](#-legacy-simple-two-region-setup) | Traditional development/testing deployment | 45 minutes |
+| [🌍 Enterprise Setup](#-enterprise-global-multi-geo-setup) | Production global deployment | 2-3 hours |
 | [🔧 Automation](#-automation-options) | CI/CD and automation options | 30 minutes |
 | [🩺 Validation](#-post-deployment-validation) | Testing and validation steps | 20 minutes |
 
@@ -16,22 +17,85 @@
 
 ```mermaid
 flowchart TD
-    A[Choose Deployment] --> B{Purpose?}
-    B -->|Learning/Testing| C[Simple Setup<br/>2 Regions, Basic Config<br/>⏱️ 45 min]
-    B -->|Production| D[Enterprise Setup<br/>Multi-GEO, Full Features<br/>⏱️ 2-3 hours]
-    C --> E[deploy-stamps.sh<br/>or PowerShell]
-    D --> F[main.bicep<br/>Full Configuration]
-    E --> G[Development Ready]
-    F --> H[Production Ready]
+    A[Choose Deployment] --> B{Tenancy Model?}
+    B -->|Mixed Model<br/>Flexible| C[Enhanced Mixed<br/>Shared + Dedicated CELLs<br/>⏱️ 45 min]
+    B -->|Cost-Optimized<br/>SMB Focus| D[Enhanced Shared-Only<br/>Shared CELLs Only<br/>⏱️ 30 min]
+    B -->|Enterprise<br/>Compliance| E[Enhanced Dedicated-Only<br/>Dedicated CELLs Only<br/>⏱️ 60 min]
+    B -->|Legacy<br/>Testing| F[Simple Setup<br/>Traditional Approach<br/>⏱️ 45 min]
+    C --> G[deploy-stamps-enhanced.ps1<br/>-TenancyModel mixed]
+    D --> H[deploy-stamps-enhanced.ps1<br/>-TenancyModel shared]
+    E --> I[deploy-stamps-enhanced.ps1<br/>-TenancyModel dedicated]
+    F --> J[deploy-stamps.sh<br/>Legacy Script]
+    G --> K[Production Ready<br/>All Tenant Types]
+    H --> L[Cost-Optimized<br/>SMB Platform]
+    I --> M[Enterprise-Grade<br/>Compliance Ready]
+    J --> N[Development Ready<br/>Basic Testing]
 ```
 
 ---
 
-## 🎯 Deployment Overview
+## 🎯 Enhanced Deployment Overview
 
-This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with multiple deployment options for different scenarios.
+This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The enhanced implementation supports multiple tenancy models within the same architecture.
 
-## 📋 Prerequisites
+## � Enhanced Deployment Options
+
+Choose your deployment path based on your tenancy requirements:
+
+### Option A: Enhanced PowerShell Deployment (Recommended) 🌟
+```mermaid
+graph TD
+    A[Choose Tenancy Model] --> B{Business Requirements}
+    B -->|Cost-Optimized SMB| C[Shared Tenancy]
+    B -->|Enterprise Security| D[Dedicated Tenancy]
+    B -->|Mixed Platform| E[Hybrid Tenancy]
+    
+    C --> F[./deploy-stamps-enhanced.ps1 -TenancyModel shared]
+    D --> G[./deploy-stamps-enhanced.ps1 -TenancyModel dedicated]
+    E --> H[./deploy-stamps-enhanced.ps1 -TenancyModel mixed]
+    
+    F --> I[Shared CELLs<br/>$8-16/tenant/month]
+    G --> J[Dedicated CELLs<br/>$3200+/tenant/month]
+    H --> K[Dynamic Assignment<br/>Cost + Security Optimized]
+```
+
+#### **Shared Tenancy Deployment**
+```powershell
+# Cost-optimized for SMBs (multiple tenants per CELL)
+./deploy-stamps-enhanced.ps1 -TenancyModel shared -Location eastus -Environment prod
+
+# Expected costs: $8-16 per tenant per month
+# Best for: Development, testing, cost-sensitive workloads
+```
+
+#### **Dedicated Tenancy Deployment**
+```powershell
+# Enterprise-grade isolation (one tenant per CELL)
+./deploy-stamps-enhanced.ps1 -TenancyModel dedicated -Location eastus -Environment prod
+
+# Expected costs: $3200+ per tenant per month  
+# Best for: Compliance, security-sensitive, high-performance workloads
+```
+
+#### **Mixed Tenancy Deployment**
+```powershell
+# Intelligent assignment based on tenant requirements
+./deploy-stamps-enhanced.ps1 -TenancyModel mixed -Location eastus -Environment prod
+
+# Dynamic cost optimization with automatic tenant placement
+# Best for: Multi-tier platforms with diverse tenant needs
+```
+
+### Option B: Legacy Shell Deployment
+```bash
+# Traditional deployment (single tenancy model)
+chmod +x deploy-stamps.sh
+./deploy-stamps.sh
+```
+
+---
+
+## �📋 Prerequisites
 
 ### ✅ Required Tools
 ```bash
@@ -43,7 +107,7 @@ az --version
 bicep --version
 # Should be >= 0.20.0
 
-# PowerShell 7+ (for PowerShell deployment)
+# PowerShell 7+ (required for enhanced deployment)
 pwsh --version
 # Should be >= 7.3.0
 ```
@@ -67,7 +131,13 @@ pwsh --version
 
 ## 🏗️ Deployment Architectures
 
-### 🌟 **Option 1: Simple Two-Region Setup** (Recommended for Getting Started)
+---
+
+## 🔧 Manual/Legacy Deployment Options
+
+> **Note**: For new deployments, we recommend using the Enhanced PowerShell deployment options above for intelligent tenancy features.
+
+### 🌟 **Option 1: Simple Two-Region Setup** (Manual Bicep Deployment)
 
 #### Configuration (`traffic-routing.parameters.json`):
 ```json
@@ -130,7 +200,7 @@ az deployment group create \
   --parameters @traffic-routing.parameters.json
 ```
 
-### 🌍 **Option 2: Global Multi-GEO Setup** (Production)
+### 🌍 **Option 2: Global Multi-GEO Setup** (Advanced Manual Deployment)
 
 #### Configuration (`AzureArchitecture/main.parameters.json`):
 ```json
@@ -522,6 +592,57 @@ az monitor metrics alert create \
     --condition "count staticThreshold equals 0 endpoint_status" \
     --description "Traffic Manager endpoint is down"
 ```
+
+## 🧪 Post-Deployment Testing & Validation
+
+### ✅ **Enhanced Tenancy Features Validation**
+```powershell
+# Test intelligent tenant assignment
+./test-enhanced-features.ps1 -TestType TenantAssignment
+
+# Validate capacity monitoring
+./test-enhanced-features.ps1 -TestType CapacityMonitoring  
+
+# Test tenant migration workflows
+./test-enhanced-features.ps1 -TestType TenantMigration
+```
+
+### 🔍 **Health Check Commands**
+```bash
+# Verify all stamps are healthy
+az rest --method GET --uri "https://func-stamps-management.azurewebsites.net/api/GetStampHealth"
+
+# Check tenant distribution
+az rest --method GET --uri "https://func-stamps-management.azurewebsites.net/api/GetTenantDistribution"
+
+# Validate cost optimization metrics
+az monitor metrics list --resource <resource-id> --metric "CostPerTenant"
+```
+
+### 📊 **Cost Validation**
+```bash
+# Shared tenancy: Verify $8-16/tenant/month range
+az consumption usage list --billing-period-name <period> --query "[?contains(instanceName, 'shared')]"
+
+# Dedicated tenancy: Verify $3200+/tenant/month range  
+az consumption usage list --billing-period-name <period> --query "[?contains(instanceName, 'dedicated')]"
+```
+
+### 🎯 **Functional Testing**
+```bash
+# Test tenant onboarding workflow
+curl -X POST "https://func-stamps-management.azurewebsites.net/api/CreateTenant" \
+  -H "Content-Type: application/json" \
+  -d '{"tenantId": "test-tenant-001", "requirements": {"securityLevel": "standard", "complianceNeeds": []}}'
+
+# Test tenant data isolation
+curl -X GET "https://func-stamps-management.azurewebsites.net/api/GetTenantInfo/test-tenant-001"
+
+# Test automatic scaling
+./load-test.ps1 -TenantId "test-tenant-001" -Duration 300
+```
+
+---
 
 ## 🛠️ Troubleshooting Common Issues
 

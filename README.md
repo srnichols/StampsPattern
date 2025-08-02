@@ -1,10 +1,32 @@
-# 🌍 Azure Stamps Pattern - Enterprise Multi-Tenant Architecture
+# 🌍 Azure Stamps Pattern - Enterprise Multi-Tenant Architecture with Intelligent Tenancy
 
-The **Azure Stamps Pattern** is a proven architectural framework for building globally distributed, enterprise-grade SaaS platforms that deliver flexible tenant isolation with unlimited scalability. This sophisticated pattern implements a hierarchical **GEO → Region → CELL** structure supporting both **shared CELLs** (10-100 small tenants) and **dedicated CELLs** (single enterprise tenant) within the same architecture. Unlike rigid multi-tenancy approaches, this pattern provides the flexibility to host cost-conscious startups in shared infrastructure while providing enterprise clients with completely isolated resources including dedicated SQL databases, storage, and container applications.
+The **Azure Stamps Pattern** is a proven architectural framework for building globally distributed, enterprise-grade SaaS platforms that deliver **intelligent flexible tenant isolation** with unlimited scalability. This sophisticated pattern implements a hierarchical **GEO → Region → CELL** structure supporting both **shared CELLs** (10-100 small tenants) and **dedicated CELLs** (single enterprise tenant) within the same architecture, with **automated tenant assignment**, **capacity management**, and **seamless migration capabilities**.
 
-**Why consider it for enterprise SaaS?** The pattern solves critical enterprise challenges with its **flexible tenancy models**: you can optimize costs with shared CELLs for smaller clients while providing dedicated CELLs for enterprise customers requiring compliance, custom configurations, or performance guarantees. It enables unlimited global expansion without architectural changes, provides built-in disaster recovery through cross-region replication, and delivers enterprise-grade security with defense-in-depth strategies including Azure Front Door WAF, API Management Premium with tenant-specific rate limiting, and Azure AD B2C integration. With comprehensive monitoring, automated scaling, and infrastructure-as-code deployment, this pattern allows SaaS businesses to serve everything from startups to Fortune 500 companies within the same architectural framework.
+**🎯 What makes this implementation unique?** Unlike rigid multi-tenancy approaches, this enhanced pattern provides **intelligent tenant placement** that automatically assigns tenants to appropriate CELL types based on their tier, compliance requirements, and business needs. The system includes automated capacity monitoring, smart CELL provisioning, and zero-downtime migration workflows that allow tenants to seamlessly move from shared to dedicated models as they grow.
+
+**Why consider it for enterprise SaaS?** The pattern solves critical enterprise challenges with its **flexible tenancy models**: you can optimize costs with shared CELLs for smaller clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance, custom configurations, or performance guarantees ($3,200/tenant/month). It enables unlimited global expansion without architectural changes, provides built-in disaster recovery through cross-region replication, and delivers enterprise-grade security with defense-in-depth strategies including Azure Front Door WAF, API Management Premium with tenant-specific rate limiting, and Azure AD B2C integration.
 
 This pattern is particularly powerful for **mixed tenant portfolios** where you need to serve both cost-sensitive SMBs and compliance-focused enterprises (healthcare, financial services) where dedicated isolation isn't just preferred—it's mandatory for regulatory compliance.
+
+## ✨ **Enhanced Features - NEW**
+
+### 🧠 **Intelligent Tenant Management**
+- **Smart Assignment**: Automatically routes tenants to appropriate CELL types (Startup → Shared, Enterprise → Dedicated)
+- **Capacity Monitoring**: Timer-triggered monitoring every 15 minutes with auto-provisioning
+- **Migration Workflows**: Seamless tenant migration from shared to dedicated CELLs as businesses grow
+- **Compliance Matching**: Routes tenants to CELLs meeting their regulatory requirements (HIPAA, SOX, PCI-DSS)
+
+### 📊 **Cost-Optimized Tenancy Models**
+- **Startup Tier**: $8/tenant/month in shared CELLs for cost-sensitive startups
+- **SMB Tier**: $16/tenant/month in shared CELLs for small-medium businesses
+- **Enterprise Tier**: $3,200/tenant/month in dedicated CELLs for enterprise isolation
+- **Compliance Premiums**: Automatic compliance cost calculation (HIPAA +$50/month, SOX +$100/month)
+
+### ⚡ **Automated Operations**
+- **Auto-Provisioning**: Creates new CELLs when capacity thresholds (80%) are reached
+- **Load Balancing**: Distributes shared tenants across CELLs for optimal resource utilization
+- **Cost Optimization**: Provides recommendations for CELL consolidation and efficiency
+- **Analytics Dashboard**: Real-time capacity, utilization, and cost optimization insights
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2Fmain%2Ftraffic-routing.json)
 
@@ -145,65 +167,125 @@ graph TB
 - ✅ **📊 Advanced Monitoring**: Per-tenant API analytics and SLA tracking across both deployment models
 - ✅ **🔐 Developer Self-Service**: API portals, documentation, and key management for all tenant types
 
-## 🚀 **Quick Start - Get Running in 10 Minutes**
+## 🚀 **Enhanced Quick Start - Choose Your Tenancy Model**
 
 ### 📋 **Before You Begin**
 Ensure you have these tools installed:
 - ✅ [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (v2.50.0+)  
 - ✅ [Bicep CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) (v0.20.0+)
+- ✅ PowerShell 7+ (for enhanced deployment script)
 - ✅ Azure subscription with **Contributor** access
 
-### 🎯 **Choose Your Deployment Path**
+### 🎯 **Choose Your Tenancy Model**
 
-#### 🌟 **Path 1: Development/Testing** (2 regions, 2 tenants)
-Perfect for learning, development, or proof-of-concept.
+#### � **Mixed Model** (Recommended - Supports All Tenant Types)
+Deploy both shared and dedicated CELLs for maximum flexibility.
 
-```bash
+```powershell
 # 1️⃣ Clone and setup
 git clone <repository-url>
 cd StampsPattern
 
-# 2️⃣ Quick configuration
-cp traffic-routing.parameters.json.example traffic-routing.parameters.json
-# Edit: email, password, domain name
-
-# 3️⃣ Deploy automatically  
-chmod +x deploy-stamps.sh
-./deploy-stamps.sh
+# 2️⃣ Deploy mixed tenancy model
+.\deploy-stamps-enhanced.ps1 `
+  -ResourceGroupName "rg-stamps-prod" `
+  -Location "eastus" `
+  -TenancyModel "mixed" `
+  -Environment "prod"
 ```
 
 **⏱️ Deployment time**: ~45 minutes  
-**💰 Monthly cost**: ~$300-500 USD  
-**🎯 Use case**: Development, testing, demos
+**💰 Monthly cost**: $8-3,200 per tenant (tier-based)  
+**🎯 Use case**: Full SaaS platform, all business sizes
 
-#### 🌍 **Path 2: Enterprise Production** (Multi-GEO, unlimited tenants)
-Full production deployment with global reach.
+#### 💰 **Shared-Only Model** (Cost-Optimized)
+Optimize for cost with shared CELLs for small-medium tenants.
 
-```bash
-# 1️⃣ Enterprise configuration
-cd AzureArchitecture
-cp main.parameters.json.example main.parameters.json
-# Configure: regions, tenant names, domains
-
-# 2️⃣ Deploy enterprise architecture
-az deployment group create \
-  --resource-group rg-stamps-eus-global \
-  --template-file main.bicep \
-  --parameters @main.parameters.json
+```powershell
+# Deploy shared tenancy model
+.\deploy-stamps-enhanced.ps1 `
+  -ResourceGroupName "rg-stamps-shared" `
+  -Location "eastus" `
+  -TenancyModel "shared" `
+  -MaxSharedTenantsPerCell 100
 ```
 
-**⏱️ Deployment time**: ~2-3 hours  
-**💰 Monthly cost**: ~$2,000-5,000 USD  
-**🎯 Use case**: Production, enterprise, global SaaS
+**⏱️ Deployment time**: ~30 minutes  
+**💰 Monthly cost**: $8-16 per tenant  
+**🎯 Use case**: SMB focus, startups, cost-sensitive market
+
+#### � **Dedicated-Only Model** (Enterprise-Grade)
+Maximum isolation for enterprise and compliance-focused clients.
+
+```powershell
+# Deploy dedicated tenancy model
+.\deploy-stamps-enhanced.ps1 `
+  -ResourceGroupName "rg-stamps-enterprise" `
+  -Location "eastus" `
+  -TenancyModel "dedicated" `
+  -EnableCompliance @("HIPAA", "SOX")
+```
+
+**⏱️ Deployment time**: ~60 minutes  
+**💰 Monthly cost**: $3,200+ per tenant  
+**🎯 Use case**: Enterprise clients, regulated industries
+
+#### 🛡️ **Healthcare/Financial Services** (Compliance-Ready)
+Pre-configured with compliance features for regulated industries.
+
+```powershell
+# Deploy with compliance features
+.\deploy-stamps-enhanced.ps1 `
+  -ResourceGroupName "rg-stamps-healthcare" `
+  -Location "eastus" `
+  -TenancyModel "mixed" `
+  -EnableCompliance @("HIPAA", "SOC2-Type2", "PCI-DSS") `
+  -EnableAutoScaling
+```
+
+**⏱️ Deployment time**: ~75 minutes  
+**💰 Monthly cost**: Base + compliance premiums ($25-200/month)  
+**🎯 Use case**: Healthcare, financial services, government
 
 ### ⚡ **Alternative Deployment Methods**
 
 | Method | Best For | Command |
 |--------|----------|---------|
 | 🐧 **Bash Script** | Linux/macOS developers | `./deploy-stamps.sh` |
-| 🪟 **PowerShell** | Windows environments | `.\deploy-stamps.ps1` |
+| 🪟 **PowerShell Enhanced** | **NEW** - Intelligent tenancy | `.\deploy-stamps-enhanced.ps1` |
 | 🌐 **Azure Portal** | GUI-based deployment | [![Deploy](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2Fmain%2Ftraffic-routing.json) |
 | 🤖 **CI/CD Pipeline** | Automated deployments | See [Deployment Guide](./DEPLOYMENT_GUIDE.md#automation) |
+
+### 🧪 **Testing Your Enhanced Implementation**
+
+After deployment, test the intelligent tenancy features:
+
+```powershell
+# Test the enhanced tenancy system
+.\test-enhanced-tenancy.ps1 -FunctionAppUrl "https://fa-stamps-eastus.azurewebsites.net"
+```
+
+**What the test validates:**
+- ✅ **Smart Tenant Assignment**: Startup → Shared CELL, Enterprise → Dedicated CELL
+- ✅ **Tenant Migration**: Seamless migration between CELL types
+- ✅ **Capacity Monitoring**: Real-time CELL utilization and auto-provisioning
+- ✅ **Compliance Routing**: HIPAA tenants → Compliance-enabled CELLs
+- ✅ **Cost Calculation**: Tier-based pricing with compliance premiums
+
+**Sample Test Results:**
+```
+Testing: Startup Tenant
+Expected CELL Type: Shared
+✓ Tenant created successfully
+✓ Correctly assigned to Shared CELL: shared-eastus-001
+✓ Monthly cost: $8 (Startup tier)
+
+Testing: Enterprise Banking Tenant  
+Expected CELL Type: Dedicated
+✓ Tenant created successfully
+✓ Correctly assigned to Dedicated CELL: dedicated-banking-eastus
+✓ Monthly cost: $3,375 ($3,200 base + $100 SOX + $75 PCI-DSS)
+```
 
 | 📖 Guide | 🎯 Purpose | � Audience | �🔗 Link |
 |----------|------------|-------------|----------|
