@@ -379,7 +379,7 @@ function Start-BicepDeployment {
     Write-Host "Starting Bicep deployment..." -ForegroundColor Yellow
     
     $deploymentName = "stamps-$TenancyModel-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-    $bicepFile = ".\AzureArchitecture\main-corrected.bicep"
+    $bicepFile = ".\AzureArchitecture\main.bicep"
     
     if (-not (Test-Path $bicepFile)) {
         Write-Error "Bicep template not found: $bicepFile"

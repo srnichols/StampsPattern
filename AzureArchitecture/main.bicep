@@ -1,4 +1,4 @@
-// Azure Stamps Pattern - Main Orchestration Template (Corrected)
+// Azure Stamps Pattern - Main Orchestration Template
 // This file works with the existing module parameter schemas
 
 targetScope = 'resourceGroup'
@@ -235,6 +235,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       storageAccountName: 'st${cell.geoName}${cell.regionName}${cell.cellName}'
+      keyVaultName: 'kv-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       tags: union(baseTags, {
         geo: cell.geoName
@@ -286,6 +287,11 @@ output deploymentStampOutputs array = [
     regionName: cell.regionName
     cellName: cell.cellName
     acrLoginServer: deploymentStampLayers[index].outputs.acrLoginServer
-    acrUsername: deploymentStampLayers[index].outputs.acrUsername
+    acrId: deploymentStampLayers[index].outputs.acrId
+    acrSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.acrSystemAssignedPrincipalId
+    keyVaultId: deploymentStampLayers[index].outputs.keyVaultId
+    keyVaultUri: deploymentStampLayers[index].outputs.keyVaultUri
+    sqlServerSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.sqlServerSystemAssignedPrincipalId
+    storageAccountSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.storageAccountSystemAssignedPrincipalId
   }
 ]

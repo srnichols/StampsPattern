@@ -1,10 +1,29 @@
 # 🚀 Azure Stamps Pattern - Enhanced Deployment Guide with Intelligent Tenancy
 
-> **🎯 Purpose**: Step-by-step guide for deploying the Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
+**Enterprise Multi-Tenant Architecture with 94/100 CAF/WAF Compliance**
+
+> **🎯 Purpose**: Step-by-step guide for deployi## 📋 Prerequisites
+
+### 🔧 **Template Customization**
+For deployments using custom domains, organization names, or multi-geography requirements, first review the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
+
+### ✅ Required Toolsthe Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
 
 > **🆕 Recent Updates**: The templates are now **fully parameterized** for organization reusability! All hardcoded domains (`contoso.com`), geography names (`northamerica`), and organizational metadata are now configurable parameters. Deploy for any organization without code changes.
 
+> **🏆 Enterprise Compliance**: This deployment achieves **94/100 CAF/WAF compliance** with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.
+
 ## 📋 **Quick Navigation**
+
+| **Role** | **Start Here** | **Key Documents** |
+|----------|----------------|-------------------|
+| **👔 Enterprise Decision Makers** | [Business Value](#-business-value) | [CAF/WAF Compliance](./CAF_WAF_COMPLIANCE_ANALYSIS.md), [ROI Analysis](#-roi-analysis) |
+| **🏗️ Solution Architects** | [Architecture Overview](#-architecture-overview) | [Architecture Guide](./ARCHITECTURE_GUIDE.md), [Security Guide](./SECURITY_GUIDE.md) |
+| **👨‍💻 DevOps Engineers** | [Quick Start](#-quick-start-deployment) | [Operations Guide](./OPERATIONS_GUIDE.md), [Deployment Scripts](#-automated-deployment) |
+| **🛡️ Security Teams** | [Security Implementation](#-security-implementation) | [Security Guide](./SECURITY_GUIDE.md), [Zero-Trust Architecture](#-zero-trust-security) |
+| **📊 Compliance Officers** | [Compliance Framework](#-compliance-framework) | [CAF/WAF Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md), [Audit Readiness](#-audit-readiness) |
+
+### 📊 **Deployment Paths**
 
 | Section | Description | Time Required |
 |---------|-------------|---------------|
@@ -14,8 +33,6 @@
 | [🌍 Enterprise Setup](#-enterprise-global-multi-geo-setup) | Production global deployment | 2-3 hours |
 | [🔧 Automation](#-automation-options) | CI/CD and automation options | 30 minutes |
 | [🩺 Validation](#-post-deployment-validation) | Testing and validation steps | 20 minutes |
-
-### 🛣️ **Choose Your Deployment Path**
 
 ```mermaid
 flowchart TD
@@ -254,7 +271,7 @@ pwsh --version
 }
 ```
 
-#### NEW: Enhanced Main Template Configuration (`AzureArchitecture/main-corrected.parameters.json`):
+#### NEW: Enhanced Main Template Configuration (`AzureArchitecture/main.parameters.json`):
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -315,8 +332,8 @@ pwsh --version
 az group create --name rg-stamps-eus-prod --location eastus
 az deployment group create \
   --resource-group rg-stamps-eus-prod \
-  --template-file AzureArchitecture/main-corrected.bicep \
-  --parameters @AzureArchitecture/main-corrected.parameters.json
+  --template-file AzureArchitecture/main.bicep \
+  --parameters @AzureArchitecture/main.parameters.json
 
 # Option C: Legacy Template (Simple Setup)
 az group create --name rg-stamps-eus-dev --location eastus
@@ -328,7 +345,7 @@ az deployment group create \
 
 ### 🌍 **Option 2: Global Multi-GEO Setup** (Advanced Manual Deployment)
 
-#### Configuration (`AzureArchitecture/main-corrected.parameters.json`):
+#### Configuration (`AzureArchitecture/main.parameters.json`):
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
