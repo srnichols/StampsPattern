@@ -1,5 +1,9 @@
-# Bicep build artifacts
+# Bicep build artifacts - exclude generated ARM templates but keep parameter files
 *.json
+!*.parameters.json
+!*.parameters.json.example
+!azure-region-mapping.json
+!traffic-routing.parameters.json
 
 # User-specific files
 *.docx
@@ -44,3 +48,6 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+
+# Deprecated files
+*.deprecated

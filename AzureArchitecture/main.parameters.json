@@ -1,0 +1,257 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dnsZoneName": {
+      "value": "sdpsaas-dns-zone.com"
+    },
+    "trafficManagerName": {
+      "value": "sdpsaas-tm-demo"
+    },
+    "frontDoorName": {
+      "value": "sdpsaas-fd-demo"
+    },
+    "globalLogAnalyticsLocation": {
+      "value": "eastus"
+    },
+    "globalLogAnalyticsWorkspaceName": {
+      "value": "global-la-workspace"
+    },
+    "sqlAdminPassword": {
+      "value": "your-secure-sql-password"
+    },
+    "postgresAdminPassword": {
+      "value": "your-secure-postgres-password"
+    },
+    "cellCount": {
+      "value": 3
+    },
+    "functionAppNamePrefix": {
+      "value": "global-funcapp"
+    },
+    "functionStorageNamePrefix": {
+      "value": "globalfuncstorage"
+    },
+    "geodeRegions": {
+      "value": [
+        {
+          "name": "East US",
+          "appGatewayName": "myDemoAppGateway-eastus",
+          "subnetId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/virtualNetworks/my-vnet/subnets/my-subnet-eastus",
+          "publicIpId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/publicIPAddresses/myPublicIp-eastus",
+          "sslCertSecretId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.KeyVault/vaults/myKeyVault/secrets/mySslCert-eastus",
+          "backendAddresses": [
+            "10.0.0.4"
+          ],
+          "containerAppName": "myDemoContainerApp-eastus",
+          "managedEnvId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.App/managedEnvironments/myDemoManagedEnv-eastus",
+          "sqlServerName": "myDemoSqlServer-eastus",
+          "sqlAdminUsername": "myDemoSqlAdminUser",
+          "sqlDbName": "myDemoSqlDb-eastus",
+          "storageAccountName": "mydemostorageaccounteastus",
+          "cosmosDbStampName": "myDemoCosmosDbStamp-eastus",
+          "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-eastus",
+          "blobContainerName": "mydemocontainer-eastus",
+          "apimPublisherEmail": "admin-eastus@sdpsaas.com",
+          "apimPublisherName": "SdpSaaS East US",
+          "keyVaultName": "myKeyVault-eastus",
+          "tags": {
+            "environment": "demo",
+            "department": "IT"
+          }
+        },
+        {
+          "name": "West US 3",
+          "appGatewayName": "myDemoAppGateway-westus3",
+          "subnetId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/virtualNetworks/my-vnet/subnets/my-subnet-westus3",
+          "publicIpId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/publicIPAddresses/myPublicIp-westus3",
+          "sslCertSecretId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.KeyVault/vaults/myKeyVault/secrets/mySslCert-westus3",
+          "backendAddresses": [
+            "10.0.0.5"
+          ],
+          "containerAppName": "myDemoContainerApp-westus3",
+          "managedEnvId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.App/managedEnvironments/myDemoManagedEnv-westus3",
+          "sqlServerName": "myDemoSqlServer-westus3",
+          "sqlAdminUsername": "myDemoSqlAdminUser",
+          "sqlDbName": "myDemoSqlDb-westus3",
+          "storageAccountName": "mydemostorageaccountwestus3",
+          "cosmosDbStampName": "myDemoCosmosDbStamp-westus3",
+          "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-westus3",
+          "blobContainerName": "mydemocontainer-westus3",
+          "apimPublisherEmail": "admin-westus3@sdpsaas.com",
+          "apimPublisherName": "SdpSaaS West US 3",
+          "keyVaultName": "myKeyVault-westus3",
+          "tags": {
+            "environment": "demo",
+            "department": "IT"
+          }
+        },
+        {
+          "name": "North Europe",
+          "appGatewayName": "myDemoAppGateway-northeurope",
+          "subnetId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/virtualNetworks/my-vnet/subnets/my-subnet-northeurope",
+          "publicIpId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/publicIPAddresses/myPublicIp-northeurope",
+          "sslCertSecretId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.KeyVault/vaults/myKeyVault/secrets/mySslCert-northeurope",
+          "backendAddresses": [
+            "10.0.0.6"
+          ],
+          "containerAppName": "myDemoContainerApp-northeurope",
+          "managedEnvId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.App/managedEnvironments/myDemoManagedEnv-northeurope",
+          "sqlServerName": "myDemoSqlServer-northeurope",
+          "sqlAdminUsername": "myDemoSqlAdminUser",
+          "sqlDbName": "myDemoSqlDb-northeurope",
+          "storageAccountName": "mydemostorageaccountnortheurope",
+          "cosmosDbStampName": "myDemoCosmosDbStamp-northeurope",
+          "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-northeurope",
+          "blobContainerName": "mydemocontainer-northeurope",
+          "apimPublisherEmail": "admin-northeurope@sdpsaas.com",
+          "apimPublisherName": "SdpSaaS North Europe",
+          "keyVaultName": "myKeyVault-northeurope",
+          "tags": {
+            "environment": "demo",
+            "department": "IT"
+          }
+        },
+        {
+          "name": "West Europe",
+          "appGatewayName": "myDemoAppGateway-westeurope",
+          "subnetId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/virtualNetworks/my-vnet/subnets/my-subnet-westeurope",
+          "publicIpId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.Network/publicIPAddresses/myPublicIp-westeurope",
+          "sslCertSecretId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.KeyVault/vaults/myKeyVault/secrets/mySslCert-westeurope",
+          "backendAddresses": [
+            "10.0.0.7"
+          ],
+          "containerAppName": "myDemoContainerApp-westeurope",
+          "managedEnvId": "/subscriptions/my-subscription-id/resourceGroups/my-resource-group/providers/Microsoft.App/managedEnvironments/myDemoManagedEnv-westeurope",
+          "sqlServerName": "myDemoSqlServer-westeurope",
+          "sqlAdminUsername": "myDemoSqlAdminUser",
+          "sqlDbName": "myDemoSqlDb-westeurope",
+          "storageAccountName": "mydemostorageaccountwesteurope",
+          "cosmosDbStampName": "myDemoCosmosDbStamp-westeurope",
+          "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-westeurope",
+          "blobContainerName": "mydemocontainer-westeurope",
+          "apimPublisherEmail": "admin-westeurope@sdpsaas.com",
+          "apimPublisherName": "SdpSaaS West Europe",
+          "keyVaultName": "myKeyVault-westeurope",
+          "tags": {
+            "environment": "demo",
+            "department": "IT"
+          }
+        }
+      ]
+    },
+    "geos": {
+      "value": [
+        {
+          "geoName": "UnitedStates",
+          "regions": [
+            {
+              "regionName": "eastus",
+              "containerAppName": "myDemoContainerApp-eastus",
+              "managedEnvId": "/subscriptions/.../managedEnvironments/myDemoManagedEnv-eastus",
+              "sqlServerName": "myDemoSqlServer-eastus",
+              "sqlAdminUsername": "myDemoSqlAdminUser",
+              "sqlDbName": "myDemoSqlDb-eastus",
+              "storageAccountName": "mydemostorageaccounteastus",
+              "cosmosDbStampName": "myDemoCosmosDbStamp-eastus",
+              "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-eastus",
+              "blobContainerName": "mydemocontainer-eastus",
+              "keyVaultName": "myKeyVault-eastus",
+              "cells": [
+                "cell1",
+                "cell2"
+              ]
+            },
+            {
+              "regionName": "westus3",
+              "containerAppName": "myDemoContainerApp-westus3",
+              "managedEnvId": "/subscriptions/.../managedEnvironments/myDemoManagedEnv-westus3",
+              "sqlServerName": "myDemoSqlServer-westus3",
+              "sqlAdminUsername": "myDemoSqlAdminUser",
+              "sqlDbName": "myDemoSqlDb-westus3",
+              "storageAccountName": "mydemostorageaccountwestus3",
+              "cosmosDbStampName": "myDemoCosmosDbStamp-westus3",
+              "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-westus3",
+              "blobContainerName": "mydemocontainer-westus3",
+              "keyVaultName": "myKeyVault-westus3",
+              "cells": [
+                "cell1",
+                "cell2"
+              ]
+            }
+          ]
+        },
+        {
+          "geoName": "Europe",
+          "regions": [
+            {
+              "regionName": "northeurope",
+              "containerAppName": "myDemoContainerApp-northeurope",
+              "managedEnvId": "/subscriptions/.../managedEnvironments/myDemoManagedEnv-northeurope",
+              "sqlServerName": "myDemoSqlServer-northeurope",
+              "sqlAdminUsername": "myDemoSqlAdminUser",
+              "sqlDbName": "myDemoSqlDb-northeurope",
+              "storageAccountName": "mydemostorageaccountnortheurope",
+              "cosmosDbStampName": "myDemoCosmosDbStamp-northeurope",
+              "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-northeurope",
+              "blobContainerName": "mydemocontainer-northeurope",
+              "keyVaultName": "myKeyVault-northeurope",
+              "cells": [
+                "cell1",
+                "cell2"
+              ]
+            },
+            {
+              "regionName": "westeurope",
+              "containerAppName": "myDemoContainerApp-westeurope",
+              "managedEnvId": "/subscriptions/.../managedEnvironments/myDemoManagedEnv-westeurope",
+              "sqlServerName": "myDemoSqlServer-westeurope",
+              "sqlAdminUsername": "myDemoSqlAdminUser",
+              "sqlDbName": "myDemoSqlDb-westeurope",
+              "storageAccountName": "mydemostorageaccountwesteurope",
+              "cosmosDbStampName": "myDemoCosmosDbStamp-westeurope",
+              "logAnalyticsWorkspaceName": "myDemoLogAnalyticsWorkspace-westeurope",
+              "blobContainerName": "mydemocontainer-westeurope",
+              "keyVaultName": "myKeyVault-westeurope",
+              "cells": [
+                "cell1",
+                "cell2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "apimName": {
+      "value": "myDemoAPIM"
+    },
+    "apimPublisherEmail": {
+      "value": "admin@sdpsaas.com"
+    },
+    "apimPublisherName": {
+      "value": "SdpSaaS Publisher"
+    },
+    "globalControlCosmosDbName": {
+      "value": "global-cosmosdb"
+    },
+    "primaryLocation": {
+      "value": "eastus"
+    },
+    "additionalLocations": {
+      "value": [
+        {
+          "locationName": "westus3",
+          "failoverPriority": 1
+        },
+        {
+          "locationName": "northeurope",
+          "failoverPriority": 2
+        },
+        {
+          "locationName": "westeurope",
+          "failoverPriority": 3
+        }
+      ]
+    }
+  }
+}

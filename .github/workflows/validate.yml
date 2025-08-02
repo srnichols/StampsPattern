@@ -1,0 +1,91 @@
+name: Validate Bicep Templates
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'AzureArchitecture/**/*.bicep'
+      - 'AzureArchitecture/**/*.json'
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'AzureArchitecture/**/*.bicep'
+      - 'AzureArchitecture/**/*.json'
+
+jobs:
+  bicep-validation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Bicep
+      run: |
+        # Install Bicep CLI
+        curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
+        chmod +x ./bicep
+        sudo mv ./bicep /usr/local/bin/bicep
+        bicep --version
+    
+    - name: Validate Main Template
+      run: |
+        cd AzureArchitecture
+        bicep build main.bicep --outfile main.json
+        echo "✅ main.bicep compiled successfully"
+    
+    - name: Validate Individual Modules
+      run: |
+        cd AzureArchitecture
+        for file in *.bicep; do
+          if [ "$file" != "main.bicep" ]; then
+            echo "Validating $file..."
+            bicep build "$file" --outfile "${file%.bicep}.json"
+            echo "✅ $file compiled successfully"
+          fi
+        done
+    
+    - name: Check for Best Practices
+      run: |
+        cd AzureArchitecture
+        echo "🔍 Checking Bicep best practices..."
+        
+        # Check for hardcoded locations
+        if grep -r "location.*:" *.bicep | grep -v "param location" | grep -v "location: location" | grep -v "location: region"; then
+          echo "⚠️  Found hardcoded locations. Consider using parameters."
+        fi
+        
+        # Check for hardcoded resource names
+        if grep -r "name.*:" *.bicep | grep -E "'[a-zA-Z0-9-]+'" | head -5; then
+          echo "⚠️  Found potentially hardcoded resource names. Consider using parameters or variables."
+        fi
+        
+        # Check for secure parameters
+        if grep -r "@secure" *.bicep; then
+          echo "✅ Found secure parameters - good practice for sensitive data"
+        fi
+        
+        echo "✅ Best practices check completed"
+
+  schema-validation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate Parameter Files
+      run: |
+        cd AzureArchitecture
+        for file in *.parameters.json; do
+          if [ -f "$file" ]; then
+            echo "Validating parameter file: $file"
+            python3 -m json.tool "$file" > /dev/null
+            echo "✅ $file is valid JSON"
+          fi
+        done
+        
+        # Validate example parameter files
+        for file in *.parameters.json.example; do
+          if [ -f "$file" ]; then
+            echo "Validating example parameter file: $file"
+            python3 -m json.tool "$file" > /dev/null
+            echo "✅ $file is valid JSON"
+          fi
+        done

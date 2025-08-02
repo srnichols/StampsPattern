@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": {
+      "value": "dev"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "resourcePrefix": {
+      "value": "stamps"
+    },
+    "publisherEmail": {
+      "value": "admin@contoso.com"
+    },
+    "publisherName": {
+      "value": "Contoso"
+    },
+    "sqlAdminUsername": {
+      "value": "sqladmin"
+    },
+    "sqlAdminPassword": {
+      "value": "ChangeThisPassword123!"
+    },
+    "baseDomain": {
+      "value": "contoso.com"
+    }
+  }
+}
