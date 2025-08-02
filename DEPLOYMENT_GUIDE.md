@@ -234,7 +234,6 @@ az deployment group show \
 param(
     [string]$ResourceGroupName = "rg-stamps-eus-production",
     [string]$Location = "eastus",
-    [string]$Location = "eastus",
     [string]$TemplateFile = "traffic-routing.bicep",
     [string]$ParametersFile = "traffic-routing.parameters.json"
 )
