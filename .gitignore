@@ -1,0 +1,46 @@
+# Bicep build artifacts
+*.json
+
+# User-specific files
+*.docx
+*.zip
+Notes.*
+
+# IDE/Editor settings
+.vscode/
+.vs/
+.idea/
+
+# Build artifacts
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+
+# Package manager artifacts
+node_modules/
+package-lock.json
+
+# Azure CLI artifacts
+.azure/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup

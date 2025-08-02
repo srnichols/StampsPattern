@@ -1,0 +1,234 @@
+// --------------------------------------------------------------------------------------
+// Module: regionalLayer
+// Purpose: Provisions region-specific infrastructure such as Application Gateway, networking, and automation.
+//          Configures backend addresses, public IP, SSL certificate, tags, and Automation Account.
+//          Outputs the public IP address and Automation Account resource ID for integration.
+// --------------------------------------------------------------------------------------
+
+@description('The Azure region for this regional layer')
+param location string
+
+@description('The name of the Application Gateway')
+param appGatewayName string
+
+@description('The subnet resource ID for the Application Gateway')
+param subnetId string
+
+@description('The public IP resource ID for the Application Gateway')
+param publicIpId string
+
+@secure()
+@description('The Key Vault secret ID for the SSL certificate')
+param sslCertSecretId string
+
+@description('The number of CELLs (stamps) in this region')
+param cellCount int
+
+@description('The FQDNs for each CELL backend in this region')
+param cellBackendFqdns array
+
+@description('Tags to apply to all resources')
+param tags object = {}
+
+@description('Health probe path for Application Gateway')
+param healthProbePath string = '/health'
+
+@description('The name of the Automation Account for this region')
+param automationAccountName string = '${appGatewayName}-automation'
+
+@description('The SKU for the Automation Account')
+param automationAccountSkuName string = 'Free'
+
+// Generate backend pools, http settings, and probes for each CELL
+var backendPools = [
+  for i in range(0, cellCount): {
+    name: 'cell${i + 1}-backend'
+    properties: {
+      backendAddresses: [
+        {
+          fqdn: cellBackendFqdns[i]
+        }
+      ]
+    }
+  }
+]
+
+var backendHttpSettings = [
+  for i in range(0, cellCount): {
+    name: 'cell${i + 1}-http-settings'
+    properties: {
+      port: 443
+      protocol: 'Https'
+      probe: {
+        id: resourceId('Microsoft.Network/applicationGateways/probes', appGatewayName, 'cell${i + 1}-probe')
+      }
+      pickHostNameFromBackendAddress: true
+      requestTimeout: 30
+    }
+  }
+]
+
+var probes = [
+  for i in range(0, cellCount): {
+    name: 'cell${i + 1}-probe'
+    properties: {
+      protocol: 'Https'
+      host: cellBackendFqdns[i]
+      path: healthProbePath
+      interval: 30
+      timeout: 30
+      unhealthyThreshold: 3
+      match: {
+        statusCodes: ['200-399']
+      }
+    }
+  }
+]
+
+// Application Gateway resource
+resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
+  name: appGatewayName
+  location: location
+  sku: {
+    name: 'WAF_v2'
+    tier: 'WAF_v2'
+    capacity: 2
+  }
+  zones: [1, 2] // Deploy Application Gateway across at least two zones
+  properties: {
+    gatewayIPConfigurations: [
+      {
+        name: 'appGatewayIpConfig'
+        properties: {
+          subnet: {
+            id: subnetId
+          }
+        }
+      }
+    ]
+    frontendIPConfigurations: [
+      {
+        name: 'appGatewayFrontendIp'
+        properties: {
+          publicIPAddress: {
+            id: publicIpId
+          }
+        }
+      }
+    ]
+    frontendPorts: [
+      {
+        name: 'httpsPort'
+        properties: {
+          port: 443
+        }
+      }
+    ]
+    sslCertificates: [
+      {
+        name: 'gatewayCert'
+        properties: {
+          keyVaultSecretId: sslCertSecretId
+        }
+      }
+    ]
+    httpListeners: [
+      {
+        name: 'httpsListener'
+        properties: {
+          frontendIPConfiguration: {
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGatewayFrontendIp')
+          }
+          frontendPort: {
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, 'httpsPort')
+          }
+          protocol: 'Https'
+          sslCertificate: {
+            id: resourceId('Microsoft.Network/applicationGateways/sslCertificates', appGatewayName, 'gatewayCert')
+          }
+        }
+      }
+    ]
+    backendAddressPools: backendPools
+    backendHttpSettingsCollection: backendHttpSettings
+    probes: probes
+    urlPathMaps: [
+      {
+        name: 'cellPathMap'
+        properties: {
+          defaultBackendAddressPool: {
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGatewayName, backendPools[0].name)
+          }
+          defaultBackendHttpSettings: {
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGatewayName, backendHttpSettings[0].name)
+          }
+          pathRules: [
+            for i in range(0, cellCount): {
+              name: 'cell${i + 1}-path'
+              properties: {
+                paths: ['/cell${i + 1}/*']
+                backendAddressPool: {
+                  id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGatewayName, backendPools[i].name)
+                }
+                backendHttpSettings: {
+                  id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGatewayName, backendHttpSettings[i].name)
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+    requestRoutingRules: [
+      {
+        name: 'cellRoutingRule'
+        properties: {
+          ruleType: 'PathBasedRouting'
+          httpListener: {
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, 'httpsListener')
+          }
+          urlPathMap: {
+            id: resourceId('Microsoft.Network/applicationGateways/urlPathMaps', appGatewayName, 'cellPathMap')
+          }
+        }
+      }
+    ]
+    webApplicationFirewallConfiguration: {
+      enabled: true
+      firewallMode: 'Prevention'
+      ruleSetType: 'OWASP'
+      ruleSetVersion: '3.2'
+    }
+  }
+  tags: tags
+}
+
+// Azure Automation Account for regional automation and runbooks
+resource automationAccount 'Microsoft.Automation/automationAccounts@2023-05-15' = {
+  name: automationAccountName
+  location: location
+  sku: {
+    name: automationAccountSkuName
+  }
+  tags: tags
+}
+
+// Reference the existing Public IP by name and scope
+resource publicIp 'Microsoft.Network/publicIPAddresses@2022-05-01' existing = {
+  name: last(split(publicIpId, '/'))
+  scope: resourceGroup()
+}
+
+// Output the regional public IP address for use in Traffic Manager endpoints
+output regionalEndpointIpAddress string = publicIp.properties.ipAddress
+
+// Output the Automation Account resource ID for integration or runbook assignment
+output automationAccountId string = automationAccount.id
+
+// Comments:
+// - Each CELL gets its own backend pool, HTTP settings, and health probe.
+// - Path-based routing directs /cell1/* to CELL 1, /cell2/* to CELL 2, etc.
+// - WAF is enabled for security.
+// - SSL termination is handled at the gateway using a Key Vault certificate.
+// - Regional Automation Account enables operational runbooks and automation.
+// - All major parameters are exposed for flexibility.
