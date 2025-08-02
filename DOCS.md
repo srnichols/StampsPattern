@@ -1,6 +1,6 @@
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 
-**🗺️ Complete Navigation Guide for Enterprise Architecture Documentation**
+**🗺️| [📊 **CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | Enterprise compliance showcase (94/100) | Decision Makers, Compliance Officers | ⭐⭐⭐ | 25 min |Complete Navigation Guide for Enterprise Architecture Documentation**
 
 > **Your Guide**: This comprehensive sitemap helps you navigate all documentation for the Azure Stamps Pattern enterprise architecture with **world-class compliance** and **industry-leading practices**. Choose your path based on your role and requirements.
 
@@ -269,7 +269,7 @@ If you find gaps or areas for improvement in this documentation:
 
 ---
 
-**🎯 Start Here**: New to the project? Begin with [README.md](./README.md)
+**🎯 Start Here**: Begin with [README.md](./README.md)
 
 **⚡ Quick Deploy**: Ready to deploy? Jump to [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 

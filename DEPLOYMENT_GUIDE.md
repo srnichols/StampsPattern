@@ -1,6 +1,6 @@
-# 🚀 Azure Stamps Pattern - Deployment Guide with Intel## 🎯 Deployment Overview
+# 🚀 Azure Stamps Pattern - Deployment Guide with Intel## 🎯 Depl## 🚀 Deployment Optionsyment Overview
 
-This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The enhanced implementation supports multiple tenancy models within the same architecture, enabling you to optimize costs for different customer segments while maintaining enterprise-grade security and compliance. Whether you're deploying for small businesses, mid-market clients, or enterprise customers, this guide helps you choose the right configuration and deployment approach.
+This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The implementation supports multiple tenancy models within the same architecture, enabling you to optimize costs for different customer segments while maintaining enterprise-grade security and compliance. Whether you're deploying for small businesses, mid-market clients, or enterprise customers, this guide helps you choose the right configuration and deployment approach.
 
 ## ⚡ Deployment Options
 
@@ -15,7 +15,7 @@ For deployments using custom domains, organization names, or multi-geography req
 
 ### ✅ Required Toolsthe Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
 
-> **🆕 Recent Updates**: The templates are now **fully parameterized** for organization reusability! All hardcoded domains (`contoso.com`), geography names (`northamerica`), and organizational metadata are now configurable parameters. Deploy for any organization without code changes.
+> **�️ Template Flexibility**: The templates are **fully parameterized** for organization reusability! All domains, geography names, and organizational metadata are configurable parameters. Deploy for any organization without code changes.
 
 > **🏆 Enterprise Compliance**: This deployment achieves **94/100 CAF/WAF compliance** with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.
 
@@ -34,7 +34,7 @@ For deployments using custom domains, organization names, or multi-geography req
 | Section | Description | Time Required |
 |---------|-------------|---------------|
 | [📋 Prerequisites](#-prerequisites) | Required tools and access | 10 minutes |
-| [🧠 Enhanced Deployment](#-enhanced-deployment-with-intelligent-tenancy-new) | **NEW** - Intelligent tenancy deployment | 45-75 minutes |
+| [🧠 Intelligent Deployment](#-intelligent-deployment-with-tenancy-options) | Intelligent tenancy deployment | 45-75 minutes |
 | [🌟 Legacy Simple Setup](#-legacy-simple-two-region-setup) | Traditional development/testing deployment | 45 minutes |
 | [🌍 Enterprise Setup](#-enterprise-global-multi-geo-setup) | Production global deployment | 2-3 hours |
 | [🔧 Automation](#-automation-options) | CI/CD and automation options | 30 minutes |
@@ -43,9 +43,9 @@ For deployments using custom domains, organization names, or multi-geography req
 ```mermaid
 flowchart TD
     A[Choose Deployment] --> B{Tenancy Model?}
-    B -->|Mixed Model<br/>Flexible| C[Enhanced Mixed<br/>Shared + Dedicated CELLs<br/>⏱️ 45 min]
-    B -->|Cost-Optimized<br/>SMB Focus| D[Enhanced Shared-Only<br/>Shared CELLs Only<br/>⏱️ 30 min]
-    B -->|Enterprise<br/>Compliance| E[Enhanced Dedicated-Only<br/>Dedicated CELLs Only<br/>⏱️ 60 min]
+    B -->|Mixed Model<br/>Flexible| C[Mixed Tenancy<br/>Shared + Dedicated CELLs<br/>⏱️ 45 min]
+    B -->|Cost-Optimized<br/>SMB Focus| D[Shared Tenancy<br/>Shared CELLs Only<br/>⏱️ 30 min]
+    B -->|Enterprise<br/>Compliance| E[Dedicated Tenancy<br/>Dedicated CELLs Only<br/>⏱️ 60 min]
     B -->|Legacy<br/>Testing| F[Simple Setup<br/>Traditional Approach<br/>⏱️ 45 min]
     C --> G[deploy-stamps.ps1<br/>-TenancyModel mixed]
     D --> H[deploy-stamps.ps1<br/>-TenancyModel shared]
@@ -61,7 +61,7 @@ flowchart TD
 
 ## 🎯 Deployment Overview
 
-This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The enhanced implementation supports multiple tenancy models within the same architecture.
+This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The implementation supports multiple tenancy models within the same architecture.
 
 ## � Enhanced Deployment Options
 
@@ -150,9 +150,9 @@ graph TD
 # Best for: Multi-tier platforms with diverse tenant needs and high availability requirements
 ```
 
-### 🏢 **Organization Parameters** (NEW)
+### 🏢 **Organization Parameters**
 
-The enhanced deployment script now supports **organization-specific parameters** for true multi-tenant reusability:
+The deployment script supports **organization-specific parameters** for true multi-tenant reusability:
 
 #### **Core Organization Parameters**
 | Parameter | Description | Default | Example Values |
@@ -254,7 +254,7 @@ pwsh --version
 
 ## 🔧 Manual/Legacy Deployment Options
 
-> **Note**: For new deployments, we recommend using the Enhanced PowerShell deployment options above for intelligent tenancy features.
+> **Note**: For deployments, we recommend using the PowerShell deployment options above for intelligent tenancy features.
 
 ### 🌟 **Option 1: Simple Two-Region Setup** (Manual Bicep Deployment)
 
@@ -277,7 +277,7 @@ pwsh --version
 }
 ```
 
-#### NEW: Main Template Configuration (`AzureArchitecture/main.parameters.json`):
+#### Main Template Configuration (`AzureArchitecture/main.parameters.json`):
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -375,7 +375,7 @@ az deployment group create \
 }
 ```
 
-> **💡 Note**: The new parameterized approach automatically constructs region-specific domains:
+> **💡 Note**: The parameterized approach automatically constructs region-specific domains:
 > - `eastus.stamps.contoso.com` (computed from parameters)
 > - `westus2.stamps.contoso.com` (computed from parameters)
 > - DNS zone: `stamps.contoso.com` (computed from `baseDnsZoneName.organizationDomain`)
