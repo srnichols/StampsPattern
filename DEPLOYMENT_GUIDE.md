@@ -1,19 +1,37 @@
-# 🚀 Azure Stamps Pattern - Deployment Guide with Intel## 🎯 Depl## 🚀 Deployment Optionsyment Overview
+# 🚀 Azure Stamps Pattern - Deployment Guide
+
+## 🎯 Deployment Overview
 
 This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The implementation supports multiple tenancy models within the same architecture, enabling you to optimize costs for different customer segments while maintaining enterprise-grade security and compliance. Whether you're deploying for small businesses, mid-market clients, or enterprise customers, this guide helps you choose the right configuration and deployment approach.
 
 ## ⚡ Deployment Options
 
-The Azure Stamps Pattern offers flexible deployment options designed to meet different organizational needs, from rapid prototyping to enterprise-scale production deployments. Each option provides different levels of automation, customization, and operational complexity. Choose your deployment path based on your tenancy requirements, operational maturity, and business goals.# ⚡ Deployment Optionst Tenancy
+The Azure Stamps Pattern offers flexible deployment options designed to meet different organizational needs, from rapid prototyping to enterprise-scale production deployments. Each option provides different levels of automation, customization, and operational complexity. Choose your deployment path based on your tenancy requirements, operational maturity, and business goals.
 
 **Enterprise Multi-Tenant Architecture with 94/100 CAF/WAF Compliance**
 
-> **🎯 Purpose**: Step-by-step guide for deployi## 📋 Prerequisites
+## 📋 Prerequisites
 
 ### 🔧 **Template Customization**
 For deployments using custom domains, organization names, or multi-geography requirements, first review the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
 
-### ✅ Required Toolsthe Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
+### ✅ **Required Tools**
+
+```bash
+# Azure CLI (latest version)
+az --version
+# Should be >= 2.50.0
+
+# Bicep CLI 
+bicep --version
+# Should be >= 0.20.0
+
+# PowerShell 7+ (required for deployment)
+pwsh --version
+# Should be >= 7.3.0
+```
+
+> **🎯 Purpose**: Step-by-step guide for deploying the Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
 
 > **�️ Template Flexibility**: The templates are **fully parameterized** for organization reusability! All domains, geography names, and organizational metadata are configurable parameters. Deploy for any organization without code changes.
 
