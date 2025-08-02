@@ -22,9 +22,9 @@ flowchart TD
     B -->|Cost-Optimized<br/>SMB Focus| D[Enhanced Shared-Only<br/>Shared CELLs Only<br/>⏱️ 30 min]
     B -->|Enterprise<br/>Compliance| E[Enhanced Dedicated-Only<br/>Dedicated CELLs Only<br/>⏱️ 60 min]
     B -->|Legacy<br/>Testing| F[Simple Setup<br/>Traditional Approach<br/>⏱️ 45 min]
-    C --> G[deploy-stamps-enhanced.ps1<br/>-TenancyModel mixed]
-    D --> H[deploy-stamps-enhanced.ps1<br/>-TenancyModel shared]
-    E --> I[deploy-stamps-enhanced.ps1<br/>-TenancyModel dedicated]
+    C --> G[deploy-stamps.ps1<br/>-TenancyModel mixed]
+    D --> H[deploy-stamps.ps1<br/>-TenancyModel shared]
+    E --> I[deploy-stamps.ps1<br/>-TenancyModel dedicated]
     F --> J[deploy-stamps.sh<br/>Legacy Script]
     G --> K[Production Ready<br/>All Tenant Types]
     H --> L[Cost-Optimized<br/>SMB Platform]
@@ -50,9 +50,9 @@ graph TD
     B -->|Enterprise Security| D[Dedicated Tenancy]
     B -->|Mixed Platform| E[Hybrid Tenancy]
     
-    C --> F[./deploy-stamps-enhanced.ps1 -TenancyModel shared]
-    D --> G[./deploy-stamps-enhanced.ps1 -TenancyModel dedicated]
-    E --> H[./deploy-stamps-enhanced.ps1 -TenancyModel mixed]
+    C --> F[./deploy-stamps.ps1 -TenancyModel shared]
+    D --> G[./deploy-stamps.ps1 -TenancyModel dedicated]
+    E --> H[./deploy-stamps.ps1 -TenancyModel mixed]
     
     F --> I[Shared CELLs<br/>$8-16/tenant/month]
     G --> J[Dedicated CELLs<br/>$3200+/tenant/month]
@@ -62,7 +62,7 @@ graph TD
 #### **Shared Tenancy Deployment**
 ```powershell
 # Cost-optimized for SMBs (multiple tenants per CELL)
-./deploy-stamps-enhanced.ps1 -TenancyModel shared -Location eastus -Environment prod
+./deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod
 
 # Expected costs: $8-16 per tenant per month
 # Best for: Development, testing, cost-sensitive workloads
@@ -71,7 +71,7 @@ graph TD
 #### **Dedicated Tenancy Deployment**
 ```powershell
 # Enterprise-grade isolation (one tenant per CELL)
-./deploy-stamps-enhanced.ps1 -TenancyModel dedicated -Location eastus -Environment prod
+./deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod
 
 # Expected costs: $3200+ per tenant per month  
 # Best for: Compliance, security-sensitive, high-performance workloads
@@ -80,7 +80,7 @@ graph TD
 #### **Mixed Tenancy Deployment**
 ```powershell
 # Intelligent assignment based on tenant requirements
-./deploy-stamps-enhanced.ps1 -TenancyModel mixed -Location eastus -Environment prod
+./deploy-stamps.ps1 -TenancyModel mixed -Location eastus -Environment prod
 
 # Dynamic cost optimization with automatic tenant placement
 # Best for: Multi-tier platforms with diverse tenant needs
@@ -598,13 +598,13 @@ az monitor metrics alert create \
 ### ✅ **Enhanced Tenancy Features Validation**
 ```powershell
 # Test intelligent tenant assignment
-./test-enhanced-features.ps1 -TestType TenantAssignment
+./test-tenancy.ps1 -TestType TenantAssignment
 
 # Validate capacity monitoring
-./test-enhanced-features.ps1 -TestType CapacityMonitoring  
+./test-tenancy.ps1 -TestType CapacityMonitoring  
 
 # Test tenant migration workflows
-./test-enhanced-features.ps1 -TestType TenantMigration
+./test-tenancy.ps1 -TestType TenantMigration
 ```
 
 ### 🔍 **Health Check Commands**

@@ -187,7 +187,7 @@ git clone <repository-url>
 cd StampsPattern
 
 # 2️⃣ Deploy mixed tenancy model
-.\deploy-stamps-enhanced.ps1 `
+.\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-prod" `
   -Location "eastus" `
   -TenancyModel "mixed" `
@@ -203,7 +203,7 @@ Optimize for cost with shared CELLs for small-medium tenants.
 
 ```powershell
 # Deploy shared tenancy model
-.\deploy-stamps-enhanced.ps1 `
+.\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-shared" `
   -Location "eastus" `
   -TenancyModel "shared" `
@@ -219,7 +219,7 @@ Maximum isolation for enterprise and compliance-focused clients.
 
 ```powershell
 # Deploy dedicated tenancy model
-.\deploy-stamps-enhanced.ps1 `
+.\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-enterprise" `
   -Location "eastus" `
   -TenancyModel "dedicated" `
@@ -235,7 +235,7 @@ Pre-configured with compliance features for regulated industries.
 
 ```powershell
 # Deploy with compliance features
-.\deploy-stamps-enhanced.ps1 `
+.\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-healthcare" `
   -Location "eastus" `
   -TenancyModel "mixed" `
@@ -252,7 +252,7 @@ Pre-configured with compliance features for regulated industries.
 | Method | Best For | Command |
 |--------|----------|---------|
 | 🐧 **Bash Script** | Linux/macOS developers | `./deploy-stamps.sh` |
-| 🪟 **PowerShell Enhanced** | **NEW** - Intelligent tenancy | `.\deploy-stamps-enhanced.ps1` |
+| 🪟 **PowerShell** | **NEW** - Intelligent tenancy | `.\deploy-stamps.ps1` |
 | 🌐 **Azure Portal** | GUI-based deployment | [![Deploy](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2Fmain%2Ftraffic-routing.json) |
 | 🤖 **CI/CD Pipeline** | Automated deployments | See [Deployment Guide](./DEPLOYMENT_GUIDE.md#automation) |
 
@@ -261,8 +261,8 @@ Pre-configured with compliance features for regulated industries.
 After deployment, test the intelligent tenancy features:
 
 ```powershell
-# Test the enhanced tenancy system
-.\test-enhanced-tenancy.ps1 -FunctionAppUrl "https://fa-stamps-eastus.azurewebsites.net"
+# Test the tenancy system
+.\test-tenancy.ps1 -FunctionAppUrl "https://fa-stamps-eastus.azurewebsites.net"
 ```
 
 **What the test validates:**

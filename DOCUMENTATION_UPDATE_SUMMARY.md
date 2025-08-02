@@ -86,4 +86,4 @@ Your Azure Stamps Pattern documentation is now fully updated and ready for produ
 
 ---
 
-**Next Steps:** Your documentation is complete and ready for deployment. Use the enhanced PowerShell deployment script (`deploy-stamps-enhanced.ps1`) for new implementations.
+**Next Steps:** Your documentation is complete and ready for deployment. Use the PowerShell deployment script (`deploy-stamps.ps1`) for new implementations.
