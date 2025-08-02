@@ -4,6 +4,8 @@
 
 This guide defines the standardized naming conventions for the Azure Stamps Pattern implementation to ensure consistency, clarity, and Azure best practices compliance.
 
+> **📝 Recent Updates**: This guide was enhanced to address naming consistency issues, particularly ensuring resource groups include Azure region abbreviations and storage accounts stay within the 24-character limit. All deployment scripts and templates have been updated to follow these standards.
+
 ## 🌍 **Resource Group Naming**
 
 ### **Pattern**: `rg-{purpose}-{region-short}-{environment}`
