@@ -1,10 +1,6 @@
 # 🌍 Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Score)
 
-The **Azure Sta| **5** | 📋 [**PARAMETERIZATION_GUI| 📋 **Parameterization Guide** | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |
-| 🚀 **Deployment Guide** | Step-by-step deployment with governance automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |.md**](./docs/PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
-| **6** | 🚀 [**DEPLOYMENT_GUIDE.md**](./docs/DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
-| **7** | 🛡️ [**SECURITY_GUIDE.md**](./docs/SECURITY_GUIDE.md) | Security baseline and zero-trust architecture | 30 minutes |
-| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./docs/OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |attern** represents a **gold-standard enterprise architecture** achieving **94/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
+The **Azure Stamps Pattern** represents a **gold-standard enterprise architecture** achieving **94/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
 
 **🏆 Enterprise Excellence:** This implementation showcases **world-class architectural practices** with zero-trust security, AI-driven operations, automated governance, and intelligent cost optimization. The pattern implements a hierarchical **GEO → Region → CELL** structure supporting both **shared CELLs** (10-100 small tenants) and **dedicated CELLs** (single enterprise tenant) with **automated tenant assignment**, **Azure Policy as Code governance**, and **seamless migration capabilities**.
 
