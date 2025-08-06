@@ -1,0 +1,337 @@
+name: Azure Stamps Pattern CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  DOTNET_VERSION: '6.0.x'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'AzureArchitecture'
+
+jobs:
+  # Bicep Validation and Linting
+  bicep-validation:
+    runs-on: ubuntu-latest
+    name: 'Bicep Validation'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Azure CLI
+      uses: azure/setup-azure-cli@v1
+      
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Install Bicep CLI
+      run: az bicep install
+      
+    - name: Bicep Build and Validate
+      run: |
+        cd AzureArchitecture
+        echo "Building main.bicep..."
+        az bicep build --file main.bicep
+        
+        echo "Building deploymentStampLayer.bicep..."
+        az bicep build --file deploymentStampLayer.bicep
+        
+        echo "Building globalLayer.bicep..."
+        az bicep build --file globalLayer.bicep --ignore-warnings
+        
+        echo "Building regionalLayer.bicep..."
+        az bicep build --file regionalLayer.bicep --ignore-warnings
+        
+    - name: Bicep What-If Deployment
+      run: |
+        cd AzureArchitecture
+        az deployment group what-if \
+          --resource-group rg-stamps-dev \
+          --template-file main.bicep \
+          --parameters main.parameters.json \
+          --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD }}"
+      continue-on-error: true
+
+  # .NET Build and Test
+  dotnet-build-test:
+    runs-on: ubuntu-latest
+    name: 'Build and Test .NET Functions'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore NuGet packages
+      run: |
+        cd AzureArchitecture
+        dotnet restore AzureArchitecture.sln
+        
+    - name: Build Functions
+      run: |
+        cd AzureArchitecture
+        dotnet build AzureArchitecture.sln --configuration Release --no-restore
+        
+    - name: Run Unit Tests
+      run: |
+        cd AzureArchitecture
+        dotnet test Tests/CreateTenantFunctionTests.cs --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        
+    - name: Upload Code Coverage
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./AzureArchitecture/TestResults/*/coverage.cobertura.xml
+        flags: unittests
+        name: stamps-pattern-coverage
+
+  # Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    name: 'Security and Code Quality'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Run Bandit Security Scan
+      uses: tj-actions/bandit@v5
+      with:
+        options: "-r . -f json -o bandit-report.json"
+      continue-on-error: true
+        
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/init@v2
+      with:
+        languages: csharp
+        
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Build for CodeQL
+      run: |
+        cd AzureArchitecture
+        dotnet build AzureArchitecture.sln --configuration Release
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  # Infrastructure Deployment (Development)
+  deploy-infrastructure-dev:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [bicep-validation, dotnet-build-test, security-scan]
+    runs-on: ubuntu-latest
+    name: 'Deploy Infrastructure (Dev)'
+    environment: development
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Install Bicep CLI
+      run: az bicep install
+      
+    - name: Create Resource Group
+      run: |
+        az group create --name rg-stamps-dev --location eastus
+        
+    - name: Deploy Infrastructure
+      run: |
+        cd AzureArchitecture
+        az deployment group create \
+          --resource-group rg-stamps-dev \
+          --template-file main.bicep \
+          --parameters main.parameters.json \
+          --parameters environment=dev \
+          --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD }}"
+          
+    - name: Output Deployment Results
+      run: |
+        echo "Infrastructure deployment completed successfully"
+        az deployment group show \
+          --resource-group rg-stamps-dev \
+          --name main \
+          --query properties.outputs
+
+  # Function App Deployment (Development)
+  deploy-functions-dev:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [deploy-infrastructure-dev]
+    runs-on: ubuntu-latest
+    name: 'Deploy Functions (Dev)'
+    environment: development
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Build Function App
+      run: |
+        cd AzureArchitecture
+        dotnet publish AzureArchitecture.sln --configuration Release --output ./output
+        
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Deploy Function Apps
+      run: |
+        # Deploy to primary region (eastus)
+        az functionapp deployment source config-zip \
+          --resource-group rg-stamps-dev \
+          --name fa-stamps-eastus-dev \
+          --src AzureArchitecture/output.zip
+          
+        # Deploy to secondary region (westus2)
+        az functionapp deployment source config-zip \
+          --resource-group rg-stamps-dev \
+          --name fa-stamps-westus2-dev \
+          --src AzureArchitecture/output.zip
+
+  # Integration Tests
+  integration-tests:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [deploy-functions-dev]
+    runs-on: ubuntu-latest
+    name: 'Integration Tests'
+    environment: development
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Get Function App URLs
+      run: |
+        FUNCTION_URL=$(az functionapp show --resource-group rg-stamps-dev --name fa-stamps-eastus-dev --query defaultHostName --output tsv)
+        echo "FUNCTION_URL=https://$FUNCTION_URL" >> $GITHUB_ENV
+        
+    - name: Test Function Health
+      run: |
+        curl -f "$FUNCTION_URL/api/health" || exit 1
+        
+    - name: Test Tenant Creation
+      run: |
+        curl -X POST "$FUNCTION_URL/api/tenant" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "tenantId": "test-tenant-'$(date +%s)'",
+            "subdomain": "test-subdomain",
+            "tenantTier": "Shared",
+            "region": "eastus"
+          }' || exit 1
+
+  # Production Deployment (Manual Approval)
+  deploy-production:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [integration-tests]
+    runs-on: ubuntu-latest
+    name: 'Deploy to Production'
+    environment: production
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+        
+    - name: Deploy Production Infrastructure
+      run: |
+        cd AzureArchitecture
+        az group create --name rg-stamps-prod --location eastus
+        
+        az deployment group create \
+          --resource-group rg-stamps-prod \
+          --template-file main.bicep \
+          --parameters main.parameters.json \
+          --parameters environment=prod \
+          --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD_PROD }}"
+          
+    - name: Deploy Production Functions
+      run: |
+        cd AzureArchitecture
+        dotnet publish AzureArchitecture.sln --configuration Release --output ./output
+        
+        # Deploy to production regions
+        az functionapp deployment source config-zip \
+          --resource-group rg-stamps-prod \
+          --name fa-stamps-eastus-prod \
+          --src output.zip
+          
+        az functionapp deployment source config-zip \
+          --resource-group rg-stamps-prod \
+          --name fa-stamps-westus2-prod \
+          --src output.zip
+
+  # Cost Analysis and Monitoring Setup
+  monitoring-setup:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [deploy-production]
+    runs-on: ubuntu-latest
+    name: 'Setup Monitoring and Alerts'
+    environment: production
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+        
+    - name: Create Cost Budget Alert
+      run: |
+        az consumption budget create \
+          --resource-group rg-stamps-prod \
+          --budget-name stamps-monthly-budget \
+          --amount 5000 \
+          --time-grain Monthly \
+          --start-date $(date -d "first day of this month" +%Y-%m-%d) \
+          --end-date $(date -d "last day of next year" +%Y-%m-%d) \
+          --notifications '[{
+            "enabled": true,
+            "operator": "GreaterThan",
+            "threshold": 80,
+            "contactEmails": ["platform-team@contoso.com"],
+            "contactRoles": ["Owner"]
+          }]'
+          
+    - name: Setup Application Insights Alerts
+      run: |
+        # Create alerts for function failures, high latency, etc.
+        az monitor metrics alert create \
+          --name "Function App High Error Rate" \
+          --resource-group rg-stamps-prod \
+          --scopes $(az functionapp show --resource-group rg-stamps-prod --name fa-stamps-eastus-prod --query id --output tsv) \
+          --condition "count requests/failed > 10" \
+          --window-size 5m \
+          --evaluation-frequency 1m \
+          --action-group-ids /subscriptions/${{ secrets.SUBSCRIPTION_ID }}/resourceGroups/rg-stamps-prod/providers/microsoft.insights/actionGroups/stamps-alerts

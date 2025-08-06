@@ -32,6 +32,16 @@ param baseDnsZoneName string = 'stamps'
 @allowed(['dev', 'test', 'staging', 'prod'])
 param environment string = 'dev'
 
+@description('Minimum number of availability zones required')
+@minValue(1)
+@maxValue(3)
+param minAvailabilityZones int = 2
+
+@description('Maximum tenants allowed per shared CELL')
+@minValue(10)
+@maxValue(1000)
+param maxTenantsPerSharedCell int = 100
+
 @description('Name of the DNS Zone')
 param dnsZoneName string = '${baseDnsZoneName}.${organizationDomain}'
 
@@ -68,6 +78,8 @@ param sqlAdminUsername string
 param sqlAdminPassword string
 
 @description('Array of regions to deploy stamps to')
+@minLength(1)
+@maxLength(10)
 param regions array = [
   {
     geoName: geoName
@@ -88,6 +100,8 @@ param regions array = [
 ]
 
 @description('Array of cells (deployment stamps) to deploy')
+@minLength(1)
+@maxLength(50)
 param cells array = [
   {
     geoName: geoName
@@ -144,6 +158,20 @@ var baseTags = {
   workload: workloadName
   owner: ownerEmail
 }
+
+// Validation: Ensure all cells meet minimum availability zone requirements
+var cellValidation = [for cell in cells: {
+  isValid: length(cell.availabilityZones) >= minAvailabilityZones
+  cellName: cell.cellName
+  zoneCount: length(cell.availabilityZones)
+}]
+
+// Validation: Ensure shared cells don't exceed max tenant limit
+var tenantValidation = [for cell in cells: {
+  isValid: cell.cellType == 'Dedicated' || cell.maxTenantCount <= maxTenantsPerSharedCell
+  cellName: cell.cellName
+  tenantCount: cell.maxTenantCount
+}]
 
 // ============ GLOBAL LAYER ============
 module globalLayer './globalLayer.bicep' = {
@@ -257,6 +285,13 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
 
 // ============ OUTPUTS ============
 output globalLayerOutputs object = globalLayer.outputs
+
+output validationResults object = {
+  cellValidation: cellValidation
+  tenantValidation: tenantValidation
+  allCellsValid: !contains(map(cellValidation, item => item.isValid), false)
+  allTenantsValid: !contains(map(tenantValidation, item => item.isValid), false)
+}
 
 output keyVaultOutputs array = [
   for (region, index) in regions: {

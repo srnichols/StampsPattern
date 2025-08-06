@@ -7,65 +7,109 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 public class CreateTenantFunction
 {
     private readonly CosmosClient _cosmosClient;
     private readonly Container _tenantsContainer;
     private readonly Container _cellsContainer;
+    private readonly ILogger<CreateTenantFunction> _logger;
 
-    public CreateTenantFunction()
+    // Use dependency injection for better testability
+    public CreateTenantFunction(CosmosClient cosmosClient, ILogger<CreateTenantFunction> logger)
     {
-        string cosmosDbConnectionString = Environment.GetEnvironmentVariable("CosmosDbConnection");
+        _cosmosClient = cosmosClient ?? throw new ArgumentNullException(nameof(cosmosClient));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        
         string databaseName = Environment.GetEnvironmentVariable("CosmosDbDatabaseName") ?? "globaldb";
         string tenantsContainerName = Environment.GetEnvironmentVariable("TenantsContainerName") ?? "tenants";
         string cellsContainerName = Environment.GetEnvironmentVariable("CellsContainerName") ?? "cells";
         
-        _cosmosClient = new CosmosClient(cosmosDbConnectionString);
         _tenantsContainer = _cosmosClient.GetContainer(databaseName, tenantsContainerName);
         _cellsContainer = _cosmosClient.GetContainer(databaseName, cellsContainerName);
+    }
+
+    // Fallback constructor for environments without DI
+    public CreateTenantFunction() : this(
+        new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbConnection") ?? 
+            throw new InvalidOperationException("CosmosDbConnection not configured")),
+        LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<CreateTenantFunction>())
+    {
     }
 
     [Function("CreateTenant")]
     public async Task<HttpResponseData> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "tenant")] HttpRequestData req)
     {
-        var tenant = await req.ReadFromJsonAsync<TenantInfo>();
-
-        // Validate tenant requirements
-        if (string.IsNullOrEmpty(tenant.tenantId) || string.IsNullOrEmpty(tenant.subdomain))
+        try
         {
+            _logger.LogInformation("Creating new tenant...");
+            
+            var tenant = await req.ReadFromJsonAsync<TenantInfo>();
+
+            // Validate tenant requirements
+            if (string.IsNullOrEmpty(tenant?.tenantId) || string.IsNullOrEmpty(tenant.subdomain))
+            {
+                _logger.LogWarning("Invalid tenant data: missing tenantId or subdomain");
+                var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                await errorResponse.WriteStringAsync("TenantId and Subdomain are required.");
+                return errorResponse;
+            }
+
+            // Set default values if not provided
+            tenant.tenantTier = tenant.tenantTier ?? TenantTier.Shared;
+            tenant.region = tenant.region ?? "eastus";
+            tenant.complianceRequirements = tenant.complianceRequirements ?? new List<string>();
+            tenant.createdDate = DateTime.UtcNow;
+            tenant.status = TenantStatus.Active;
+
+            _logger.LogInformation("Assigning CELL for tenant {TenantId} in region {Region}", tenant.tenantId, tenant.region);
+
+            // Assign CELL based on intelligent logic
+            var assignmentResult = await AssignCellForTenantAsync(tenant);
+            
+            if (!assignmentResult.Success)
+            {
+                _logger.LogError("CELL assignment failed for tenant {TenantId}: {Error}", tenant.tenantId, assignmentResult.ErrorMessage);
+                var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
+                await errorResponse.WriteStringAsync($"Failed to assign CELL: {assignmentResult.ErrorMessage}");
+                return errorResponse;
+            }
+
+            tenant.cellBackendPool = assignmentResult.CellBackendPool;
+            tenant.cellName = assignmentResult.CellName;
+
+            // Create tenant in database
+            await _tenantsContainer.CreateItemAsync(tenant, new PartitionKey(tenant.tenantId));
+            
+            _logger.LogInformation("Successfully created tenant {TenantId} in CELL {CellName}", tenant.tenantId, tenant.cellName);
+
+            var response = req.CreateResponse(HttpStatusCode.Created);
+            await response.WriteAsJsonAsync(tenant);
+            return response;
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogError(ex, "Invalid JSON in request body");
             var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
-            await errorResponse.WriteStringAsync("TenantId and Subdomain are required.");
+            await errorResponse.WriteStringAsync("Invalid JSON format in request body.");
             return errorResponse;
         }
-
-        // Set default values if not provided
-        tenant.tenantTier = tenant.tenantTier ?? TenantTier.Shared;
-        tenant.region = tenant.region ?? "eastus";
-        tenant.complianceRequirements = tenant.complianceRequirements ?? new List<string>();
-        tenant.createdDate = DateTime.UtcNow;
-        tenant.status = TenantStatus.Active;
-
-        // Assign CELL based on intelligent logic
-        var assignmentResult = await AssignCellForTenantAsync(tenant);
-        
-        if (!assignmentResult.Success)
+        catch (CosmosException ex)
         {
+            _logger.LogError(ex, "Cosmos DB error during tenant creation");
             var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
-            await errorResponse.WriteStringAsync($"Failed to assign CELL: {assignmentResult.ErrorMessage}");
+            await errorResponse.WriteStringAsync("Database error occurred. Please try again.");
             return errorResponse;
         }
-
-        tenant.cellBackendPool = assignmentResult.CellBackendPool;
-        tenant.cellName = assignmentResult.CellName;
-
-        // Create tenant in database
-        await _tenantsContainer.CreateItemAsync(tenant, new PartitionKey(tenant.tenantId));
-
-        var response = req.CreateResponse(HttpStatusCode.Created);
-        await response.WriteAsJsonAsync(tenant);
-        return response;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error during tenant creation");
+            var errorResponse = req.CreateResponse(HttpStatusCode.InternalServerError);
+            await errorResponse.WriteStringAsync("An unexpected error occurred. Please contact support.");
+            return errorResponse;
+        }
     }
 
     /// <summary>
@@ -75,11 +119,14 @@ public class CreateTenantFunction
     {
         try
         {
+            _logger.LogInformation("Getting available CELLs for region {Region}", tenant.region);
+            
             // Get available CELLs for the region
             var availableCells = await GetAvailableCellsInRegionAsync(tenant.region);
 
             if (!availableCells.Any())
             {
+                _logger.LogWarning("No available CELLs found in region {Region}", tenant.region);
                 return new CellAssignmentResult 
                 { 
                     Success = false, 
@@ -93,22 +140,26 @@ public class CreateTenantFunction
             {
                 case TenantTier.Enterprise:
                 case TenantTier.Dedicated:
+                    _logger.LogInformation("Assigning dedicated CELL for enterprise tenant {TenantId}", tenant.tenantId);
                     selectedCell = await AssignDedicatedCellAsync(tenant, availableCells);
                     break;
 
                 case TenantTier.Shared:
                 case TenantTier.Startup:
                 case TenantTier.SMB:
+                    _logger.LogInformation("Assigning shared CELL for tenant {TenantId}", tenant.tenantId);
                     selectedCell = await AssignSharedCellAsync(tenant, availableCells);
                     break;
 
                 default:
+                    _logger.LogInformation("Using default shared CELL assignment for tenant {TenantId}", tenant.tenantId);
                     selectedCell = await AssignSharedCellAsync(tenant, availableCells);
                     break;
             }
 
             if (selectedCell == null)
             {
+                _logger.LogError("Unable to find suitable CELL for tenant {TenantId} with tier {TenantTier}", tenant.tenantId, tenant.tenantTier);
                 return new CellAssignmentResult 
                 { 
                     Success = false, 
@@ -118,6 +169,8 @@ public class CreateTenantFunction
 
             // Update CELL tenant count
             await UpdateCellTenantCountAsync(selectedCell.cellId, 1);
+            
+            _logger.LogInformation("Successfully assigned CELL {CellName} to tenant {TenantId}", selectedCell.cellName, tenant.tenantId);
 
             return new CellAssignmentResult
             {
@@ -126,8 +179,18 @@ public class CreateTenantFunction
                 CellName = selectedCell.cellName
             };
         }
+        catch (CosmosException ex)
+        {
+            _logger.LogError(ex, "Cosmos DB error during CELL assignment for tenant {TenantId}", tenant.tenantId);
+            return new CellAssignmentResult 
+            { 
+                Success = false, 
+                ErrorMessage = $"Database error during CELL assignment: {ex.Message}" 
+            };
+        }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Unexpected error during CELL assignment for tenant {TenantId}", tenant.tenantId);
             return new CellAssignmentResult 
             { 
                 Success = false, 

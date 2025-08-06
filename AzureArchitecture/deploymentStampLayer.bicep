@@ -196,7 +196,7 @@ resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
     // Advanced security
     enableCassandraConnector: false
     minimalTlsVersion: 'Tls12'
-    publicNetworkAccess: enablePrivateEndpoints ? 'Disabled' : 'Enabled'
+    publicNetworkAccess: 'Disabled' // Zero-trust: Always disable public access
   }
   tags: tags
 }
@@ -761,8 +761,8 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   }
 }
 
-// SQL Server firewall rule to allow Azure services
-resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-11-01-preview' = {
+// SQL Server firewall rule to allow Azure services (consider using private endpoints instead)
+resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-11-01-preview' = if (!enablePrivateEndpoints) {
   parent: sqlServer
   name: 'AllowAzureServices'
   properties: {

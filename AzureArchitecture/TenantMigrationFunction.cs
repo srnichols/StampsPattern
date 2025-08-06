@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Azure Function for migrating tenants between CELL types (Shared → Dedicated)
@@ -17,17 +18,28 @@ public class TenantMigrationFunction
     private readonly CosmosClient _cosmosClient;
     private readonly Container _tenantsContainer;
     private readonly Container _cellsContainer;
+    private readonly ILogger<TenantMigrationFunction> _logger;
 
-    public TenantMigrationFunction()
+    // Use dependency injection for better testability
+    public TenantMigrationFunction(CosmosClient cosmosClient, ILogger<TenantMigrationFunction> logger)
     {
-        string cosmosDbConnectionString = Environment.GetEnvironmentVariable("CosmosDbConnection");
+        _cosmosClient = cosmosClient ?? throw new ArgumentNullException(nameof(cosmosClient));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        
         string databaseName = Environment.GetEnvironmentVariable("CosmosDbDatabaseName") ?? "globaldb";
         string tenantsContainerName = Environment.GetEnvironmentVariable("TenantsContainerName") ?? "tenants";
         string cellsContainerName = Environment.GetEnvironmentVariable("CellsContainerName") ?? "cells";
         
-        _cosmosClient = new CosmosClient(cosmosDbConnectionString);
         _tenantsContainer = _cosmosClient.GetContainer(databaseName, tenantsContainerName);
         _cellsContainer = _cosmosClient.GetContainer(databaseName, cellsContainerName);
+    }
+
+    // Fallback constructor for environments without DI
+    public TenantMigrationFunction() : this(
+        new CosmosClient(Environment.GetEnvironmentVariable("CosmosDbConnection") ?? 
+            throw new InvalidOperationException("CosmosDbConnection not configured")),
+        LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<TenantMigrationFunction>())
+    {
     }
 
     /// <summary>
