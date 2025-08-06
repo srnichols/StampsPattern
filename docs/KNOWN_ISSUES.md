@@ -1,0 +1,568 @@
+# 🛠️ Known Issues & Workarounds - Azure Stamps Pattern
+
+This document provides solutions to common issues encountered during development, deployment, and operation of the Azure Stamps Pattern.
+
+## 📋 Table of Contents
+- [🚀 Deployment Issues](#-deployment-issues)
+- [🔧 Development Issues](#-development-issues)
+- [⚡ Performance Issues](#-performance-issues)
+- [🔐 Security Issues](#-security-issues)
+- [🗃️ Database Issues](#️-database-issues)
+- [🧰 Operational Issues](#-operational-issues)
+
+---
+
+## 🚀 Deployment Issues
+
+### Issue: Bicep Template Validation Errors
+
+**Problem**: Getting validation errors when deploying Bicep templates.
+
+**Common Symptoms**:
+```
+Error: Scope "resourceGroup" is not valid for this resource type
+Error: The provided value can have a length as small as 2 and may be too short
+```
+
+**Solution**:
+```bash
+# 1. Always validate templates before deployment
+az bicep build --file main.bicep
+
+# 2. Run what-if analysis
+az deployment group what-if \
+  --resource-group rg-stamps-dev \
+  --template-file main.bicep \
+  --parameters main.parameters.json
+
+# 3. For subscription-scoped resources (Azure Defender), use:
+az deployment sub create \
+  --location eastus \
+  --template-file advancedSecurity.bicep \
+  --parameters resourceGroupName=rg-stamps-dev
+```
+
+**Prevention**: Use the CI/CD pipeline which includes automatic validation.
+
+---
+
+### Issue: Resource Naming Conflicts
+
+**Problem**: Resources with duplicate names causing deployment failures.
+
+**Symptoms**:
+```
+Error: The resource name 'sa123abc' is already taken
+```
+
+**Workaround**:
+```bash
+# Use the resource token parameter to ensure uniqueness
+# In main.parameters.json, ensure resourceToken is unique:
+{
+  "resourceToken": {
+    "value": "myorg001"  // Use your organization prefix + environment
+  }
+}
+
+# Or let it auto-generate:
+param resourceToken string = take(uniqueString(resourceGroup().id), 6)
+```
+
+---
+
+### Issue: Azure B2C Deployment Limitations
+
+**Problem**: Azure AD B2C tenants cannot be created via Bicep/ARM templates.
+
+**Symptoms**:
+```
+Error: Resource type 'Microsoft.AzureActiveDirectory/b2cDirectories' not supported
+```
+
+**Workaround**:
+```bash
+# 1. Manually create B2C tenant in Azure Portal first
+# 2. Then deploy the b2c-setup.bicep to link it:
+az deployment group create \
+  --resource-group rg-stamps-dev \
+  --template-file b2c-setup.bicep \
+  --parameters b2cTenantName=your-existing-tenant
+```
+
+---
+
+## 🔧 Development Issues
+
+### Issue: Cosmos DB Emulator Connection Failures
+
+**Problem**: Integration tests fail with emulator connection errors.
+
+**Symptoms**:
+```
+CosmosException: Service is unavailable
+SSL connection error
+```
+
+**Solution**:
+```bash
+# 1. Install and start Cosmos DB Emulator
+# Download from: https://aka.ms/cosmosdb-emulator
+
+# 2. Start with proper SSL configuration
+"C:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe" /AllowNetworkAccess /Key=your-key
+
+# 3. For development, disable SSL validation:
+var cosmosClientOptions = new CosmosClientOptions
+{
+    HttpClientTimeout = TimeSpan.FromSeconds(30),
+    ConnectionMode = ConnectionMode.Gateway, // Required for emulator
+    ConsistencyLevel = ConsistencyLevel.Session,
+    // For emulator only - DO NOT use in production
+    HttpClientFactory = () => new HttpClient(new HttpClientHandler()
+    {
+        ServerCertificateCustomValidationCallback = (message, certificate, chain, errors) => true
+    })
+};
+```
+
+---
+
+### Issue: Redis Cache Connection Failures in Development
+
+**Problem**: Functions fail to connect to Redis cache locally.
+
+**Symptoms**:
+```
+StackExchange.Redis.RedisConnectionException: No connection is available
+```
+
+**Workaround**:
+```csharp
+// Use fallback to in-memory cache for local development
+public void ConfigureServices(IServiceCollection services)
+{
+    var redisConnectionString = Environment.GetEnvironmentVariable("RedisConnection");
+    if (!string.IsNullOrEmpty(redisConnectionString))
+    {
+        try 
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "StampsPattern";
+            });
+            services.AddScoped<ITenantCacheService, RedisTenantCacheService>();
+        }
+        catch 
+        {
+            // Fallback to in-memory cache
+            services.AddMemoryCache();
+            services.AddScoped<ITenantCacheService, MemoryTenantCacheService>();
+        }
+    }
+    else
+    {
+        // Local development fallback
+        services.AddMemoryCache();
+        services.AddScoped<ITenantCacheService, MemoryTenantCacheService>();
+    }
+}
+```
+
+---
+
+## ⚡ Performance Issues
+
+### Issue: High JWT Validation Latency
+
+**Problem**: JWT validation taking longer than expected (>100ms).
+
+**Investigation**:
+```csharp
+// Add performance logging to identify bottlenecks
+public async Task<bool> ValidateJwtAsync(string token)
+{
+    var stopwatch = Stopwatch.StartNew();
+    
+    try 
+    {
+        // Check cache first
+        var cacheKey = $"jwt:validation:{token.GetHashCode()}";
+        var cachedResult = await _cache.GetStringAsync(cacheKey);
+        
+        if (cachedResult != null)
+        {
+            _logger.LogInformation("JWT validation cache hit - Duration: {Duration}ms", stopwatch.ElapsedMilliseconds);
+            return bool.Parse(cachedResult);
+        }
+        
+        // Validate JWT
+        var result = await ValidateTokenWithJwks(token);
+        
+        // Cache result for 5 minutes
+        await _cache.SetStringAsync(cacheKey, result.ToString(), 
+            new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
+            
+        _logger.LogInformation("JWT validation completed - Duration: {Duration}ms, CacheHit: false", stopwatch.ElapsedMilliseconds);
+        return result;
+    }
+    finally 
+    {
+        stopwatch.Stop();
+    }
+}
+```
+
+**Solutions**:
+1. Ensure Redis cache is properly configured
+2. Increase JWKS cache TTL if appropriate
+3. Consider pre-warming cache for frequently used tokens
+4. Monitor cache hit ratios via Application Insights
+
+---
+
+### Issue: Cosmos DB Rate Limiting (429 errors)
+
+**Problem**: Receiving 429 throttling errors from Cosmos DB.
+
+**Symptoms**:
+```
+Microsoft.Azure.Cosmos.CosmosException: Request rate is large
+Status: 429 TooManyRequests
+```
+
+**Immediate Solutions**:
+```csharp
+// 1. Implement exponential backoff retry policy
+var cosmosClientOptions = new CosmosClientOptions
+{
+    MaxRetryAttemptsOnRateLimitedRequests = 5,
+    MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(30),
+    ConsistencyLevel = ConsistencyLevel.Session
+};
+
+// 2. Optimize queries with proper indexing
+var queryDefinition = new QueryDefinition(
+    "SELECT * FROM c WHERE c.tenantId = @tenantId AND c.region = @region")
+    .WithParameter("@tenantId", tenantId)
+    .WithParameter("@region", region);
+
+// 3. Use bulk operations for multiple operations
+var tasks = tenants.Select(tenant => 
+    container.CreateItemAsync(tenant, new PartitionKey(tenant.TenantId))
+);
+await Task.WhenAll(tasks);
+```
+
+**Long-term Solutions**:
+- Scale up RU/s during peak hours
+- Implement autoscale for Cosmos DB
+- Review and optimize query patterns
+- Add composite indexes for common query patterns
+
+---
+
+## 🔐 Security Issues
+
+### Issue: Azure Defender Not Activating
+
+**Problem**: Azure Defender policies not being applied despite deployment.
+
+**Diagnosis**:
+```bash
+# Check current pricing tier
+az security pricing show --name VirtualMachines
+az security pricing show --name AppServices
+az security pricing show --name SqlServers
+
+# Verify at subscription level
+az account show --query id
+```
+
+**Solution**:
+```bash
+# Deploy security template at subscription scope
+az deployment sub create \
+  --location eastus \
+  --template-file advancedSecurity.bicep \
+  --parameters resourceGroupName=rg-stamps-prod \
+  --parameters enableAzureDefender=true
+```
+
+---
+
+### Issue: Key Vault Access Denied
+
+**Problem**: Functions unable to access Key Vault secrets.
+
+**Symptoms**:
+```
+Azure.Security.KeyVault.Secrets.SecretClientException: Forbidden
+```
+
+**Solution**:
+```bash
+# 1. Verify managed identity is enabled
+az functionapp identity show --name fa-stamps-eastus --resource-group rg-stamps-dev
+
+# 2. Grant Key Vault access
+FUNCTION_PRINCIPAL_ID=$(az functionapp identity show --name fa-stamps-eastus --resource-group rg-stamps-dev --query principalId --output tsv)
+
+az keyvault set-policy \
+  --name kv-stamps123abc \
+  --object-id $FUNCTION_PRINCIPAL_ID \
+  --secret-permissions get list
+
+# 3. Use managed identity in code
+var credential = new DefaultAzureCredential();
+var keyVaultClient = new SecretClient(new Uri("https://kv-stamps123abc.vault.azure.net/"), credential);
+```
+
+---
+
+## 🗃️ Database Issues
+
+### Issue: SQL Database Connection Timeouts
+
+**Problem**: SQL Database connections timing out intermittently.
+
+**Investigation**:
+```sql
+-- Check current connections
+SELECT 
+    session_id,
+    status,
+    blocking_session_id,
+    wait_type,
+    wait_time,
+    last_request_start_time
+FROM sys.dm_exec_sessions 
+WHERE is_user_process = 1;
+
+-- Check for blocking
+SELECT 
+    blocking.session_id AS BlockingSessionId,
+    blocked.session_id AS BlockedSessionId,
+    waitresource,
+    waittype
+FROM sys.dm_exec_requests blocked
+INNER JOIN sys.dm_exec_requests blocking ON blocked.blocking_session_id = blocking.session_id;
+```
+
+**Solutions**:
+```csharp
+// 1. Implement connection pooling
+services.AddDbContext<StampsContext>(options =>
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(30), null);
+        sqlOptions.CommandTimeout(30);
+    })
+);
+
+// 2. Use async operations
+public async Task<TenantInfo> GetTenantAsync(string tenantId)
+{
+    using var connection = new SqlConnection(_connectionString);
+    await connection.OpenAsync();
+    
+    var command = new SqlCommand("SELECT * FROM Tenants WHERE TenantId = @tenantId", connection);
+    command.Parameters.AddWithValue("@tenantId", tenantId);
+    
+    using var reader = await command.ExecuteReaderAsync();
+    // Process results...
+}
+```
+
+---
+
+## 🧰 Operational Issues
+
+### Issue: Load Balancer Health Check Failures
+
+**Problem**: Health checks failing causing traffic routing issues.
+
+**Diagnosis**:
+```bash
+# Check health endpoint
+curl -f https://fa-stamps-eastus.azurewebsites.net/api/health
+
+# Check Application Insights for health check metrics
+az monitor app-insights query \
+  --app stamps-app-insights \
+  --analytics-query "requests | where name == 'GET /api/health' | where timestamp > ago(1h)"
+```
+
+**Solution**:
+```csharp
+// Implement comprehensive health check
+[Function("HealthCheck")]
+public async Task<HttpResponseData> HealthCheck([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health")] HttpRequestData req)
+{
+    var healthChecks = new Dictionary<string, bool>();
+    
+    try 
+    {
+        // Check Cosmos DB
+        var cosmosResponse = await _cosmosClient.ReadAccountAsync();
+        healthChecks["cosmos-db"] = true;
+    }
+    catch 
+    {
+        healthChecks["cosmos-db"] = false;
+    }
+    
+    try 
+    {
+        // Check Redis Cache
+        await _cache.GetStringAsync("health-check");
+        healthChecks["redis-cache"] = true;
+    }
+    catch 
+    {
+        healthChecks["redis-cache"] = false;
+    }
+    
+    var isHealthy = healthChecks.Values.All(x => x);
+    var status = isHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable;
+    
+    var response = req.CreateResponse(status);
+    await response.WriteAsJsonAsync(new { 
+        status = isHealthy ? "Healthy" : "Unhealthy",
+        checks = healthChecks,
+        timestamp = DateTime.UtcNow
+    });
+    
+    return response;
+}
+```
+
+---
+
+### Issue: High Memory Usage in Function Apps
+
+**Problem**: Function Apps experiencing memory pressure and restarts.
+
+**Diagnosis**:
+```bash
+# Check memory metrics
+az monitor metrics list \
+  --resource /subscriptions/sub-id/resourceGroups/rg-stamps/providers/Microsoft.Web/sites/fa-stamps \
+  --metric "MemoryWorkingSet" \
+  --start-time 2025-08-06T00:00:00Z \
+  --end-time 2025-08-06T23:59:59Z
+```
+
+**Solutions**:
+```csharp
+// 1. Implement proper disposal patterns
+public class TenantFunction : IDisposable
+{
+    private readonly CosmosClient _cosmosClient;
+    private bool _disposed = false;
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed && disposing)
+        {
+            _cosmosClient?.Dispose();
+            _disposed = true;
+        }
+    }
+}
+
+// 2. Use object pooling for expensive objects
+services.AddSingleton<IObjectPool<StringBuilder>>(serviceProvider =>
+{
+    var provider = new DefaultObjectPoolProvider();
+    return provider.Create<StringBuilder>();
+});
+
+// 3. Configure proper garbage collection
+// In host.json:
+{
+  "functionTimeout": "00:05:00",
+  "extensions": {
+    "http": {
+      "routePrefix": "api",
+      "maxConcurrentRequests": 100,
+      "maxOutstandingRequests": 200
+    }
+  }
+}
+```
+
+---
+
+## 🔍 Troubleshooting Tools
+
+### Essential Commands
+
+```bash
+# Check resource status
+az resource list --resource-group rg-stamps-dev --output table
+
+# Monitor logs in real-time
+az monitor activity-log list --resource-group rg-stamps-dev --start-time 2025-08-06T00:00:00Z
+
+# Function app logs
+az functionapp logs tail --name fa-stamps-eastus --resource-group rg-stamps-dev
+
+# Performance metrics
+az monitor metrics list --resource /subscriptions/sub-id/resourceGroups/rg-stamps/providers/Microsoft.Web/sites/fa-stamps --metric "ResponseTime"
+```
+
+### Application Insights Queries
+
+```kusto
+// Function performance analysis
+requests
+| where timestamp > ago(24h)
+| summarize 
+    avg(duration), 
+    percentiles(duration, 50, 95, 99) 
+    by operation_Name
+| order by avg_duration desc
+
+// Error analysis
+exceptions
+| where timestamp > ago(24h)
+| summarize count() by problemId, outerMessage
+| order by count_ desc
+
+// Cache performance
+traces
+| where message contains "cache"
+| where timestamp > ago(24h)
+| extend cacheHit = tobool(customDimensions["CacheHit"])
+| summarize 
+    hitRate = avg(iff(cacheHit, 1.0, 0.0)) * 100,
+    totalRequests = count()
+    by bin(timestamp, 1h)
+```
+
+---
+
+## 📞 Getting Help
+
+If you encounter issues not covered here:
+
+1. **Check Application Insights** for detailed error information
+2. **Review Azure Monitor** alerts and metrics
+3. **Search GitHub Issues** in the repository
+4. **Create a new issue** with:
+   - Environment details (dev/staging/prod)
+   - Error messages and stack traces
+   - Steps to reproduce
+   - Expected vs actual behavior
+
+---
+
+*This document is updated regularly. Last updated: August 6, 2025*

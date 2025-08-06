@@ -1,0 +1,47 @@
+version: v0.1
+testName: Azure Stamps Pattern Load Test
+testPlan: load-test.js
+description: |
+  Comprehensive load testing for Azure Stamps Pattern including:
+  - Health check endpoints
+  - Tenant CRUD operations
+  - JWT validation performance (with caching)
+  - Cache hit ratio monitoring
+  - Multi-region testing
+
+# Load test configuration
+engineInstances: 3
+failureDetails:
+  responseTimeMs: 500
+  errorPercentage: 10
+
+# Environment variables
+env:
+  - name: webapp_url
+    value: $(webapp_url)
+  - name: TEST_DURATION
+    value: "300" # 5 minutes
+  - name: TARGET_VUS
+    value: "100"
+
+# Auto-stop criteria
+autoStop:
+  - errorPercentage > 15
+  - responseTimeP95 > 1000
+
+# Key metrics to track
+splitByRequest: true
+metrics:
+  - metricName: response_time_ms
+    aggregation: avg
+    thresholdValue: 200
+  - metricName: error_percentage
+    aggregation: avg  
+    thresholdValue: 5
+  - metricName: requests_per_sec
+    aggregation: avg
+    thresholdValue: 50
+
+# Test run settings
+properties:
+  userPropertyFile: false

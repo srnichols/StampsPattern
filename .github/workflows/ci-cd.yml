@@ -106,6 +106,20 @@ jobs:
       with:
         options: "-r . -f json -o bandit-report.json"
       continue-on-error: true
+
+    # Enhanced Static Code Analysis with SonarCloud
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=azure-stamps-pattern
+          -Dsonar.organization=your-org
+          -Dsonar.sources=AzureArchitecture
+          -Dsonar.exclusions=**/bin/**,**/obj/**
+          -Dsonar.cs.dotcover.reportsPaths=coverage.xml
         
     - name: Run CodeQL Analysis
       uses: github/codeql-action/init@v2
@@ -124,6 +138,96 @@ jobs:
         
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+
+    # Automated Penetration Testing
+    - name: OWASP ZAP Security Scan
+      uses: zaproxy/action-baseline@v0.7.0
+      with:
+        target: 'https://fa-stamps-eastus-dev.azurewebsites.net'
+        rules_file_name: '.zap/rules.tsv'
+        cmd_options: '-a'
+
+  # Load Testing
+  load-testing:
+    runs-on: ubuntu-latest
+    name: 'Performance and Load Testing'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup k6
+      run: |
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+
+    - name: Run Load Tests
+      run: |
+        k6 run --out json=load-test-results.json ./scripts/load-test.js
+      env:
+        TEST_URL: ${{ secrets.TEST_ENDPOINT }}
+
+    - name: Azure Load Testing
+      uses: azure/load-testing@v1
+      with:
+        loadTestConfigFile: 'scripts/azure-load-test.yaml'
+        loadTestResource: 'stamps-load-testing'
+        resourceGroup: 'rg-stamps-dev'
+        env: |
+          [
+            {
+              "name": "webapp_url",
+              "value": "${{ secrets.TEST_ENDPOINT }}"
+            }
+          ]
+
+    - name: Upload Load Test Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: load-test-results
+        path: |
+          load-test-results.json
+          LoadTestResults/
+
+  # Cache Performance Monitoring
+  cache-monitoring:
+    runs-on: ubuntu-latest
+    name: 'Cache Performance Analysis'
+    needs: [deploy-functions-dev]
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Azure CLI Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+    - name: Query Cache Hit Ratios
+      run: |
+        # Query Redis cache hit ratios
+        az monitor metrics list \
+          --resource $(az redis show --name redis-stamps-dev --resource-group rg-stamps-dev --query id --output tsv) \
+          --metric "CacheHits,CacheMisses" \
+          --start-time $(date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%S) \
+          --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+          --interval PT5M \
+          --output table
+          
+        # Create alert if cache hit ratio < 80%
+        CACHE_HIT_RATIO=$(az monitor metrics list \
+          --resource $(az redis show --name redis-stamps-dev --resource-group rg-stamps-dev --query id --output tsv) \
+          --metric "CacheHitRate" \
+          --start-time $(date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%S) \
+          --query 'value[0].timeseries[0].data[-1].average' \
+          --output tsv)
+          
+        if (( $(echo "$CACHE_HIT_RATIO < 80" | bc -l) )); then
+          echo "::warning::Cache hit ratio is below 80%: $CACHE_HIT_RATIO%"
+        fi
 
   # Infrastructure Deployment (Development)
   deploy-infrastructure-dev:
