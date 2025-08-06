@@ -1,10 +1,41 @@
 # 🚀 Azure Stamps Pattern - Deployment Guide
 
-## 🎯 Deployment Overview
+## 🎯 **Deployment Overview (For New Users)**
 
-This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment**, **automated capacity management**, and **enhanced zero-trust security**. The implementation supports multiple tenancy models within the same architecture, enabling you to optimize costs for different customer segments while maintaining enterprise-grade security and compliance.
+This guide walks you through deploying the Azure Stamps Pattern - think of it as setting up a global network of identical "application factories" that can serve tenants efficiently and securely.
 
-### 🚨 **Latest Security Enhancements (August 2025)**
+**What you're building:**
+- **Global Infrastructure**: Like setting up franchise locations worldwide
+- **Flexible Tenancy**: Some locations serve many customers (shared), others serve VIP clients exclusively (dedicated)
+- **Zero-Trust Security**: Every connection is verified - no exceptions
+- **Auto-Scaling**: Resources automatically adjust based on demand
+
+**Time Investment:**
+- **Simple Setup**: 45-60 minutes for basic 2-region deployment
+- **Enterprise Setup**: 2-3 hours for full multi-GEO production deployment
+
+## 📖 **Key Concepts Before You Start**
+
+### **Tenancy Models Explained**
+| Model | Analogy | Best For | Cost per Tenant |
+|-------|---------|----------|-----------------|
+| **Shared CELL** | Apartment building | Startups, SMBs | $8-16/month |
+| **Dedicated CELL** | Private house | Enterprises, Compliance-required | $3,200/month |
+
+### **Geographic Hierarchy**
+```
+🌍 GEO (North America)
+  └── 🏢 Region (East US)
+      └── 🏠 CELL (Shared or Dedicated)
+          └── 👥 Tenants (1-100 depending on model)
+```
+
+### **What Gets Deployed**
+- **Global Layer**: DNS routing, CDN, global tenant directory
+- **Regional Layer**: Security gateways, monitoring, regional services  
+- **CELL Layer**: Your actual applications and databases (shared or dedicated)
+
+## 🚨 **Latest Security Enhancements (August 2025)**
 
 **🔐 Zero-Trust Network Architecture**: All deployments now include enhanced security with:
 - **Private Endpoints Only**: Complete isolation from public internet for all data services
@@ -24,26 +55,61 @@ The Azure Stamps Pattern offers flexible deployment options designed to meet dif
 
 **Enterprise Multi-Tenant Architecture with 96/100 CAF/WAF Compliance** (improved from 94/100)
 
-## 📋 Prerequisites
+## 📋 **Prerequisites (Explained for Beginners)**
+
+### 🔧 **What You Need Before Starting**
+
+**Think of prerequisites like having the right tools before building a house:**
+
+#### **Azure Access Requirements**
+- **Azure Subscription**: Like having a building permit
+  - Need **Contributor** access (ability to create resources)
+  - Subscription with sufficient quota (see [resource limits](#resource-requirements))
+- **Azure Active Directory**: Like having security clearance
+  - Permissions to create App Registrations (for security)
+  - Permission to assign roles to managed identities
+
+#### **Local Development Tools**
+```bash
+# Azure CLI (latest version) - Your main tool for talking to Azure
+az --version
+# Should be >= 2.50.0
+
+# Bicep CLI - Like having blueprints for construction
+bicep --version  
+# Should be >= 0.20.0
+
+# PowerShell 7+ - Your project manager tool
+pwsh --version
+# Should be >= 7.3.0
+```
+
+**Why these tools?**
+- **Azure CLI**: Communicates with Azure to create resources
+- **Bicep**: Defines what infrastructure to build (like architectural blueprints)
+- **PowerShell**: Orchestrates the deployment process
+
+#### **Knowledge Prerequisites**
+- **Basic Azure concepts**: Resource groups, subscriptions, regions
+- **DNS basics**: Understanding of domain names and routing
+- **Multi-tenancy concepts**: Review [GLOSSARY.md](./GLOSSARY.md) if needed
 
 ### 🔧 **Template Customization**
 For deployments using custom domains, organization names, or multi-geography requirements, first review the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
 
-### ✅ **Required Tools**
+### 💰 **Resource Requirements & Costs**
 
-```bash
-# Azure CLI (latest version)
-az --version
-# Should be >= 2.50.0
+#### **Minimum Resources Needed**
+| Resource Type | Minimum SKU | Purpose | Estimated Monthly Cost |
+|---------------|-------------|---------|----------------------|
+| Container Apps Environment | Consumption | Host applications | $0-50 |
+| Azure SQL Database | Basic (shared) or Standard (dedicated) | Data storage | $5-200 |
+| Application Gateway | Standard_v2 | Regional security | $25 |
+| API Management | Developer | API gateway | $50 |
+| Storage Account | Standard LRS | Blob/file storage | $5-20 |
+| Key Vault | Standard | Security secrets | $3 |
 
-# Bicep CLI 
-bicep --version
-# Should be >= 0.20.0
-
-# PowerShell 7+ (required for deployment)
-pwsh --version
-# Should be >= 7.3.0
-```
+**Total estimated starting cost: $88-348/month** (varies by tenancy model and scale)
 
 > **🎯 Purpose**: Step-by-step guide for deploying the Azure Stamps Pattern with **intelligent tenant assignment**, **automated capacity management**, and **flexible tenancy models**. Choose your deployment path based on your tenant requirements.
 
