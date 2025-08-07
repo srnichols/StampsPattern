@@ -659,7 +659,7 @@ az apim api import \
   --path tenant \
   --api-id tenant-management \
   --specification-format OpenApi \
-  --specification-url https://raw.githubusercontent.com/your-repo/tenant-api-spec.json
+  --specification-url https://raw.githubusercontent.com/srnichols/StampsPattern/tenant-api-spec.json
 
 # Create tenant subscription tiers
 az apim product create \

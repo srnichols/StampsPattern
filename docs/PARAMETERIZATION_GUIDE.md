@@ -329,4 +329,4 @@ az deployment group validate `
 - [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) – Compliance analysis
 - [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) – Known issues
 - [GLOSSARY.md](./GLOSSARY.md) – Key terms
-- [Azure Naming Conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
+- [Azure Naming Conventions](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)

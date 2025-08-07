@@ -1,4 +1,3 @@
-
 # 🛠️ Azure Stamps Pattern - Known Issues & Workarounds
 
 ---
@@ -692,5 +691,7 @@ If you encounter issues not covered here:
    - Expected vs actual behavior
 
 ---
+
+**🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to report issues, suggest improvements, or contribute fixes.
 
 *This document is updated regularly. Last updated: August 6, 2025*

@@ -641,10 +641,10 @@ actions:
 ## 📚 Security Resources
 
 ### 📖 **Documentation References**
-- [Azure Security Benchmark](https://docs.microsoft.com/en-us/security/benchmark/azure/)
-- [Azure Well-Architected Security Pillar](https://docs.microsoft.com/en-us/azure/architecture/framework/security/)
+- [Azure Security Benchmark](https://learn.microsoft.com/en-us/security/benchmark/azure/)
+- [Azure Well-Architected Security Pillar](https://learn.microsoft.com/en-us/azure/architecture/framework/security/)
 - [CIS Azure Foundations Benchmark](https://www.cisecurity.org/benchmark/azure)
-- [Azure B2C Security Best Practices](https://docs.microsoft.com/en-us/azure/active-directory-b2c/security-best-practices)
+- [Azure B2C Security Best Practices](https://learn.microsoft.com/en-us/azure/active-directory-b2c/security-best-practices)
 
 ### 🛠️ **Security Tools**
 - **Azure Security Center**: Unified security management

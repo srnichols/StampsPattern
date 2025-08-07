@@ -1141,9 +1141,9 @@ fi
 - **Azure DevOps**: CI/CD pipeline management
 
 ### 📖 **Documentation References**
-- [Azure Monitor Best Practices](https://docs.microsoft.com/en-us/azure/azure-monitor/best-practices)
-- [Azure Well-Architected Operations](https://docs.microsoft.com/en-us/azure/architecture/framework/devops/)
-- [Disaster Recovery Planning](https://docs.microsoft.com/en-us/azure/site-recovery/)
+- [Azure Monitor Best Practices](https://learn.microsoft.com/en-us/azure/azure-monitor/best-practices)
+- [Azure Well-Architected Operations](https://learn.microsoft.com/en-us/azure/architecture/framework/devops/)
+- [Disaster Recovery Planning](https://learn.microsoft.com/en-us/azure/site-recovery/)
 
 ---
 

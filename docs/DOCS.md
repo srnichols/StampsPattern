@@ -1,4 +1,3 @@
-
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 
 ---
@@ -311,9 +310,9 @@ If you find gaps or areas for improvement in this documentation:
 - **Security Concerns**: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
 
 ### 📚 **Additional Resources**
-- **Azure Documentation**: [Azure Architecture Center](https://docs.microsoft.com/en-us/azure/architecture/)
-- **Stamps Pattern**: [Azure Application Architecture Guide](https://docs.microsoft.com/en-us/azure/architecture/guide/)
-- **Multi-Tenant SaaS**: [SaaS Architecture Guidance](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/apps/sap-production)
+- **Azure Documentation**: [Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/)
+- **Stamps Pattern**: [Azure Application Architecture Guide](https://learn.microsoft.com/en-us/azure/architecture/guide/)
+- **Multi-Tenant SaaS**: [SaaS Architecture Guidance](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/apps/sap-production)
 
 ### 🔐 **Security Highlights**
 - Multi-layer WAF protection
@@ -359,3 +358,5 @@ If you find gaps or areas for improvement in this documentation:
 **⚡ Quick Deploy**: Ready to deploy? Jump to [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
 **🏗️ Deep Dive**: Want technical details? Explore [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
+
+**🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to contribute, report issues, or suggest improvements.

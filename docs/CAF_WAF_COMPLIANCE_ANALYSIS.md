@@ -1023,7 +1023,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Known Issues](./KNOWN_ISSUES.md)
 - [All Docs Index](./DOCS.md)
 
-- [Azure Cloud Adoption Framework](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/)
+- [Azure Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/)
 - [Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/)
 - [Azure Security Benchmark](https://docs.microsoft.com/en-us/security/benchmark/azure/)
 - [Azure Naming Conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
