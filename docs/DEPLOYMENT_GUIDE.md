@@ -986,4 +986,4 @@ az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAM
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md)
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
-- [Cost Optimization](./COST_OPTIMIZATION.md)
+ - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
