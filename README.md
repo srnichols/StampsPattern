@@ -2,6 +2,11 @@
 
 > **Enterprise-ready, zero-trust, and cost-optimized Azure SaaS architecture for regulated industries and high-scale multi-tenancy.**
 
+
+> **Cloud Capacity Management & Supply Constraints**
+>
+> All major cloud providers occasionally face regional or zone capacity limits for compute and storage due to demand surges, supply chain issues, or quota exhaustion. The Stamps Pattern’s modular, zone-aware, and multi-region CELL design gives you more options to mitigate these challenges: if a region or AZ is at capacity, you can deploy new CELLs in available locations with minimal disruption, maintaining business continuity and agility even in constrained environments.
+
 This repository provides a production-grade, CAF/WAF-compliant Azure reference implementation for organizations seeking secure, scalable, and automated SaaS solutions. Designed for both IT leaders and developers, it enables rapid onboarding, compliance, and operational excellence.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)

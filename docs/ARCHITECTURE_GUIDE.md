@@ -49,34 +49,51 @@
 
 ## 🏗️ Architecture Overview
 
-This solution implements a sophisticated **GEO → Region → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution.
 
-### 🌍 **Visual: Global Architecture Hierarchy**
+This solution implements a sophisticated **GEO → Region → Availability Zone → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution. Availability Zones (AZs) are a critical layer for high availability (HA) and disaster recovery (DR), allowing each CELL to be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.
+
+> **Global Capacity Management & Cloud Supply Constraints**
+>
+> All major cloud providers occasionally face regional or zone capacity limits for compute and storage resources, due to demand surges, supply chain disruptions, or quota exhaustion. The Stamps Pattern architecture is designed to address this reality: its modular, zone-aware, and multi-region CELL approach enables organizations to deploy new workloads or scale existing ones in any available region or zone, minimizing business disruption. If a preferred region or AZ is at capacity, new CELLs can be provisioned elsewhere with minimal reconfiguration, ensuring business continuity and operational agility even in constrained environments.
+
+### 🌍 **Visual: Global Architecture Hierarchy with Availability Zones**
 
 ```mermaid
 graph TB
-    subgraph "� Global Layer"
+    subgraph "🌐 Global Layer"
         FD[Azure Front Door<br/>Global Load Balancing]
         TM[Traffic Manager<br/>DNS-based Routing]
         GF[Global Functions<br/>Tenant Management]
     end
     
-    subgraph "🌎 GEO: North America"
+    subgraph "� GEO: North America"
         subgraph "🏢 Region: East US"
-            AG1[App Gateway<br/>Regional Security]
-            C1[CELL-001<br/>Shared: 50 tenants]
-            C2[CELL-002<br/>Dedicated: 1 tenant]
+            subgraph "🗂️ AZ 1"
+                AG1[App Gateway<br/>Zone-Redundant]
+                C1[CELL-001<br/>Shared: 50 tenants]
+                C2[CELL-002<br/>Dedicated: 1 tenant]
+            end
+            subgraph "🗂️ AZ 2"
+                C3[CELL-003<br/>Shared: 30 tenants]
+            end
         end
         subgraph "🏢 Region: West US"
-            AG2[App Gateway<br/>Regional Security]
-            C3[CELL-003<br/>Shared: 75 tenants]
+            subgraph "🗂️ AZ 1"
+                AG2[App Gateway<br/>Zone-Redundant]
+                C4[CELL-004<br/>Shared: 75 tenants]
+            end
+            subgraph "🗂️ AZ 2"
+                C5[CELL-005<br/>Dedicated: 1 tenant]
+            end
         end
     end
     
     subgraph "🌍 GEO: Europe"
         subgraph "🏢 Region: West Europe"
-            AG3[App Gateway<br/>Regional Security]
-            C4[CELL-004<br/>Enterprise GDPR]
+            subgraph "🗂️ AZ 1"
+                AG3[App Gateway<br/>Zone-Redundant]
+                C6[CELL-006<br/>Enterprise GDPR]
+            end
         end
     end
     
@@ -86,8 +103,9 @@ graph TB
     
     AG1 --> C1
     AG1 --> C2
-    AG2 --> C3
-    AG3 --> C4
+    AG2 --> C4
+    AG2 --> C5
+    AG3 --> C6
 ```
 
 ### �🎯 **Key Design Principles (Explained)**
@@ -289,7 +307,12 @@ graph TD
 - **Response**: Traffic Manager routes to backup region
 - **Recovery**: Geo-disaster recovery procedures
 
-This solution implements a sophisticated **GEO → Region → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution.
+
+**Why Availability Zones Matter:**
+- **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures.
+- **Disaster Recovery (DR):** AZs enable rapid failover and business continuity.
+- **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload.
+
 
 ### 🌍 **Hierarchical Structure with Availability Zones**
 

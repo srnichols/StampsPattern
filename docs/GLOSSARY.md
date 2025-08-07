@@ -54,21 +54,35 @@ An Azure architectural pattern that deploys identical "stamps" of infrastructure
 - **Benefits**: Predictable performance, easier troubleshooting, horizontal scaling
 - **Example**: Netflix uses a similar pattern to serve different regions with identical infrastructure
 
-### **GEO → Region → CELL Hierarchy**
-The three-tier architecture structure of the Stamps Pattern:
+
+### **GEO → Region → Availability Zone → CELL Hierarchy**
+The four-tier architecture structure of the Stamps Pattern:
 - **GEO**: Geographic area (e.g., North America, Europe) - highest level routing
 - **Region**: Azure region within a GEO (e.g., East US, West Europe) - regional services
-- **CELL**: Individual application instance within a region - tenant hosting
+- **Availability Zone (AZ)**: Physically separate datacenters within a region, providing high availability and fault tolerance. Each CELL can be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.
+- **CELL**: Individual application instance within a zone - tenant hosting and logical isolation
 
-**Visual Representation**:
+**Visual Representation:**
 ```
 🌍 North America GEO
 ├── 🏢 East US Region
-│   ├── 🏠 CELL-001 (Shared: 50 tenants)
-│   └── 🏠 CELL-002 (Dedicated: 1 enterprise tenant)
+│   ├── 🗂️ AZ 1
+│   │   ├── 🏠 CELL-001 (Shared: 50 tenants)
+│   │   └── 🏠 CELL-002 (Dedicated: 1 enterprise tenant)
+│   └── 🗂️ AZ 2
+│       └── 🏠 CELL-003 (Shared: 30 tenants)
 └── 🏢 West US Region
-    └── 🏠 CELL-003 (Shared: 75 tenants)
+    ├── 🗂️ AZ 1
+    │   └── 🏠 CELL-004 (Shared: 75 tenants)
+    └── 🗂️ AZ 2
+        └── 🏠 CELL-005 (Dedicated: 1 enterprise tenant)
 ```
+
+**Why Availability Zones Matter:**
+- **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures.
+- **Disaster Recovery (DR):** AZs enable rapid failover and business continuity.
+- **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload.
+
 
 ### **CELL (Compute Environment for Logical Isolation)**
 An isolated application instance that hosts one or more tenants.

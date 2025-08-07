@@ -428,20 +428,22 @@ lifecycleRules: [
 - Step-by-step deployment guides for different tenancy models
 - Operational runbooks and troubleshooting guides
 
+
 ### ✅ **Ready** - Score: 92/100
 ✅ **Strong Foundation**
 - **Naming Conventions**: Fully compliant with CAF standards
-- **Resource Organization**: Clear hierarchy (GEO → Region → CELL)
-- **Tagging Strategy**: Comprehensive tag implementation
+- **Resource Organization**: Clear hierarchy (**GEO → Region → Availability Zone → CELL**)
+- **Tagging Strategy**: Comprehensive tag implementation, including zone count for all CELL-level resources
 - **Governance**: Parameterized templates for organization reusability
 
 **Evidence:**
 ```bicep
-// CAF-Compliant Naming Examples
+// CAF-Compliant Naming Examples (with zone awareness)
 'rg-stamps-eus-prod'                    // Resource Group
-'ca-shared-smb-z3-eus-prod'            // Container App
-'kv-us-eus-prod'                       // Key Vault
+'ca-shared-smb-z3-eus-prod'            // Container App (CELL, 3 zones)
+'kv-us-eus-prod'                       // Key Vault (zone-redundant by default)
 'law-stamps-eus-prod'                  // Log Analytics
+// New hierarchy: GEO → Region → Availability Zone → CELL
 ```
 
 ### 🚀 **Adopt** - Score: 90/100
@@ -557,14 +559,16 @@ resource diagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 
 ### 🔧 **Reliability Pillar** - Score: 89/100
 
+
 #### ✅ **Reliability Features:**
-- **Availability Zones**: Configurable 0-3 zone deployment
+- **Availability Zones**: Configurable 0-3 zone deployment per CELL (GEO → Region → AZ → CELL)
 - **Cross-Region**: Multi-geography replication
 - **Health Checks**: Front Door health probes + Application Gateway probes
-- **SLA Targets**: Documented SLA tiers (99.95%, 99.99%)
+- **SLA Targets**: Documented SLA tiers (99.95%, 99.99%) based on zone count
 - **ENHANCED**: Automated backup strategies with long-term retention
 - **ENHANCED**: Cosmos DB continuous backup (7-day PITR)
 - **ENHANCED**: SQL Database geo-zone backup redundancy
+
 
 #### ✅ **Reliability Improvements COMPLETED:**
 ```bicep
@@ -590,6 +594,10 @@ backupPolicy: {
 properties: {
   requestedBackupStorageRedundancy: 'GeoZone'
 }
+
+// Example: CELL-level resource with explicit zone count in name/tag
+'ca-shared-smb-z3-eus-prod' // Container App, 3 zones
+// Hierarchy: GEO → Region → Availability Zone → CELL
 ```
 
 ### 💰 **Cost Optimization** - Score: 87/100
@@ -926,6 +934,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 
 ---
 
+
 ## 🔗 Related Guides
 
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md)
@@ -934,7 +943,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Cost Optimization Guide](./COST_OPTIMIZATION_GUIDE.md)
 - [Developer Security Guide](./DEVELOPER_SECURITY_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Naming Conventions](./NAMING_CONVENTIONS.md) — see for full details on the **GEO → Region → Availability Zone → CELL** hierarchy and zone-aware naming/tagging
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
@@ -946,6 +955,14 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Azure Naming Conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
 
 ---
+
+
+---
+
+### **Why Availability Zones Matter in the Stamps Pattern**
+- **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures and supports strict SLA targets.
+- **Disaster Recovery (DR):** AZs enable rapid failover and business continuity for each CELL.
+- **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload, supporting both enterprise and cost-sensitive scenarios.
 
 *Assessment completed on: August 2, 2025*  
 *Assessor: AI Architecture Review Agent*  

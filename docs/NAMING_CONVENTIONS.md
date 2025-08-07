@@ -51,7 +51,7 @@
 
 This guide defines the standardized naming conventions for the Azure Stamps Pattern implementation to ensure consistency, clarity, and Azure best practices compliance.
 
-> **📝 Recent Updates**: This guide was enhanced to address naming consistency issues, particularly ensuring resource groups include Azure region abbreviations and storage accounts stay within the 24-character limit. All deployment scripts and templates have been updated to follow these standards.
+> **📝 Recent Updates**: This guide now reflects the four-tier hierarchy: **GEO → Region → Availability Zone → CELL**. All CELL-level resources should include zone information in their names and tags to support high availability (HA), disaster recovery (DR), and cost/SLA flexibility.
 
 ## 🌍 **Resource Group Naming**
 
@@ -115,10 +115,10 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 ```
 
 **Zone Count Convention**:
-- `z0`: Single zone (development/testing)
+- `z0`: No zone (development/testing, lowest cost)
 - `z1`: Single zone deployment (standard)
-- `z2`: Two-zone deployment (99.95% SLA)
-- `z3`: Three-zone deployment (99.99% SLA)
+- `z2`: Two-zone deployment (99.95% SLA, HA)
+- `z3`: Three-zone deployment (99.99% SLA, maximum resilience)
 
 ### **Data Resources**
 ```bicep
@@ -192,7 +192,10 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 // Example: acruseusprod
 ```
 
+
 ## 🔄 **Zone-Aware Naming Considerations**
+
+### **Hierarchy:** GEO → Region → Availability Zone → CELL
 
 ### **When to Include Zone Information**
 - ✅ **CELL Resources**: All CELL-level resources should include zone count (ca-, sqldb-, cosmos-)
@@ -204,10 +207,15 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 ### **Zone Count Mapping**
 | Zone Config | Naming | Use Case | SLA | Cost Impact |
 |-------------|--------|----------|-----|-------------|
-| **0 Zones** | `z0` | Development, testing | Standard | Baseline |
+| **0 Zones** | `z0` | No zone (dev/test, lowest cost) | Standard | Baseline |
 | **1 Zone** | `z1` | Single zone deployment | Standard | Baseline |
 | **2 Zones** | `z2` | Basic HA with failover | 99.95% | +20% |
 | **3 Zones** | `z3` | Maximum resilience | 99.99% | +40% |
+
+### **Why Availability Zones Matter**
+- **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures.
+- **Disaster Recovery (DR):** AZs enable rapid failover and business continuity.
+- **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload.
 
 ### **Examples by Tenancy Model**
 ```bicep

@@ -57,6 +57,44 @@ Cost optimization in the Azure Stamps Pattern requires understanding the **total
 
 ---
 
+
+## 🏗️ Zone Flexibility: Cost, Durability, and SLA Options
+
+The Azure Stamps Pattern is built on a four-tier hierarchy: **GEO → Region → Availability Zone → CELL**. This enables highly flexible deployment options for each CELL, allowing you to optimize for cost, durability, and business requirements at a granular level.
+
+- **No Zones (z0):** No zone redundancy. Lowest cost, suitable for dev/test or non-critical workloads. Standard durability and SLA.
+- **1 Zone (z1):** Single zone deployment, standard SLA, moderate cost.
+- **2 Zones (z2):** High availability with failover across two AZs, 99.95% SLA, increased cost (+20%).
+- **3 Zones (z3):** Maximum durability and resilience with three AZs, 99.99% SLA, highest cost (+40%).
+
+**Key Points:**
+- You can mix and match zone configurations per CELL to right-size cost, durability, and SLA for every tenant or workload.
+- Zone-aware naming and tagging (e.g., `ca-shared-smb-z3-eus-prod`) help track and manage these options and support compliance/auditing.
+- Higher zone count increases cost but provides stronger SLAs, disaster recovery, and business continuity.
+
+
+**Why Availability Zones Matter:**
+- **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures and supports strict SLA targets.
+- **Disaster Recovery (DR):** AZs enable rapid failover and business continuity for each CELL.
+- **Flexible Cost/SLA:** Choose the number of AZs per CELL to balance cost and durability for each tenant or workload, supporting both enterprise and cost-sensitive scenarios.
+
+> **Global Capacity Management & Cloud Supply Constraints**
+>
+> Cloud providers sometimes face regional or zone capacity limits for compute and storage due to demand spikes, supply chain issues, or quota exhaustion. The Stamps Pattern’s modular, zone-aware, and multi-region CELL design gives you more options to mitigate these challenges: if a region or AZ is at capacity, you can deploy new CELLs in available locations with minimal disruption, maintaining business continuity and agility even in constrained environments.
+
+**Example Table:**
+
+| Zone Config | Use Case | SLA Target | Cost Impact |
+|-------------|--------------------------|------------|-------------|
+| z0 (No Zones) | Dev/Test, non-critical  | Standard   | Lowest      |
+| z1 (1 Zone)  | Standard prod workloads | Standard   | Baseline    |
+| z2 (2 Zones) | HA, regulated workloads | 99.95%     | +20%        |
+| z3 (3 Zones) | Mission-critical, DR    | 99.99%     | +40%        |
+
+**Tip:** For cost-sensitive tenants, start with z0/z1. For enterprise or regulated tenants, use z2/z3 for higher durability and compliance.
+
+This flexibility is a core advantage of the Stamps Pattern—enabling you to right-size cost and resilience for every business scenario.
+
 ## 📊 Deployment Cost Analysis
 
 Understanding the cost implications of different deployment scenarios is crucial for making informed architectural decisions. The following analysis compares various deployment patterns across different scales and tenancy models.
