@@ -8,7 +8,7 @@
 
 ---
 
-## � Who Should Read This Guide?
+## 👥 Who Should Read This Guide?
 
 - **Operations/SRE Teams:** Day-to-day management, monitoring, and incident response
 - **DevOps Engineers:** Automation, maintenance, and scaling
@@ -27,17 +27,17 @@
 | [🚨 Incident Response](#-incident-response) | Emergency procedures | 10 min | Ops, SRE |
 | [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | 10 min | Ops, DevOps |
 | [📈 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
-| [� Related Guides](#-related-guides) | More docs | 2 min | All readers |
+| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
 
-### � **Key Subsections You Can Jump To:**
+### 🔗 **Key Subsections You Can Jump To:**
 - [🎛️ AI-Driven Operational Maturity](#%EF%B8%8F-ai-driven-operational-maturity)
 - [📈 Key Performance Indicators (KPIs)](#-key-performance-indicators-kpis)
 - [🚨 Alert Configuration](#-alert-configuration)  
 - [📊 Flexible Tenant Management Operations](#-flexible-tenant-management-operations)
-- [� Tenant Onboarding Automation](#-tenant-onboarding-automation)
+- [🔧 Tenant Onboarding Automation](#-tenant-onboarding-automation)
 - [📊 Custom Dashboards](#-custom-dashboards)
 - [🔄 Routine Maintenance Tasks](#-routine-maintenance-tasks)
-- [� Incident Classification](#-incident-classification)
+- [📋 Incident Classification](#-incident-classification)
 - [🔧 Incident Response Playbooks](#-incident-response-playbooks)
 - [📈 Growth Projections](#-growth-projections)
 - [🎯 Scaling Triggers](#-scaling-triggers)
