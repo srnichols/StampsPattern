@@ -17,6 +17,132 @@ Achieving an industry-leading **96/100 CAF/WAF compliance score**, this framewor
 
 **Perfect for organizations building mission-critical SaaS platforms** in healthcare (patient data isolation), financial services (regulatory compliance), government (data sovereignty), or any industry where security, compliance, and scalability are non-negotiable. The pattern provides a proven foundation to accelerate your SaaS journey, reduce architectural risk, and deliver measurable business value from day one.
 
+---
+
+## 🏗️ Architecture at a Glance
+
+The Azure Stamps Pattern implements a sophisticated **GEO → Region → Availability Zone → CELL** hierarchy that supports both shared and dedicated tenancy models with enterprise-grade security and global distribution.
+
+```mermaid
+graph TB
+    subgraph "🌐 Global Layer - Worldwide Traffic Management"
+        FD[🌍 Azure Front Door<br/>Global Load Balancing & WAF]
+        TM[🌐 Traffic Manager<br/>DNS-based Routing]
+        GF[⚡ Global Functions<br/>Tenant Management & Routing]
+    end
+    
+    subgraph "🗺️ GEO: North America"
+        subgraph "🏢 Region: East US"
+            subgraph "🏗️ APIM Layer"
+                APIM1[🔌 API Management<br/>Premium Multi-Region<br/>• Tenant Isolation<br/>• Rate Limiting<br/>• Developer Portal]
+            end
+            subgraph "🛡️ AZ 1 - High Availability"
+                AG1[🚪 Application Gateway<br/>Zone-Redundant WAF]
+                subgraph "📦 Shared CELL-001"
+                    CA1[🐳 Container Apps<br/>50 SMB Tenants]
+                    SQL1[🗄️ Azure SQL<br/>Multi-tenant DB]
+                    REDIS1[⚡ Redis Cache<br/>Shared Performance]
+                end
+                subgraph "🏢 Dedicated CELL-002"
+                    CA2[🐳 Container Apps<br/>1 Enterprise Tenant]
+                    SQL2[🗄️ Azure SQL<br/>Dedicated DB]
+                    REDIS2[⚡ Redis Cache<br/>Dedicated Performance]
+                end
+            end
+            subgraph "🛡️ AZ 2 - High Availability"
+                subgraph "📦 Shared CELL-003"
+                    CA3[🐳 Container Apps<br/>30 Mid-Market Tenants]
+                    SQL3[🗄️ Azure SQL<br/>Multi-tenant DB]
+                end
+            end
+            subgraph "🌍 Regional Services"
+                COSMOS1[🌐 Cosmos DB<br/>Global Distribution<br/>• Tenant Routing<br/>• Configuration Data]
+                KV1[🔐 Key Vault<br/>Secrets & Certificates]
+                LA1[📊 Log Analytics<br/>Centralized Monitoring]
+            end
+        end
+        
+        subgraph "🏢 Region: West US - DR & Scaling"
+            APIM2[🔌 API Management<br/>Multi-Region Replica]
+            subgraph "🛡️ AZ 1"
+                AG2[🚪 Application Gateway]
+                CELL4[📦 CELL-004<br/>🐳 75 Startup Tenants]
+            end
+            COSMOS2[🌐 Cosmos DB<br/>Read Replica]
+        end
+    end
+    
+    subgraph "🌍 GEO: Europe - GDPR Compliance"
+        subgraph "🏢 Region: West Europe"
+            APIM3[🔌 API Management<br/>GDPR Compliant Gateway]
+            subgraph "🛡️ AZ 1"
+                AG3[🚪 Application Gateway]
+                CELL5[🏛️ Enterprise CELL-005<br/>🐳 GDPR Banking Client<br/>🗄️ Dedicated SQL<br/>🔐 Customer-Managed Keys]
+            end
+            COSMOS3[🌐 Cosmos DB<br/>EU Data Residency]
+        end
+    end
+    
+    %% Traffic Flow
+    FD --> APIM1
+    FD --> APIM2
+    FD --> APIM3
+    
+    APIM1 --> AG1
+    APIM2 --> AG2
+    APIM3 --> AG3
+    
+    AG1 --> CA1
+    AG1 --> CA2
+    AG2 --> CELL4
+    AG3 --> CELL5
+    
+    %% Data Layer Connections
+    CA1 -.-> SQL1
+    CA2 -.-> SQL2
+    CA3 -.-> SQL3
+    
+    CA1 -.-> REDIS1
+    CA2 -.-> REDIS2
+    
+    GF -.-> COSMOS1
+    GF -.-> COSMOS2
+    GF -.-> COSMOS3
+    
+    %% Styling
+    classDef globalLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef geoLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef regionLayer fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef cellLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef dataLayer fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class FD,TM,GF globalLayer
+    class APIM1,APIM2,APIM3 geoLayer
+    class AG1,AG2,AG3 regionLayer
+    class CA1,CA2,CA3,CELL4,CELL5 cellLayer
+    class SQL1,SQL2,SQL3,COSMOS1,COSMOS2,COSMOS3,REDIS1,REDIS2 dataLayer
+```
+
+### 🎯 **Key Enterprise Services & Their Roles**
+
+| Service | Purpose | Tenancy Model | Enterprise Benefits |
+|---------|---------|---------------|-------------------|
+| 🔌 **API Management (APIM)** | Multi-region API gateway with tenant isolation | Premium tier with multi-region | Rate limiting, developer portals, policy enforcement |
+| 🌍 **Azure Front Door** | Global load balancing and WAF protection | Global with zone redundancy | DDoS protection, SSL termination, caching |
+| 🐳 **Container Apps** | Serverless application hosting | Shared or dedicated per CELL | Auto-scaling, zero-downtime deployments |
+| 🌐 **Cosmos DB** | Global tenant routing and configuration | Multi-region with consistency | 99.999% availability, global distribution |
+| 🗄️ **Azure SQL** | Tenant data storage | Shared schemas or dedicated databases | Enterprise security, backup, performance insights |
+| ⚡ **Redis Cache** | Performance acceleration | Shared or dedicated per tenant tier | 80-90% database hit reduction, sub-ms latency |
+| 🚪 **Application Gateway** | Regional traffic routing and WAF | Zone-redundant per region | SSL offloading, path-based routing, security |
+| 🔐 **Key Vault** | Secrets and certificate management | Per region with private endpoints | Hardware security modules, audit logging |
+
+**💡 Architecture Highlights:**
+- **🏠 Mixed Tenancy**: Shared CELLs for cost optimization ($8-16/tenant) + Dedicated CELLs for enterprise compliance ($3,200+/tenant)
+- **🌍 Global Resilience**: Multi-region deployment with automatic failover and disaster recovery
+- **🛡️ Zone Distribution**: 0-3 availability zones per CELL for different SLA requirements  
+- **🔒 Zero-Trust Security**: Private endpoints, managed identities, and network micro-segmentation
+- **📊 AI-Driven Operations**: Predictive scaling and intelligent monitoring across all layers
+
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
 ![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-96%2F100-brightgreen)
