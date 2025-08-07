@@ -424,7 +424,7 @@ lifecycleRules: [
 1. **Architecture Deep-Dive**: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
 2. **Security Implementation**: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
 3. **Operations Setup**: [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)
-4. **Quick Start Deployment**: [README.md - Quick Start](./README.md#-quick-start)
+4. **Quick Start Deployment**: [README.md - Quick Start](../README.md#-quick-start---choose-your-tenancy-model)
 
 ### **🛡️ For Compliance Teams**
 1. **Framework Mapping**: [Implementation Status](#-implementation-status) below

@@ -175,7 +175,7 @@ journey
 1. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Complete compliance assessment *(25 minutes)*
 2. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(20 minutes)*
 3. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - Governance and policy automation *(15 minutes)*
-4. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md#-compliance-framework)** - Audit readiness procedures *(10 minutes)*
+4. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md#-post-deployment-validation)** - Audit readiness procedures *(10 minutes)*
 
 #### 👨‍💻 **For Developers & DevOps Engineers**
 ```mermaid
@@ -238,9 +238,9 @@ journey
 ### 🚀 **Deployment Quick Links**
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
-| 🌟 **Simple 2-Region Setup** | [DEPLOYMENT_GUIDE - Option 1](./DEPLOYMENT_GUIDE.md#-option-1-simple-two-region-setup-recommended-for-getting-started) | 45 minutes |
-| 🌍 **Enterprise Multi-GEO** | [DEPLOYMENT_GUIDE - Option 2](./DEPLOYMENT_GUIDE.md#-option-2-global-multi-geo-setup-production) | 2-3 hours |
-| 🔧 **Automation Setup** | [DEPLOYMENT_GUIDE - Automation](./DEPLOYMENT_GUIDE.md#-automation-options) | 30 minutes |
+| 🌟 **Simple 2-Region Setup** | [DEPLOYMENT_GUIDE - Option 1](./DEPLOYMENT_GUIDE.md#-option-1-simple-two-region-setup-manual-bicep-deployment) | 45 minutes |
+| 🌍 **Enterprise Multi-GEO** | [DEPLOYMENT_GUIDE - Option 2](./DEPLOYMENT_GUIDE.md#-option-2-global-multi-geo-setup-advanced-manual-deployment) | 2-3 hours |
+| 🔧 **Automation Setup** | [DEPLOYMENT_GUIDE - Methods](./DEPLOYMENT_GUIDE.md#-deployment-methods) | 30 minutes |
 
 ### 🆕 **Implementation Quick Links**
 | Feature | Documentation | Implementation Details |
@@ -255,17 +255,17 @@ journey
 ### ⚙️ **Operations Quick Links**
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
-| 🏠 **Add New Tenant (CELL)** | [OPERATIONS_GUIDE - Adding Tenants](./OPERATIONS_GUIDE.md#-adding-new-tenants-cells) | 20 minutes |
+| 🏠 **Add New Tenant (CELL)** | [OPERATIONS_GUIDE - Tenant Management](./OPERATIONS_GUIDE.md#-flexible-tenant-management-operations) | 20 minutes |
 | 🚨 **Incident Response** | [OPERATIONS_GUIDE - Incident Response](./OPERATIONS_GUIDE.md#-incident-response) | 15 minutes |
 | 📊 **Monitoring Setup** | [OPERATIONS_GUIDE - Monitoring](./OPERATIONS_GUIDE.md#-monitoring--observability) | 30 minutes |
-| 🔧 **Troubleshooting** | [OPERATIONS_GUIDE - Troubleshooting](./OPERATIONS_GUIDE.md#%EF%B8%8F-troubleshooting-guide) | Variable |
+| 🔧 **Troubleshooting** | [OPERATIONS_GUIDE - Maintenance](./OPERATIONS_GUIDE.md#-maintenance-procedures) | Variable |
 
 ### 🛡️ **Security Quick Links**
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
 | ✅ **Security Baseline** | [SECURITY_GUIDE - Overview](./SECURITY_GUIDE.md#-security-overview) | 30 minutes |
 | 🔐 **Identity Setup** | [SECURITY_GUIDE - Identity](./SECURITY_GUIDE.md#-identity--access-management) | 45 minutes |
-| 📋 **Compliance Checklist** | [SECURITY_GUIDE - Compliance](./SECURITY_GUIDE.md#-compliance-frameworks) | 20 minutes |
+| 📋 **Compliance Checklist** | [SECURITY_GUIDE - Compliance](./SECURITY_GUIDE.md#-security-baseline-compliance) | 20 minutes |
 
 ### �️ **Architecture Reference**
 

@@ -22,16 +22,25 @@
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🎯 Operations Overview](#operations-overview) | What operations covers | 5 min | All readers |
-| [📊 Monitoring & Observability](#monitoring--observability) | Multi-layer monitoring | 15 min | Ops, DevOps |
-| [🤖 Predictive Analytics](#predictive-analytics--intelligence) | AI-powered insights | 10 min | Ops, IT Leaders |
-| [🚨 Incident Response](#incident-response) | Emergency procedures | 10 min | Ops, SRE |
-| [🔧 Maintenance](#maintenance-procedures) | Routine/automated tasks | 10 min | Ops, DevOps |
-| [📈 Performance & Scaling](#capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
-| [💰 Cost Intelligence](#cost-intelligence--optimization) | Cost optimization | 5 min | IT Leaders |
-| [🛠️ Troubleshooting](#advanced-troubleshooting) | Issue resolution | 10 min | Ops, DevOps |
-| [📋 Governance Automation](#governance-automation) | Policy-driven ops | 5 min | Security, Ops |
-| [📚 Related Guides](#related-guides) | More docs | 2 min | All readers |
+| [🎯 Operations Overview](#-operations-overview) | What operations covers | 5 min | All readers |
+| [📊 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | 15 min | Ops, DevOps |
+| [🚨 Incident Response](#-incident-response) | Emergency procedures | 10 min | Ops, SRE |
+| [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | 10 min | Ops, DevOps |
+| [📈 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
+| [� Related Guides](#-related-guides) | More docs | 2 min | All readers |
+
+### � **Key Subsections You Can Jump To:**
+- [🎛️ AI-Driven Operational Maturity](#%EF%B8%8F-ai-driven-operational-maturity)
+- [📈 Key Performance Indicators (KPIs)](#-key-performance-indicators-kpis)
+- [🚨 Alert Configuration](#-alert-configuration)  
+- [📊 Flexible Tenant Management Operations](#-flexible-tenant-management-operations)
+- [� Tenant Onboarding Automation](#-tenant-onboarding-automation)
+- [📊 Custom Dashboards](#-custom-dashboards)
+- [🔄 Routine Maintenance Tasks](#-routine-maintenance-tasks)
+- [� Incident Classification](#-incident-classification)
+- [🔧 Incident Response Playbooks](#-incident-response-playbooks)
+- [📈 Growth Projections](#-growth-projections)
+- [🎯 Scaling Triggers](#-scaling-triggers)
 
 ---
 
@@ -81,10 +90,13 @@ graph LR
 
 ---
 
+## 🎯 Operations Overview
+
 This guide provides comprehensive operational procedures for managing, monitoring, and maintaining the Azure Stamps Pattern infrastructure in production environments.
 
-
 ---
+
+## 📊 Monitoring & Observability
 
 Effective monitoring and observability in the Azure Stamps Pattern goes beyond traditional metrics collection to provide intelligent, AI-driven insights that enable proactive operations. The multi-layer monitoring strategy provides comprehensive visibility from global traffic patterns down to individual tenant performance, enabling rapid issue identification, intelligent capacity planning, and automated optimization. This approach transforms reactive operations into predictive, data-driven decision making.
 
@@ -537,6 +549,10 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 
 ---
 
+---
+
+## 🔧 Maintenance Procedures
+
 ### 🔄 **Routine Maintenance Tasks**
 
 #### Weekly Tasks:
@@ -740,6 +756,8 @@ echo "✅ Infrastructure update completed"
 
 
 ---
+
+## 🚨 Incident Response
 
 Incident response in the Azure Stamps Pattern leverages AI-driven detection and automated response workflows to minimize Mean Time to Detection (MTTD) and Mean Time to Resolution (MTTR). The intelligent incident response system automatically correlates signals across multiple monitoring layers, provides contextual information for faster diagnosis, and can execute predetermined response actions for common scenarios. This approach ensures that incidents are detected early, escalated appropriately, and resolved with minimal business impact.
 
@@ -1028,6 +1046,10 @@ echo "✅ Data recovery completed for $TARGET_CELL"
 
 
 ---
+
+---
+
+## 📈 Performance & Scaling (Capacity Planning)
 
 ### 📈 **Growth Projections**
 
