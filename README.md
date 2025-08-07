@@ -27,8 +27,8 @@ The Azure Stamps Pattern implements a sophisticated **GEO → Region → Availab
 graph TB
     subgraph "🌐 Global Layer - Worldwide Traffic Management"
         FD[🌍 Azure Front Door<br/>Global Load Balancing & WAF]
-        TM[🌐 Traffic Manager<br/>DNS-based Routing]
         GF[⚡ Global Functions<br/>Tenant Management & Routing]
+        TM[🌐 Traffic Manager<br/>DNS-based Routing]
     end
     
     subgraph "🗺️ GEO: North America"
