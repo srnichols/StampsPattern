@@ -8,7 +8,7 @@
 
 ---
 
-## � Who Should Read This Guide?
+## 👥 Who Should Read This Guide?
 
 - **Security Architects:** Design and validate zero-trust controls
 - **DevOps/Cloud Engineers:** Implement and automate security policies
@@ -657,7 +657,7 @@ actions:
 
 ---
 
-## � Related Guides
+## 📚 Related Guides
 
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md)
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)

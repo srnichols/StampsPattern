@@ -362,7 +362,7 @@ ROI = (Annual Savings - Implementation Cost) / Implementation Cost × 100%
 
 ---
 
-## � Cost Monitoring & Governance
+## 📊 Cost Monitoring & Governance
 
 ### 🛠️ **Cost Management Tools & Setup**
 
@@ -435,7 +435,7 @@ pie title Monthly Cost Allocation ($45,000)
 
 ---
 
-## � Practical Optimization Examples
+## 💡 Practical Optimization Examples
 
 ### 📈 **Case Study 1: SaaS Startup (50 tenants → 200 tenants)**
 

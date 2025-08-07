@@ -66,7 +66,7 @@ graph TB
         GF[Global Functions<br/>Tenant Management]
     end
     
-    subgraph "� GEO: North America"
+    subgraph "🌍 GEO: North America"
         subgraph "🏢 Region: East US"
             subgraph "🗂️ AZ 1"
                 AG1[App Gateway<br/>Zone-Redundant]
@@ -108,7 +108,7 @@ graph TB
     AG3 --> C6
 ```
 
-### �🎯 **Key Design Principles (Explained)**
+### 🎯 **Key Design Principles (Explained)**
 
 | Principle | What It Means | Real-World Analogy | Implementation |
 |-----------|---------------|-------------------|----------------|

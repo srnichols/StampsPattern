@@ -38,7 +38,7 @@
 ---
 
 
-## � Getting Started: What is Parameterization?
+## 🚀 Getting Started: What is Parameterization?
 
 Parameterization means making every deployment flexible and reusable—no more hardcoded values. You can deploy the same templates and scripts for any organization, region, or environment, simply by changing parameters. This approach unlocks:
 

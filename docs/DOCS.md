@@ -267,7 +267,7 @@ journey
 | 🔐 **Identity Setup** | [SECURITY_GUIDE - Identity](./SECURITY_GUIDE.md#-identity--access-management) | 45 minutes |
 | 📋 **Compliance Checklist** | [SECURITY_GUIDE - Compliance](./SECURITY_GUIDE.md#-security-baseline-compliance) | 20 minutes |
 
-### �️ **Architecture Reference**
+### 🏗️ **Architecture Reference**
 
 #### **📐 System Layers**
 ```

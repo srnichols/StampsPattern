@@ -210,7 +210,7 @@ For deployments using custom domains, organization names, or multi-geography req
 
 This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The implementation supports multiple tenancy models within the same architecture.
 
-## � Enhanced Deployment Options
+## 🚀 Enhanced Deployment Options
 
 Choose your deployment path based on your tenancy requirements:
 
@@ -362,7 +362,7 @@ chmod +x ../scripts/deploy-stamps.sh
 
 ---
 
-## �📋 Prerequisites
+## 📋 Prerequisites
 
 ### ✅ Required Tools
 ```bash
