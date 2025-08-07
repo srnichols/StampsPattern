@@ -1150,7 +1150,7 @@ fi
 
 ---
 
-## � Related Guides
+## 📚 Related Guides
 
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md)
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
