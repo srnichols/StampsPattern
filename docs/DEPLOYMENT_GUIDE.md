@@ -78,6 +78,37 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
           └── 👥 Tenants (1-100 depending on model)
 ```
 
+### 🗺️ **Deployment Flow Overview**
+
+```mermaid
+graph TD
+    A[🚀 Start Deployment] --> B{Prerequisites Met?}
+    B -->|No| C[📋 Install Tools<br/>Azure CLI, Bicep, PowerShell]
+    B -->|Yes| D[🎯 Choose Tenancy Model]
+    C --> D
+    
+    D --> E{Deployment Model?}
+    E -->|Shared| F[💰 Cost-Optimized<br/>$8-16/tenant/month]
+    E -->|Dedicated| G[🏢 Enterprise-Grade<br/>$3,200+/tenant/month]
+    E -->|Mixed| H[🏠 Recommended<br/>$8-3,200/tenant/month]
+    
+    F --> I[⚡ Quick Deploy<br/>30 minutes]
+    G --> J[🛡️ Enterprise Deploy<br/>60 minutes]
+    H --> K[🎯 Flexible Deploy<br/>45 minutes]
+    
+    I --> L[🧪 Post-Deployment Tests]
+    J --> L
+    K --> L
+    
+    L --> M{Tests Pass?}
+    M -->|No| N[🛠️ Troubleshooting<br/>Check Known Issues]
+    M -->|Yes| O[✅ Deployment Complete]
+    N --> L
+    
+    style H fill:#90EE90
+    style K fill:#90EE90
+```
+
 ### **What Gets Deployed**
 - **Global Layer**: DNS routing, CDN, global tenant directory
 - **Regional Layer**: Security gateways, monitoring, regional services  

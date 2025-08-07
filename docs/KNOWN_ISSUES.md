@@ -43,6 +43,87 @@
 > - **Onboarding:** New team members ramp up quickly by seeing common pitfalls
 > - **Operational excellence:** Reduce downtime and improve reliability
 
+### 🔍 **Troubleshooting Decision Tree**
+
+```mermaid
+graph TD
+    A[🚨 Issue Detected] --> B{Issue Category?}
+    
+    B -->|Deployment| C[🚀 Deployment Issues]
+    B -->|Development| D[🔧 Development Issues]
+    B -->|Performance| E[⚡ Performance Issues]
+    B -->|Security| F[🔐 Security Issues]
+    B -->|Database| G[🗃️ Database Issues]
+    B -->|Operations| H[🧰 Operational Issues]
+    
+    C --> C1{Bicep Error?}
+    C1 -->|Yes| C2[Validate Template<br/>Check Syntax]
+    C1 -->|No| C3{Naming Conflict?}
+    C3 -->|Yes| C4[Check Resource Names<br/>Update Parameters]
+    C3 -->|No| C5[Check Prerequisites<br/>Review Quota]
+    
+    D --> D1{Local Dev?}
+    D1 -->|Yes| D2[Check Emulator<br/>Update Settings]
+    D1 -->|No| D3[Review Redis Config<br/>Check Connections]
+    
+    E --> E1{JWT Slow?}
+    E1 -->|Yes| E2[Check JWKS Cache<br/>Update Settings]
+    E1 -->|No| E3{Database Slow?}
+    E3 -->|Yes| E4[Check Query Performance<br/>Review Indexes]
+    
+    F --> F1[Review Security Settings<br/>Check Key Vault Access]
+    
+    G --> G1{Timeout?}
+    G1 -->|Yes| G2[Check Connection Pool<br/>Review Query Time]
+    G1 -->|No| G3[Review SQL Performance<br/>Check Indexes]
+    
+    H --> H1{Health Check Fail?}
+    H1 -->|Yes| H2[Check Service Health<br/>Review Dependencies]
+    H1 -->|No| H3[Check Memory Usage<br/>Review Scaling]
+    
+    style A fill:#ff6b6b,color:#fff
+    style C2 fill:#90EE90
+    style C4 fill:#90EE90
+    style D2 fill:#90EE90
+    style E2 fill:#90EE90
+    style E4 fill:#90EE90
+```
+
+### 📊 **Issue Resolution Matrix**
+
+```mermaid
+graph LR
+    subgraph "🎯 Issue Severity"
+        A[🔴 Critical<br/>Production Down]
+        B[🟠 High<br/>Major Feature Impact]
+        C[🟡 Medium<br/>Minor Impact]
+        D[🟢 Low<br/>Enhancement]
+    end
+    
+    subgraph "⏱️ Response Time"
+        A1[Immediate<br/>15 minutes]
+        B1[Urgent<br/>2 hours]
+        C1[Standard<br/>24 hours]
+        D1[Planned<br/>Next Sprint]
+    end
+    
+    subgraph "👥 Escalation Path"
+        A2[On-Call Engineer<br/>+ Management]
+        B2[Senior Engineer<br/>+ Team Lead]
+        C2[Team Member<br/>Self-Service]
+        D2[Backlog<br/>Planning]
+    end
+    
+    A --> A1 --> A2
+    B --> B1 --> B2
+    C --> C1 --> C2
+    D --> D1 --> D2
+    
+    style A fill:#ffebee
+    style A1 fill:#ffebee
+    style A2 fill:#ffebee
+```
+
 ---
 
 # 🛠️ Known Issues & Workarounds - Azure Stamps Pattern

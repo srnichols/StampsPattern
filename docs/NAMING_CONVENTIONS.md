@@ -53,6 +53,62 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 
 > **📝 Recent Updates**: This guide now reflects the four-tier hierarchy: **GEO → Region → Availability Zone → CELL**. All CELL-level resources should include zone information in their names and tags to support high availability (HA), disaster recovery (DR), and cost/SLA flexibility.
 
+### 🏗️ **Naming Convention Architecture**
+
+```mermaid
+graph TD
+    subgraph "🌍 Global Layer"
+        A[cosmos-stamps-global<br/>🌐 Global Services]
+    end
+    
+    subgraph "🗺️ Geography Layer"
+        B[rg-stamps-eus-prod<br/>📍 Regional Resources]
+        C[agw-us-eus-prod<br/>🚪 Application Gateway]
+    end
+    
+    subgraph "🏠 CELL Layer - Zone Aware"
+        D[ca-shared-smb-z3-eus-prod<br/>🐳 3-Zone Shared CELL]
+        E[ca-dedicated-bank-z2-eus-prod<br/>🏢 2-Zone Dedicated CELL]
+        F[sqldb-shared-smb-z3-eus-prod<br/>🗄️ Multi-Zone Database]
+        G[st-us-eus-start-z1-dev<br/>💾 Single-Zone Storage]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    C --> E
+    D --> F
+    E --> F
+    D --> G
+    
+    style D fill:#90EE90
+    style E fill:#87CEEB
+    style F fill:#FFB6C1
+    style G fill:#DDA0DD
+```
+
+### 🎯 **Zone-Aware Naming Strategy**
+
+```mermaid
+graph LR
+    subgraph "💰 Cost vs Resilience"
+        A[z0: No Zone<br/>💰 Lowest Cost<br/>🔴 Basic SLA]
+        B[z1: Single Zone<br/>💰 Low Cost<br/>🟡 Standard SLA]
+        C[z2: Two Zones<br/>💰 Medium Cost<br/>🟠 99.95% SLA]
+        D[z3: Three Zones<br/>💰 Highest Cost<br/>🟢 99.99% SLA]
+    end
+    
+    A -->|Dev/Test| E[ca-test-app-z0-eus-dev]
+    B -->|Standard Prod| F[ca-shared-smb-z1-eus-prod]
+    C -->|Enterprise| G[ca-dedicated-bank-z2-eus-prod]
+    D -->|Mission Critical| H[ca-critical-health-z3-eus-prod]
+    
+    style A fill:#ffebee
+    style B fill:#fff3e0
+    style C fill:#e8f5e8
+    style D fill:#e1f5fe
+```
+
 ## 🌍 **Resource Group Naming**
 
 ### **Pattern**: `rg-{purpose}-{region-short}-{environment}`

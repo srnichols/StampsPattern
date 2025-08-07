@@ -58,6 +58,69 @@ Parameterization means making every deployment flexible and reusable—no more h
 
 The Azure Stamps Pattern templates have been enhanced with comprehensive parameterization to make them reusable across different organizations, geographies, and environments. All previously hardcoded values are now configurable parameters, enabling **enterprise-grade multi-organization support** with custom domains, branding, and geographic deployment strategies.
 
+### 📊 **Parameterization Architecture Overview**
+
+```mermaid
+graph TD
+    A[🏢 Organization Parameters] --> D[🏗️ Template Processing]
+    B[🌍 Geography Parameters] --> D
+    C[🏷️ Tagging Parameters] --> D
+    
+    D --> E[📝 Bicep Templates]
+    D --> F[🔧 PowerShell Scripts]
+    D --> G[📋 Parameter Files]
+    
+    E --> H[🚀 Deployment Engine]
+    F --> H
+    G --> H
+    
+    H --> I[🏠 Shared CELLs]
+    H --> J[🏢 Dedicated CELLs]
+    H --> K[🌐 Global Services]
+    
+    subgraph "🔧 Parameter Types"
+        A1[organizationDomain<br/>organizationName<br/>department<br/>ownerEmail]
+        B1[geoName<br/>baseDnsZoneName<br/>region]
+        C1[projectName<br/>workloadName<br/>environment]
+    end
+    
+    A --- A1
+    B --- B1
+    C --- C1
+    
+    style D fill:#e1f5fe
+    style H fill:#f3e5f5
+```
+
+### 🔄 **Before vs After: Template Flexibility**
+
+```mermaid
+graph LR
+    subgraph "❌ Before: Hardcoded"
+        A1[Fixed Domain:<br/>stamps.contoso.com]
+        A2[Fixed Tags:<br/>project: StampsPattern<br/>owner: platform-team]
+        A3[Fixed Geography:<br/>northamerica]
+        A4[Single Organization<br/>Only]
+    end
+    
+    subgraph "✅ After: Parameterized"
+        B1[Dynamic Domain:<br/>$baseDnsZone.$orgDomain]
+        B2[Flexible Tags:<br/>project: $projectName<br/>owner: $ownerEmail]
+        B3[Multi-Geography:<br/>$geoName]
+        B4[Multi-Organization<br/>Support]
+    end
+    
+    A1 -.->|Transform| B1
+    A2 -.->|Transform| B2
+    A3 -.->|Transform| B3
+    A4 -.->|Transform| B4
+    
+    style B1 fill:#90EE90
+    style B2 fill:#90EE90
+    style B3 fill:#90EE90
+    style B4 fill:#90EE90
+```
+
 ## 🔧 New Parameters Added
 
 ### **Organization Parameters**
