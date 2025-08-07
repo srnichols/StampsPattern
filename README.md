@@ -127,13 +127,14 @@ graph TB
 
 | Service | Purpose | Tenancy Model | Enterprise Benefits |
 |---------|---------|---------------|-------------------|
-| 🔌 **API Management (APIM)** | Multi-region API gateway with tenant isolation | Premium tier with multi-region | Rate limiting, developer portals, policy enforcement |
+| 🌐 **Traffic Manager** | DNS-based global traffic routing and failover | Global profile with multiple endpoints | Automatic failover, geographic routing, performance-based routing |
 | 🌍 **Azure Front Door** | Global load balancing and WAF protection | Global with zone redundancy | DDoS protection, SSL termination, caching |
-| 🐳 **Container Apps** | Serverless application hosting | Shared or dedicated per CELL | Auto-scaling, zero-downtime deployments |
-| 🌐 **Cosmos DB** | Global tenant routing and configuration | Multi-region with consistency | 99.999% availability, global distribution |
-| 🗄️ **Azure SQL** | Tenant data storage | Shared schemas or dedicated databases | Enterprise security, backup, performance insights |
-| ⚡ **Redis Cache** | Performance acceleration | Shared or dedicated per tenant tier | 80-90% database hit reduction, sub-ms latency |
+| 🔌 **API Management (APIM)** | Multi-region API gateway with tenant isolation | Premium tier with multi-region | Rate limiting, developer portals, policy enforcement |
 | 🚪 **Application Gateway** | Regional traffic routing and WAF | Zone-redundant per region | SSL offloading, path-based routing, security |
+| 🐳 **Container Apps** | Serverless application hosting | Shared or dedicated per CELL | Auto-scaling, zero-downtime deployments |
+| ⚡ **Redis Cache** | Performance acceleration | Shared or dedicated per tenant tier | 80-90% database hit reduction, sub-ms latency |
+| 🗄️ **Azure SQL** | Tenant data storage | Shared schemas or dedicated databases | Enterprise security, backup, performance insights |
+| 🌐 **Cosmos DB** | Global tenant routing and configuration | Multi-region with consistency | 99.999% availability, global distribution |
 | 🔐 **Key Vault** | Secrets and certificate management | Per region with private endpoints | Hardware security modules, audit logging |
 
 **💡 Architecture Highlights:**
