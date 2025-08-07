@@ -33,7 +33,7 @@ graph LR
 9. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Resource naming standards *(15 minutes)*
 
 ### **Phase 4: Status & Troubleshooting (As Needed)**
-10. **✅ [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)** - Complete implementation progress *(20 minutes)*
+10. **✅ [IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)** - Complete implementation progress *(20 minutes)*
 11. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
 12. **📋 [RECOMMENDATIONS_REPORT.md](./RECOMMENDATIONS_REPORT.md)** - Implementation achievements *(15 minutes)*
 
@@ -119,7 +119,7 @@ The Azure Stamps Pattern provides a comprehensive, enterprise-ready infrastructu
 | [📄 **README.md**](../README.md) | Project overview, quick start, business value | All stakeholders | ⭐⭐ | 15 min |
 | [📖 **GLOSSARY.md**](./GLOSSARY.md) | **NEW** - Key terms and concepts explained | Newcomers to Azure/Stamps Pattern | ⭐⭐ | 15 min |
 | [📊 **CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | Enterprise compliance showcase (96/100) | Decision Makers, Compliance Officers | ⭐⭐⭐ | 25 min |
-| [✅ **IMPLEMENTATION_STATUS.md**](./IMPLEMENTATION_STATUS.md) | Complete implementation progress (100% complete) | Developers, Project Managers | ⭐⭐⭐ | 20 min |
+| [✅ **IMPLEMENTATION_STATUS.md**](./archive/IMPLEMENTATION_STATUS.md) | Complete implementation progress (100% complete) | Developers, Project Managers | ⭐⭐⭐ | 20 min |
 | [📋 **RECOMMENDATIONS_REPORT.md**](./RECOMMENDATIONS_REPORT.md) | All recommendations implemented with status | Technical Teams | ⭐⭐⭐ | 15 min |
 | [🏗️ **ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Technical deep-dive, system design, traffic flow | Solution Architects, DevOps Engineers | ⭐⭐⭐⭐ | 30 min |
 | [🚀 **DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | DevOps Engineers, Platform Engineers | ⭐⭐⭐ | 45 min |
@@ -221,7 +221,7 @@ journey
 
 **📋 Recommended Path:**
 1. **📄 [README.md](../README.md)** - Quick start and prerequisites *(10 minutes)*
-2. **✅ [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)** - **NEW** - Complete implementation overview *(20 minutes)*
+2. **✅ [IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)** - **NEW** - Complete implementation overview *(20 minutes)*
 3. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment *(45 minutes)*
 4. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - **NEW** - Troubleshooting common issues *(Reference as needed)*
 5. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Multi-org template customization *(20 minutes)*

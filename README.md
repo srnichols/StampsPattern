@@ -1,6 +1,19 @@
 # 🌍 Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (96/100 Score) ✅ COMPLETE
 
-The **Azure Stamps Pattern** represents a **gold-standard enterprise architecture** achieving **96/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
+The **Azure Stamps Pattern** repre| **9** | 🔧 [**KNOWN_ISSUES.m| � Guide | 🎯 Purpose | 👥 Audience | 🔗 Link |
+|----------|------------|-------------|----------|
+| 🏗️ **Architecture Guide** | Technical deep-dive: layers, traffic flow, security architecture | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./docs/ARCHITECTURE_GUIDE.md) |
+| �📋 **Parameterization Guide** | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |
+| 🚀 **Deployment Guide** | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |
+| ⚙️ **Operations Guide** | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
+| 🛡️ **Security Guide** | Security baseline, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./docs/SECURITY_GUIDE.md) |
+
+### 📋 **Quick Reference**
+- **📚 Complete Documentation Hub**: [DOCS.md](./docs/DOCS.md) - Master documentation index with navigation tips
+- **🚀 Quick Start**: See [deployment section](#-quick-start) below
+| 🚀 **Deployment Guide** | Step-by-step deployment with governance automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |*](./docs/KNOWN_ISSUES.md) | Troubleshooting guide and solutions | 15 minutes |
+
+### 🎯 **Role-Based Quick Start**ts a **gold-standard enterprise architecture** achieving **96/100 CAF/WAF compliance score** through comprehensive implementation of Cloud Adoption Framework and Well-Architected Framework principles. This sophisticated multi-tenant SaaS platform delivers **intelligent flexible tenant isolation** with unlimited scalability, advanced security, and enterprise-grade governance.
 
 ### 🚨 **Latest Implementation Complete (August 2025)** ✅
 
@@ -40,7 +53,7 @@ This pattern is particularly powerful for **regulated industries** (healthcare, 
 
 > **📚 DOCUMENTATION SITEMAP**: New to this architecture? Start with our comprehensive **[📋 Documentation Sitemap](./docs/DOCS.md)** for guided navigation through all guides, role-based learning paths, and quick-start options. This master index helps you find exactly what you need based on your role and requirements.
 
-> **✅ IMPLEMENTATION STATUS**: Want to see what enterprise features have been implemented? Check our **[📊 Implementation Status Report](./docs/IMPLEMENTATION_STATUS.md)** for complete progress tracking and **[🛠️ Known Issues Guide](./docs/KNOWN_ISSUES.md)** for troubleshooting solutions.
+- **Implementation Status**: [IMPLEMENTATION_STATUS.md](./docs/archive/IMPLEMENTATION_STATUS.md) - What's been built
 
 ## ✨ **Enterprise Features - Enhanced CAF/WAF Compliant**
 
@@ -128,11 +141,10 @@ journey
 | **3** | 🏆 [**CAF_WAF_COMPLIANCE_ANALYSIS.md**](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) | **CAF/WAF Compliance Scorecard (94/100)** | 20 minutes |
 | **4** | 📋 [**NAMING_CONVENTIONS.md**](./docs/NAMING_CONVENTIONS.md) | Naming standards and best practices | 15 minutes |
 | **5** | 📋 [**PARAMETERIZATION_GUIDE.md**](./docs/PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
-| **5** | � [**PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | 20 minutes |
-| **6** | �🚀 [**DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
-| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
-| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
-| **9** | 🚪 [**APIM_INTEGRATION_SUMMARY.md**](./docs/APIM_INTEGRATION_SUMMARY.md) | API Management integration and enterprise features | 15 minutes |
+| **6** | 🚀 [**DEPLOYMENT_GUIDE.md**](./docs/DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | 45 minutes |
+| **7** | 🔒 [**SECURITY_GUIDE.md**](./docs/SECURITY_GUIDE.md) | Zero-trust security and compliance | 40 minutes |
+| **8** | ⚙️ [**OPERATIONS_GUIDE.md**](./docs/OPERATIONS_GUIDE.md) | Production operations and AI-driven monitoring | 45 minutes |
+| **9** | � [**KNOWN_ISSUES.md**](./docs/KNOWN_ISSUES.md) | Troubleshooting guide and solutions | 15 minutes |
 
 ### 🎯 **Role-Based Quick Start**
 
@@ -261,7 +273,7 @@ Ensure you have these tools installed:
 - ✅ PowerShell 7+ (for enhanced deployment script)
 - ✅ Azure subscription with **Contributor** access
 
-**🔧 Multi-Organization Support**: For custom domains and organization-specific deployments, see the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
+**🔧 Multi-Organization Support**: For custom domains and organization-specific deployments, see the [📋 Parameterization Guide](./docs/PARAMETERIZATION_GUIDE.md) for template customization options.
 
 ### 🎯 **Choose Your Tenancy Model**
 
