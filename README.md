@@ -3,13 +3,13 @@
 
 Azure Stamps Pattern is a comprehensive, production-grade reference architecture for building secure, scalable, and cost-optimized SaaS solutions on Azure. Designed for regulated industries and high-scale multi-tenancy, this framework implements a modular, zero-trust, and policy-driven approach that accelerates onboarding, ensures compliance, and enables operational excellence.
 
-This solution goes beyond basic templates by delivering a layered, zone-aware architecture (GEO → Region → CELL → Availability Zone) that supports both shared and dedicated tenancy models. It empowers organizations to achieve enterprise-grade isolation, flexible cost management, and seamless scalability—whether you’re serving startups or the world’s largest enterprises.
+This solution goes beyond basic templates by delivering a layered, zone-aware architecture (GEO → Region → CELL → Availability Zone) that supports both shared and dedicated tenancy models. It empowers organizations to achieve enterprise-grade isolation, flexible cost management, and seamless scalability, whether you’re serving startups or the world’s largest enterprises.
 
 Key benefits include:
 - **Enterprise-Ready Security**: End-to-end zero-trust network design, private endpoints, managed identities, and automated policy enforcement.
 - **Automated Governance & Compliance**: Azure Policy as Code, audit-ready logging, and comprehensive compliance scorecards (CAF/WAF 94/100).
 - **AI-Driven Operations**: Predictive scaling, intelligent monitoring, and real-time analytics with built-in Application Insights, Log Analytics, and visual dashboards.
-- **Flexible Tenancy & Cost Optimization**: Mix and match shared and dedicated CELLs to optimize for cost, compliance, and performance—supporting seamless tenant migration and growth.
+- **Flexible Tenancy & Cost Optimization**: Mix and match shared and dedicated CELLs to optimize for cost, compliance, and performance, supporting seamless tenant migration and growth.
 - **Resilience & Global Scale**: Multi-region, multi-zone deployment with automated failover, disaster recovery, and capacity management to ensure business continuity.
 - **Cloud Capacity Management & Supply Resilience**: Modular, zone-aware, and multi-region CELL design enables rapid deployment in alternative locations when regions or zones reach capacity, ensuring business continuity and agility despite cloud supply constraints.
 - **Developer & DevOps Friendly**: Rapid onboarding, parameterized templates, CI/CD integration, and extensive documentation for all roles—from architects to SREs.
