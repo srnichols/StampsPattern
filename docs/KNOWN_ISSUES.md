@@ -28,7 +28,7 @@
 | [🗃️ Database Issues](#️-database-issues) | SQL, timeouts, pooling | DevOps |
 | [🧰 Operational Issues](#-operational-issues) | Health checks, memory | Operations |
 | [🔍 Troubleshooting Tools](#-troubleshooting-tools) | CLI, Kusto, logs | All readers |
-| [📞 Getting Help](#getting-help) | Support, escalation | All readers |
+| [📞 Getting Help](#-getting-help) | Support, escalation | All readers |
 
 ---
 

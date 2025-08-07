@@ -36,16 +36,16 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🎯 Deployment Overview](#deployment-overview) | What you’re building | 5 min | All readers |
-| [📖 Key Concepts](#key-concepts-before-you-start) | Tenancy, hierarchy, layers | 10 min | Architects, DevOps |
-| [⚡ Deployment Options](#deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
-| [📋 Prerequisites](#prerequisites) | Tools, access, quotas | 10 min | All readers |
-| [🔧 Manual/Legacy Deployment](#manuallegacy-deployment-options) | Manual/legacy steps | 10 min | DevOps |
-| [🚪 Enterprise API Management](#enterprise-api-management-deployment) | APIM deployment | 10 min | Security, DevOps |
-| [🧪 Post-Deployment Validation](#post-deployment-testing--validation) | Testing, health checks | 10 min | DevOps |
-| [🛠️ Troubleshooting](#troubleshooting-common-issues) | Common issues | 5 min | All readers |
-| [🔄 Updating Deployments](#updating-existing-deployments) | Add/expand/cleanup | 5 min | DevOps |
-| [📚 Related Guides](#related-guides) | More docs | 2 min | All readers |
+| [🎯 Deployment Overview](#-deployment-overview) | What you're building | 5 min | All readers |
+| [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | 10 min | Architects, DevOps |
+| [⚡ Deployment Options](#-deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
+| [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | 10 min | All readers |
+| [🔧 Manual/Legacy Deployment](#-manuallegacy-deployment-options) | Manual/legacy steps | 10 min | DevOps |
+| [🚪 Enterprise API Management](#-enterprise-api-management-deployment) | APIM deployment | 10 min | Security, DevOps |
+| [🧪 Post-Deployment Validation](#-post-deployment-testing--validation) | Testing, health checks | 10 min | DevOps |
+| [🛠️ Troubleshooting](#-troubleshooting-common-issues) | Common issues | 5 min | All readers |
+| [🔄 Updating Deployments](#-updating-existing-deployments) | Add/expand/cleanup | 5 min | DevOps |
+| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
 
 ---
 
@@ -146,7 +146,7 @@ The Azure Stamps Pattern offers flexible deployment options designed to meet dif
 #### **Azure Access Requirements**
 - **Azure Subscription**: Like having a building permit
   - Need **Contributor** access (ability to create resources)
-  - Subscription with sufficient quota (see [resource limits](#resource-requirements))
+  - Subscription with sufficient quota for required resources
 - **Azure Active Directory**: Like having security clearance
   - Permissions to create App Registrations (for security)
   - Permission to assign roles to managed identities
