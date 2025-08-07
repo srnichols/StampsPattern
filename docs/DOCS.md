@@ -56,9 +56,7 @@ graph LR
 9. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Resource naming standards *(15 minutes)*
 
 ### **Phase 4: Status & Troubleshooting (As Needed)**
-10. **✅ [IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)** - Complete implementation progress *(20 minutes)*
-11. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
-12. **📋 [RECOMMENDATIONS_REPORT.md](./RECOMMENDATIONS_REPORT.md)** - Implementation achievements *(15 minutes)*
+10. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
 
 ## 🏆 **Enterprise Compliance Showcase**
 
@@ -85,20 +83,20 @@ Glossary → README → Architecture Guide → Simple Deployment
 
 ### 👨‍💻 **Experienced Developer** (1-2 hours total)
 ```
-README → Implementation Status → Deployment Guide → Known Issues
-  15min         20min                45min           As needed
+README → Deployment Guide → Known Issues
+  15min         45min           As needed
 ```
 
 ### 👨‍💼 **IT Leadership** (30-45 minutes total)
 ```
-README → Compliance Analysis → Recommendations Report
-  15min         25min                   15min
+README → Compliance Analysis
+  15min         25min
 ```
 
 ### 🏗️ **Solution Architect** (2-3 hours total)
 ```
-Architecture Guide → Security Guide → Operations Guide → Implementation Status
-      30min             30min            45min              20min
+Architecture Guide → Security Guide → Operations Guide
+      30min             30min            45min
 ```
 
 ## 🗺️ **Learning Journey Map**
@@ -200,12 +198,11 @@ journey
 
 **📋 Recommended Path:**
 1. **📄 [README.md](../README.md)** - Quick start and prerequisites *(10 minutes)*
-2. **✅ [IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)** - Complete implementation overview *(20 minutes)*
-3. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment *(45 minutes)*
-4. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting common issues *(Reference as needed)*
-5. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Multi-org template customization *(20 minutes)*
-6. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Naming standards *(15 minutes)*
-7. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - Technical deep-dive *(30 minutes)*
+2. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment *(45 minutes)*
+3. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting common issues *(Reference as needed)*
+4. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Multi-org template customization *(20 minutes)*
+5. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Naming standards *(15 minutes)*
+6. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - Technical deep-dive *(30 minutes)*
 
 **🆕 New Developer Highlights:**
 - **Implementation Status**: See exactly what enterprise features have been implemented
