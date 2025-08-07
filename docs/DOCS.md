@@ -1,8 +1,31 @@
+
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 
-**🗺️ Complete Navigation Guide for Enterprise Architecture Documentation**
+---
 
-> **Your Guide**: This comprehensive sitemap helps you navigate all documentation for the Azure Stamps Pattern enterprise architecture with **world-class compliance** and **industry-leading practices**. Choose your path based on your role and requirements.
+> **Executive Summary:**
+> This documentation hub is your single source of truth for the Azure Stamps Pattern. It provides a complete, role-based navigation guide for onboarding, learning, and mastering the architecture, deployment, operations, and compliance of the Stamps Pattern.
+
+---
+
+## 👤 Who Should Use This Guide?
+
+- **Newcomers:** Start here to understand the big picture and find your learning path
+- **Developers/DevOps:** Quickly locate deployment, troubleshooting, and implementation guides
+- **Solution Architects:** Access deep-dive technical and compliance documentation
+- **IT Leaders/Compliance:** Review business value, compliance, and operational excellence
+
+---
+
+## 🧭 How to Use This Documentation
+
+1. **Start with the [README.md](../README.md)** for a project overview and business value
+2. **Follow the [Progressive Learning Path](#-progressive-learning-path-recommended-for-new-users)** for a logical sequence
+3. **Use the [Quick Start Paths](#-quick-start-paths-by-experience-level)** to jump in based on your experience
+4. **Reference the [Documentation Portfolio](#-documentation-overview)** for a summary of all guides
+5. **Bookmark this page** for future navigation and onboarding
+
+---
 
 ## 🧭 **Progressive Learning Path (Recommended for New Users)**
 
@@ -108,50 +131,6 @@ graph TD
 
 ---
 
-## 🎯 **Documentation Overview**
-
-The Azure Stamps Pattern provides a comprehensive, enterprise-ready infrastructure solution with complete documentation for all phases of implementation and operation.
-
-### 📖 **Complete Documentation Portfolio**
-
-| 📚 Guide | 🎯 Purpose | 👥 Primary Audience | 📊 Complexity | ⏱️ Read Time |
-|----------|------------|---------------------|---------------|--------------|
-| [📄 **README.md**](../README.md) | Project overview, quick start, business value | All stakeholders | ⭐⭐ | 15 min |
-| [📖 **GLOSSARY.md**](./GLOSSARY.md) | **NEW** - Key terms and concepts explained | Newcomers to Azure/Stamps Pattern | ⭐⭐ | 15 min |
-| [📊 **CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | Enterprise compliance showcase (96/100) | Decision Makers, Compliance Officers | ⭐⭐⭐ | 25 min |
-| [✅ **IMPLEMENTATION_STATUS.md**](./archive/IMPLEMENTATION_STATUS.md) | Complete implementation progress (100% complete) | Developers, Project Managers | ⭐⭐⭐ | 20 min |
-| [📋 **RECOMMENDATIONS_REPORT.md**](./RECOMMENDATIONS_REPORT.md) | All recommendations implemented with status | Technical Teams | ⭐⭐⭐ | 15 min |
-| [🏗️ **ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Technical deep-dive, system design, traffic flow | Solution Architects, DevOps Engineers | ⭐⭐⭐⭐ | 30 min |
-| [🚀 **DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | DevOps Engineers, Platform Engineers | ⭐⭐⭐ | 45 min |
-| [🛠️ **KNOWN_ISSUES.md**](./KNOWN_ISSUES.md) | Comprehensive troubleshooting guide | All technical teams | ⭐⭐ | Variable |
-| [📋 **PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | ⭐⭐⭐ | 20 min |
-| [⚙️ **OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | AI-driven operations, monitoring, automation | SRE Teams, Operations Engineers | ⭐⭐⭐⭐ | 45 min |
-| [🛡️ **SECURITY_GUIDE.md**](./SECURITY_GUIDE.md) | Zero-trust security, compliance, controls | Security Engineers, Compliance Teams | ⭐⭐⭐⭐ | 30 min |
-| [📋 **NAMING_CONVENTIONS.md**](./NAMING_CONVENTIONS.md) | Resource naming standards and Azure best practices | All technical teams | ⭐⭐ | 15 min |
-    J --> M
-    K --> M
-    L --> M
-    O --> M
-```
-
----
-
-## 🎯 **Documentation Overview**
-
-The Azure Stamps Pattern provides a comprehensive, enterprise-ready infrastructure solution with complete documentation for all phases of implementation and operation.
-
-### 📖 **Documentation Portfolio**
-
-| 📚 Guide | 🎯 Purpose | 👥 Primary Audience | 📊 Complexity | ⏱️ Read Time |
-|----------|------------|---------------------|---------------|--------------|
-| [📄 **README.md**](../README.md) | Project overview, quick start, business value | All stakeholders | ⭐⭐ | 10 min |
-| [� **CAF_WAF_COMPLIANCE_ANALYSIS.md**](./CAF_WAF_COMPLIANCE_ANALYSIS.md) | **NEW** - Enterprise compliance showcase (94/100) | Decision Makers, Compliance Officers | ⭐⭐⭐ | 25 min |
-| [�🏗️ **ARCHITECTURE_GUIDE.md**](./ARCHITECTURE_GUIDE.md) | Technical deep-dive, system design, traffic flow | Solution Architects, DevOps Engineers | ⭐⭐⭐⭐ | 30 min |
-| [🚀 **DEPLOYMENT_GUIDE.md**](./DEPLOYMENT_GUIDE.md) | Step-by-step deployment procedures | DevOps Engineers, Platform Engineers | ⭐⭐⭐ | 45 min |
-| [📋 **PARAMETERIZATION_GUIDE.md**](./PARAMETERIZATION_GUIDE.md) | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | ⭐⭐⭐ | 20 min |
-| [⚙️ **OPERATIONS_GUIDE.md**](./OPERATIONS_GUIDE.md) | AI-driven operations, monitoring, automation | SRE Teams, Operations Engineers | ⭐⭐⭐⭐ | 45 min |
-| [🛡️ **SECURITY_GUIDE.md**](./SECURITY_GUIDE.md) | Zero-trust security, compliance, controls | Security Engineers, Compliance Teams | ⭐⭐⭐⭐ | 30 min |
-| [📋 **NAMING_CONVENTIONS.md**](./NAMING_CONVENTIONS.md) | Resource naming standards and Azure best practices | All technical teams | ⭐⭐ | 15 min |
 
 ### 🎭 **Role-Based Documentation Paths**
 
@@ -173,8 +152,8 @@ journey
 
 **📋 Recommended Path:**
 1. **📄 [README.md](../README.md)** - Business value and project overview *(10 minutes)*
-2. **� [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
-3. **�🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#%EF%B8%8F-architecture-overview)** - High-level architecture *(15 minutes)*
+2. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
+3. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#%EF%B8%8F-architecture-overview)** - High-level architecture *(15 minutes)*
 4. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md#-security-overview)** - Security and compliance posture *(15 minutes)*
 5. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md#-operations-overview)** - Operational model *(10 minutes)*
 
@@ -195,7 +174,7 @@ journey
 ```
 
 **📋 Recommended Path:**
-1. **🏆 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Complete compliance assessment *(25 minutes)*
+1. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Complete compliance assessment *(25 minutes)*
 2. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(20 minutes)*
 3. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - Governance and policy automation *(15 minutes)*
 4. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md#-compliance-framework)** - Audit readiness procedures *(10 minutes)*
@@ -221,9 +200,9 @@ journey
 
 **📋 Recommended Path:**
 1. **📄 [README.md](../README.md)** - Quick start and prerequisites *(10 minutes)*
-2. **✅ [IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)** - **NEW** - Complete implementation overview *(20 minutes)*
+2. **✅ [IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)** - Complete implementation overview *(20 minutes)*
 3. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment *(45 minutes)*
-4. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - **NEW** - Troubleshooting common issues *(Reference as needed)*
+4. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting common issues *(Reference as needed)*
 5. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Multi-org template customization *(20 minutes)*
 6. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Naming standards *(15 minutes)*
 7. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - Technical deep-dive *(30 minutes)*

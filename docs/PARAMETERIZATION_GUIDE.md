@@ -1,3 +1,55 @@
+
+
+# 📋 Parameterization Guide for Azure Stamps Pattern
+
+---
+
+> **Onboarding & Executive Summary:**
+> 
+> Welcome to the Parameterization Guide for the **Azure Stamps Pattern**! This guide will help you understand how to make your deployments flexible, reusable, and scalable across multiple organizations and geographies. Whether you're a new developer, DevOps engineer, or IT leader, you'll learn how to use parameters to unlock multi-tenant, multi-region, and multi-environment support with minimal risk and maximum maintainability.
+
+---
+
+
+## 👤 Who Should Read This Guide?
+
+- **Cloud Engineers/DevOps:** Implement and maintain parameterized templates and scripts
+- **IT Leaders:** Oversee multi-org, multi-region deployment strategies
+- **Solution Architects:** Design reusable, scalable infrastructure
+- **Operations Teams:** Validate, migrate, and support parameterized deployments
+
+---
+
+
+## 🧭 Quick Navigation
+
+| Section | Focus Area |
+|---------|------------|
+| [🎯 Overview](#-overview) | What parameterization enables |
+| [🔧 New Parameters](#-new-parameters-added) | Parameter reference |
+| [🏗️ Template Changes](#-template-changes-made) | Bicep/PowerShell updates |
+| [🚀 Script Updates](#-powershell-script-updates) | PowerShell parameterization |
+| [📝 Usage Examples](#-usage-examples) | Real-world scenarios |
+| [✅ Benefits](#-benefits-achieved) | Flexibility, tagging, cost |
+| [🔍 Validation](#-validation) | Testing and validation |
+| [🎭 Migration Notes](#-migration-notes) | Adopting new parameters |
+| [📚 Related Documentation](#-related-documentation) | More docs |
+
+---
+
+
+## � Getting Started: What is Parameterization?
+
+Parameterization means making every deployment flexible and reusable—no more hardcoded values. You can deploy the same templates and scripts for any organization, region, or environment, simply by changing parameters. This approach unlocks:
+
+- **Enterprise flexibility:** Deploy anywhere, for anyone, with a single codebase
+- **Operational excellence:** Consistent tagging, ownership, and cost tracking
+- **Rapid onboarding:** New orgs and regions require only parameter changes
+- **Migration-ready:** Move from hardcoded to parameterized with minimal risk
+
+---
+
+
 # 📋 Template Parameterization Guide
 
 **Enterprise Multi-Organization Deployment Support**
@@ -200,8 +252,18 @@ az deployment group validate `
 
 ---
 
+
 ## 📚 Related Documentation
 
-- [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) - Zone-aware naming patterns
-- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Deployment procedures
+- [README.md](../README.md) – Main onboarding and navigation
+- [DOCS.md](./DOCS.md) – Documentation index
+- [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) – Solution architecture
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) – Deployment procedures
+- [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) – Zone-aware naming patterns
+- [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) – Security best practices
+- [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md) – Cost management
+- [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md) – Developer security
+- [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) – Compliance analysis
+- [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) – Known issues
+- [GLOSSARY.md](./GLOSSARY.md) – Key terms
 - [Azure Naming Conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)

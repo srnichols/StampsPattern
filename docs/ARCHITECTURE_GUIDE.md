@@ -1,31 +1,49 @@
+
 # 🏗️ Azure Stamps Pattern - Enterprise Architecture Guide (CAF/WAF Compliant)
 
-> **🎯 Purpose**: This guide provides a comprehensive technical dive into the **enterprise-grade Azure Stamps Pattern** achieving **96/100 CAF/WAF compliance**, covering zero-trust security architecture, automated governance, AI-driven operations, and comprehensive monitoring implementation.
+---
 
-## 📖 **For Newcomers to Stamps Pattern**
+> **Executive Summary:**
+> This guide provides a comprehensive technical dive into the **enterprise-grade Azure Stamps Pattern** (96/100 CAF/WAF compliance), covering zero-trust security, automated governance, AI-driven operations, and monitoring. It is designed for architects, developers, IT leaders, and security professionals building scalable, compliant, and resilient Azure solutions.
 
-**What is the Stamps Pattern?** Think of it like a franchise restaurant chain:
-- Each restaurant (CELL) has identical setup but serves different customers (tenants)
-- Regional managers (Regional Layer) coordinate multiple restaurants
-- Corporate headquarters (Global Layer) manages the entire network
-- Some locations serve many customers at once (Shared CELLs), others cater to VIP clients exclusively (Dedicated CELLs)
+---
 
-**Why use this pattern?**
-- **Predictable scaling**: Add more "restaurants" when you need capacity
-- **Isolation**: Problems in one location don't affect others
-- **Global reach**: Serve customers from local "restaurants" for better performance
-- **Flexibility**: Different service models for different customer segments
+## 👤 Who Should Read This Guide?
 
-## 📋 **Navigation Guide**
+- **Solution Architects:** Deep-dive into system design, scalability, and compliance
+- **Developers:** Understand deployment, tenancy, and integration patterns
+- **IT Leaders:** Evaluate architecture for onboarding, scaling, and governance
+- **Security/Compliance Teams:** Review security, monitoring, and compliance controls
+
+---
+
+## 🧭 Quick Navigation
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🏗️ Architecture Overview](#architecture-overview) | High-level design and hierarchical structure | 10 minutes | All readers |
-| [🏛️ Architecture Layers](#architecture-layers) | Detailed component breakdown | 15 minutes | Architects, Developers |
-| [🚀 Traffic Flow](#traffic-flow-architecture) | Request routing and data flow | 10 minutes | DevOps, Network Engineers |
-| [🔒 Security](#security-architecture) | Multi-layer security model | 15 minutes | Security Engineers |
-| [📊 Monitoring](#monitoring--observability) | Observability and monitoring strategy | 10 minutes | Operations Teams |
-| [🌱 Scaling](#scaling-strategies) | Growth and expansion strategies | 5 minutes | Architects, IT Leaders |
+| [🏗️ Architecture Overview](#architecture-overview) | High-level design and hierarchy | 10 min | All readers |
+| [🏛️ Architecture Layers](#architecture-layers) | Component breakdown | 15 min | Architects, Devs |
+| [🚀 Traffic Flow](#traffic-flow-architecture) | Request/data flow | 10 min | DevOps, Network |
+| [🔒 Security](#security-architecture) | Multi-layer security | 15 min | Security Teams |
+| [📊 Monitoring](#monitoring--observability) | Observability strategy | 10 min | Operations |
+| [🌱 Scaling](#scaling-strategies) | Growth/expansion | 5 min | IT Leaders |
+
+---
+
+## 📚 For Newcomers to Stamps Pattern
+
+**What is the Stamps Pattern?**
+> Think of it like a franchise restaurant chain:
+> - Each restaurant (CELL) has identical setup but serves different customers (tenants)
+> - Regional managers (Regional Layer) coordinate multiple restaurants
+> - Corporate headquarters (Global Layer) manages the entire network
+> - Some locations serve many customers at once (Shared CELLs), others cater to VIP clients exclusively (Dedicated CELLs)
+
+**Why use this pattern?**
+> - **Predictable scaling:** Add more "restaurants" when you need capacity
+> - **Isolation:** Problems in one location don't affect others
+> - **Global reach:** Serve customers from local "restaurants" for better performance
+> - **Flexibility:** Different service models for different customer segments
 
 ---
 
@@ -709,8 +727,19 @@ az deployment group create \
 
 ---
 
-## 🔗 Related Documentation
+
+---
+
+## 🔗 Related Guides
 
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Operations Runbook](./OPERATIONS_GUIDE.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
+- [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
+- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Glossary](./GLOSSARY.md)
+- [Known Issues](./KNOWN_ISSUES.md)
+
+---
+
+*Last updated: August 2025*

@@ -1,8 +1,49 @@
-# 🔐 Security Implementation Guide for Developers
 
-## 🎯 Overview
+# 🔐 Azure Stamps Pattern - Developer Security Implementation Guide
 
-This guide helps new developers understand and implement the enhanced security features in the Azure Stamps Pattern. Recent security improvements have achieved **96/100 CAF/WAF compliance** with zero-trust architecture and significant performance enhancements.
+---
+
+> **Executive Summary:**
+> This guide enables developers to implement and maintain the advanced security features of the Azure Stamps Pattern. It covers critical security changes, zero-trust best practices, performance improvements, and hands-on implementation patterns. Designed for onboarding new developers and upskilling experienced engineers.
+
+---
+
+## 👤 Who Should Read This Guide?
+
+- **New Developers:** Ramp up on security requirements and implementation
+- **Experienced Engineers:** Apply advanced security and performance patterns
+- **DevOps/Platform Teams:** Ensure compliance and operational security
+
+---
+
+## 🧭 Quick Navigation
+
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🚨 Critical Security Changes](#-critical-security-changes-august-2025) | Breaking changes, compliance | All developers |
+| [🔧 Implementation Guide](#-developer-implementation-guide) | JWT, DB, DI, caching | Developers |
+| [🧪 Testing Guidelines](#-testing-guidelines) | Unit/integration tests | Developers |
+| [📋 Configuration Checklist](#-configuration-checklist) | Env vars, NuGet, indexing | DevOps |
+| [🔍 Debugging & Troubleshooting](#-debugging-and-troubleshooting) | Common issues, monitoring | All |
+| [📚 Additional Resources](#-additional-resources) | Best practices, docs | All |
+| [🔗 Related Documentation](#-related-documentation) | Other guides | All |
+
+---
+
+## 📚 For New Developers
+
+**What is this guide for?**
+> This guide is your onboarding reference for implementing secure, compliant, and high-performance solutions in the Azure Stamps Pattern. It explains what changed, why it matters, and how to apply best practices in your code and infrastructure.
+
+**Why is this important?**
+> - **Security:** Prevent breaches and ensure compliance from day one
+> - **Performance:** Leverage caching and indexing for fast, reliable apps
+> - **Onboarding:** Learn by example with before/after code and configuration
+> - **Troubleshooting:** Quickly resolve common issues and avoid pitfalls
+
+---
+
+
 
 ## 🚨 Critical Security Changes (August 2025)
 

@@ -1,3 +1,50 @@
+
+# 🛠️ Azure Stamps Pattern - Known Issues & Workarounds
+
+---
+
+> **Executive Summary:**
+> This guide provides solutions and workarounds for common issues encountered during development, deployment, and operation of the **Azure Stamps Pattern**. It is designed for developers, DevOps, operations, and support teams to quickly resolve problems and maintain system health.
+
+---
+
+## 👤 Who Should Read This Guide?
+
+- **Developers/DevOps:** Troubleshoot deployment and development issues
+- **Operations Teams:** Resolve performance, security, and operational incidents
+- **Support Engineers:** Provide fast, accurate solutions to users
+- **Newcomers:** Learn about common pitfalls and best practices
+
+---
+
+## 🧭 Quick Navigation
+
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, B2C | DevOps |
+| [🔧 Development Issues](#-development-issues) | Emulator, Redis, local dev | Developers |
+| [⚡ Performance Issues](#-performance-issues) | JWT, Cosmos DB, scaling | DevOps |
+| [🔐 Security Issues](#-security-issues) | Defender, Key Vault | Security, DevOps |
+| [🗃️ Database Issues](#️-database-issues) | SQL, timeouts, pooling | DevOps |
+| [🧰 Operational Issues](#-operational-issues) | Health checks, memory | Operations |
+| [🔍 Troubleshooting Tools](#-troubleshooting-tools) | CLI, Kusto, logs | All readers |
+| [📞 Getting Help](#getting-help) | Support, escalation | All readers |
+
+---
+
+## 📚 For Newcomers to the Known Issues Guide
+
+**What is this guide for?**
+> This guide is your first stop when something goes wrong with the Stamps Pattern. It covers the most frequent issues, their symptoms, and proven solutions—so you can get back to building, deploying, and operating with confidence.
+
+**Why is this important?**
+> - **Faster troubleshooting:** Find answers without searching endlessly
+> - **Knowledge sharing:** Learn from real-world problems and solutions
+> - **Onboarding:** New team members ramp up quickly by seeing common pitfalls
+> - **Operational excellence:** Reduce downtime and improve reliability
+
+---
+
 # 🛠️ Known Issues & Workarounds - Azure Stamps Pattern
 
 This document provides solutions to common issues encountered during development, deployment, and operation of the Azure Stamps Pattern.

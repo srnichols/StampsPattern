@@ -1,18 +1,58 @@
+
+# 🛡️ Azure Stamps Pattern - Zero-Trust Security Guide
+
+---
+
+> **Executive Summary:**
+> This guide provides a comprehensive blueprint for implementing zero-trust security in the **Azure Stamps Pattern**. It covers enterprise-grade controls, automated governance, network micro-segmentation, and threat protection for regulated industries. The guide is designed for security architects, DevOps, IT leaders, and compliance teams to ensure robust, compliant, and adaptive security.
+
+---
+
+## � Who Should Read This Guide?
+
+- **Security Architects:** Design and validate zero-trust controls
+- **DevOps/Cloud Engineers:** Implement and automate security policies
+- **IT Leaders:** Evaluate security maturity, compliance, and risk
+- **Compliance Teams:** Audit and verify regulatory controls
+
+---
+
+## 🧭 Quick Navigation
+
+| Section | Focus Area | Time to Read | Best for |
+|---------|------------|--------------|----------|
+| [🎯 Security Overview](#-security-overview) | Baselines, recent enhancements | 5 min | All readers |
+| [🏗️ Zero-Trust Architecture](#-zero-trust-architecture) | Network micro-segmentation | 20 min | Architects |
+| [🔐 Identity & Access](#-identity--access-management) | Managed identity, B2C | 30 min | DevOps, IT |
+| [🌐 Network Security](#-network-security) | WAF, NSG, DDoS | 25 min | DevOps |
+| [🗄️ Data Protection](#-data-protection) | Encryption, classification | 30 min | Security, Compliance |
+| [📜 Governance & Policy](#-governance--policy-enforcement) | Policy as Code | 20 min | DevOps, Compliance |
+| [📊 Security Monitoring](#-security-monitoring) | Threat detection, Sentinel | 25 min | Security Ops |
+| [✅ Compliance](#-compliance-frameworks) | Regulatory readiness | 20 min | Compliance |
+| [🛠️ Security Operations](#-security-operations) | IR, automation, checklists | 20 min | Security Ops |
+| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
+
+---
+
+## 📚 For Newcomers to Stamps Pattern Security
+
+**What is Security in the Stamps Pattern?**
+> Security in the Stamps Pattern means building a fortress around every layer—network, identity, data, and operations—using zero-trust principles. This guide helps you understand how to protect sensitive data, enforce compliance, and automate threat response in a multi-tenant, cloud-native environment.
+
+**Why is this important?**
+> - **Zero-trust by default:** Every request is verified, every resource is isolated
+> - **Automated governance:** Policies and controls are enforced at scale
+> - **Threat intelligence:** AI-driven detection and rapid response
+> - **Compliance:** Ready for SOC 2, GDPR, HIPAA, PCI-DSS, and more
+
+---
+
 # 🛡️ Azure Stamps Pattern - Zero-Trust Security Architecture
 
 > **🎯 Purpose**: Comprehensive zero-trust security implementation achieving **96/100 WAF Security score** with enterprise-grade controls, automated governance, network micro-segmentation, and comprehensive threat protection for regulated industries.
 
-## 📋 **Zero-Trust Security Navigation**
 
-| Section | Focus Area | Implementation Time |
-|---------|------------|-------------------|
-| [🏗️ Zero-Trust Architecture](#%EF%B8%8F-zero-trust-architecture) | Network micro-segmentation strategy | 20 minutes |
-| [🔐 Identity & Access](#-identity--access-management) | 100% managed identity adoption | 30 minutes |
-| [🌐 Network Security](#-network-security) | Firewall Premium, NSG, DDoS protection | 25 minutes |
-| [🗄️ Data Protection](#%EF%B8%8F-data-protection) | Customer-managed encryption, private endpoints | 30 minutes |
-| [📜 Governance & Policy](#-governance--policy-enforcement) | Azure Policy as Code automation | 20 minutes |
-| [📊 Security Monitoring](#-security-monitoring) | AI-driven threat detection and response | 25 minutes |
-| [✅ Compliance](#-compliance-frameworks) | SOC 2, GDPR, HIPAA, PCI-DSS readiness | 20 minutes |
+---
 
 ### 🛡️ **Zero-Trust Security Maturity**
 
@@ -614,7 +654,20 @@ actions:
 
 ---
 
-## 🔗 Related Guides
+
+---
+
+## � Related Guides
+
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md)
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Operations Guide](./OPERATIONS_GUIDE.md)
+- [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
+- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Glossary](./GLOSSARY.md)
+- [Known Issues](./KNOWN_ISSUES.md)
+- [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
+
+---
+
+*Last updated: August 2025*
