@@ -90,6 +90,8 @@ This solution is designed for:
 
 > **New to this solution?** Begin with the [📚 Documentation Hub](./docs/DOCS.md) for a guided sitemap, learning paths, and role-based quick starts. See the [Glossary](./docs/GLOSSARY.md) for key terms and the [FAQ](./docs/KNOWN_ISSUES.md) for common questions.
 
+**📋 Complete Documentation Index**: [DOCS.md](./docs/DOCS.md) - Master documentation sitemap with navigation guide and role-based learning paths.
+
 ### 📖 Main Guides
 
 | Guide | Purpose | Audience | Link |
