@@ -21,8 +21,8 @@
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🏗️ Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
-| [🏛️ Architecture Layers](#-architecture-layers) | Component breakdown | 15 min | Architects, Devs |
+| [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
+| [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | 15 min | Architects, Devs |
 | [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | 10 min | DevOps, Network |
 | [🔒 Security](#-security-architecture) | Multi-layer security | 15 min | Security Teams |
 | [📊 Monitoring](#-monitoring--observability) | Observability strategy | 10 min | Operations |
@@ -47,7 +47,7 @@
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗 Architecture Overview
 
 
 This solution implements a sophisticated **GEO → Region → Availability Zone → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution. Availability Zones (AZs) are a critical layer for high availability (HA) and disaster recovery (DR), allowing each CELL to be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.
@@ -383,7 +383,7 @@ GEO: Europe
        └─ CELL: dedicated-fintech-z3-dr (Zones 1,2,3)
 ```
 
-## 🏛️ Architecture Layers
+## 🏛 Architecture Layers
 
 The Azure Stamps Pattern is built using a carefully orchestrated five-layer architecture that provides clear separation of concerns while maintaining scalability and operational excellence. Each layer serves a specific purpose in the overall system, from global traffic distribution down to individual tenant workloads. This layered approach enables independent scaling, clear operational boundaries, and simplified troubleshooting.
 
