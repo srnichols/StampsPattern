@@ -48,6 +48,7 @@ graph LR
 4. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - System design with visual diagrams *(30 minutes)*
 5. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step implementation *(45 minutes)*
 6. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Template customization *(15 minutes)*
+7. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
 
 ### **Phase 3: Operations & Security (60-75 minutes)**
 7. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
@@ -255,6 +256,7 @@ journey
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
 | 🏠 **Add New Tenant (CELL)** | [OPERATIONS_GUIDE - Tenant Management](./OPERATIONS_GUIDE.md#-flexible-tenant-management-operations) | 20 minutes |
+| 🗂️ **Management Portal** | [User Guide](./MANAGEMENT_PORTAL_USER_GUIDE.md) | 15-30 minutes |
 | 🚨 **Incident Response** | [OPERATIONS_GUIDE - Incident Response](./OPERATIONS_GUIDE.md#-incident-response) | 15 minutes |
 | 📊 **Monitoring Setup** | [OPERATIONS_GUIDE - Monitoring](./OPERATIONS_GUIDE.md#-monitoring--observability) | 30 minutes |
 | 🔧 **Troubleshooting** | [OPERATIONS_GUIDE - Maintenance](./OPERATIONS_GUIDE.md#-maintenance-procedures) | Variable |

@@ -147,9 +147,9 @@ graph TB
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
 ![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-96%2F100-brightgreen)
-![GitHub release](https://img.shields.io/github/v/release/your-repo/stamps-pattern)
-![GitHub issues](https://img.shields.io/github/issues/your-repo/stamps-pattern)
-![GitHub stars](https://img.shields.io/github/stars/your-repo/stamps-pattern)
+![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
+![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
+![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
 
 ---
 
@@ -239,8 +239,8 @@ This solution is designed for:
 
 ### 📋 Before You Begin
 Ensure you have these tools installed:
-- ✅ [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (v2.50.0+)  
-- ✅ [Bicep CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) (v0.20.0+)
+- ✅ [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) (v2.50.0+)  
+- ✅ [Bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) (v0.20.0+)
 - ✅ PowerShell 7+ (for enhanced deployment script)
 - ✅ Azure subscription with **Contributor** access
 
@@ -324,8 +324,8 @@ We welcome contributions! Please see our contribution guidelines:
 
 ### 💬 Getting Help
 - 📚 **Documentation**: Start with our comprehensive guides
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-repo/issues) for bugs and feature requests
-- 💡 **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions) for questions
+- 🐛 **Issues**: [GitHub Issues](https://github.com/srnichols/StampsPattern/issues) for bugs and feature requests
+- 💡 **Discussions**: [GitHub Discussions](https://github.com/srnichols/StampsPattern/discussions) for questions
 - 📧 **Enterprise Support**: Contact your Microsoft representative
 
 ---
