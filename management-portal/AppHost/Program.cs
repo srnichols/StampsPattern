@@ -3,9 +3,11 @@ using Aspire.Hosting;
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Data API Builder container (GraphQL) for local development
+var cosmosConn = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
 var dab = builder.AddContainer("dab", "mcr.microsoft.com/data-api-builder", tag: "latest")
     .WithBindMount("..\\dab\\dab-config.json", "/App/dab-config.json")
     .WithEnvironment("ASPNETCORE_URLS", "http://+:8082")
+    .WithEnvironment("COSMOS_CONNECTION_STRING", cosmosConn ?? string.Empty)
     // Provide COSMOS_CONNECTION_STRING via environment or user-secrets for DAB to connect to Cosmos
     .WithHttpEndpoint(port: 8082, name: "http")
     .WithArgs(["dab", "start", "--host", "0.0.0.0", "--config", "/App/dab-config.json"]);
