@@ -86,9 +86,7 @@ graph TD
     A --- A1
     B --- B1
     C --- C1
-    
-    style D fill:#e1f5fe
-    style H fill:#f3e5f5
+
 ```
 
 ### 🔄 **Before vs After: Template Flexibility**
@@ -113,11 +111,7 @@ graph LR
     A2 -.->|Transform| B2
     A3 -.->|Transform| B3
     A4 -.->|Transform| B4
-    
-    style B1 fill:#90EE90
-    style B2 fill:#90EE90
-    style B3 fill:#90EE90
-    style B4 fill:#90EE90
+
 ```
 
 ## 🔧 New Parameters Added

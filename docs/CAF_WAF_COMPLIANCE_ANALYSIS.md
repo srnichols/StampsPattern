@@ -124,12 +124,7 @@ graph TD
     A --> C3
     A --> C4
     A --> C5
-    
-    style A fill:#ff6b6b,color:#fff
-    style B5 fill:#90EE90
-    style B6 fill:#90EE90
-    style C1 fill:#90EE90
-    style C5 fill:#90EE90
+
 ```
 
 ### 🚀 **Competitive Advantage Matrix**
@@ -154,11 +149,7 @@ graph LR
     A2 -->|+23 Points| B2
     A3 -->|+25 Points| B3
     A4 -->|+27 Points| B4
-    
-    style A1 fill:#90EE90
-    style A2 fill:#90EE90
-    style A3 fill:#90EE90
-    style A4 fill:#90EE90
+
 ```
 
 ---

@@ -109,18 +109,7 @@ graph TB
     GF -.-> COSMOS2
     GF -.-> COSMOS3
     
-    %% Styling
-    classDef globalLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef geoLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef regionLayer fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef cellLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef dataLayer fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-    
-    class FD,TM,GF globalLayer
-    class APIM1,APIM2,APIM3 geoLayer
-    class AG1,AG2,AG3 regionLayer
-    class CA1,CA2,CA3,CELL4,CELL5 cellLayer
-    class SQL1,SQL2,SQL3,COSMOS1,COSMOS2,COSMOS3,REDIS1,REDIS2 dataLayer
+    %% Styling removed to match default scheme
 ```
 
 ### 🎯 **Key Enterprise Services & Their Roles**

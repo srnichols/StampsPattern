@@ -109,15 +109,11 @@ graph TD
     
     I --> L[🧪 Post-Deployment Tests]
     J --> L
-    K --> L
-    
-    L --> M{Tests Pass?}
+
     M -->|No| N[🛠️ Troubleshooting<br/>Check Known Issues]
     M -->|Yes| O[✅ Deployment Complete]
     N --> L
-    
-    style H fill:#90EE90
-    style K fill:#90EE90
+
 ```
 
 ### **What Gets Deployed**

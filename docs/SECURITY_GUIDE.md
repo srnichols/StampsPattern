@@ -83,11 +83,7 @@ graph LR
   B --- B1  
   C --- C1
   D --- D1
-    
-  style C fill:#ff6b6b
-  style D fill:#9775fa
-  style C1 fill:#ff6b6b
-  style D1 fill:#9775fa
+  
 ```
 
 ---

@@ -79,13 +79,7 @@ graph TD
     H --> H1{Health Check Fail?}
     H1 -->|Yes| H2[Check Service Health<br/>Review Dependencies]
     H1 -->|No| H3[Check Memory Usage<br/>Review Scaling]
-    
-    style A fill:#ff6b6b,color:#fff
-    style C2 fill:#90EE90
-    style C4 fill:#90EE90
-    style D2 fill:#90EE90
-    style E2 fill:#90EE90
-    style E4 fill:#90EE90
+
 ```
 
 ### 📊 **Issue Resolution Matrix**
@@ -117,10 +111,7 @@ graph LR
     B --> B1 --> B2
     C --> C1 --> C2
     D --> D1 --> D2
-    
-    style A fill:#ffebee
-    style A1 fill:#ffebee
-    style A2 fill:#ffebee
+
 ```
 
 ---

@@ -81,11 +81,7 @@ graph TD
 	D --> F
 	E --> F
 	D --> G
-    
-	style D fill:#90EE90
-	style E fill:#87CEEB
-	style F fill:#FFB6C1
-	style G fill:#DDA0DD
+
 ```
 
 ### 🎯 **Zone-Aware Naming Strategy**
@@ -103,11 +99,7 @@ graph LR
 	B -->|Standard Prod| F[ca-shared-smb-z1-eus-prod]
 	C -->|Enterprise| G[ca-dedicated-bank-z2-eus-prod]
 	D -->|Mission Critical| H[ca-critical-health-z3-eus-prod]
-    
-	style A fill:#ffebee
-	style B fill:#fff3e0
-	style C fill:#e8f5e8
-	style D fill:#e1f5fe
+
 ```
 
 ## 🌍 **Resource Group Naming**

@@ -149,10 +149,7 @@ graph TB
     C --> C1
     C --> C2
     C --> C3
-    
-    style A2 fill:#90EE90
-    style B2 fill:#90EE90
-    style C2 fill:#90EE90
+
 ```
 
 ### 💡 **Cost-Benefit Analysis by Use Case**
@@ -209,9 +206,7 @@ graph LR
     C --> D[Consolidate DNS Zones]
     D --> E[Monitor & Adjust]
     E --> A
-    
-    style A fill:#E1F5FE
-    style E fill:#C8E6C9
+
 ```
 
 ### 🏢 **Regional Layer - Cost Optimization**
@@ -271,11 +266,7 @@ graph TB
     C --> C1
     C --> C2
     C --> C3
-    
-    style C fill:#90EE90
-    style C1 fill:#90EE90
-    style C2 fill:#90EE90
-    style C3 fill:#90EE90
+
 ```
 
 ---
@@ -308,9 +299,7 @@ graph TD
     B --> B1
     B --> B2
     
-    style A fill:#FFE0B2
-    style E fill:#C8E6C9
-    style F fill:#E1F5FE
+    
 ```
 
 ### 🔧 **Tactical Optimization Techniques**
@@ -334,10 +323,7 @@ graph LR
     C --> F[Cost Impact: +15-30%<br/>Performance: Improved]
     D --> G[Cost Impact: Stable<br/>Performance: Consistent]
     E --> H[Cost Impact: -20-40%<br/>Performance: Adequate]
-    
-    style C fill:#FFCDD2
-    style D fill:#FFF9C4
-    style E fill:#C8E6C9
+
 ```
 
 #### **3. Environment-Specific Optimizations**
@@ -405,9 +391,7 @@ graph TD
     B --> G
     B --> H
     
-    style A fill:#FFE0B2
-    style G fill:#FFCDD2
-    style H fill:#F44336,color:#ffffff
+    
 ```
 
 ### 📊 **Cost Governance Policies**
@@ -466,9 +450,7 @@ graph LR
     B --> B1
     C --> C1
     D --> D1
-    
-    style A fill:#FFCDD2
-    style D fill:#C8E6C9
+
 ```
 
 **Results:**
