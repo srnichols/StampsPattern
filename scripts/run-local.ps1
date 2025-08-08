@@ -90,6 +90,14 @@ $cosmosConnForHost = "AccountEndpoint=https://localhost:${CosmosHostPort}/;Accou
 
 Start-Dab -network 'stamps-net' -containerName $dabContainer -dabPort $DabPort -dabConfigPath '.\management-portal\dab\dab-config.json' -cosmosConn $cosmosConnForContainers
 
+# Install emulator certificate into DAB container trust store
+$pem = Join-Path $env:TEMP "cosmos-emulator.pem"
+try { Invoke-WebRequest -Uri "https://localhost:${CosmosHostPort}/_explorer/emulator.pem" -OutFile $pem -SkipCertificateCheck } catch {}
+if (Test-Path $pem) {
+    docker cp $pem ${dabContainer}:/usr/local/share/ca-certificates/cosmos-emulator.crt | Out-Null
+    docker exec ${dabContainer} update-ca-certificates | Out-Null
+}
+
 # Wait for DAB GraphQL
 Wait-Http -url "http://localhost:${DabPort}/graphql" -timeoutSec 120
 
