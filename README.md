@@ -6,16 +6,16 @@ Achieving an industry-leading **94/100 overall [CAF/WAF compliance score](./docs
 
 It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platform and workload landing zones, management group hierarchy, and policy-as-code guardrails. For practical implementation guidance, see the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
 
-**The unique zone-aware architecture (GEO → Region → Availability Zone → CELL)** supports both shared and dedicated tenancy models, enabling organizations to optimize costs with shared CELLs for SMB clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance isolation ($3,200+/tenant/month). This flexibility delivers up to 10-50x cost reduction for smaller tenants while ensuring enterprise-grade isolation for regulated workloads.
+**The unique [zone-aware architecture](./docs/ARCHITECTURE_GUIDE.md) (GEO → Region → Availability Zone → CELL)** supports both shared and dedicated tenancy models, enabling organizations to optimize costs with shared CELLs for SMB clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance isolation ($3,200+/tenant/month). This flexibility delivers up to 10-50x cost reduction for smaller tenants while ensuring enterprise-grade isolation for regulated workloads.
 
 **Key business benefits include:**
-- **Enterprise-Ready Security**: End-to-end zero-trust network design with 85-90% JWT validation performance improvement, private endpoints, and automated policy enforcement
-- **Proven Compliance**: Pre-built compliance frameworks for HIPAA, SOC 2, PCI-DSS, and GDPR with automated audit trails and policy enforcement
-- **AI-Driven Operations**: Predictive scaling and intelligent monitoring reduce operational overhead by 25-40% while providing real-time insights through executive dashboards
-- **Economic Flexibility**: Mixed tenancy models support growth from startup to enterprise scale with seamless migration paths and tier-based pricing
-- **Global Resilience**: Multi-region, multi-zone deployment with automated failover and disaster recovery ensures 99.99%+ availability
+- **Enterprise-Ready Security**: End-to-end zero-trust network design with 85-90% JWT validation performance improvement, private endpoints, and automated policy enforcement ([Security Guide](./docs/SECURITY_GUIDE.md))
+- **Proven Compliance**: Pre-built compliance frameworks for HIPAA, SOC 2, PCI-DSS, and GDPR with automated audit trails and policy enforcement ([CAF/WAF Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md))
+- **AI-Driven Operations**: Predictive scaling and intelligent monitoring reduce operational overhead by 25-40% while providing real-time insights through executive dashboards ([Operations Guide](./docs/OPERATIONS_GUIDE.md))
+- **Economic Flexibility**: Mixed tenancy models support growth from startup to enterprise scale with seamless migration paths and tier-based pricing ([Architecture Guide](./docs/ARCHITECTURE_GUIDE.md))
+- **Global Resilience**: Multi-region, multi-zone deployment with automated failover and disaster recovery ensures 99.99%+ availability ([AZ Architecture](./docs/ARCHITECTURE_GUIDE.md#availability-zone-architecture))
 - **Cloud Capacity Management**: Modular design enables rapid deployment in alternative locations when regions reach capacity, ensuring business continuity despite cloud supply constraints
-- **Developer Velocity**: Parameterized templates, comprehensive documentation, and CI/CD integration accelerate time-to-market by 60-80%
+- **Developer Velocity**: Parameterized templates, comprehensive documentation, and CI/CD integration accelerate time-to-market by 60-80% ([Parameterization Guide](./docs/PARAMETERIZATION_GUIDE.md))
 
 **Perfect for organizations building mission-critical SaaS platforms** in healthcare (patient data isolation), financial services (regulatory compliance), government (data sovereignty), or any industry where security, compliance, and scalability are non-negotiable. The pattern provides a proven foundation to accelerate your SaaS journey, reduce architectural risk, and deliver measurable business value from day one.
 
