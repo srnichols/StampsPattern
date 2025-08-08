@@ -109,8 +109,16 @@ $cosmosContainer = 'stamps-cosmos'
 
 Start-CosmosEmulator -network 'stamps-net' -containerName $cosmosContainer -hostPort $CosmosHostPort
 
-# Wait for emulator certificate endpoint as readiness signal
-Wait-Http -url "https://localhost:${CosmosHostPort}/_explorer/emulator.pem" -timeoutSec 180
+# Wait for emulator certificate endpoint as readiness signal (emulator can be slow on first start)
+try {
+    Wait-Http -url "https://localhost:${CosmosHostPort}/_explorer/emulator.pem" -timeoutSec 420
+}
+catch {
+    Write-Warning "Cosmos Emulator readiness check timed out. Showing container status and recent logs:"
+    docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | Write-Host
+    docker logs $cosmosContainer --tail 200 | Write-Host
+    throw
+}
 
 $cosmosConnForHost = "AccountEndpoint=https://localhost:${CosmosHostPort}/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;"
 
