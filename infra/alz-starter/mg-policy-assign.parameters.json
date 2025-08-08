@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "policyAssignmentName": { "value": "alz-platform-initiative" },
+    "displayName": { "value": "ALZ Platform Baseline" },
+    "policyDefinitionId": { "value": "/providers/Microsoft.Authorization/policySetDefinitions/abcdef01-2345-6789-abcd-ef0123456789" },
+    "parameters": { "value": {} },
+    "enforcementMode": { "value": "Default" },
+    "assignmentDescription": { "value": "Baseline policies for platform." }
+  }
+}

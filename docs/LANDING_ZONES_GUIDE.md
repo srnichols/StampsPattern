@@ -165,6 +165,15 @@ module cell './AzureArchitecture/deploymentStampLayer.bicep' = {
 - [ ] Region pairs and DR pattern; target RPO/RTO
 - [ ] Policy initiatives at Platform and Landing Zones MGs
 
+## Implementation starters
+
+Starter Bicep templates are available under `infra/alz-starter/`:
+
+- `mg-policy-assign.bicep` — Minimal management group policy/initiative assignment.
+- `subscription-map.bicep` — Tenant-scope subscription mapping for platform/shared services and cells.
+
+These are conservative, non-destructive starters you can extend with your own policy sets and subscription provisioning.
+
 ## References
 
 - Azure CAF – Landing Zones: https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/
