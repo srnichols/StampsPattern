@@ -2,8 +2,16 @@ using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-// Data API Builder container (GraphQL) for local development
-var cosmosConn = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
+// Cosmos DB Emulator (for local dev). If you prefer local emulator app, set COSMOS_CONNECTION_STRING externally and skip this container.
+var cosmosEmu = builder.AddContainer("cosmos", "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator", tag: "latest")
+    .WithEnvironment("AZURE_COSMOS_EMULATOR_ENABLE_TELEMETRY", "false")
+    .WithEnvironment("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", "3")
+    .WithEnvironment("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "true")
+    .WithContainerRuntimeArgs("--cap-add=NET_ADMIN")
+    .WithHttpEndpoint(port: 8085, targetPort: 8081, name: "cosmos"); // maps emulator 8081 -> 8085 on host
+
+var cosmosConn = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING")
+    ?? "AccountEndpoint=https://localhost:8085/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;";
 var dab = builder.AddContainer("dab", "mcr.microsoft.com/data-api-builder", tag: "latest")
     .WithBindMount("..\\dab\\dab-config.json", "/App/dab-config.json")
     .WithEnvironment("ASPNETCORE_URLS", "http://+:8082")
@@ -11,6 +19,8 @@ var dab = builder.AddContainer("dab", "mcr.microsoft.com/data-api-builder", tag:
     // Provide COSMOS_CONNECTION_STRING via environment or user-secrets for DAB to connect to Cosmos
     .WithHttpEndpoint(port: 8082, name: "http")
     .WithArgs(["dab", "start", "--host", "0.0.0.0", "--config", "/App/dab-config.json"]);
+
+// (Optional) Run Seeder manually: dotnet run --project management-portal/Seeder 
 
 var portal = builder.AddProject("portal", "..\\src\\Portal\\Portal.csproj")
     .WithEnvironment("ASPNETCORE_URLS", "http://+:8081")
