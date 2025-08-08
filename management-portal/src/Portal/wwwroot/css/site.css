@@ -1,0 +1,6 @@
+.navbar { display:flex; gap:1rem; align-items:center; background:#0f172a; color:white; padding:.75rem 1rem; }
+.navbar a { color:white; text-decoration:none; }
+.nav-list { list-style:none; display:flex; gap:1rem; margin:0; padding:0; }
+.page { display:grid; grid-template-columns: 220px 1fr; min-height:100vh; }
+.sidebar { background:#111827; color:white; padding:1rem; }
+.content { padding:1rem; }
