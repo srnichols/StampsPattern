@@ -1,6 +1,5 @@
 # 🏗️ Azure Stamps Pattern - Azure Landing Zones Guide
 
-Quick summary
 Practical guide to placing Azure Stamps Pattern components within Azure Landing Zones - platform versus workload boundaries, management group hierarchy, policy guardrails, and IaC entry points - so you can scale safely with clear ownership and governance.
 
 - What's inside: MG hierarchy, subscription design, component-to-LZ mapping, policy assignments, networking, identity, monitoring, and IaC wiring

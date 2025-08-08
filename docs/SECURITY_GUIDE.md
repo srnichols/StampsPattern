@@ -3,7 +3,6 @@
 
 ---
 
-Quick summary
 Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—network micro‑segmentation, managed identity, private endpoints, threat protection, and automated governance.
 
 - What’s inside: Baselines, architecture, identity, network, data, policy, monitoring, operations

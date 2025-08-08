@@ -1,7 +1,6 @@
 
 # 💰 Azure Stamps Pattern - Cost Optimization Guide
 
-Quick summary
 Practical ways to reduce spend across compute, storage, networking, data, and operations—without sacrificing reliability or security—plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
 
 > 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** for the framework mapping of the cost pillar.

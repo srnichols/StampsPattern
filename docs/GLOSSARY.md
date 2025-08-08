@@ -1,7 +1,6 @@
 
 # 📖 Azure Stamps Pattern - Glossary of Key Terms
 
-Quick summary
 Key terminology for the Azure Stamps Pattern with plain-language explanations and analogies to speed up onboarding and reduce ambiguity.
 
 - What’s inside: Architecture, tenancy, security, ops, and compliance terms

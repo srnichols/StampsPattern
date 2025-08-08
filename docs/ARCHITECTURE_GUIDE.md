@@ -5,7 +5,6 @@
 >
 > Alignment note: This guide references CAF/WAF throughout. To see how these translate into enterprise landing zones, use the companion [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
-Quick summary
 A concise tour of the Azure Stamps Pattern architecture—layers, flows, and core decisions—so you can design, build, and scale compliant multi-tenant systems with confidence.
 
 - What’s inside: Architecture layers, traffic flow, security, monitoring, scaling principles

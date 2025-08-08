@@ -2,7 +2,6 @@
 
 # 📋 Parameterization Guide for Azure Stamps Pattern
 
-Quick summary
 Make deployments flexible and reusable with parameters—enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
 
 - What's inside: Parameter types, template/script changes, usage examples, validation, and migration notes

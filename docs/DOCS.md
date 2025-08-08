@@ -1,6 +1,5 @@
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 
-Quick summary
 Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
 
 - What’s inside: Role-based paths, quick links, and deep-dive references

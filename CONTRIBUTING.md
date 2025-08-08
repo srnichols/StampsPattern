@@ -48,5 +48,5 @@ Please follow these rules for all Markdown docs under `docs/`:
 ### Pre-PR checklist for docs
 - Run the relative link check locally:
   - PowerShell: `pwsh -File ./scripts/verify-doc-links.ps1 -IncludeImages`
-- Ensure “Quick summary” is present at top of each guide and that compliance scores are consistent (Overall 94/100; WAF Security 96/100 where relevant).
+  - Ensure compliance scores are consistent where relevant (Overall 94/100; WAF Security 96/100).
 Before opening a PR, skim related guides for consistent wording and anchors. Small inconsistencies are welcome fixes.

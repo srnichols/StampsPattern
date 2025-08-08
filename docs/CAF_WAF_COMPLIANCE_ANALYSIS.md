@@ -5,8 +5,6 @@
 > See also: For practical implementation of CAF/WAF guidance at scale, review the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md) and map controls to your enterprise platform.
 
 
-## ⚡ Quick summary
-
 **Overall Compliance Score: 94/100** 🏆
 
 The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to Microsoft's Cloud Adoption Framework (CAF) and Well-Architected Framework (WAF) principles, achieving a **94/100 overall compliance score** that places it in the **top 5% of enterprise architectures**. This implementation showcases industry-leading practices across governance, security, operations, and cost optimization.

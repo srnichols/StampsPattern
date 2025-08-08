@@ -1,7 +1,6 @@
 
 # ⚙️ Azure Stamps Pattern - AI-Driven Operations Guide
 
-Quick summary
 Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
 > 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — how operations and reliability pillars map to WAF.
