@@ -1,16 +1,23 @@
-# Azure Landing Zones Guide for the Stamps Pattern
+# 🏗️ Azure Landing Zones Guide for the Stamps Pattern
 
-Audience: Cloud architects, platform engineers, and workload teams adopting the Stamps Pattern within an Azure Landing Zone (ALZ) enterprise environment.
+---
+
+> **Executive Summary:**
+> This guide maps the Stamps Pattern to Azure Landing Zones (ALZ) with clear placement of components across Platform and Application landing zones, governance via management groups and policy, and practical IaC examples.
+
+---
 
 Last updated: August 2025
 
-## TL;DR – Where things go
+## 🧭 TL;DR – Where Things Go
 
 - Platform landing zones host shared enterprise services: Identity (process), Management, Connectivity, and Shared Services (global edge, shared gateways). Do not put all infra into the Management subscription.
 - Application (workload) landing zones host your CELLs (shared or dedicated) per region. Use one subscription per CELL for isolation, quotas, and billing clarity.
 - Control Plane (management portal, DAB GraphQL, control metadata): either a) Platform Shared-Services subscription if used by many apps/org-wide, or b) a dedicated “ControlPlane” workload subscription under Landing Zones for autonomy and SDLC separation.
 
-## Management groups and subscriptions
+---
+
+## 🗂️ Management Groups and Subscriptions
 
 Recommended CAF-aligned hierarchy:
 
@@ -34,14 +41,16 @@ Tenant Root Group (TRG)
       └─ Sub: sandbox
 ```
 
-Subscriptions at a glance:
+### 📦 Subscriptions at a Glance
 
 - Platform/Management: Log Analytics, Sentinel, Defender, Automation; central diagnostics.
 - Platform/Connectivity: vWAN/Hub VNets, Azure Firewall, Private DNS, DDoS plan.
 - Platform/Shared-Services: Traffic Manager, Front Door, global APIM (if shared), optional Control Plane.
 - Workload (Application) landing zones: CELL per subscription; VNet-injected Container Apps Env, App Gateway, Redis, SQL, Storage, per-CELL Key Vault, Private Endpoints.
 
-## Component-to-landing-zone mapping
+---
+
+## 🧩 Component-to-Landing-Zone Mapping
 
 | Component (repo) | Resource examples | Landing zone | Rationale |
 |---|---|---|---|
@@ -53,7 +62,9 @@ Subscriptions at a glance:
 | Monitoring (monitoringLayer.bicep, monitoringDashboards.bicep) | Log Analytics, Dashboards, alerts | Platform/Management (central) + per-CELL in workload subs | Central visibility + local SLOs |
 | Security/Policy (policyAsCode.bicep, zeroTrustSecurity.bicep) | Policy assignments, Defender, Sentinel | MG scopes (Platform, Landing Zones) | Inheritance and guardrails |
 
-## Governance & policy
+---
+
+## 🛡️ Governance & Policy
 
 - Apply policy at MG scope; inherit to subscriptions. At minimum:
   - Required: Diagnostic settings to Log Analytics, Defender for Cloud on, baseline tag requirements, allowed locations/SKUs, secure transfer, TLS minimums, managed identity enforced.
@@ -75,32 +86,42 @@ module diagnostics './policy/assign-diagnostics.bicep' = {
 }
 ```
 
-## Networking & connectivity
+---
+
+## 🌐 Networking & Connectivity
 
 - Hub-and-spoke or vWAN in Platform/Connectivity subscription.
 - Private DNS zones central in hub; link CELL spokes across subscriptions.
 - Container Apps: use VNet-injected CAE in each CELL subscription; ensure hub-spoke peering/vWAN route propagation and Private DNS resolution.
 - Private Endpoints for SQL/Storage/etc. in CELL spokes; integrate with central Private DNS.
 
-## Identity & access
+---
+
+## 🔐 Identity & Access
 
 - Entra ID tenant-level ownership for identity; PIM-enforced RBAC.
 - Platform team owns Platform subscriptions; workload teams own CELL subscriptions.
 - Managed identities everywhere (Functions/Apps/APIM/CAE); separate Key Vault per CELL; platform KV for shared secrets.
 
-## Monitoring & security
+---
+
+## 🧭 Monitoring & Security
 
 - Central Log Analytics workspace(s) in Platform/Management; optional per-CELL workspaces for autonomy.
 - Defender for Cloud enabled across Platform and Landing Zones; Sentinel in Management.
 - Standardize diagnostic settings via policy; use workbooks/dashboards (see `monitoringDashboards.bicep`).
 
-## CI/CD & environments
+---
+
+## 🚀 CI/CD & Environments
 
 - Platform pipelines (infrequent): Management/Connectivity/Shared-Services; policy assignments at MG.
 - Workload pipelines (frequent): deploy stamps (CELLs) to workload subscriptions; parameterize subscription IDs and regions.
 - Separate MGs or folders per env (dev/test/prod); align subscriptions accordingly.
 
-## IaC structure & parameters
+---
+
+## 🏗️ IaC Structure & Parameters
 
 - Keep Bicep modules layer-aligned (already reflected in repo). Parameterize:
   - platformSubscriptionId, connectivitySubscriptionId, sharedServicesSubscriptionId
@@ -144,19 +165,25 @@ module cell './AzureArchitecture/deploymentStampLayer.bicep' = {
 }
 ```
 
-## Tags, cost, and quotas
+---
+
+## 🏷️ Tags, Cost, and Quotas
 
 - Standard tags: `env`, `costCenter`, `owner`, `app`, `cellId`, `tenantId`, `azd-env-name`.
 - Budgets at subscription level per CELL; cost analysis by tag.
 - Dedicated CELLs per enterprise tenant ease chargeback and increase quota limits vs shared.
 
-## Resiliency & DR
+---
+
+## 🛟 Resiliency & DR
 
 - Global: Front Door/Traffic Manager (active-active across regions).
 - Regional: duplicate CELLs across at least two regions; align data replication (SQL/Cosmos) to RPO/RTO.
 - Control Plane: geo-replicate Cosmos DB (if used centrally) and deploy portal/DAB in two regions.
 
-## Quick decisions checklist
+---
+
+## ✅ Quick Decisions Checklist
 
 - [ ] Control Plane placement: Platform Shared-Services vs dedicated workload subscription
 - [ ] Per-CELL subscription model: shared vs dedicated per enterprise tenant
@@ -165,7 +192,9 @@ module cell './AzureArchitecture/deploymentStampLayer.bicep' = {
 - [ ] Region pairs and DR pattern; target RPO/RTO
 - [ ] Policy initiatives at Platform and Landing Zones MGs
 
-## Implementation starters
+---
+
+## 🧰 Implementation Starters
 
 Starter Bicep templates are available under `infra/alz-starter/`:
 
@@ -174,7 +203,18 @@ Starter Bicep templates are available under `infra/alz-starter/`:
 
 These are conservative, non-destructive starters you can extend with your own policy sets and subscription provisioning.
 
-## References
+---
+
+## 📚 Related Guides
+
+- [Architecture Guide](./ARCHITECTURE_GUIDE.md)
+- [Deployment Guide](./DEPLOYMENT_GUIDE.md)
+- [Security Guide](./SECURITY_GUIDE.md)
+- [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
+- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Glossary](./GLOSSARY.md)
+- [Known Issues](./KNOWN_ISSUES.md)
+- [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
 
 - Azure CAF – Landing Zones: https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/
 - Azure Architecture Center: https://learn.microsoft.com/azure/architecture/
