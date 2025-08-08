@@ -31,6 +31,7 @@ We appreciate your contributions!
 Please follow these rules for all Markdown docs under `docs/`:
 
   - What’s inside, Best for, Outcomes
+  - Use the term “Azure Stamps Pattern” (not just “Stamps Pattern”) when referring to the pattern
   - Overall CAF/WAF compliance: 94/100
   - WAF Security pillar: 96/100
   - Do not state 96/100 as the overall score
