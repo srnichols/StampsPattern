@@ -2,8 +2,7 @@
 
 ---
 
-> **Executive Summary:**
-> This guide walks platform admins, operators, and support engineers through onboarding, managing, and operating tenants using the Management Portal (Control Plane UI). It covers concepts, workflows, and common tasks with a clear, action-first layout.
+> Quick summary: How platform admins, operators, and support engineers onboard and manage tenants in the Management Portal—core concepts, workflows, and common tasks with an action-first layout.
 
 ---
 

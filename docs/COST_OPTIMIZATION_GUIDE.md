@@ -1,12 +1,12 @@
 
 # 💰 Azure Stamps Pattern - Cost Optimization Guide
 
----
+Quick summary
+Practical ways to reduce spend across compute, storage, networking, data, and operations—without sacrificing reliability or security—plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
 
-> **Executive Summary:**
-> This guide provides comprehensive cost optimization strategies for the Azure Stamps Pattern, including deployment comparisons, visual cost breakdowns, and actionable workflows. It is designed to help architects, IT leaders, DevOps, and finance teams make informed, cost-effective decisions at every stage of cloud adoption.
-
----
+- What’s inside: Deployment cost analysis, layer-by-layer tactics, monitoring/governance, examples, and checklists
+- Best for: Architects, DevOps, finance/FinOps, and IT leaders
+- Outcomes: Lower, predictable costs with clear ROI and governance guardrails
 
 ## 👤 Who Should Read This Guide?
 

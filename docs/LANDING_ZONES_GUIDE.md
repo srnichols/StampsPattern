@@ -2,8 +2,7 @@
 
 ---
 
-> **Executive Summary:**
-> This guide maps the Stamps Pattern to Azure Landing Zones (ALZ) with clear placement of components across Platform and Application landing zones, governance via management groups and policy, and practical IaC examples.
+> Quick summary: Where Stamps Pattern components belong in Azure Landing Zones—platform vs workload landing zones, management groups and policy, and IaC examples to implement it.
 
 ---
 

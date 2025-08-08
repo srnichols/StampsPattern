@@ -1,11 +1,11 @@
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 
----
+Quick summary
+Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
 
-> **Executive Summary:**
-> This documentation hub is your single source of truth for the Azure Stamps Pattern. It provides a complete, role-based navigation guide for onboarding, learning, and mastering the architecture, deployment, operations, and compliance of the Stamps Pattern.
-
----
+- What’s inside: Role-based paths, quick links, and deep-dive references
+- Best for: Newcomers, developers/DevOps, architects, IT leaders, and compliance
+- Outcomes: Faster onboarding and easier navigation across the docs suite
 
 ## 👤 Who Should Use This Guide?
 
@@ -61,14 +61,14 @@ graph LR
 
 ## 🏆 **Enterprise Compliance Showcase**
 
-**Overall Score: 96/100** - Placing this architecture in the **top 5% of enterprise implementations**
+**Overall Score: 94/100** - Placing this architecture in the **top 5% of enterprise implementations**
 
 | **Framework** | **Score** | **Achievement** |
 |---------------|-----------|-----------------|
 | **CAF: Governance** | 95/100 | **Industry Leading** |
 | **WAF: Security** | 96/100 | **World Class** |
 | **WAF: Operational Excellence** | 95/100 | **AI-Powered** |
-| **Overall Compliance** | **96/100** | **Gold Standard** |
+| **Overall Compliance** | **94/100** | **Gold Standard** |
 
 📊 **[View Complete Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**
 

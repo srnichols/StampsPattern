@@ -4,9 +4,7 @@
 
 ---
 
-> **Onboarding & Executive Summary:**
-> 
-> Welcome to the Parameterization Guide for the **Azure Stamps Pattern**! This guide will help you understand how to make your deployments flexible, reusable, and scalable across multiple organizations and geographies. Whether you're a new developer, DevOps engineer, or IT leader, you'll learn how to use parameters to unlock multi-tenant, multi-region, and multi-environment support with minimal risk and maximum maintainability.
+> Quick summary: Make deployments flexible and reusable with parameters—enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
 
 ---
 

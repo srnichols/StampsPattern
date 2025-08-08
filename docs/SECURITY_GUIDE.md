@@ -3,12 +3,20 @@
 
 ---
 
-> **Executive Summary:**
-> This guide provides a comprehensive blueprint for implementing zero-trust security in the **Azure Stamps Pattern**. It covers enterprise-grade controls, automated governance, network micro-segmentation, and threat protection for regulated industries. The guide is designed for security architects, DevOps, IT leaders, and compliance teams to ensure robust, compliant, and adaptive security.
+Quick summary
+Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—network micro‑segmentation, managed identity, private endpoints, threat protection, and automated governance.
+
+- What’s inside: Baselines, architecture, identity, network, data, policy, monitoring, operations
+- Best for: Security architects, DevOps/cloud engineers, IT leaders, and compliance teams
+- Outcomes: Strong security posture, faster audits, and reduced incident risk
+
+- **Security Architects:** Design and validate zero-trust controls
+- **DevOps/Cloud Engineers:** Implement and automate security policies
+- **IT Leaders:** Evaluate security maturity, compliance, and risk
+- **Compliance Teams:** Audit and verify regulatory controls
 
 ---
-
-## 👥 Who Should Read This Guide?
+## 👤 Who Should Read This Guide?
 
 - **Security Architects:** Design and validate zero-trust controls
 - **DevOps/Cloud Engineers:** Implement and automate security policies
@@ -58,27 +66,24 @@
 
 ```mermaid
 graph LR
-    A[Basic<br/>🟡 Foundation] --> B[Enhanced<br/>🟠 Hardened]
-    B --> C[Advanced<br/>🔴 Zero-Trust]
-    C --> D[Expert<br/>🟣 AI-Driven]
+  A[Basic\n🟡 Foundation] --> B[Enhanced\n🟠 Hardened]
+  B --> C[Advanced\n🔴 Zero-Trust]
+  C --> D[Expert\n🟣 AI-Driven]
     
-    A1[WAF Basic Rules<br/>Basic Encryption<br/>Simple RBAC] 
-    B1[Custom WAF Rules<br/>Managed Identity<br/>Private Endpoints]
-    C1[Network Micro-Segmentation<br/>Customer-Managed Keys<br/>Policy Automation]
-    D1[AI Threat Detection<br/>Predictive Analytics<br/>Adaptive Security]
+  A1[WAF Basic Rules\nBasic Encryption\nSimple RBAC]
+  B1[Custom WAF Rules\nManaged Identity\nPrivate Endpoints]
+  C1[Network Micro-Segmentation\nCustomer-Managed Keys\nPolicy Automation]
+  D1[AI Threat Detection\nPredictive Analytics\nAdaptive Security]
     
-    A --- A1
-    B --- B1  
-    C --- C1
-    D --- D1
+  A --- A1
+  B --- B1  
+  C --- C1
+  D --- D1
     
-    style C fill:#ff6b6b
-    style D fill:#9775fa
-    style C1 fill:#ff6b6b
-    style D1 fill:#9775fa
-````
-    C --- C1
-    D --- D1
+  style C fill:#ff6b6b
+  style D fill:#9775fa
+  style C1 fill:#ff6b6b
+  style D1 fill:#9775fa
 ```
 
 ---

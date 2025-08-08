@@ -1,12 +1,12 @@
 
 # 🔐 Azure Stamps Pattern - Developer Security Implementation Guide
 
----
+Quick summary
+How to implement zero‑trust security in code and infra: JWT validation, private endpoints, managed identity, caching, indexing, and robust error handling—optimized for performance and compliance.
 
-> **Executive Summary:**
-> This guide enables developers to implement and maintain the advanced security features of the Azure Stamps Pattern. It covers critical security changes, zero-trust best practices, performance improvements, and hands-on implementation patterns. Designed for onboarding new developers and upskilling experienced engineers.
-
----
+- What’s inside: Breaking changes, secure patterns, code samples, and test guidance
+- Best for: New and experienced developers plus DevOps/platform teams
+- Outcomes: Secure-by-default services with measurable latency and reliability gains
 
 ## 👤 Who Should Read This Guide?
 

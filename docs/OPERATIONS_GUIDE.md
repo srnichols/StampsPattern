@@ -3,8 +3,7 @@
 
 ---
 
-> **Executive Summary:**
-> This guide provides a comprehensive operational runbook for managing the **Azure Stamps Pattern** with AI-driven monitoring, predictive analytics, automated governance, and incident response. It is designed for operations, SRE, DevOps, IT leaders, and security teams to ensure resilient, compliant, and cost-optimized enterprise operations.
+> Quick summary: Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
 ---
 
@@ -62,27 +61,24 @@
 
 ```mermaid
 graph LR
-    A[Level 1<br/>🟡 Reactive] --> B[Level 2<br/>🟠 Proactive]
-    B --> C[Level 3<br/>🔴 Predictive]
-    C --> D[Level 4<br/>🟣 Autonomous]
+  A[Level 1\n🟡 Reactive] --> B[Level 2\n🟠 Proactive]
+  B --> C[Level 3\n🔴 Predictive]
+  C --> D[Level 4\n🟣 Autonomous]
     
-    A1[Manual Monitoring<br/>Issue Resolution<br/>Basic Alerts]
-    B1[Automated Monitoring<br/>Policy Enforcement<br/>SLA Tracking]
-    C1[AI Predictive Analytics<br/>Intelligent Scaling<br/>Cost Optimization]
-    D1[Self-Healing Systems<br/>Autonomous Operations<br/>Zero-Touch Governance]
+  A1[Manual Monitoring\nIssue Resolution\nBasic Alerts]
+  B1[Automated Monitoring\nPolicy Enforcement\nSLA Tracking]
+  C1[AI Predictive Analytics\nIntelligent Scaling\nCost Optimization]
+  D1[Self-Healing Systems\nAutonomous Operations\nZero-Touch Governance]
     
-    A --- A1
-    B --- B1
-    C --- C1
-    D --- D1
+  A --- A1
+  B --- B1
+  C --- C1
+  D --- D1
     
-    style C fill:#ff6b6b
-    style D fill:#9775fa
-    style C1 fill:#ff6b6b
-    style D1 fill:#9775fa
-````
-    C --- C1
-    D --- D1
+  style C fill:#ff6b6b
+  style D fill:#9775fa
+  style C1 fill:#ff6b6b
+  style D1 fill:#9775fa
 ```
 
 ---

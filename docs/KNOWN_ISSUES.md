@@ -2,8 +2,7 @@
 
 ---
 
-> **Executive Summary:**
-> This guide provides solutions and workarounds for common issues encountered during development, deployment, and operation of the **Azure Stamps Pattern**. It is designed for developers, DevOps, operations, and support teams to quickly resolve problems and maintain system health.
+> Quick summary: Practical fixes and workarounds for common issues across development, deployment, and operations of the Azure Stamps Pattern—aimed at developers, DevOps, ops, and support to restore health fast.
 
 ---
 

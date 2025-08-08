@@ -3,14 +3,14 @@
 **Azure Stamps Pattern - Enterprise Architecture Excellence**
 
 
-## 📋 **Executive Summary**
+## ⚡ Quick summary
 
 **Overall Compliance Score: 94/100** 🏆
 
 The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to Microsoft's Cloud Adoption Framework (CAF) and Well-Architected Framework (WAF) principles, achieving a **94/100 overall compliance score** that places it in the **top 5% of enterprise architectures**. This implementation showcases industry-leading practices across governance, security, operations, and cost optimization.
 
 
-### **🎯 Why This Matters for Enterprise Decision Makers**
+### **🎯 Why this matters for decision makers**
 
 - **💼 Business Impact**: Proven architecture reducing operational costs by 25-40% while improving security posture by 95%
 - **🛡️ Risk Mitigation**: Comprehensive compliance framework meeting SOC 2, ISO 27001, HIPAA, and PCI-DSS requirements
@@ -37,13 +37,7 @@ The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to 
 
 ---
 
-## 📢 Executive Summary
-
-**Overall Compliance Score: 94/100** 🏆
-
-The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to Microsoft's Cloud Adoption Framework (CAF) and Well-Architected Framework (WAF) principles, achieving a **94/100 overall compliance score** that places it in the **top 5% of enterprise architectures**. This implementation showcases industry-leading practices across governance, security, operations, and cost optimization.
-
----
+ 
 
 ## 👤 Who Should Read This Guide?
 

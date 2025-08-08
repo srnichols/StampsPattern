@@ -1,12 +1,12 @@
 
 # 🚀 Azure Stamps Pattern - Deployment Guide
 
----
+Quick summary
+Fast, reliable paths to deploy the Azure Stamps Pattern—from simple two-region setups to enterprise multi‑GEO—covering prerequisites, options, automation, validation, and troubleshooting.
 
-> **Executive Summary:**
-> This guide provides step-by-step instructions for deploying the **Azure Stamps Pattern**—a scalable, secure, and compliant multi-tenant architecture for Azure. It covers everything from prerequisites and onboarding to advanced deployment options, automation, and troubleshooting. Designed for DevOps, architects, IT leaders, and security teams, this guide ensures a smooth path from first deployment to enterprise-scale operations.
-
----
+- What’s inside: Prereqs, deployment paths (PS/Bicep/GitHub Actions), validation, and troubleshooting
+- Best for: DevOps, architects, and security/operations stakeholders
+- Outcomes: Repeatable, auditable deployments with parameterized org metadata
 
 ## 👤 Who Should Read This Guide?
 
@@ -134,7 +134,7 @@ graph TD
 
 The Azure Stamps Pattern offers flexible deployment options designed to meet different organizational needs, from rapid prototyping to enterprise-scale production deployments. Each option provides different levels of automation, customization, and operational complexity. Choose your deployment path based on your tenancy requirements, operational maturity, and business goals.
 
-**Enterprise Multi-Tenant Architecture with 96/100 CAF/WAF Compliance** (improved from 94/100)
+**Enterprise Multi-Tenant Architecture with CAF/WAF Compliance**
 
 
 ---
@@ -200,7 +200,7 @@ For deployments using custom domains, organization names, or multi-geography req
 
 > **🧩 Template Flexibility**: The templates are **fully parameterized** for organization reusability! All domains, geography names, and organizational metadata are configurable parameters. Deploy for any organization without code changes.
 
-> **🏆 Enterprise Compliance**: This deployment achieves **94/100 CAF/WAF compliance** with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.
+> **🏆 Enterprise Compliance**: This deployment achieves **94/100 overall CAF/WAF compliance** (with **96/100 WAF Security**), with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.
 
 
 

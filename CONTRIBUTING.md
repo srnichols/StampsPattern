@@ -23,3 +23,29 @@ Please be respectful and considerate in all interactions. See [CODE_OF_CONDUCT.m
 ---
 
 We appreciate your contributions!
+
+---
+
+## Documentation Conventions (Style Guide)
+
+Please follow these rules for all Markdown docs under `docs/`:
+
+- Quick summary at the top (no “Executive Summary”), followed by 3 bullets:
+  - What’s inside, Best for, Outcomes
+- Scores and claims:
+  - Overall CAF/WAF compliance: 94/100
+  - WAF Security pillar: 96/100
+  - Do not state 96/100 as the overall score
+- Diagrams and fences:
+  - Mermaid blocks use triple backticks with `mermaid`
+  - Use `\n` inside Mermaid labels instead of `<br/>`
+  - Keep diagrams minimal and readable
+- Punctuation & tone:
+  - Use ASCII punctuation (quotes, dashes, ellipses)
+  - Clear, concise, action‑oriented prose
+- Links & references:
+  - Prefer relative links (`./file.md`, `../folder/file.md`)
+  - Validate links resolve; remove or fix dead links
+  - Avoid linking to deleted stubs
+
+Before opening a PR, skim related guides for consistent wording and anchors. Small inconsistencies are welcome fixes.

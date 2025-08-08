@@ -3,8 +3,7 @@
 
 ---
 
-> **Executive Summary:**
-> This guide defines standardized naming conventions for the **Azure Stamps Pattern** to ensure consistency, clarity, and compliance with Azure best practices. It covers naming patterns for all major resource types, region abbreviations, tagging, and migration strategies. The guide is designed for cloud engineers, DevOps, architects, and operations teams deploying and managing resources at scale.
+> Quick summary: Standard naming for the Azure Stamps Pattern—patterns per resource type, region abbreviations, tagging, and migration guidance to keep deployments consistent and compliant at scale.
 
 ---
 

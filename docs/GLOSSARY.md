@@ -1,12 +1,12 @@
 
 # 📖 Azure Stamps Pattern - Glossary of Key Terms
 
----
+Quick summary
+Key terminology for the Azure Stamps Pattern with plain-language explanations and analogies to speed up onboarding and reduce ambiguity.
 
-> **Executive Summary:**
-> This glossary explains key concepts and terminology used throughout the **Azure Stamps Pattern** documentation. It is designed for newcomers, engineers, architects, and business users to quickly understand the language of multi-tenancy, cloud operations, and the Stamps architecture.
-
----
+- What’s inside: Architecture, tenancy, security, ops, and compliance terms
+- Best for: Newcomers, engineers/DevOps, architects, and business/IT leaders
+- Outcomes: Shared vocabulary that improves collaboration and decision-making
 
 ## 👤 Who Should Read This Guide?
 
@@ -234,7 +234,6 @@ Practices to reduce expenses while maintaining performance and functionality.
 ### **CAF (Cloud Adoption Framework)**
 Microsoft's guidance for cloud adoption journey.
 - **Areas**: Strategy, Plan, Ready, Adopt, Govern, Manage
-- **Score**: This implementation achieves 96/100 CAF compliance
 
 ### **WAF (Well-Architected Framework)**
 Azure's framework for building reliable, secure, efficient applications.
