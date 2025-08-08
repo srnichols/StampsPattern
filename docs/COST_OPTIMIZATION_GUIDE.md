@@ -4,6 +4,8 @@
 Quick summary
 Practical ways to reduce spend across compute, storage, networking, data, and operations—without sacrificing reliability or security—plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
 
+> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** for the framework mapping of the cost pillar.
+>
 > See also: Azure landing zone implementation guidance — Azure Landing Zones bring CAF/WAF alignment into practice at scale. Start here: [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 - What’s inside: Deployment cost analysis, layer-by-layer tactics, monitoring/governance, examples, and checklists

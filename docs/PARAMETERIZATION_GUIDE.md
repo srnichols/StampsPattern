@@ -329,4 +329,5 @@ az deployment group validate `
 - [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) – Known issues
 - [GLOSSARY.md](./GLOSSARY.md) – Key terms
 - [Azure Naming Conventions](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
+ - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
  - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)

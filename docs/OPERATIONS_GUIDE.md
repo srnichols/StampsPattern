@@ -4,6 +4,8 @@
 Quick summary
 Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
+> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — how operations and reliability pillars map to WAF.
+>
 > Alignment note: Operations practices tie directly to CAF/WAF pillars (operations, reliability, cost). For how these map into enterprise-ready landing zones, see the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
 - What's inside: Monitoring, incident response, maintenance, scaling, and automation playbooks
@@ -1159,6 +1161,7 @@ fi
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
+ - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
  - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 ---
