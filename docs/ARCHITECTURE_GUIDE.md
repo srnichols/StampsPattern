@@ -63,6 +63,7 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 ### 🌍 **Visual: Global Architecture Hierarchy with Availability Zones**
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 graph TB
     subgraph "🌐 Global Layer"
         FD[Azure Front Door<br/>Global Load Balancing]
@@ -221,6 +222,7 @@ Azure Availability Zones provide **intra-region high availability** by distribut
 ### 🏛️ **Regional Architecture with Availability Zones**
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 graph TD
     subgraph "🌍 GEO: United States"
         subgraph "🏢 Region: eastus"
@@ -321,6 +323,7 @@ graph TD
 ### 🌍 **Hierarchical Structure with Availability Zones**
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 graph TD
     subgraph "🌍 GEO Layer"
         G1[UnitedStates]
@@ -470,6 +473,7 @@ Think of the traffic flow like ordering food delivery:
 ### 🌐 **Visual: Complete Request Flow**
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 graph TD
     User[👤 User Request<br/>api.myapp.com/v1/data] --> FD[🌍 Azure Front Door<br/>Global CDN + WAF]
     
@@ -513,6 +517,7 @@ Headers: Authorization: Bearer JWT_TOKEN
 
 **Step 2: Tenant Identification**
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 graph LR
     REQ[API Request] --> JWT[Extract JWT Token]
     JWT --> TID[Extract Tenant ID]
