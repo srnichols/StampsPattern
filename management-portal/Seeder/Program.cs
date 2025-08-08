@@ -1,4 +1,5 @@
 using Azure.Cosmos;
+using System.Net;
 
 var conn = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
 if (string.IsNullOrWhiteSpace(conn))
@@ -7,6 +8,8 @@ if (string.IsNullOrWhiteSpace(conn))
     return 1;
 }
 
+// Accept Cosmos Emulator self-signed cert in local dev.
+ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
 var client = new CosmosClient(conn);
 var db = (await client.CreateDatabaseIfNotExistsAsync("stamps-control-plane")).Database;
 var tenants = (await db.CreateContainerIfNotExistsAsync(new CosmosContainerProperties("tenants", "/pk"))).Container;
