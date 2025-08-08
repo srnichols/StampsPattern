@@ -54,7 +54,7 @@ graph LR
 ### **Phase 3: Operations & Security (60-75 minutes)**
 7. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
 8. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(30 minutes)*
-9. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Resource naming standards *(15 minutes)*
+9. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Resource naming standards *(15 minutes)*
 
 ### **Phase 4: Status & Troubleshooting (As Needed)**
 10. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
@@ -71,6 +71,7 @@ graph LR
 | **Overall Compliance** | **94/100** | **Gold Standard** |
 
 📊 **[View Complete Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**
+🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how CAF/WAF alignment maps to enterprise landing zones setup.
 
 ---
 
@@ -202,7 +203,7 @@ journey
 2. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment *(45 minutes)*
 3. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting common issues *(Reference as needed)*
 4. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Multi-org template customization *(20 minutes)*
-5. **📋 [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Naming standards *(15 minutes)*
+5. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Naming standards *(15 minutes)*
 6. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - Technical deep-dive *(30 minutes)*
 
 **🆕 New Developer Highlights:**
@@ -316,6 +317,7 @@ If you find gaps or areas for improvement in this documentation:
 - **Azure Documentation**: [Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/)
 - **Azure Stamps Pattern**: [Azure Application Architecture Guide](https://learn.microsoft.com/en-us/azure/architecture/guide/)
 - **Multi-Tenant SaaS**: [SaaS Architecture Guidance](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/apps/sap-production)
+ - **Azure Landing Zones**: [Landing Zones overview](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/)
 
 ### 🔐 **Security Highlights**
 - Multi-layer WAF protection

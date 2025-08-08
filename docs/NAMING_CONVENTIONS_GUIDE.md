@@ -1,3 +1,4 @@
+<!-- Renamed from NAMING_CONVENTIONS.md to NAMING_CONVENTIONS_GUIDE.md for consistency -->
 
 # 📋 Azure Stamps Pattern - Naming Conventions Guide
 
@@ -57,56 +58,56 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 
 ```mermaid
 graph TD
-    subgraph "🌍 Global Layer"
-        A[cosmos-stamps-global<br/>🌐 Global Services]
-    end
+	subgraph "🌍 Global Layer"
+		A[cosmos-stamps-global<br/>🌐 Global Services]
+	end
     
-    subgraph "🗺️ Geography Layer"
-        B[rg-stamps-eus-prod<br/>📍 Regional Resources]
-        C[agw-us-eus-prod<br/>🚪 Application Gateway]
-    end
+	subgraph "🗺️ Geography Layer"
+		B[rg-stamps-eus-prod<br/>📍 Regional Resources]
+		C[agw-us-eus-prod<br/>🚪 Application Gateway]
+	end
     
-    subgraph "🏠 CELL Layer - Zone Aware"
-        D[ca-shared-smb-z3-eus-prod<br/>🐳 3-Zone Shared CELL]
-        E[ca-dedicated-bank-z2-eus-prod<br/>🏢 2-Zone Dedicated CELL]
-        F[sqldb-shared-smb-z3-eus-prod<br/>🗄️ Multi-Zone Database]
-        G[st-us-eus-start-z1-dev<br/>💾 Single-Zone Storage]
-    end
+	subgraph "🏠 CELL Layer - Zone Aware"
+		D[ca-shared-smb-z3-eus-prod<br/>🐳 3-Zone Shared CELL]
+		E[ca-dedicated-bank-z2-eus-prod<br/>🏢 2-Zone Dedicated CELL]
+		F[sqldb-shared-smb-z3-eus-prod<br/>🗄️ Multi-Zone Database]
+		G[st-us-eus-start-z1-dev<br/>💾 Single-Zone Storage]
+	end
     
-    A --> B
-    B --> C
-    C --> D
-    C --> E
-    D --> F
-    E --> F
-    D --> G
+	A --> B
+	B --> C
+	C --> D
+	C --> E
+	D --> F
+	E --> F
+	D --> G
     
-    style D fill:#90EE90
-    style E fill:#87CEEB
-    style F fill:#FFB6C1
-    style G fill:#DDA0DD
+	style D fill:#90EE90
+	style E fill:#87CEEB
+	style F fill:#FFB6C1
+	style G fill:#DDA0DD
 ```
 
 ### 🎯 **Zone-Aware Naming Strategy**
 
 ```mermaid
 graph LR
-    subgraph "💰 Cost vs Resilience"
-        A[z0: No Zone<br/>💰 Lowest Cost<br/>🔴 Basic SLA]
-        B[z1: Single Zone<br/>💰 Low Cost<br/>🟡 Standard SLA]
-        C[z2: Two Zones<br/>💰 Medium Cost<br/>🟠 99.95% SLA]
-        D[z3: Three Zones<br/>💰 Highest Cost<br/>🟢 99.99% SLA]
-    end
+	subgraph "💰 Cost vs Resilience"
+		A[z0: No Zone<br/>💰 Lowest Cost<br/>🔴 Basic SLA]
+		B[z1: Single Zone<br/>💰 Low Cost<br/>🟡 Standard SLA]
+		C[z2: Two Zones<br/>💰 Medium Cost<br/>🟠 99.95% SLA]
+		D[z3: Three Zones<br/>💰 Highest Cost<br/>🟢 99.99% SLA]
+	end
     
-    A -->|Dev/Test| E[ca-test-app-z0-eus-dev]
-    B -->|Standard Prod| F[ca-shared-smb-z1-eus-prod]
-    C -->|Enterprise| G[ca-dedicated-bank-z2-eus-prod]
-    D -->|Mission Critical| H[ca-critical-health-z3-eus-prod]
+	A -->|Dev/Test| E[ca-test-app-z0-eus-dev]
+	B -->|Standard Prod| F[ca-shared-smb-z1-eus-prod]
+	C -->|Enterprise| G[ca-dedicated-bank-z2-eus-prod]
+	D -->|Mission Critical| H[ca-critical-health-z3-eus-prod]
     
-    style A fill:#ffebee
-    style B fill:#fff3e0
-    style C fill:#e8f5e8
-    style D fill:#e1f5fe
+	style A fill:#ffebee
+	style B fill:#fff3e0
+	style C fill:#e8f5e8
+	style D fill:#e1f5fe
 ```
 
 ## 🌍 **Resource Group Naming**
@@ -352,35 +353,35 @@ var sqlDatabaseName = 'sqldb-${cellName}-${zoneConfig.suffix}-${regionShort}-${e
 ### **PowerShell Helper Function**
 ```powershell
 function Get-RegionShortName {
-    param([string]$Location)
+	param([string]$Location)
     
-    $RegionMap = @{
-        'eastus' = 'eus'; 'westus' = 'wus'; 'northeurope' = 'neu'
-        'westeurope' = 'weu'; 'eastus2' = 'eus2'; 'westus2' = 'wus2'
-    }
+	$RegionMap = @{
+		'eastus' = 'eus'; 'westus' = 'wus'; 'northeurope' = 'neu'
+		'westeurope' = 'weu'; 'eastus2' = 'eus2'; 'westus2' = 'wus2'
+	}
     
-    return $RegionMap[$Location] ?? $Location.Substring(0, [Math]::Min(3, $Location.Length))
+	return $RegionMap[$Location] ?? $Location.Substring(0, [Math]::Min(3, $Location.Length))
 }
 
 function Get-ZoneAwareName {
-    param(
-        [string]$ResourceType,
-        [string]$CellName,
-        [int]$AvailabilityZones,
-        [string]$Location,
-        [string]$Environment
-    )
+	param(
+		[string]$ResourceType,
+		[string]$CellName,
+		[int]$AvailabilityZones,
+		[string]$Location,
+		[string]$Environment
+	)
     
-    $RegionShort = Get-RegionShortName -Location $Location
-    $ZoneConfig = "z$AvailabilityZones"
+	$RegionShort = Get-RegionShortName -Location $Location
+	$ZoneConfig = "z$AvailabilityZones"
     
-    switch ($ResourceType) {
-        'ContainerApp' { return "ca-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-        'SqlDatabase' { return "sqldb-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-        'FunctionApp' { return "func-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-        'CosmosDb' { return "cosmos-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-        default { return "$ResourceType-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-    }
+	switch ($ResourceType) {
+		'ContainerApp' { return "ca-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+		'SqlDatabase' { return "sqldb-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+		'FunctionApp' { return "func-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+		'CosmosDb' { return "cosmos-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+		default { return "$ResourceType-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+	}
 }
 
 # Usage examples
@@ -392,15 +393,15 @@ $ContainerAppName = Get-ZoneAwareName -ResourceType 'ContainerApp' -CellName $Ce
 ### **Bash Helper Function**
 ```bash
 get_region_short() {
-    case $1 in
-        eastus) echo "eus" ;;
-        westus) echo "wus" ;;
-        northeurope) echo "neu" ;;
-        westeurope) echo "weu" ;;
-        eastus2) echo "eus2" ;;
-        westus2) echo "wus2" ;;
-        *) echo "${1:0:3}" ;;
-    esac
+	case $1 in
+		eastus) echo "eus" ;;
+		westus) echo "wus" ;;
+		northeurope) echo "neu" ;;
+		westeurope) echo "weu" ;;
+		eastus2) echo "eus2" ;;
+		westus2) echo "wus2" ;;
+		*) echo "${1:0:3}" ;;
+	esac
 }
 
 REGION_SHORT=$(get_region_short "$LOCATION")
@@ -448,3 +449,4 @@ RESOURCE_GROUP_NAME="rg-stamps-${REGION_SHORT}-${ENVIRONMENT}"
 - [Azure Naming Conventions](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
 - [Azure Resource Abbreviations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations)
 - [Azure Tagging Strategy](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging)
+

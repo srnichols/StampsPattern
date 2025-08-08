@@ -4,6 +4,8 @@
 Quick summary
 Practical ways to reduce spend across compute, storage, networking, data, and operations—without sacrificing reliability or security—plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
 
+> See also: Azure landing zone implementation guidance — Azure Landing Zones bring CAF/WAF alignment into practice at scale. Start here: [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
+
 - What’s inside: Deployment cost analysis, layer-by-layer tactics, monitoring/governance, examples, and checklists
 - Best for: Architects, DevOps, finance/FinOps, and IT leaders
 - Outcomes: Lower, predictable costs with clear ROI and governance guardrails
@@ -215,6 +217,8 @@ graph LR
 | Service | Standard Cost | Optimization Strategy | Potential Savings | Implementation Complexity |
 |---------|---------------|----------------------|------------------|--------------------------|
 | **Application Gateway v2** | $250-400/month | Enable auto-scaling, optimize WAF rules | 25-40% | 🟡 Medium |
+
+> Adjacent guidance: For production WAF policies and governance at scale, align this regional layer with your enterprise landing zones. See [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 | **Azure Key Vault** | $50-150/month | Use Standard tier, optimize key operations | 15-25% | 🟢 Low |
 | **Log Analytics** | $200-800/month | Set retention policies, use commitment tiers | 30-60% | 🟡 Medium |
 | **Virtual Network** | $100-300/month | Optimize peering, use service endpoints | 20-40% | 🟠 High |

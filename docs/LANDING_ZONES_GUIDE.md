@@ -1,10 +1,34 @@
-# 🏗️ Azure Landing Zones Guide for the Stamps Pattern
+# 🏗️ Azure Stamps Pattern - Azure Landing Zones Guide
+
+Quick summary
+Practical guide to placing Azure Stamps Pattern components within Azure Landing Zones - platform versus workload boundaries, management group hierarchy, policy guardrails, and IaC entry points - so you can scale safely with clear ownership and governance.
+
+- What's inside: MG hierarchy, subscription design, component-to-LZ mapping, policy assignments, networking, identity, monitoring, and IaC wiring
+- Best for: Platform/ALZ teams, solution architects, DevOps/infra engineers, and security/governance leads
+- Outcomes: Clear placement rules, repeatable deployments, consistent guardrails, and reduced blast radius
+
+## 👤 Who Should Read This Guide?
+
+- Platform/ALZ Teams: Define and operate CAF-aligned landing zones and guardrails
+- Solution Architects: Map workload components to the right scopes (MG, subscription)
+- DevOps/Infra Engineers: Implement IaC with correct scoping and parameters
+- Security/Governance: Enforce policy-as-code and central diagnostics at scale
 
 ---
 
-> Quick summary: Where Stamps Pattern components belong in Azure Landing Zones—platform vs workload landing zones, management groups and policy, and IaC examples to implement it.
+## 🧭 Quick Navigation
 
----
+| Section | Focus Area | Time to Read | Best for |
+|---------|------------|--------------|----------|
+| [🗂️ MGs & Subscriptions](#-management-groups-and-subscriptions) | CAF hierarchy and scope | 7 min | Platform, Architects |
+| [🧩 Component Mapping](#-component-to-landing-zone-mapping) | Where each piece belongs | 10 min | Architects, DevOps |
+| [🛡️ Governance & Policy](#-governance--policy) | Initiatives, diagnostics, guardrails | 8 min | Platform, Security |
+| [🌐 Networking & Connectivity](#-networking--connectivity) | Hub/spoke, private DNS, vWAN | 7 min | Network, DevOps |
+| [🔐 Identity & Access](#-identity--access) | RBAC, PIM, managed identities | 5 min | Security, Platform |
+| [📈 Monitoring & Security](#-monitoring--security) | LAW, Defender, Sentinel | 6 min | Ops, Security |
+| [🚀 CI/CD & Environments](#-cicd--environments) | Pipelines and scopes | 5 min | DevOps |
+| [🏗️ IaC Structure & Parameters](#-iac-structure--parameters) | Scoping modules and params | 6 min | DevOps |
+| [🏷️ Tags, Cost, and Quotas](#-tags-cost-and-quotas) | Standards and limits | 5 min | IT Leaders |
 
 Last updated: August 2025
 
@@ -253,11 +277,11 @@ flowchart LR
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Security Guide](./SECURITY_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
 
 - Azure CAF – Landing Zones: https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/
 - Azure Architecture Center: https://learn.microsoft.com/azure/architecture/
-- Repo docs: `ARCHITECTURE_GUIDE.md`, `OPERATIONS_GUIDE.md`, `SECURITY_GUIDE.md`, `NAMING_CONVENTIONS.md`
+- Repo docs: `ARCHITECTURE_GUIDE.md`, `OPERATIONS_GUIDE.md`, `SECURITY_GUIDE.md`, `NAMING_CONVENTIONS_GUIDE.md`

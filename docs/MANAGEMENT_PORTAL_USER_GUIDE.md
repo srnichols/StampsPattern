@@ -8,7 +8,7 @@
 
 Last updated: August 2025
 
-## 👥 Who Should Read This?
+## � Who Should Read This Guide?
 
 - Platform administrators
 - Operators/SREs

@@ -211,7 +211,8 @@ For deployments using custom domains, organization names, or multi-geography req
 
 > **🧩 Template Flexibility**: The templates are **fully parameterized** for organization reusability! All domains, geography names, and organizational metadata are configurable parameters. Deploy for any organization without code changes.
 
-> **🏆 Enterprise Compliance**: This deployment achieves **94/100 overall CAF/WAF compliance** (with **96/100 WAF Security**), with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.
+> **🏆 Enterprise Compliance**: This deployment achieves **94/100 overall CAF/WAF compliance** (with **96/100 WAF Security**), with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.  
+> 🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** to align deployments with your enterprise landing zone topology.
 
 
 
@@ -1050,7 +1051,7 @@ az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAM
 - [Operations Runbook](./OPERATIONS_GUIDE.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)

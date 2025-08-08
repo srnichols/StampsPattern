@@ -1,6 +1,8 @@
 
 # 🏗️ Azure Stamps Pattern - Enterprise Architecture Guide (CAF/WAF Compliant)
 
+> Alignment note: This guide references CAF/WAF throughout. To see how these translate into enterprise landing zones, use the companion [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
+
 Quick summary
 A concise tour of the Azure Stamps Pattern architecture—layers, flows, and core decisions—so you can design, build, and scale compliant multi-tenant systems with confidence.
 
@@ -759,9 +761,10 @@ az deployment group create \
 - [Operations Runbook](./OPERATIONS_GUIDE.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
+ - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 ---
 

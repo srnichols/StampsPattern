@@ -58,6 +58,8 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—netw
 # 🛡️ Azure Stamps Pattern - Zero-Trust Security Architecture
 
 > **🎯 Purpose**: Comprehensive zero-trust security implementation achieving **96/100 WAF Security score** with enterprise-grade controls, automated governance, network micro-segmentation, and comprehensive threat protection for regulated industries.
+>
+> 🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how these security controls align with CAF/WAF-aligned enterprise landing zones.
 
 
 ---
@@ -668,10 +670,11 @@ actions:
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
+ - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 ---
 

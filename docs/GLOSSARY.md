@@ -235,10 +235,14 @@ Practices to reduce expenses while maintaining performance and functionality.
 Microsoft's guidance for cloud adoption journey.
 - **Areas**: Strategy, Plan, Ready, Adopt, Govern, Manage
 
+> Related: To implement CAF-aligned platform landing zones, see the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
+
 ### **WAF (Well-Architected Framework)**
 Azure's framework for building reliable, secure, efficient applications.
 - **Pillars**: Reliability, Security, Cost Optimization, Operational Excellence, Performance Efficiency
 - **Assessment**: Regular reviews to identify improvements
+
+> Related: Pair WAF reviews with enterprise landing zones for durable enforcement. Start with the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
 ### **GDPR/HIPAA/SOC 2**
 Compliance standards for data protection and security.

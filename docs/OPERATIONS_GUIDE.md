@@ -1,13 +1,16 @@
 
 # ⚙️ Azure Stamps Pattern - AI-Driven Operations Guide
 
----
+Quick summary
+Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
-> Quick summary: Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
+> Alignment note: Operations practices tie directly to CAF/WAF pillars (operations, reliability, cost). For how these map into enterprise-ready landing zones, see the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
----
+- What's inside: Monitoring, incident response, maintenance, scaling, and automation playbooks
+- Best for: Operations/SRE, DevOps engineers, IT leaders, and security/compliance teams
+- Outcomes: Faster MTTR/MTTD, higher resilience, better cost control, and consistent runbooks
 
-## 👥 Who Should Read This Guide?
+## � Who Should Read This Guide?
 
 - **Operations/SRE Teams:** Day-to-day management, monitoring, and incident response
 - **DevOps Engineers:** Automation, maintenance, and scaling
@@ -1152,10 +1155,11 @@ fi
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Security Guide](./SECURITY_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md)
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
+ - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 ---
 

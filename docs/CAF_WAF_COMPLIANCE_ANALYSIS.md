@@ -2,6 +2,8 @@
 
 **Azure Stamps Pattern - Enterprise Architecture Excellence**
 
+> See also: For practical implementation of CAF/WAF guidance at scale, review the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md) and map controls to your enterprise platform.
+
 
 ## ⚡ Quick summary
 
@@ -29,6 +31,8 @@ The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to 
 
 **What is this guide for?**
 > This guide provides a comprehensive analysis of how the Azure Stamps Pattern aligns with Microsoft's Cloud Adoption Framework (CAF) and Well-Architected Framework (WAF). It is your reference for understanding compliance, best practices, and how to leverage these frameworks for enterprise success.
+>
+> Complementary: Map CAF/WAF outcomes to landing zone implementation with the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
 **Why is this important?**
 > - **Onboarding:** Ramp up quickly on CAF/WAF principles in the context of Azure Stamps
@@ -1011,7 +1015,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Cost Optimization Guide](./COST_OPTIMIZATION_GUIDE.md)
 - [Developer Security Guide](./DEVELOPER_SECURITY_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS.md) — see for full details on the **GEO → Region → Availability Zone → CELL** hierarchy and zone-aware naming/tagging
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md) — see for full details on the **GEO → Region → Availability Zone → CELL** hierarchy and zone-aware naming/tagging
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)

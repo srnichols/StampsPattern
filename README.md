@@ -154,6 +154,8 @@ graph TB
 
 ---
 
+Note: For CAF/WAF references and how this architecture maps to Azure Landing Zones, see the Azure Landing Zones Guide (./docs/LANDING_ZONES_GUIDE.md).
+
 ## 🚀 Quick Links
 
 - [📚 Documentation Hub](./docs/DOCS.md)
@@ -161,6 +163,7 @@ graph TB
 - [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
 - [⚙️ Operations Guide](./docs/OPERATIONS_GUIDE.md)
 - [🛡️ Security Guide](./docs/SECURITY_GUIDE.md)
+- [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
 - [Known Issues](./docs/KNOWN_ISSUES.md)
 - [Contributing](#contributing)
 - [Support](#support--community)
@@ -230,7 +233,7 @@ This solution is designed for:
 | ⚙️ Operations Guide | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
 | 🛡️ Security Guide | Security baseline, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./docs/SECURITY_GUIDE.md) |
 | 🏆 CAF/WAF Compliance | Enterprise compliance scorecard and framework alignment | C-Level, Enterprise Architects | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) |
-| 📋 Naming Conventions | Resource naming standards and policy enforcement | All Teams | [NAMING_CONVENTIONS.md](./docs/NAMING_CONVENTIONS.md) |
+| 📋 Naming Conventions | Resource naming standards and policy enforcement | All Teams | [NAMING_CONVENTIONS_GUIDE.md](./docs/NAMING_CONVENTIONS_GUIDE.md) |
 | 📝 Glossary | Key terms and concepts | All | [GLOSSARY.md](./docs/GLOSSARY.md) |
 | ❓ FAQ / Known Issues | Troubleshooting and common questions | All | [KNOWN_ISSUES.md](./docs/KNOWN_ISSUES.md) |
 

@@ -2,11 +2,12 @@
 
 # 📋 Parameterization Guide for Azure Stamps Pattern
 
----
+Quick summary
+Make deployments flexible and reusable with parameters—enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
 
-> Quick summary: Make deployments flexible and reusable with parameters—enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
-
----
+- What's inside: Parameter types, template/script changes, usage examples, validation, and migration notes
+- Best for: DevOps, cloud engineers, solution architects, and operations teams
+- Outcomes: Reusable templates, clean tagging, faster onboarding, and safer migrations
 
 
 ## 👤 Who Should Read This Guide?
@@ -320,7 +321,7 @@ az deployment group validate `
 - [DOCS.md](./DOCS.md) – Documentation index
 - [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) – Solution architecture
 - [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) – Deployment procedures
-- [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md) – Zone-aware naming patterns
+- [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md) – Zone-aware naming patterns
 - [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) – Security best practices
 - [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md) – Cost management
 - [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md) – Developer security
@@ -328,3 +329,4 @@ az deployment group validate `
 - [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) – Known issues
 - [GLOSSARY.md](./GLOSSARY.md) – Key terms
 - [Azure Naming Conventions](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
+ - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
