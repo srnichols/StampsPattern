@@ -9,7 +9,7 @@
 
 Last updated: August 2025
 
-## 🧭 TL;DR - Where Things Go
+## 🧭 Quick Summary - Where Things Go
 
 - Platform landing zones host shared enterprise services: Identity (process), Management, Connectivity, and Shared Services (global edge, shared gateways). Do not put all infra into the Management subscription.
 - Application (workload) landing zones host your CELLs (shared or dedicated) per region. Use one subscription per CELL for isolation, quotas, and billing clarity.
