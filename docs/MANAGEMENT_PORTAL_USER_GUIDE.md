@@ -56,6 +56,7 @@ Last updated: August 2025
 ### 🚀 Tenant Onboarding Flow
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
   start(["Start"]) --> form["Open New Tenant Form"]
   form --> validate{"Validate Inputs"}
@@ -69,6 +70,7 @@ flowchart TD
 ### 🔁 Tenant Migration (Shared → Dedicated or Cell-to-Cell)
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 sequenceDiagram
   participant U as Operator
   participant P as Portal
@@ -87,6 +89,7 @@ sequenceDiagram
 ### 🧩 Routing Strategy Decision
 
 ```mermaid
+%%{init: {"theme":"neutral","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
   input_req["Routing Update Request"] --> strategy{"Strategy"}
   strategy -->|"Geo"| geo_node["Geo-based Rule"]
