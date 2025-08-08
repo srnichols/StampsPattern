@@ -33,9 +33,9 @@
 
 ---
 
-## 📚 For Newcomers to Stamps Pattern Naming
+## 📚 For Newcomers to Azure Stamps Pattern Naming
 
-**What are Naming Conventions in the Stamps Pattern?**
+**What are Naming Conventions in the Azure Stamps Pattern?**
 > Naming conventions are the rules that make your Azure resources discoverable, manageable, and compliant. This guide shows you how to name every resource—across regions, zones, and environments—so your cloud is organized, scalable, and easy to operate.
 
 **Why is this important?**

@@ -314,7 +314,7 @@ If you find gaps or areas for improvement in this documentation:
 
 ### 📚 **Additional Resources**
 - **Azure Documentation**: [Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/)
-- **Stamps Pattern**: [Azure Application Architecture Guide](https://learn.microsoft.com/en-us/azure/architecture/guide/)
+- **Azure Stamps Pattern**: [Azure Application Architecture Guide](https://learn.microsoft.com/en-us/azure/architecture/guide/)
 - **Multi-Tenant SaaS**: [SaaS Architecture Guidance](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/apps/sap-production)
 
 ### 🔐 **Security Highlights**

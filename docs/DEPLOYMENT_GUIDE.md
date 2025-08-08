@@ -60,9 +60,9 @@ pwsh -File ./scripts/verify-doc-links.ps1 -IncludeImages -CheckExternal
 Our CI runs the same check on pull requests and pushes. Fix any reported links (relative or external) before submitting your PR to avoid CI failures.
 
 
-## 📚 For Newcomers to Stamps Pattern Deployment
+## 📚 For Newcomers to Azure Stamps Pattern Deployment
 
-**What is the Stamps Pattern?**
+**What is the Azure Stamps Pattern?**
 > Imagine deploying a network of identical, secure “application factories” (CELLs) worldwide. Each can serve many customers (shared) or VIPs (dedicated), all managed with zero-trust security and automated scaling. This guide helps you set up, customize, and validate your own global, multi-tenant Azure platform.
 
 **Why use this pattern?**
@@ -843,7 +843,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: Deploy Stamps Pattern
+  - name: Deploy Azure Stamps Pattern
       run: |
         az deployment group create \
           --resource-group rg-stamps-${{ github.event.inputs.environment || 'dev' }} \

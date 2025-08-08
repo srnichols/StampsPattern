@@ -80,7 +80,7 @@ The Azure Stamps Pattern is built on a four-tier hierarchy: **GEO → Region →
 
 > **Global Capacity Management & Cloud Supply Constraints**
 >
-> Cloud providers sometimes face regional or zone capacity limits for compute and storage due to demand spikes, supply chain issues, or quota exhaustion. The Stamps Pattern’s modular, zone-aware, and multi-region CELL design gives you more options to mitigate these challenges: if a region or AZ is at capacity, you can deploy new CELLs in available locations with minimal disruption, maintaining business continuity and agility even in constrained environments.
+> Cloud providers sometimes face regional or zone capacity limits for compute and storage due to demand spikes, supply chain issues, or quota exhaustion. The Azure Stamps Pattern’s modular, zone-aware, and multi-region CELL design gives you more options to mitigate these challenges: if a region or AZ is at capacity, you can deploy new CELLs in available locations with minimal disruption, maintaining business continuity and agility even in constrained environments.
 
 **Example Table:**
 
@@ -93,7 +93,7 @@ The Azure Stamps Pattern is built on a four-tier hierarchy: **GEO → Region →
 
 **Tip:** For cost-sensitive tenants, start with z0/z1. For enterprise or regulated tenants, use z2/z3 for higher durability and compliance.
 
-This flexibility is a core advantage of the Stamps Pattern—enabling you to right-size cost and resilience for every business scenario.
+This flexibility is a core advantage of the Azure Stamps Pattern—enabling you to right-size cost and resilience for every business scenario.
 
 ## 📊 Deployment Cost Analysis
 

@@ -396,7 +396,7 @@ lifecycleRules: [
 
 ### **📊 Benchmark Comparisons**
 
-| **Metric** | **Stamps Pattern** | **Industry Average** | **Advantage** |
+| **Metric** | **Azure Stamps Pattern** | **Industry Average** | **Advantage** |
 |------------|-------------------|---------------------|---------------|
 | **Deployment Time** | 2-4 weeks | 12-16 weeks | **75% faster** |
 | **Security Score** | 96/100 | 73/100 | **+23 points** |
@@ -888,7 +888,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 resource resourceNamingPolicy 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
   name: 'stamps-naming-convention'
   properties: {
-    displayName: 'Stamps Pattern Naming Convention'
+  displayName: 'Azure Stamps Pattern Naming Convention'
     policyType: 'Custom'
     mode: 'All'
     policyRule: {
@@ -1027,7 +1027,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 
 ---
 
-### **Why Availability Zones Matter in the Stamps Pattern**
+### **Why Availability Zones Matter in the Azure Stamps Pattern**
 - **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures and supports strict SLA targets.
 - **Disaster Recovery (DR):** AZs enable rapid failover and business continuity for each CELL.
 - **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload, supporting both enterprise and cost-sensitive scenarios.

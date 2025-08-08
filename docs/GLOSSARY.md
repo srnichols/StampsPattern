@@ -10,7 +10,7 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 
 ## 👤 Who Should Read This Guide?
 
-- **Newcomers:** Get up to speed on Stamps Pattern terminology
+- **Newcomers:** Get up to speed on Azure Stamps Pattern terminology
 - **Engineers/DevOps:** Clarify technical terms and acronyms
 - **Solution Architects:** Reference for design and documentation
 - **Business/IT Leaders:** Understand key concepts for decision-making
@@ -34,10 +34,10 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 
 ---
 
-## 📚 For Newcomers to the Stamps Pattern Glossary
+## 📚 For Newcomers to the Azure Stamps Pattern Glossary
 
 **What is the Glossary for?**
-> The glossary is your quick reference for all the terms, acronyms, and concepts used in the Stamps Pattern documentation. If you’re new to Azure, multi-tenancy, or cloud architecture, start here to build your foundation.
+> The glossary is your quick reference for all the terms, acronyms, and concepts used in the Azure Stamps Pattern documentation. If you’re new to Azure, multi-tenancy, or cloud architecture, start here to build your foundation.
 
 **Why is this important?**
 > - **Clarity:** Demystifies technical jargon and acronyms
@@ -48,7 +48,7 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 
 ## 🏗️ **Architectural Terms**
 
-### **Stamps Pattern**
+### **Azure Stamps Pattern**
 An Azure architectural pattern that deploys identical "stamps" of infrastructure globally for scalability and isolation.
 - **Analogy**: Like franchise restaurants - each location (stamp) has the same setup but serves different customers (tenants)
 - **Benefits**: Predictable performance, easier troubleshooting, horizontal scaling
@@ -56,7 +56,7 @@ An Azure architectural pattern that deploys identical "stamps" of infrastructure
 
 
 ### **GEO → Region → Availability Zone → CELL Hierarchy**
-The four-tier architecture structure of the Stamps Pattern:
+The four-tier architecture structure of the Azure Stamps Pattern:
 - **GEO**: Geographic area (e.g., North America, Europe) - highest level routing
 - **Region**: Azure region within a GEO (e.g., East US, West Europe) - regional services
 - **Availability Zone (AZ)**: Physically separate datacenters within a region, providing high availability and fault tolerance. Each CELL can be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.

@@ -1,6 +1,6 @@
 # ALZ Starter (Management Group Policy Assignments and Subscription Map)
 
-This folder contains minimal, safe-to-clone Bicep starters to help align your Stamps Pattern with Azure Landing Zones (ALZ).
+This folder contains minimal, safe-to-clone Bicep starters to help align your Azure Stamps Pattern with Azure Landing Zones (ALZ).
 
 Contents:
 - mg-policy-assign.bicep — Assign a Policy/Initiative at a management group scope.

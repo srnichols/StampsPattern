@@ -43,9 +43,9 @@
 
 ---
 
-## 📚 For Newcomers to Stamps Pattern Operations
+## 📚 For Newcomers to Azure Stamps Pattern Operations
 
-**What is Operations in the Stamps Pattern?**
+**What is Operations in the Azure Stamps Pattern?**
 > Think of operations as running a global network of “smart factories” (CELLs) that are monitored, maintained, and optimized by AI. This guide helps you keep everything healthy, secure, and cost-effective—whether you’re responding to incidents, scaling up, or automating routine tasks.
 
 **Why is this important?**
@@ -851,7 +851,7 @@ curl -X POST "https://events.pagerduty.com/v2/enqueue" \
         "routing_key": "YOUR_INTEGRATION_KEY",
         "event_action": "trigger",
         "payload": {
-            "summary": "Critical: Global stamps pattern outage",
+            "summary": "Critical: Global Azure Stamps Pattern outage",
             "severity": "critical",
             "source": "Azure Stamps Pattern",
             "component": "Global Infrastructure"
