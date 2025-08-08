@@ -71,6 +71,48 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
         await MutationAsync<object>(mutation, variables, "deleteTenant", ct);
     }
 
+    public async Task<Cell> CreateCellAsync(Cell cell, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($input: CreateCellInput!) { createCell(input: $input) { id region availabilityZone status capacityUsed capacityTotal } }";
+        var variables = new { input = new { id = cell.Id, pk = cell.Id, region = cell.Region, availabilityZone = cell.AvailabilityZone, status = cell.Status, capacityUsed = cell.CapacityUsed, capacityTotal = cell.CapacityTotal } };
+        return await MutationAsync<Cell>(mutation, variables, "createCell", ct);
+    }
+
+    public async Task<Cell> UpdateCellAsync(Cell cell, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($id: ID!, $input: UpdateCellInput!) { updateCell(id: $id, input: $input) { id region availabilityZone status capacityUsed capacityTotal } }";
+        var variables = new { id = cell.Id, input = new { region = cell.Region, availabilityZone = cell.AvailabilityZone, status = cell.Status, capacityUsed = cell.CapacityUsed, capacityTotal = cell.CapacityTotal } };
+        return await MutationAsync<Cell>(mutation, variables, "updateCell", ct);
+    }
+
+    public async Task DeleteCellAsync(string id, string partitionKey, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($id: ID!, $pk: String!) { deleteCell(id: $id, partitionKeyValue: $pk) }";
+        var variables = new { id, pk = partitionKey };
+        await MutationAsync<object>(mutation, variables, "deleteCell", ct);
+    }
+
+    public async Task<Operation> CreateOperationAsync(Operation op, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($input: CreateOperationInput!) { createOperation(input: $input) { id tenantId type status createdAt } }";
+        var variables = new { input = new { id = op.Id, pk = op.TenantId, tenantId = op.TenantId, type = op.Type, status = op.Status, createdAt = op.CreatedAt } };
+        return await MutationAsync<Operation>(mutation, variables, "createOperation", ct);
+    }
+
+    public async Task<Operation> UpdateOperationAsync(Operation op, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($id: ID!, $input: UpdateOperationInput!) { updateOperation(id: $id, input: $input) { id tenantId type status createdAt } }";
+        var variables = new { id = op.Id, input = new { tenantId = op.TenantId, type = op.Type, status = op.Status, createdAt = op.CreatedAt } };
+        return await MutationAsync<Operation>(mutation, variables, "updateOperation", ct);
+    }
+
+    public async Task DeleteOperationAsync(string id, string partitionKey, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($id: ID!, $pk: String!) { deleteOperation(id: $id, partitionKeyValue: $pk) }";
+        var variables = new { id, pk = partitionKey };
+        await MutationAsync<object>(mutation, variables, "deleteOperation", ct);
+    }
+
     private async Task<IReadOnlyList<T>> QueryAsync<T>(string query, string rootField, CancellationToken ct)
     {
         var payload = new { query };

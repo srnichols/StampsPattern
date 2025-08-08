@@ -1,7 +1,24 @@
 @page "/cells"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
 @inject Stamps.ManagementPortal.Services.IDataService Data
 
 <h1>Cells</h1>
+
+<EditForm Model="edit" OnValidSubmit="OnSaveAsync">
+    <DataAnnotationsValidator />
+    <div class="form-grid">
+        <input @bind="edit.Id" placeholder="Id" />
+        <input @bind="edit.Region" placeholder="Region" />
+        <input @bind="edit.AvailabilityZone" placeholder="AZ" />
+        <input @bind="edit.Status" placeholder="Status" />
+        <input type="number" @bind-value="edit.CapacityUsed" placeholder="Used" />
+        <input type="number" @bind-value="edit.CapacityTotal" placeholder="Total" />
+    </div>
+    <button type="submit">Save</button>
+    <button type="button" @onclick="NewAsync">New</button>
+    <span class="hint">CRUD requires GraphQL/DAB to be enabled</span>
+</EditForm>
 
 @if (cells is null)
 {
@@ -22,6 +39,10 @@ else
                 <td>@c.AvailabilityZone</td>
                 <td>@c.Status</td>
                 <td>@c.CapacityUsed/@c.CapacityTotal</td>
+                <td>
+                    <button @onclick="() => Edit(c)">Edit</button>
+                    <button @onclick="() => DeleteAsync(c)">Delete</button>
+                </td>
             </tr>
         }
         </tbody>
@@ -30,8 +51,39 @@ else
 
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Cell>? cells;
+    private CellEdit edit = new();
+
+    class CellEdit
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string AvailabilityZone { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public int CapacityUsed { get; set; }
+        public int CapacityTotal { get; set; }
+    }
     protected override async Task OnInitializedAsync()
     {
+        cells = await Data.GetCellsAsync();
+    }
+
+    void Edit(Stamps.ManagementPortal.Models.Cell c)
+        => edit = new CellEdit { Id = c.Id, Region = c.Region, AvailabilityZone = c.AvailabilityZone, Status = c.Status, CapacityUsed = c.CapacityUsed, CapacityTotal = c.CapacityTotal };
+    Task NewAsync() { edit = new CellEdit(); return Task.CompletedTask; }
+
+    async Task OnSaveAsync()
+    {
+        var rec = new Stamps.ManagementPortal.Models.Cell(edit.Id, edit.Region, edit.AvailabilityZone, edit.Status, edit.CapacityUsed, edit.CapacityTotal);
+        if (cells?.Any(x => x.Id == rec.Id) == true)
+            await Data.UpdateCellAsync(rec);
+        else
+            await Data.CreateCellAsync(rec);
+        cells = await Data.GetCellsAsync();
+    }
+
+    async Task DeleteAsync(Stamps.ManagementPortal.Models.Cell c)
+    {
+        await Data.DeleteCellAsync(c.Id, c.Id);
         cells = await Data.GetCellsAsync();
     }
 }

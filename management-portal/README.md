@@ -22,5 +22,5 @@ Run locally with one command or via the AppHost. Defaults to in-memory data; set
 - Set DAB_GRAPHQL_URL to use GraphQL
 
 ## CRUD
-- Tenants page supports create/update/delete when GraphQL is enabled (DAB provides mutations).
+- Tenants, Cells, and Operations pages support create/update/delete when GraphQL is enabled (DAB provides mutations).
 - For in-memory mode, operations affect only the running process.

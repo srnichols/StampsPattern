@@ -29,14 +29,14 @@
       "graphql": {
         "type": { "singular": "Cell", "plural": "Cells" }
       },
-      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+  "permissions": [ { "role": "anonymous", "actions": [ "read", "create", "update", "delete" ] } ]
     },
     "Operation": {
       "source": "operations",
       "graphql": {
         "type": { "singular": "Operation", "plural": "Operations" }
       },
-      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+  "permissions": [ { "role": "anonymous", "actions": [ "read", "create", "update", "delete" ] } ]
     }
   }
 }

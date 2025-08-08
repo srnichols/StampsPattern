@@ -1,7 +1,23 @@
 @page "/operations"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
 @inject Stamps.ManagementPortal.Services.IDataService Data
 
 <h1>Operations</h1>
+
+<EditForm Model="edit" OnValidSubmit="OnSaveAsync">
+    <DataAnnotationsValidator />
+    <div class="form-grid">
+        <input @bind="edit.Id" placeholder="Id" />
+        <input @bind="edit.TenantId" placeholder="Tenant Id" />
+        <input @bind="edit.Type" placeholder="Type" />
+        <input @bind="edit.Status" placeholder="Status" />
+        <input type="datetime-local" @bind-value="edit.CreatedAtLocal" />
+    </div>
+    <button type="submit">Save</button>
+    <button type="button" @onclick="NewAsync">New</button>
+    <span class="hint">CRUD requires GraphQL/DAB to be enabled</span>
+</EditForm>
 
 @if (ops is null)
 {
@@ -22,6 +38,10 @@ else
                 <td>@o.Type</td>
                 <td>@o.Status</td>
                 <td>@o.CreatedAt.ToLocalTime()</td>
+                <td>
+                    <button @onclick="() => Edit(o)">Edit</button>
+                    <button @onclick="() => DeleteAsync(o)">Delete</button>
+                </td>
             </tr>
         }
         </tbody>
@@ -30,8 +50,43 @@ else
 
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Operation>? ops;
+    private OperationEdit edit = new();
+
+    class OperationEdit
+    {
+        public string Id { get; set; } = string.Empty;
+        public string TenantId { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTime CreatedAtLocal
+        {
+            get => CreatedAt.LocalDateTime;
+            set => CreatedAt = new DateTimeOffset(value, DateTimeOffset.Now.Offset);
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
+        ops = await Data.GetOperationsAsync();
+    }
+
+    void Edit(Stamps.ManagementPortal.Models.Operation o)
+        => edit = new OperationEdit { Id = o.Id, TenantId = o.TenantId, Type = o.Type, Status = o.Status, CreatedAt = o.CreatedAt };
+    Task NewAsync() { edit = new OperationEdit(); return Task.CompletedTask; }
+
+    async Task OnSaveAsync()
+    {
+        var rec = new Stamps.ManagementPortal.Models.Operation(edit.Id, edit.TenantId, edit.Type, edit.Status, edit.CreatedAt);
+        if (ops?.Any(x => x.Id == rec.Id) == true)
+            await Data.UpdateOperationAsync(rec);
+        else
+            await Data.CreateOperationAsync(rec);
+        ops = await Data.GetOperationsAsync();
+    }
+
+    async Task DeleteAsync(Stamps.ManagementPortal.Models.Operation o)
+    {
+        await Data.DeleteOperationAsync(o.Id, o.TenantId);
         ops = await Data.GetOperationsAsync();
     }
 }
