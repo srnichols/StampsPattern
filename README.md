@@ -154,7 +154,7 @@ graph TB
 
 ---
 
-Note: For CAF/WAF references and how this architecture maps to Azure Landing Zones, see the Azure Landing Zones Guide (./docs/LANDING_ZONES_GUIDE.md).
+Note: See CAF/WAF Compliance Analysis (./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the Azure Landing Zones Guide (./docs/LANDING_ZONES_GUIDE.md).
 
 ## 🚀 Quick Links
 
@@ -163,6 +163,7 @@ Note: For CAF/WAF references and how this architecture maps to Azure Landing Zon
 - [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
 - [⚙️ Operations Guide](./docs/OPERATIONS_GUIDE.md)
 - [🛡️ Security Guide](./docs/SECURITY_GUIDE.md)
+- [🏆 CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
 - [Known Issues](./docs/KNOWN_ISSUES.md)
 - [Contributing](#contributing)
