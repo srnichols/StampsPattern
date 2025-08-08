@@ -4,6 +4,8 @@
 
 Achieving an industry-leading **94/100 overall CAF/WAF compliance score** (with **96/100 WAF Security**), this framework implements a modular, zero-trust, and policy-driven approach that has been battle-tested in regulated industries including healthcare, financial services, and government sectors. Organizations can deploy production-ready infrastructure in under 45 minutes while meeting the most stringent security and compliance requirements.
 
+It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platform and workload landing zones, management group hierarchy, and policy-as-code guardrails. For practical implementation guidance, see the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
+
 **The unique zone-aware architecture (GEO → Region → Availability Zone → CELL)** supports both shared and dedicated tenancy models, enabling organizations to optimize costs with shared CELLs for SMB clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance isolation ($3,200+/tenant/month). This flexibility delivers up to 10-50x cost reduction for smaller tenants while ensuring enterprise-grade isolation for regulated workloads.
 
 **Key business benefits include:**
