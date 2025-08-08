@@ -1,0 +1,43 @@
+{
+  "$schema": "https://dataapibuilder.azureedge.net/schemas/latest/dab.draft.schema.json",
+  "data-source": {
+    "database-type": "cosmosdb_nosql",
+    "options": {
+      "database": "stamps-control-plane",
+      "schema": "",
+      "graphQLSchemaPath": "schema.graphql"
+    },
+    "connection-string": "@env('COSMOS_CONNECTION_STRING')"
+  },
+  "runtime": {
+    "rest": { "enabled": false },
+    "graphql": { "enabled": true, "path": "/graphql" },
+    "cors": { "origins": ["*"], "allow-credentials": false }
+  },
+  "entities": {
+    "Tenant": {
+      "source": "tenants",
+      "graphql": {
+        "type": {
+          "singular": "Tenant",
+          "plural": "Tenants"
+        }
+      },
+      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+    },
+    "Cell": {
+      "source": "cells",
+      "graphql": {
+        "type": { "singular": "Cell", "plural": "Cells" }
+      },
+      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+    },
+    "Operation": {
+      "source": "operations",
+      "graphql": {
+        "type": { "singular": "Operation", "plural": "Operations" }
+      },
+      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+    }
+  }
+}
