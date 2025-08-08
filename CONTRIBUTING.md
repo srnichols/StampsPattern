@@ -30,22 +30,22 @@ We appreciate your contributions!
 
 Please follow these rules for all Markdown docs under `docs/`:
 
-- Quick summary at the top (no “Executive Summary”), followed by 3 bullets:
   - What’s inside, Best for, Outcomes
-- Scores and claims:
   - Overall CAF/WAF compliance: 94/100
   - WAF Security pillar: 96/100
   - Do not state 96/100 as the overall score
-- Diagrams and fences:
   - Mermaid blocks use triple backticks with `mermaid`
   - Use `\n` inside Mermaid labels instead of `<br/>`
   - Keep diagrams minimal and readable
-- Punctuation & tone:
   - Use ASCII punctuation (quotes, dashes, ellipses)
   - Clear, concise, action‑oriented prose
-- Links & references:
   - Prefer relative links (`./file.md`, `../folder/file.md`)
   - Validate links resolve; remove or fix dead links
   - Avoid linking to deleted stubs
 
+
+### Pre-PR checklist for docs
+- Run the relative link check locally:
+  - PowerShell: `pwsh -File ./scripts/verify-doc-links.ps1 -IncludeImages`
+- Ensure “Quick summary” is present at top of each guide and that compliance scores are consistent (Overall 94/100; WAF Security 96/100 where relevant).
 Before opening a PR, skim related guides for consistent wording and anchors. Small inconsistencies are welcome fixes.
