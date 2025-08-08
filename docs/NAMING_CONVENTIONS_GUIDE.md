@@ -2,7 +2,6 @@
 
 # 📋 Azure Stamps Pattern - Naming Conventions Guide
 
-Quick summary
 Standard naming for the Azure Stamps Pattern—patterns per resource type, region abbreviations, tagging, and migration guidance to keep deployments consistent and compliant at scale.
 
 - What's inside: Resource naming patterns, region abbreviations, zone-aware names, tagging, and helpers
