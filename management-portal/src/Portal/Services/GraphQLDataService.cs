@@ -21,6 +21,56 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
     public async Task<IReadOnlyList<Operation>> GetOperationsAsync(CancellationToken ct = default)
         => await QueryAsync<Operation>("query { Operations { id tenantId type status createdAt } }", "Operations", ct);
 
+    public async Task<Tenant> CreateTenantAsync(Tenant tenant, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($input: CreateTenantInput!) {
+            createTenant(input: $input) { id displayName domain tier status cellId }
+        }";
+        var variables = new
+        {
+            input = new
+            {
+                id = tenant.Id,
+                pk = tenant.Id,
+                displayName = tenant.DisplayName,
+                domain = tenant.Domain,
+                tier = tenant.Tier,
+                status = tenant.Status,
+                cellId = tenant.CellId
+            }
+        };
+        return await MutationAsync<Tenant>(mutation, variables, "createTenant", ct);
+    }
+
+    public async Task<Tenant> UpdateTenantAsync(Tenant tenant, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($id: ID!, $input: UpdateTenantInput!) {
+            updateTenant(id: $id, input: $input) { id displayName domain tier status cellId }
+        }";
+        var variables = new
+        {
+            id = tenant.Id,
+            input = new
+            {
+                displayName = tenant.DisplayName,
+                domain = tenant.Domain,
+                tier = tenant.Tier,
+                status = tenant.Status,
+                cellId = tenant.CellId
+            }
+        };
+        return await MutationAsync<Tenant>(mutation, variables, "updateTenant", ct);
+    }
+
+    public async Task DeleteTenantAsync(string id, string partitionKey, CancellationToken ct = default)
+    {
+        var mutation = @"mutation($id: ID!, $pk: String!) {
+            deleteTenant(id: $id, partitionKeyValue: $pk)
+        }";
+        var variables = new { id, pk = partitionKey };
+        await MutationAsync<object>(mutation, variables, "deleteTenant", ct);
+    }
+
     private async Task<IReadOnlyList<T>> QueryAsync<T>(string query, string rootField, CancellationToken ct)
     {
         var payload = new { query };
@@ -40,5 +90,22 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
             if (obj is not null) list.Add(obj);
         }
         return list;
+    }
+
+    private async Task<T> MutationAsync<T>(string query, object variables, string rootField, CancellationToken ct)
+    {
+        var payload = new { query, variables };
+        using var req = new HttpRequestMessage(HttpMethod.Post, "")
+        {
+            Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+        };
+        using var res = await Client.SendAsync(req, ct);
+        res.EnsureSuccessStatusCode();
+        using var stream = await res.Content.ReadAsStreamAsync(ct);
+        using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+        var data = doc.RootElement.GetProperty("data").GetProperty(rootField);
+        if (typeof(T) == typeof(object)) return default!;
+        var result = data.Deserialize<T>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return result!;
     }
 }

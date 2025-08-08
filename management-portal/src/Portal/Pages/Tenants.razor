@@ -3,6 +3,20 @@
 
 <h1>Tenants</h1>
 
+<EditForm Model="editModel" OnValidSubmit="OnSaveAsync">
+    <DataAnnotationsValidator />
+    <div class="form-grid">
+    <input @bind="editModel.Id" placeholder="Id" />
+    <input @bind="editModel.DisplayName" placeholder="Display Name" />
+    <input @bind="editModel.Domain" placeholder="Domain" />
+    <input @bind="editModel.Tier" placeholder="Tier" />
+    <input @bind="editModel.Status" placeholder="Status" />
+    <input @bind="editModel.CellId" placeholder="CellId" />
+    </div>
+    <button type="submit">Save</button>
+    <button type="button" @onclick="NewAsync">New</button>
+</EditForm>
+
 @if (tenants is null)
 {
     <p>Loading...</p>
@@ -23,6 +37,10 @@ else
                 <td>@t.Tier</td>
                 <td>@t.Status</td>
                 <td>@t.CellId</td>
+                <td>
+                    <button @onclick="() => Edit(t)">Edit</button>
+                    <button @onclick="() => DeleteAsync(t)">Delete</button>
+                </td>
             </tr>
         }
         </tbody>
@@ -31,8 +49,39 @@ else
 
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Tenant>? tenants;
+    class TenantEdit
+    {
+        public string Id { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string Domain { get; set; } = string.Empty;
+        public string Tier { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string CellId { get; set; } = string.Empty;
+    }
+
+    private TenantEdit editModel = new();
     protected override async Task OnInitializedAsync()
     {
+        tenants = await Data.GetTenantsAsync();
+    }
+
+    void Edit(Stamps.ManagementPortal.Models.Tenant t)
+        => editModel = new TenantEdit { Id = t.Id, DisplayName = t.DisplayName, Domain = t.Domain, Tier = t.Tier, Status = t.Status, CellId = t.CellId };
+    Task NewAsync() { editModel = new TenantEdit(); return Task.CompletedTask; }
+
+    async Task OnSaveAsync()
+    {
+        var rec = new Stamps.ManagementPortal.Models.Tenant(editModel.Id, editModel.DisplayName, editModel.Domain, editModel.Tier, editModel.Status, editModel.CellId);
+        if (tenants?.Any(x => x.Id == rec.Id) == true)
+            await Data.UpdateTenantAsync(rec);
+        else
+            await Data.CreateTenantAsync(rec);
+        tenants = await Data.GetTenantsAsync();
+    }
+
+    async Task DeleteAsync(Stamps.ManagementPortal.Models.Tenant t)
+    {
+        await Data.DeleteTenantAsync(t.Id, t.Id);
         tenants = await Data.GetTenantsAsync();
     }
 }

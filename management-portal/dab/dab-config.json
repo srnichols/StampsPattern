@@ -9,7 +9,7 @@
     "connection-string": "@env('COSMOS_CONNECTION_STRING')"
   },
   "runtime": {
-    "rest": { "enabled": false },
+    "rest": { "enabled": true, "path": "/api" },
     "graphql": { "enabled": true, "path": "/graphql" },
     "cors": { "origins": ["*"], "allow-credentials": false }
   },
@@ -22,7 +22,7 @@
           "plural": "Tenants"
         }
       },
-      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+      "permissions": [ { "role": "anonymous", "actions": [ "read", "create", "update", "delete" ] } ]
     },
     "Cell": {
       "source": "cells",
