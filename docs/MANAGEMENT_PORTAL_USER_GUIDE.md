@@ -58,45 +58,45 @@ Last updated: August 2025
 
 ```mermaid
 flowchart TD
-  Start([Start]) --> Form[Open New Tenant Form]
-  Form --> Validate{Validate Inputs}
-  Validate -->|Unique ID & Placement OK| Create[Create Tenant Record]
-  Validate -->|Error| Fix[Show Validation Errors]
-  Fix --> Form
-  Create --> Emit[Emit TenantCreated Event]
-  Emit --> Done([Done])
+  start(["Start"]) --> form["Open New Tenant Form"]
+  form --> validate{"Validate Inputs"}
+  validate -->|"Unique ID & Placement OK"| create["Create Tenant Record"]
+  validate -->|"Error"| fix["Show Validation Errors"]
+  fix --> form
+  create --> emit["Emit TenantCreated Event"]
+  emit --> done(["Done"])
 ```
 
 ### 🔁 Tenant Migration (Shared → Dedicated or Cell-to-Cell)
 
 ```mermaid
 sequenceDiagram
-  participant User as Operator
-  participant Portal
-  participant Ops as Operations API
-  participant Infra as Infra Automation
-  User->>Portal: Start Migration (Tenant X -> Cell Y)
-  Portal->>Ops: Create Operation (provisionTarget, syncData, drainAndCutover, validate)
-  Ops->>Infra: Provision target CELL (if needed)
-  Infra-->>Ops: Provisioned
-  Ops->>Infra: Data sync + cutover
-  Infra-->>Ops: Completed
-  Ops-->>Portal: Update status
-  Portal-->>User: Approve/Complete
+  participant U as Operator
+  participant P as Portal
+  participant O as Operations_API
+  participant I as Infra_Automation
+  U->>P: Start Migration (Tenant X → Cell Y)
+  P->>O: Create Operation (provisionTarget, syncData, cutover, validate)
+  O->>I: Provision target CELL (if needed)
+  I-->>O: Provisioned
+  O->>I: Data sync + cutover
+  I-->>O: Completed
+  O-->>P: Update status
+  P-->>U: Approve/Complete
 ```
 
 ### 🧩 Routing Strategy Decision
 
 ```mermaid
 flowchart TD
-  Input[Routing Update Request] --> Strategy{Strategy}
-  Strategy -->|Geo| Geo[Geo-based Rule]
-  Strategy -->|Performance| Perf[Latency-based Rule]
-  Strategy -->|Compliance| Comp[Compliance Region Pinning]
-  Geo --> Save[Save + Emit RouteUpdated]
-  Perf --> Save
-  Comp --> Save
-  Save --> Done([Done])
+  input_req["Routing Update Request"] --> strategy{"Strategy"}
+  strategy -->|"Geo"| geo_node["Geo-based Rule"]
+  strategy -->|"Performance"| perf_node["Latency-based Rule"]
+  strategy -->|"Compliance"| comp_node["Compliance Region Pinning"]
+  geo_node --> save["Save + Emit RouteUpdated"]
+  perf_node --> save
+  comp_node --> save
+  save --> done(["Done"])
 ```
 
 ---

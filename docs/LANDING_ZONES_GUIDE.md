@@ -19,17 +19,17 @@ Last updated: August 2025
 
 ```mermaid
 graph LR
-  A[Platform / Shared-Services] --- FD[Front Door / Traffic Manager]
-  A --- APIM[APIM (Global)]
-  A --- CTRL[Control Plane]
-  LZ[Landing Zones (Workloads)] --- C1[CELL Subscriptions]
-  LZ --- C2[Per-Tenant Dedicated CELLs]
-  FD --> C1
-  FD --> C2
-  APIM --> C1
-  APIM --> C2
-  CTRL -. metadata .-> C1
-  CTRL -. metadata .-> C2
+  platform["Platform / Shared-Services"] --- fd["Front Door / Traffic Manager"]
+  platform --- apim["APIM (Global)"]
+  platform --- control["Control Plane"]
+  lz["Landing Zones (Workloads)"] --- cell_shared["CELL Subscriptions"]
+  lz --- cell_ded["Per-Tenant Dedicated CELLs"]
+  fd --> cell_shared
+  fd --> cell_ded
+  apim --> cell_shared
+  apim --> cell_ded
+  control -.-> cell_shared
+  control -.-> cell_ded
 ```
 
 ---
@@ -62,15 +62,15 @@ Tenant Root Group (TRG)
 
 ```mermaid
 graph TD
-  TRG[TRG] --> P[Platform MG]
-  TRG --> LZ[Landing Zones MG]
-  P --> Mgmt[Management Sub]
-  P --> Conn[Connectivity Sub]
-  P --> SS[Shared-Services Sub]
-  LZ --> Corp[Corp MG]
-  LZ --> Online[Online MG]
-  LZ --> Sandbox[Sandbox MG]
-  Online --> Cell1[Workload Cell Subscriptions]
+  trg["TRG"] --> platform_mg["Platform MG"]
+  trg --> lz_mg["Landing Zones MG"]
+  platform_mg --> mgmt_sub["Management Sub"]
+  platform_mg --> conn_sub["Connectivity Sub"]
+  platform_mg --> ss_sub["Shared-Services Sub"]
+  lz_mg --> corp_mg["Corp MG"]
+  lz_mg --> online_mg["Online MG"]
+  lz_mg --> sandbox_mg["Sandbox MG"]
+  online_mg --> workload_cells["Workload Cell Subscriptions"]
 ```
 
 ### 📦 Subscriptions at a Glance
@@ -239,11 +239,11 @@ These are conservative, non-destructive starters you can extend with your own po
 
 ```mermaid
 flowchart LR
-  Params[Parameters (IDs, Regions)] --> Entry[Entry Bicep]
-  Entry --> Global[Global Edge Module]
-  Entry --> Control[Control Plane Module]
-  Entry --> Cell[Cell Module]
-  Cell --> Sub[Workload Subscription]
+  params["Parameters (IDs, Regions)"] --> entry["Entry Bicep"]
+  entry --> global_mod["Global Edge Module"]
+  entry --> control_mod["Control Plane Module"]
+  entry --> cell_mod["Cell Module"]
+  cell_mod --> sub_target["Workload Subscription"]
 ```
 
 ---
