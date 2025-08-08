@@ -21,6 +21,15 @@ function Ensure-Network($name) {
     }
 }
 
+function Ensure-DabTool() {
+    if (-not (Get-Command dab -ErrorAction SilentlyContinue)) {
+        Write-Host 'Installing Data API Builder (dab) dotnet tool...'
+        dotnet tool install -g microsoft.dataapibuilder | Write-Host
+        $toolsPath = Join-Path $env:USERPROFILE '.dotnet\\tools'
+        if ($env:PATH -notlike "*${toolsPath}*") { $env:PATH += ";${toolsPath}" }
+    }
+}
+
 function Start-CosmosEmulator($network, $containerName, $hostPort) {
     $running = docker ps --format '{{.Names}}' | Where-Object { $_ -eq $containerName }
     if ($running) { return }
@@ -47,17 +56,36 @@ function Wait-Http($url, $timeoutSec = 120) {
     throw "Timeout waiting for $url"
 }
 
-function Start-Dab($network, $containerName, $dabPort, $dabConfigPath, $cosmosConn) {
-    $running = docker ps --format '{{.Names}}' | Where-Object { $_ -eq $containerName }
-    if ($running) { return }
+function Import-EmulatorCert() {
+    $pemUrl = "https://localhost:${CosmosHostPort}/_explorer/emulator.pem"
+    $pem = Join-Path $env:TEMP "cosmos-emulator.pem"
+    try { Invoke-WebRequest -Uri $pemUrl -OutFile $pem -SkipCertificateCheck } catch {}
+    if (Test-Path $pem) {
+        try {
+            $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($pem)
+        } catch {
+            # Convert PEM to CER by wrapping in certutil
+            $cer = Join-Path $env:TEMP "cosmos-emulator.cer"
+            certutil -encode $pem $cer | Out-Null
+            $pem = $cer
+        }
+        try {
+            Import-Certificate -FilePath $pem -CertStoreLocation Cert:\CurrentUser\Root | Out-Null
+            Write-Host 'Imported Cosmos emulator certificate into CurrentUser\\Root.'
+        } catch {
+            Write-Warning 'Failed to import emulator certificate. You may need to accept the cert manually.'
+        }
+    }
+}
+
+function Start-DabHost($dabPort, $dabConfigPath, $cosmosConn) {
+    Ensure-DabTool
     $configAbs = Resolve-Path $dabConfigPath
-    docker run -d --name $containerName --network $network `
-        -e ASPNETCORE_URLS=http://+:${dabPort} `
-        -e COSMOS_CONNECTION_STRING="$cosmosConn" `
-        -p ${dabPort}:${dabPort} `
-        -v "${configAbs}:/App/dab-config.json:ro" `
-        mcr.microsoft.com/data-api-builder:latest `
-        dab start --host 0.0.0.0 --config /App/dab-config.json | Out-Null
+    $env:COSMOS_CONNECTION_STRING = $cosmosConn
+    $pidFile = Join-Path $PSScriptRoot '..\\.dab.pid'
+    if (Test-Path $pidFile) { Remove-Item $pidFile -Force }
+    $p = Start-Process -FilePath "dab" -ArgumentList @("start","--host","0.0.0.0","--port","${dabPort}","--config","$configAbs") -PassThru -WindowStyle Minimized
+    Set-Content -Path $pidFile -Value $p.Id
 }
 
 function Run-Seeder($cosmosHostConn) {
@@ -78,25 +106,19 @@ Ensure-Docker
 Ensure-Network 'stamps-net'
 
 $cosmosContainer = 'stamps-cosmos'
-$dabContainer = 'stamps-dab'
 
 Start-CosmosEmulator -network 'stamps-net' -containerName $cosmosContainer -hostPort $CosmosHostPort
 
 # Wait for emulator certificate endpoint as readiness signal
 Wait-Http -url "https://localhost:${CosmosHostPort}/_explorer/emulator.pem" -timeoutSec 180
 
-$cosmosConnForContainers = 'AccountEndpoint=https://stamps-cosmos:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;'
 $cosmosConnForHost = "AccountEndpoint=https://localhost:${CosmosHostPort}/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;"
 
-Start-Dab -network 'stamps-net' -containerName $dabContainer -dabPort $DabPort -dabConfigPath '.\management-portal\dab\dab-config.json' -cosmosConn $cosmosConnForContainers
+# Import emulator certificate to Windows trust so host DAB can connect
+Import-EmulatorCert
 
-# Install emulator certificate into DAB container trust store
-$pem = Join-Path $env:TEMP "cosmos-emulator.pem"
-try { Invoke-WebRequest -Uri "https://localhost:${CosmosHostPort}/_explorer/emulator.pem" -OutFile $pem -SkipCertificateCheck } catch {}
-if (Test-Path $pem) {
-    docker cp $pem ${dabContainer}:/usr/local/share/ca-certificates/cosmos-emulator.crt | Out-Null
-    docker exec ${dabContainer} update-ca-certificates | Out-Null
-}
+# Start DAB on host
+Start-DabHost -dabPort $DabPort -dabConfigPath '.\management-portal\dab\dab-config.json' -cosmosConn $cosmosConnForHost
 
 # Wait for DAB GraphQL
 Wait-Http -url "http://localhost:${DabPort}/graphql" -timeoutSec 120
