@@ -15,6 +15,23 @@ Last updated: August 2025
 - Application (workload) landing zones host your CELLs (shared or dedicated) per region. Use one subscription per CELL for isolation, quotas, and billing clarity.
 - Control Plane (management portal, DAB GraphQL, control metadata): either a) Platform Shared-Services subscription if used by many apps/org-wide, or b) a dedicated “ControlPlane” workload subscription under Landing Zones for autonomy and SDLC separation.
 
+### 🖼️ Visual: High-Level Placement
+
+```mermaid
+graph LR
+  A[Platform / Shared-Services] --- FD[Front Door / Traffic Manager]
+  A --- APIM[APIM (Global)]
+  A --- CTRL[Control Plane]
+  LZ[Landing Zones (Workloads)] --- C1[CELL Subscriptions]
+  LZ --- C2[Per-Tenant Dedicated CELLs]
+  FD --> C1
+  FD --> C2
+  APIM --> C1
+  APIM --> C2
+  CTRL -. metadata .-> C1
+  CTRL -. metadata .-> C2
+```
+
 ---
 
 ## 🗂️ Management Groups and Subscriptions
@@ -39,6 +56,21 @@ Tenant Root Group (TRG)
    │  └─ Sub: online-eus-cell-dedicated-tenantX
    └─ Sandbox (MG)
       └─ Sub: sandbox
+```
+
+### 🖼️ Visual: MG Hierarchy (CAF-Aligned)
+
+```mermaid
+graph TD
+  TRG[TRG] --> P[Platform MG]
+  TRG --> LZ[Landing Zones MG]
+  P --> Mgmt[Management Sub]
+  P --> Conn[Connectivity Sub]
+  P --> SS[Shared-Services Sub]
+  LZ --> Corp[Corp MG]
+  LZ --> Online[Online MG]
+  LZ --> Sandbox[Sandbox MG]
+  Online --> Cell1[Workload Cell Subscriptions]
 ```
 
 ### 📦 Subscriptions at a Glance
@@ -202,6 +234,17 @@ Starter Bicep templates are available under `infra/alz-starter/`:
 - `subscription-map.bicep` — Tenant-scope subscription mapping for platform/shared services and cells.
 
 These are conservative, non-destructive starters you can extend with your own policy sets and subscription provisioning.
+
+### 🖼️ Visual: IaC Flow (Consumer View)
+
+```mermaid
+flowchart LR
+  Params[Parameters (IDs, Regions)] --> Entry[Entry Bicep]
+  Entry --> Global[Global Edge Module]
+  Entry --> Control[Control Plane Module]
+  Entry --> Cell[Cell Module]
+  Cell --> Sub[Workload Subscription]
+```
 
 ---
 

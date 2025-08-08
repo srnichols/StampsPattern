@@ -52,7 +52,56 @@ Last updated: August 2025
 
 ---
 
-## 🚀 Onboarding a New Tenant
+## �️ Visual Workflows
+
+### 🚀 Tenant Onboarding Flow
+
+```mermaid
+flowchart TD
+  Start([Start]) --> Form[Open New Tenant Form]
+  Form --> Validate{Validate Inputs}
+  Validate -->|Unique ID & Placement OK| Create[Create Tenant Record]
+  Validate -->|Error| Fix[Show Validation Errors]
+  Fix --> Form
+  Create --> Emit[Emit TenantCreated Event]
+  Emit --> Done([Done])
+```
+
+### 🔁 Tenant Migration (Shared → Dedicated or Cell-to-Cell)
+
+```mermaid
+sequenceDiagram
+  participant User as Operator
+  participant Portal
+  participant Ops as Operations API
+  participant Infra as Infra Automation
+  User->>Portal: Start Migration (Tenant X -> Cell Y)
+  Portal->>Ops: Create Operation (provisionTarget, syncData, drainAndCutover, validate)
+  Ops->>Infra: Provision target CELL (if needed)
+  Infra-->>Ops: Provisioned
+  Ops->>Infra: Data sync + cutover
+  Infra-->>Ops: Completed
+  Ops-->>Portal: Update status
+  Portal-->>User: Approve/Complete
+```
+
+### 🧩 Routing Strategy Decision
+
+```mermaid
+flowchart TD
+  Input[Routing Update Request] --> Strategy{Strategy}
+  Strategy -->|Geo| Geo[Geo-based Rule]
+  Strategy -->|Performance| Perf[Latency-based Rule]
+  Strategy -->|Compliance| Comp[Compliance Region Pinning]
+  Geo --> Save[Save + Emit RouteUpdated]
+  Perf --> Save
+  Comp --> Save
+  Save --> Done([Done])
+```
+
+---
+
+## �🚀 Onboarding a New Tenant
 
 1. Open the portal and navigate to Tenants → New Tenant
 2. Provide:
