@@ -4,8 +4,7 @@
     "database-type": "cosmosdb_nosql",
     "options": {
       "database": "stamps-control-plane",
-      "schema": "",
-      "graphQLSchemaPath": "schema.graphql"
+  "schema": ""
     },
     "connection-string": "@env('COSMOS_CONNECTION_STRING')"
   },
