@@ -2,7 +2,7 @@
 
 **Azure Stamps Pattern** addresses the critical challenge facing enterprise SaaS providers: how to deliver secure, compliant, and cost-effective multi-tenant solutions at global scale without compromising on performance or regulatory requirements. This comprehensive, production-grade reference architecture eliminates months of architectural planning and provides a proven foundation for building enterprise SaaS platforms on Azure.
 
-Achieving an industry-leading **94/100 overall CAF/WAF compliance score** (with **96/100 WAF Security**), this framework implements a modular, zero-trust, and policy-driven approach that has been battle-tested in regulated industries including healthcare, financial services, and government sectors. Organizations can deploy production-ready infrastructure in under 45 minutes while meeting the most stringent security and compliance requirements.
+Achieving an industry-leading **94/100 overall [CAF/WAF compliance score](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md#-framework-scorecard)** (with **96/100 WAF Security**), this framework implements a modular, zero-trust, and policy-driven approach that has been battle-tested in regulated industries including healthcare, financial services, and government sectors. Organizations can deploy production-ready infrastructure in under 45 minutes while meeting the most stringent security and compliance requirements.
 
 It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platform and workload landing zones, management group hierarchy, and policy-as-code guardrails. For practical implementation guidance, see the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
 
