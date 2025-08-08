@@ -49,6 +49,7 @@ graph LR
 5. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step implementation *(45 minutes)*
 6. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Template customization *(15 minutes)*
 7. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
+8. **🏢 [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)** - Map Stamps to Azure Landing Zones *(20 minutes)*
 
 ### **Phase 3: Operations & Security (60-75 minutes)**
 7. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
