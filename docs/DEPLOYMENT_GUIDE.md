@@ -49,6 +49,17 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 
 ---
 
+## 🆕 New Developer Onboarding: Docs Health Check
+
+Before opening your first PR, run the Markdown link checker locally to ensure there are no broken links:
+
+```powershell
+pwsh -File ./scripts/verify-doc-links.ps1 -IncludeImages -CheckExternal
+```
+
+Our CI runs the same check on pull requests and pushes. Fix any reported links (relative or external) before submitting your PR to avoid CI failures.
+
+
 ## 📚 For Newcomers to Stamps Pattern Deployment
 
 **What is the Stamps Pattern?**

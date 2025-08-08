@@ -326,7 +326,7 @@ We welcome contributions! Please see our contribution guidelines:
 ### 💬 Getting Help
 - 📚 **Documentation**: Start with our comprehensive guides
 - 🐛 **Issues**: [GitHub Issues](https://github.com/srnichols/StampsPattern/issues) for bugs and feature requests
-- 💡 **Discussions**: [GitHub Discussions](https://github.com/srnichols/StampsPattern/discussions) for questions
+ - 💡 **Q&A**: Use [GitHub Issues](https://github.com/srnichols/StampsPattern/issues) with the `question` label
 - 📧 **Enterprise Support**: Contact your Microsoft representative
 
 ---

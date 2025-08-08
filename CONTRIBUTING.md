@@ -13,8 +13,8 @@ Thank you for your interest in contributing to the StampsPattern project!
   3. Ensure your code follows the project style and passes any tests.
   4. Submit a pull request and describe your changes.
 
-- **Discussions & Questions:**
-  - Use [GitHub Discussions](https://github.com/srnichols/StampsPattern/discussions) for questions, ideas, or help.
+- **Questions & Ideas:**
+  - Use [GitHub Issues](https://github.com/srnichols/StampsPattern/issues) with the `question` label for Q&A and ideas.
 
 ## Code of Conduct
 

@@ -649,7 +649,7 @@ actions:
 - [Azure Security Benchmark](https://learn.microsoft.com/en-us/security/benchmark/azure/)
 - [Azure Well-Architected Security Pillar](https://learn.microsoft.com/en-us/azure/architecture/framework/security/)
 - [CIS Azure Foundations Benchmark](https://www.cisecurity.org/benchmark/azure)
-- [Azure B2C Security Best Practices](https://learn.microsoft.com/en-us/azure/active-directory-b2c/security-best-practices)
+- [Microsoft Entra External ID (Azure AD B2C) docs](https://learn.microsoft.com/entra/external-id/)
 
 ### 🛠️ **Security Tools**
 - **Azure Security Center**: Unified security management
