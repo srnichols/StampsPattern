@@ -1,4 +1,4 @@
-# 🧭 Management Portal — User Guide
+# 🧭 Management Portal - User Guide
 
 ---
 
