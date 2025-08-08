@@ -8,7 +8,7 @@
 
 Last updated: August 2025
 
-## � Who Should Read This Guide?
+## 👤 Who Should Read This Guide?
 
 - Platform administrators
 - Operators/SREs
@@ -51,7 +51,7 @@ Last updated: August 2025
 
 ---
 
-## �️ Visual Workflows
+## 🖼️ Visual Workflows
 
 ### 🚀 Tenant Onboarding Flow
 
@@ -100,7 +100,7 @@ flowchart TD
 
 ---
 
-## �🚀 Onboarding a New Tenant
+## 🚀 Onboarding a New Tenant
 
 1. Open the portal and navigate to Tenants → New Tenant
 2. Provide:
