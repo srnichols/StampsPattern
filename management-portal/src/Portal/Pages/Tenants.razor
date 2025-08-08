@@ -1,0 +1,38 @@
+@page "/tenants"
+@inject Stamps.ManagementPortal.Services.IDataService Data
+
+<h1>Tenants</h1>
+
+@if (tenants is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr><th>Id</th><th>Name</th><th>Domain</th><th>Tier</th><th>Status</th><th>Cell</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var t in tenants)
+        {
+            <tr>
+                <td>@t.Id</td>
+                <td>@t.DisplayName</td>
+                <td>@t.Domain</td>
+                <td>@t.Tier</td>
+                <td>@t.Status</td>
+                <td>@t.CellId</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<Stamps.ManagementPortal.Models.Tenant>? tenants;
+    protected override async Task OnInitializedAsync()
+    {
+        tenants = await Data.GetTenantsAsync();
+    }
+}

@@ -1,0 +1,37 @@
+@page "/cells"
+@inject Stamps.ManagementPortal.Services.IDataService Data
+
+<h1>Cells</h1>
+
+@if (cells is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr><th>Id</th><th>Region</th><th>AZ</th><th>Status</th><th>Utilization</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var c in cells)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.Region</td>
+                <td>@c.AvailabilityZone</td>
+                <td>@c.Status</td>
+                <td>@c.CapacityUsed/@c.CapacityTotal</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<Stamps.ManagementPortal.Models.Cell>? cells;
+    protected override async Task OnInitializedAsync()
+    {
+        cells = await Data.GetCellsAsync();
+    }
+}

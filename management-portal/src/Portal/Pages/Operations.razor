@@ -1,0 +1,37 @@
+@page "/operations"
+@inject Stamps.ManagementPortal.Services.IDataService Data
+
+<h1>Operations</h1>
+
+@if (ops is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr><th>Id</th><th>Tenant</th><th>Type</th><th>Status</th><th>Created</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var o in ops)
+        {
+            <tr>
+                <td>@o.Id</td>
+                <td>@o.TenantId</td>
+                <td>@o.Type</td>
+                <td>@o.Status</td>
+                <td>@o.CreatedAt.ToLocalTime()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<Stamps.ManagementPortal.Models.Operation>? ops;
+    protected override async Task OnInitializedAsync()
+    {
+        ops = await Data.GetOperationsAsync();
+    }
+}
