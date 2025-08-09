@@ -181,21 +181,31 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
+  %% Color classes for layers
+  classDef edge fill:#DBEAFE,stroke:#94A3B8,color:#1F2937;
+  classDef hub fill:#FEF3C7,stroke:#D1A954,color:#1F2937;
+  classDef workload fill:#DCFCE7,stroke:#65A30D,color:#1F2937;
+
   subgraph "Networking (Edge, Hub, Workloads)"
     direction TB
     %% Edge
-    FD["Front Door"]
-    APIM["APIM (Global)"]
+    FD["🌍 Front Door<br/>&nbsp;"]
+    APIM["🔌 APIM (Global)<br/>&nbsp;"]
     
     %% Hub
-    HUBVNET["Hub VNet"]
-    PDNS["Private DNS"]
-    AFW["Azure Firewall"]
-    DDOS["DDoS Plan"]
+    HUBVNET["🕸️ Hub VNet<br/>&nbsp;"]
+    PDNS["🔏 Private DNS<br/>&nbsp;"]
+    AFW["🧱 Azure Firewall<br/>&nbsp;"]
+    DDOS["🛡️ DDoS Plan<br/>&nbsp;"]
 
     %% Workloads (collapsed per cell)
-    CELL1["CELL-001<br/>VNet • App GW • CAE<br/>PE: SQL/KV/Stor"]
-    CELL2["CELL-002<br/>VNet • App GW • CAE<br/>PE: SQL/KV/Stor"]
+    CELL1["🧩 CELL-001<br/>🕸️ VNet • 🚪 App GW • 🐳 CAE<br/>🔗 PE: SQL/KV/Stor<br/>&nbsp;"]
+    CELL2["🧩 CELL-002<br/>🕸️ VNet • 🚪 App GW • 🐳 CAE<br/>🔗 PE: SQL/KV/Stor<br/>&nbsp;"]
+
+    %% Apply colors
+    class FD,APIM edge;
+    class HUBVNET,PDNS,AFW,DDOS hub;
+    class CELL1,CELL2 workload;
 
     %% Edges inside the single group
     FD --> APIM
