@@ -94,6 +94,8 @@ _Figure: Security maturity path from basic controls to AI-driven zero-trust. Use
 
 This guide establishes security baselines and best practices for the Azure Stamps Pattern implementation, ensuring enterprise-grade security across all layers.
 
+> Domain naming note: This test framework does not require global domain reservations and uses Azure base domains for ACA/Functions. For production SaaS deployments, implement a global domain reservation strategy to avoid tenant domain collisions. See the [Management Portal Plan](./MANAGEMENT_PORTAL_PLAN.md#domain-naming-and-global-uniqueness) for recommended patterns and enforcement guidance.
+
 ### 🚨 **Recent Security Enhancements (August 2025)**
 
 **⚡ Zero-Trust Network Architecture**: 

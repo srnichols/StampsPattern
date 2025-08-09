@@ -192,6 +192,12 @@ pwsh --version
 ### 🔧 **Template Customization**
 For deployments using custom domains, organization names, or multi-geography requirements, first review the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
 
+### 🌐 Domain naming (test vs. production)
+
+- Test framework: No global domain reservation is required. Use Azure base domains/hostnames for Container Apps/Functions during development and testing.
+- Production: Implement a global domain reservation to guarantee uniqueness across tenants. See “Domain naming and global uniqueness” in the [Management Portal Plan](./MANAGEMENT_PORTAL_PLAN.md#domain-naming-and-global-uniqueness) for patterns and caveats.
+
+
 
 ---
 
