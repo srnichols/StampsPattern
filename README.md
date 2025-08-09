@@ -329,7 +329,17 @@ We welcome contributions! Please see our contribution guidelines:
 
 ---
 
-## 📄 License
+## � Contributors
+
+[![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)](https://github.com/srnichols/StampsPattern/graphs/contributors)
+
+Thanks to all the amazing people who have contributed to this project. Want to help? See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+— View the full list: https://github.com/srnichols/StampsPattern/graphs/contributors
+
+---
+
+## �📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
