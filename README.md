@@ -38,11 +38,9 @@ flowchart TB
         FD[🌍 Azure Front Door<br/>Global Load Balancing & WAF]
         GF[⚡ Global Functions<br/>Tenant Management & Routing]
         TM[🌐 Traffic Manager<br/>DNS-based Routing]
-        GL_ANCHOR[ ]
     end
     
     subgraph "🗺️ GEO: North America"
-        NA_ANCHOR[ ]
         subgraph "🏢 Region: East US"
             subgraph "🏗️ APIM Layer"
                 APIM1[🔌 API Management<br/>Premium Multi-Region<br/>• Tenant Isolation<br/>• Rate Limiting<br/>• Developer Portal]
@@ -52,7 +50,7 @@ flowchart TB
                 direction LR
                 subgraph "🛡️ AZ 1 - High Availability"
                     AG1[🚪 Application Gateway<br/>Zone-Redundant WAF]
-                    subgraph "📦 CELL-001 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    subgraph "📦 CELL-001 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         CA1[🐳 Container Apps<br/>50 SMB Tenants]
                         SQL1[🗄️ Azure SQL<br/>Multi-tenant DB]
                         REDIS1[⚡ Redis Cache<br/>Shared Performance]
@@ -88,9 +86,6 @@ flowchart TB
     end
     
     %% Traffic Flow
-    %% Centering nudge: align Global above North America
-    GL_ANCHOR --> NA_ANCHOR
-
     FD --> APIM1
     FD --> APIM2
     
