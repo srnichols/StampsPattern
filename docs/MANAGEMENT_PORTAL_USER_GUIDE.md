@@ -1,5 +1,11 @@
 # 🧭 Management Portal - User Guide
 
+Practical guide to operating the Azure Stamps Management Portal—sign‑in and roles, safe tenant and cell operations, routing, migrations, and health monitoring—so teams can manage multi‑tenant control‑plane tasks with confidence and auditability.
+
+- What's inside: Overview & architecture, operator quick start, roles & authentication, data model, workflows (onboarding, routing, migration, suspend/resume, decommission), GraphQL API, domain naming, troubleshooting
+- Best for: Platform administrators, operators/SREs, support engineers, and developers integrating with the control plane
+- Outcomes: Faster tenant onboarding, consistent guardrails for operations, improved visibility and audit readiness
+
 Last updated: August 2025
 
 ---
