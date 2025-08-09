@@ -7,10 +7,8 @@
   "MD013": false,
   "MD024": false,
   "MD033": false,
-  "MD025": {
-    "level": 1,
-    "front_matter_title": "^$"
-  },
+    // Relaxed rules for PR-only markdownlint (lint only changed MD files)
+    "MD025": false,
 
   // Relax high-churn rules for PRs
   "MD010": false, // tabs
@@ -25,5 +23,8 @@
   "MD001": false, // heading increment
   "MD005": false, // list indent
   "MD007": false, // unordered list indent
-  "MD009": false  // trailing spaces
+    "MD009": false, // trailing spaces
+    "MD058": false, // blanks around tables
+    "MD049": false, // emphasis style
+    "MD028": false  // blank line inside blockquote
 }
