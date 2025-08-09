@@ -25,7 +25,7 @@ Thanks for helping improve the Azure Stamps Pattern! This guide explains how to 
 
 ## 🌟 Code of Conduct
 
-Please be respectful and considerate in all interactions. See our [Code of Conduct](./CODE_OF_CONDUCT.md).
+Please be respectful and considerate in all interactions. See our [Code of Conduct](./CODE_OF_CONDUCT.md). For reporting guidance, jump to [Reporting a Concern](./CODE_OF_CONDUCT.md#-reporting-a-concern).
 
 ---
 
