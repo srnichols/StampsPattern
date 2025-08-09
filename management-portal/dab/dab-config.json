@@ -17,26 +17,44 @@
     "Tenant": {
       "source": "tenants",
       "graphql": {
-        "type": {
-          "singular": "Tenant",
-          "plural": "Tenants"
-        }
+        "type": { "singular": "Tenant", "plural": "Tenants" }
       },
-      "permissions": [ { "role": "anonymous", "actions": [ "read", "create", "update", "delete" ] } ]
+      "primary-key": "id",
+      "relationships": {
+        "cell": { "target.entity": "Cell", "cardinality": "one", "linking.object": { "source.field": "cellId", "target.field": "id" } },
+        "operations": { "target.entity": "Operation", "cardinality": "many", "linking.object": { "source.field": "id", "target.field": "tenantId" } }
+      },
+      "permissions": [
+        { "role": "authenticated", "actions": [ "read" ] },
+        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
+      ]
     },
     "Cell": {
       "source": "cells",
-      "graphql": {
-        "type": { "singular": "Cell", "plural": "Cells" }
-      },
-  "permissions": [ { "role": "anonymous", "actions": [ "read", "create", "update", "delete" ] } ]
+      "graphql": { "type": { "singular": "Cell", "plural": "Cells" } },
+      "primary-key": "id",
+      "permissions": [
+        { "role": "authenticated", "actions": [ "read" ] },
+        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
+      ]
     },
     "Operation": {
       "source": "operations",
-      "graphql": {
-        "type": { "singular": "Operation", "plural": "Operations" }
-      },
-  "permissions": [ { "role": "anonymous", "actions": [ "read", "create", "update", "delete" ] } ]
+      "graphql": { "type": { "singular": "Operation", "plural": "Operations" } },
+      "primary-key": "id",
+      "permissions": [
+        { "role": "authenticated", "actions": [ "read" ] },
+        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
+      ]
+    },
+    "Catalog": {
+      "source": "catalogs",
+      "graphql": { "type": { "singular": "Catalog", "plural": "Catalogs" } },
+      "primary-key": "id",
+      "permissions": [
+        { "role": "authenticated", "actions": [ "read" ] },
+        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
+      ]
     }
   }
 }

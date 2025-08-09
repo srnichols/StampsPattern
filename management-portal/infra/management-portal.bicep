@@ -47,26 +47,97 @@ resource db 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = {
   }
 }
 
-@batchSize(1)
-resource containers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = [
-  for c in [ 'tenants', 'cells', 'operations' ]: {
-    parent: db
-    name: c
-    properties: {
-      resource: {
-        id: c
-        partitionKey: {
-          paths: [ '/pk' ]
-          kind: 'Hash'
-          version: 2
-        }
-        indexingPolicy: {
-          indexingMode: 'consistent'
-        }
+// Tenants container: pk on /tenantId, composite index for domain+status
+resource tenantsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: db
+  name: 'tenants'
+  properties: {
+    resource: {
+      id: 'tenants'
+      partitionKey: {
+        paths: [ '/tenantId' ]
+        kind: 'Hash'
+        version: 2
       }
-      options: {}
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        compositeIndexes: [
+          [
+            {
+              path: '/domain'
+              order: 'ascending'
+            }
+            {
+              path: '/status'
+              order: 'ascending'
+            }
+          ]
+        ]
+      }
     }
+    options: {}
   }
-]
+}
+
+// Cells container: pk on /cellId
+resource cellsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: db
+  name: 'cells'
+  properties: {
+    resource: {
+      id: 'cells'
+      partitionKey: {
+        paths: [ '/cellId' ]
+        kind: 'Hash'
+        version: 2
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+      }
+    }
+    options: {}
+  }
+}
+
+// Operations container: pk on /tenantId, default TTL ~60 days (5184000 seconds)
+resource operationsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: db
+  name: 'operations'
+  properties: {
+    resource: {
+      id: 'operations'
+      partitionKey: {
+        paths: [ '/tenantId' ]
+        kind: 'Hash'
+        version: 2
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+      }
+      defaultTtl: 5184000
+    }
+    options: {}
+  }
+}
+
+// Catalogs container: pk on /type for simple lookups
+resource catalogsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+  parent: db
+  name: 'catalogs'
+  properties: {
+    resource: {
+      id: 'catalogs'
+      partitionKey: {
+        paths: [ '/type' ]
+        kind: 'Hash'
+        version: 2
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+      }
+    }
+    options: {}
+  }
+}
 
 // Note: Container Apps environment and apps to be added later

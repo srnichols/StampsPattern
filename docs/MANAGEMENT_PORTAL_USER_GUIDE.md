@@ -48,7 +48,131 @@ Last updated: August 2025
 
 ---
 
-## 🖼️ Visual Workflows
+## �️ Control-plane Data Model (Cosmos DB)
+
+This portal uses a control-plane Cosmos DB database (`stamps-control-plane`) to store tenant metadata, cell registry, and long‑running operations.
+
+Current implementation (MVP):
+- Containers: `tenants`, `cells`, `operations`
+- Partition key path: `/pk` in each container (value mapped per-item)
+- Access: GraphQL and REST via Data API Builder (DAB) configuration in `management-portal/dab/dab-config.json`
+
+Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
+- Tenants (pk: `/tenantId`), Cells (pk: `/cellId`), Operations (pk: `/tenantId`), Catalogs (pk: `/type`)
+- Unique keys: Tenants enforce unique `domain`; Cells enforce unique `(region, availabilityZone, name)` if applicable
+- TTL: Optional TTL on `operations` (e.g., 30–90 days) with PITR enabled at the account level
+
+### 📘 Entity shapes (JSON examples)
+
+- Tenants (container: `tenants`, pk: `/pk` today → `/tenantId` recommended)
+  {
+    "id": "contoso",
+    "pk": "contoso",           // current pk value (maps to /pk)
+    "tenantId": "contoso",     // proposed explicit pk
+    "displayName": "Contoso",
+    "domain": "contoso.com",   // unique
+    "tier": "enterprise",      // startup | smb | enterprise
+    "status": "active",        // active | suspended | decommissioned
+    "cellId": "cell-eastus-1", // FK → cells.id
+    "compliance": ["HIPAA", "GDPR"],
+    "routing": {
+      "strategy": "geo|performance|compliance",
+      "baseDomain": "contoso.app.example.com",
+      "weights": { "cell-eastus-1": 100 }
+    },
+    "createdAt": "2025-08-01T10:00:00Z",
+    "updatedAt": "2025-08-01T10:00:00Z"
+  }
+
+- Cells (container: `cells`, pk: `/pk` today → `/cellId` recommended)
+  {
+    "id": "cell-eastus-1",
+    "pk": "cell-eastus-1",
+    "cellId": "cell-eastus-1",
+    "region": "eastus",
+    "availabilityZone": "1",
+    "status": "healthy",      // healthy | constrained | offline
+    "capacityUsed": 60,
+    "capacityTotal": 100,
+    "features": { "dedicated": false, "zones": 3 }
+  }
+
+- Operations (container: `operations`, pk: `/pk` today → `/tenantId` recommended)
+  {
+    "id": "op-001",
+    "pk": "contoso",               // current pk → tenantId
+    "tenantId": "contoso",
+    "type": "migrate",             // migrate | suspend | resume | decommission
+    "status": "running",           // queued | running | completed | failed
+    "steps": [
+      { "name": "provisionTarget", "status": "completed", "ts": "2025-08-01T10:00:00Z" },
+      { "name": "syncData", "status": "running", "ts": "2025-08-01T10:20:00Z" }
+    ],
+    "createdAt": "2025-08-01T10:00:00Z",
+    "updatedAt": "2025-08-01T10:20:00Z",
+    "error": null
+  }
+
+- Catalogs (container: `catalogs`, pk: `/type`) — recommended addition
+  {
+    "id": "tiers-v1",
+    "type": "tiers",
+    "values": ["startup", "smb", "enterprise"]
+  }
+
+### 🧩 Relationships (ER view)
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+erDiagram
+  TENANTS ||--o{ OPERATIONS : has
+  TENANTS }o--|| CELLS : placed_in
+  CATALOGS ||..|| TENANTS : validates
+
+  TENANTS {
+    string id PK
+    string tenantId
+    string domain
+    string tier
+    string status
+    string cellId FK
+  }
+  CELLS {
+    string id PK
+    string region
+    string availabilityZone
+    string status
+  }
+  OPERATIONS {
+    string id PK
+    string tenantId FK
+    string type
+    string status
+  }
+  CATALOGS {
+    string id PK
+    string type
+  }
+```
+
+### 🔑 Partitioning, indexing, and constraints
+
+- Partition keys
+  - Today: generic `/pk` set to `id` (tenants/cells) or `tenantId` (operations)
+  - Recommended: explicit `/tenantId` for `tenants` and `operations`, `/cellId` for `cells` to improve clarity and enforce intent
+- Indexing
+  - Keep `consistent` indexing with selective included paths for high‑cardinality fields
+  - Add composite indexes to speed lookups: e.g., `(domain ASC, status ASC)` on `tenants`
+- Unique keys
+  - Tenants: `domain` must be unique; optionally `(tenantId)` enforced via id
+- TTL
+  - Apply TTL on `operations` (e.g., 60–90 days) to control storage costs; exempt retained/compliance operations by setting `ttl = -1` per item
+
+See also: `management-portal/infra/management-portal.bicep` and `docs/MANAGEMENT_PORTAL_PLAN.md`.
+
+---
+
+## �🖼️ Visual Workflows
 
 ### 🚀 Tenant Onboarding Flow
 
