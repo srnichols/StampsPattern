@@ -11,7 +11,7 @@
 Notes.*
 
 # IDE/Editor settings
-.vscode/
+
 .vs/
 .idea/
 

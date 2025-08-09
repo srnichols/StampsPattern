@@ -58,9 +58,9 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—netw
 
 > **🎯 Purpose**: Comprehensive zero-trust security implementation achieving **96/100 WAF Security score** with enterprise-grade controls, automated governance, network micro-segmentation, and comprehensive threat protection for regulated industries.
 >
-> � See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — how this implementation maps to Microsoft frameworks.
+> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — how this implementation maps to Microsoft frameworks.
 >
-> �🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how these security controls align with CAF/WAF-aligned enterprise landing zones.
+> 🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how these security controls align with CAF/WAF-aligned enterprise landing zones.
 
 
 ---
@@ -304,7 +304,7 @@ Network security in the Azure Stamps Pattern implements a sophisticated defense-
 ### 🛡️ **Web Application Firewall (WAF)**
 
 #### Global WAF (Front Door):
-```json
+```jsonc
 {
   "wafConfig": {
     "enabled": true,
@@ -463,7 +463,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 4. **Restricted**: Personal data, payment information
 
 #### Protection Controls by Classification:
-```json
+```jsonc
 {
   "dataClassification": {
     "public": {
@@ -526,7 +526,7 @@ resource sentinelSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-p
 ### 🚨 **Security Alerts & Automation**
 
 #### Critical Security Alerts:
-```json
+```jsonc
 {
   "securityAlerts": [
     {

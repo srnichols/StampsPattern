@@ -274,7 +274,7 @@ _Figure: Regional architecture distributing traffic across zone-pinned instances
 
 ### 🎯 **CELL Zone Assignment Strategy**
 
-```json
+```jsonc
 // Example CELL configuration with zones
 {
   "cells": [

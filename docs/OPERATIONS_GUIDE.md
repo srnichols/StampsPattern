@@ -10,7 +10,7 @@ Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predict
 - Best for: Operations/SRE, DevOps engineers, IT leaders, and security/compliance teams
 - Outcomes: Faster MTTR/MTTD, higher resilience, better cost control, and consistent runbooks
 
-## � Who Should Read This Guide?
+## 👤 Who Should Read This Guide?
 
 - **Operations/SRE Teams:** Day-to-day management, monitoring, and incident response
 - **DevOps Engineers:** Automation, maintenance, and scaling
@@ -118,7 +118,7 @@ _Diagram: Layered monitoring scope from global to CELL; align dashboards and ale
 ### 📈 **Key Performance Indicators (KPIs)**
 
 #### Global KPIs:
-```json
+```jsonc
 {
   "globalKPIs": {
     "availability": {
@@ -153,7 +153,7 @@ _Diagram: Layered monitoring scope from global to CELL; align dashboards and ale
 _Block: Suggested global SLO/SLA indicators and alert thresholds for baseline monitoring._
 
 #### CELL-Level KPIs:
-```json
+```jsonc
 {
   "cellKPIs": {
     "tenantLatency": {
@@ -476,7 +476,7 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 ### 📊 **Custom Dashboards**
 
 #### Global Operations Dashboard:
-```json
+```jsonc
 {
   "dashboardConfig": {
     "name": "Stamps Pattern - Global Operations",
@@ -511,7 +511,7 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 ```
 
 #### CELL Operations Dashboard:
-```json
+```jsonc
 {
   "dashboardConfig": {
     "name": "Stamps Pattern - CELL Operations",

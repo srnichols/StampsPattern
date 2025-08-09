@@ -95,6 +95,19 @@ Partitioning & Transactions
 
 ---
 
+## Domain naming and global uniqueness
+
+- Test framework (this repo): No global domain reservation is required. Use platform-provided base domains (for example, the default Azure Container Apps hostname or function host domain) during development and testing.
+- Production recommendation: Implement a global domain reservation to guarantee uniqueness across all tenants.
+  - Why: Cosmos DB unique keys are enforced per-partition. With tenant-scoped partitions (e.g., pk = /tenantId), a naive unique key on domain won’t prevent duplicates globally.
+  - Pattern: Use a central registry (e.g., Cosmos container `catalogs` with pk `/type`, item `{ id: <domain>, type: "domains" }`) or an alternate authoritative store. Reserve before tenant creation; release on decommission.
+  - API enforcement: Expose a reservation endpoint/mutation; on conflict, return a 409-like error and block tenant creation. Make the operation idempotent and include retries.
+  - Ops: Include cleanup tooling for orphaned reservations and audit who reserved which domains.
+
+Note: Sample UI and schema in this repo show how a reservation could work, but it’s optional for the test framework. Adopt the reservation flow when promoting to production to avoid domain collisions.
+
+---
+
 ## Deployment Topology
 
 - Resource Group: `rg-stamps-mgmt-<env>`

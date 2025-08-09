@@ -287,7 +287,7 @@ graph LR
 ## 🏷️ **Tagging Strategy**
 
 ### **Mandatory Tags**
-```json
+```jsonc
 {
   "environment": "dev|test|staging|prod",
   "geo": "us|eu|asia",
@@ -303,7 +303,7 @@ graph LR
 ```
 
 ### **Optional Tags**
-```json
+```jsonc
 {
   "backup": "daily|weekly|none",
   "monitoring": "enabled|disabled", 
