@@ -181,33 +181,31 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
-  %% Hidden class to keep spacers invisible (declare before use)
-  classDef hidden fill:transparent,stroke:transparent,color:transparent;
-
-  %% Top: Hub/Connectivity
-  subgraph "Platform / Connectivity (Hub Subscription)"
-    direction TB
-    hub_spacer[" "]
-    HUBVNET["🕸️ Hub VNet"]
-    AFW["🧱 Azure Firewall"]
-    PDNS["🔏 Private DNS Zones"]
-    DDOS["🛡️ DDoS Protection Plan"]
-  end
-
-  %% Second row: Edge + Workloads arranged horizontally
-  subgraph "Regional and Edge"
+  %% Top row: Platform/Connectivity beside Shared Services (Edge)
+  subgraph "Edge and Connectivity"
     direction LR
+
+    subgraph "Platform / Connectivity (Hub Subscription)"
+      direction TB
+      HUBVNET["🕸️ Hub VNet"]
+      AFW["🧱 Azure Firewall"]
+      PDNS["🔏 Private DNS Zones"]
+      DDOS["🛡️ DDoS Protection Plan"]
+    end
 
     subgraph "Shared Services (Edge)"
       direction TB
-      ss_spacer[" "]
       FD["🌍 Azure Front Door"]
       APIM["🔌 API Management (Global)"]
     end
+  end
+
+  %% Second section: Workload spokes stacked (portrait)
+  subgraph "Workload Landing Zones (Spokes)"
+    direction TB
 
     subgraph "Workload LZ - Spoke (CELL-001 Subscription)"
       direction TB
-      sp1_spacer[" "]
       SP1VNET["🕸️ Spoke VNet (CELL-001)"]
       AGW1["🚪 Application Gateway (WAF)"]
       CAE1["🐳 Container Apps Env\n(VNet-injected)"]
@@ -218,7 +216,6 @@ flowchart TB
 
     subgraph "Workload LZ - Spoke (CELL-002 Subscription)"
       direction TB
-      sp2_spacer[" "]
       SP2VNET["🕸️ Spoke VNet (CELL-002)"]
       AGW2["🚪 Application Gateway (WAF)"]
       CAE2["🐳 Container Apps Env\n(VNet-injected)"]
@@ -226,7 +223,6 @@ flowchart TB
       PEP_ST2["🔗 Private Endpoint: Storage"]
       PEP_KV2["🔗 Private Endpoint: Key Vault"]
     end
-
   end
 
   %% Edge to regional ingress
@@ -255,7 +251,6 @@ flowchart TB
   CAE2 -.-> PEP_SQL2
   CAE2 -.-> PEP_ST2
   CAE2 -.-> PEP_KV2
-  class hub_spacer,ss_spacer,sp1_spacer,sp2_spacer hidden;
 ```
 
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
