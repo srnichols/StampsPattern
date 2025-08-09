@@ -47,19 +47,19 @@ flowchart TB
             end
             subgraph "🛡️ AZ 1 - High Availability"
                 AG1[🚪 Application Gateway<br/>Zone-Redundant WAF]
-                subgraph "📦 Shared CELL-001"
+                subgraph "📦 CELL-001 — Shared<br/>&nbsp;"
                     CA1[🐳 Container Apps<br/>50 SMB Tenants]
                     SQL1[🗄️ Azure SQL<br/>Multi-tenant DB]
                     REDIS1[⚡ Redis Cache<br/>Shared Performance]
                 end
-                subgraph "🏢 Dedicated CELL-002"
+                subgraph "🏢 CELL-002 — Dedicated<br/>&nbsp;"
                     CA2[🐳 Container Apps<br/>1 Enterprise Tenant]
                     SQL2[🗄️ Azure SQL<br/>Dedicated DB]
                     REDIS2[⚡ Redis Cache<br/>Dedicated Performance]
                 end
             end
             subgraph "🛡️ AZ 2 - High Availability"
-                subgraph "📦 Shared CELL-003"
+                subgraph "📦 CELL-003 — Shared<br/>&nbsp;"
                     CA3[🐳 Container Apps<br/>30 Mid-Market Tenants]
                     SQL3[🗄️ Azure SQL<br/>Multi-tenant DB]
                 end
@@ -75,7 +75,7 @@ flowchart TB
             APIM2[🔌 API Management<br/>Multi-Region Replica]
             subgraph "🛡️ AZ 1"
                 AG2[🚪 Application Gateway]
-                CELL4[📦 CELL-004<br/>🐳 75 Startup Tenants]
+                CELL4[📦 CELL-004<br/>🐳 75 Startup Tenants<br/>&nbsp;]
             end
             COSMOS2[🌐 Cosmos DB<br/>Read Replica]
         end
