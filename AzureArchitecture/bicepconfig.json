@@ -1,7 +1,18 @@
 {
   "analyzers": {
     "core": {
-      "enabled": true
+      "enabled": true,
+      "rules": {
+        "no-unused-params": {
+          "level": "warning"
+        },
+        "no-unused-vars": {
+          "level": "warning"
+        },
+        "prefer-interpolation": {
+          "level": "warning"
+        }
+      }
     }
   }
 }
