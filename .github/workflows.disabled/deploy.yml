@@ -1,11 +1,10 @@
-name: DISABLED - Deploy Stamps Pattern
+name: Deploy Stamps Pattern (DISABLED)
 
 on:
   workflow_dispatch: {}
-name: DISABLED - Deploy Stamps Pattern
 
-on:
-  workflow_dispatch: {}
+# Archived copy of deploy workflow to keep Actions disabled by default.
+# Move back to .github/workflows/ to re-enable.
 
 env:
   AZURE_RESOURCEGROUP_NAME: rg-stamps-${{ github.event.inputs.environment || 'dev' }}
@@ -18,12 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
     - name: Validate Bicep Template
       uses: azure/arm-deploy@v1
       with:
@@ -34,24 +31,22 @@ jobs:
         deploymentMode: Validate
 
   deploy-dev:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: validate
     runs-on: ubuntu-latest
     environment: development
     steps:
     - uses: actions/checkout@v4
-    
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
     - name: Create Resource Group
       run: |
         az group create \
           --name ${{ env.AZURE_RESOURCEGROUP_NAME }} \
           --location eastus \
           --tags environment=dev project=StampsPattern
-    
     - name: Deploy Bicep Template
       uses: azure/arm-deploy@v1
       with:
@@ -62,24 +57,22 @@ jobs:
         deploymentName: stamps-pattern-${{ github.run_number }}
 
   deploy-prod:
+    if: github.event.inputs.environment == 'prod'
     needs: validate
     runs-on: ubuntu-latest
     environment: production
     steps:
     - uses: actions/checkout@v4
-    
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
     - name: Create Resource Group
       run: |
         az group create \
           --name ${{ env.AZURE_RESOURCEGROUP_NAME }} \
           --location eastus \
           --tags environment=prod project=StampsPattern
-    
     - name: Deploy Bicep Template
       uses: azure/arm-deploy@v1
       with:

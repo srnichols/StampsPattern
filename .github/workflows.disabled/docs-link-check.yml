@@ -1,0 +1,14 @@
+name: Docs link check (DISABLED)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  link-check:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate relative links (including images)
+        shell: pwsh
+        run: ./scripts/verify-doc-links.ps1 -IncludeImages

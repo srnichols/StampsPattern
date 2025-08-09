@@ -1,0 +1,45 @@
+name: Markdown Lint (DISABLED)
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: mdlint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint tools
+        run: |
+          npm install -g markdownlint-cli2 markdownlint-cli
+
+      - name: Run markdownlint on changed files (PR)
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          set -e
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          CHANGED_MD=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -E '\.md$' || true)
+          if [ -z "$CHANGED_MD" ]; then
+            echo "No Markdown file changes in this PR; skipping markdownlint."
+            exit 0
+          fi
+          echo -e "Linting changed Markdown files:\n$CHANGED_MD"
+          markdownlint --config .markdownlint.pr.jsonc $CHANGED_MD || exit 1
+
+      - name: Run markdownlint (push)
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          markdownlint-cli2 "**/*.md" "!**/bin/**" "!**/obj/**" || exit 1

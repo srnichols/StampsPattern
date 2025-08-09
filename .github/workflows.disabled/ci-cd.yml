@@ -94,7 +94,7 @@ jobs:
   # Security Scanning
   security-scan:
     if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-lest
     name: 'Security and Code Quality'
     steps:
       - name: Checkout
