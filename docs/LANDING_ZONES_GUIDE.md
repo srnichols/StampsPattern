@@ -199,8 +199,8 @@ flowchart TD
     DDOS["🛡️ DDoS Plan<br/>&nbsp;"]
 
     %% Workloads (collapsed per cell)
-    CELL1["🧩 CELL-001<br/>🕸️ VNet • 🚪 App GW • 🐳 CAE<br/>🔗 PE: SQL/KV/Stor<br/>&nbsp;"]
-    CELL2["🧩 CELL-002<br/>🕸️ VNet • 🚪 App GW • 🐳 CAE<br/>🔗 PE: SQL/KV/Stor<br/>&nbsp;"]
+  CELL1["CELL-001<br/>VNet peered • App Gateway • Container Apps Env<br/>Private Endpoints: SQL / Key Vault / Storage<br/>&nbsp;"]
+  CELL2["CELL-002<br/>VNet peered • App Gateway • Container Apps Env<br/>Private Endpoints: SQL / Key Vault / Storage<br/>&nbsp;"]
 
     %% Apply colors
     class FD,APIM edge;
