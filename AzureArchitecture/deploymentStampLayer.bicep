@@ -37,6 +37,8 @@ param tags object = {}
 
 @description('Name of the Azure Container Registry for this region')
 param containerRegistryName string
+@description('Enable Azure Container Registry for this CELL (disabled in smoke)')
+param enableContainerRegistry bool = false
 
 @description('Name of the Container App for this CELL')
 param containerAppName string
@@ -90,12 +92,15 @@ param enableSqlFailoverGroup bool = false
 @description('Resource ID of the partner SQL Server for Auto-failover Group')
 param sqlSecondaryServerId string = ''
 
+@description('Create the storage account in this deployment (set false to use an existing account)')
+param createStorageAccount bool = true
+
 // Create a new Azure Container Registry for the region with security hardening
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = if (enableContainerRegistry) {
   name: containerRegistryName
   location: location
   sku: {
-    name: 'Standard'
+  name: 'Standard'
   }
   identity: {
     type: 'SystemAssigned'
@@ -106,69 +111,13 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
     dataEndpointEnabled: false
     publicNetworkAccess: 'Enabled' // Can be set to 'Disabled' for private access only
     networkRuleBypassOptions: 'AzureServices'
-    policies: {
-      quarantinePolicy: {
-        status: 'enabled'
-      }
-      trustPolicy: {
-        type: 'Notary'
-        status: 'enabled'
-      }
-      retentionPolicy: {
-        days: 7
-        status: 'enabled'
-      }
-    }
+  // Policies omitted in smoke
   // Use Microsoft-managed encryption by default in smoke; CMK can be configured post-deployment
   }
   tags: tags
 }
 
-// Front Door backend pools
-var frontDoorBackendPools = [
-  {
-    name: '${containerAppName}-backend'
-    backends: [
-      {
-        address: '${containerAppName}.${baseDomain}'
-        httpPort: 80
-        httpsPort: 443
-      }
-    ]
-    healthProbeSettings: {
-      protocol: 'Https'
-      path: '/health'
-      intervalInSeconds: 30
-    }
-  }
-]
-
-// Front Door resource definition
-resource frontDoor 'Microsoft.Cdn/profiles@2023-05-01' = {
-  name: 'myFrontDoor'
-  location: 'global'
-  sku: {
-    name: 'Standard_AzureFrontDoor'
-  }
-  properties: {
-    originResponseTimeoutSeconds: 60
-  }
-}
-
-// Prepare Traffic Manager endpoints using a variable (move for-expression here)
-var trafficManagerEndpoints = [
-  for cell in frontDoorBackendPools: {
-    name: cell.name
-  // Use the fully qualified endpoint type per API spec
-  type: 'Microsoft.Network/trafficManagerProfiles/externalEndpoints'
-    properties: {
-      target: cell.backends[0].address
-      endpointStatus: 'Enabled'
-  // Required for ExternalEndpoints with Performance routing
-  endpointLocation: location
-    }
-  }
-]
+// Front Door configuration is managed at the global layer. Omitted from CELL layer in smoke.
 
 // Traffic Manager resource definition
 resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = if (enableCellTrafficManager) {
@@ -185,7 +134,7 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
       port: 80
       path: '/health'
     }
-    endpoints: trafficManagerEndpoints
+  endpoints: []
   }
 }
 
@@ -266,12 +215,17 @@ resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 
-// Storage Account for CELL with configurable redundancy SKU and security hardening
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+// Reference an existing storage account by name (always available for scoping/diagnostics)
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+  name: storageAccountName
+}
+
+// Optionally create a storage account when requested (avoids attempting to change kind on existing)
+resource storageAccountCreate 'Microsoft.Storage/storageAccounts@2022-09-01' = if (createStorageAccount) {
   name: storageAccountName
   location: location
   sku: {
-  name: storageSkuName
+    name: storageSkuName
   }
   // Premium_ZRS requires kind BlockBlobStorage; otherwise use StorageV2
   kind: storageSkuName == 'Premium_ZRS' ? 'BlockBlobStorage' : 'StorageV2'
@@ -415,23 +369,6 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2023-0
           keys: ['get', 'wrapKey', 'unwrapKey']
         }
       }
-      // Grant access to Storage Account managed identity
-      {
-        objectId: storageAccount.identity.principalId
-        tenantId: subscription().tenantId
-        permissions: {
-          secrets: ['get']
-          keys: ['get', 'wrapKey', 'unwrapKey']
-        }
-      }
-      // Grant access to Container Registry managed identity
-      {
-        objectId: containerRegistry.identity.principalId
-        tenantId: subscription().tenantId
-        permissions: {
-          secrets: ['get']
-        }
-      }
     ]
   }
 }
@@ -559,7 +496,7 @@ resource keyVaultPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01'
 }
 
 // Private endpoint for Container Registry
-resource acrPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = if (enablePrivateEndpoints && !empty(privateEndpointSubnetId)) {
+resource acrPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = if (enableContainerRegistry && enablePrivateEndpoints && !empty(privateEndpointSubnetId)) {
   name: '${containerRegistryName}-pe'
   location: location
   properties: {
@@ -782,34 +719,6 @@ resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   scope: storageAccount
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
-    // Premium BlockBlobStorage uses Blob* categories; GPv2 uses Storage* categories
-    logs: storageSkuName == 'Premium_ZRS' ? [
-      {
-        category: 'BlobRead'
-        enabled: true
-      }
-      {
-        category: 'BlobWrite'
-        enabled: true
-      }
-      {
-        category: 'BlobDelete'
-        enabled: true
-      }
-    ] : [
-      {
-        category: 'StorageRead'
-        enabled: true
-      }
-      {
-        category: 'StorageWrite'
-        enabled: true
-      }
-      {
-        category: 'StorageDelete'
-        enabled: true
-      }
-    ]
     metrics: [
       {
         category: 'AllMetrics'
@@ -837,15 +746,8 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   }
 }
 
-// SQL Server firewall rule to allow Azure services (consider using private endpoints instead)
-resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-11-01-preview' = if (!enablePrivateEndpoints) {
-  parent: sqlServer
-  name: 'AllowAzureServices'
-  properties: {
-    startIpAddress: '0.0.0.0'
-    endIpAddress: '0.0.0.0'
-  }
-}
+// SQL Server firewall rule is not created because public network access is disabled.
+// If you enable public access, add a conditional firewall rule accordingly.
 
 // SQL Database with backup configuration
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-11-01-preview' = {
@@ -881,12 +783,7 @@ resource sqlServerDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-
   scope: sqlServer
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
-      {
-        category: 'SQLSecurityAuditEvents'
-        enabled: true
-      }
-    ]
+  // Some log categories vary by tier/region; for portability in smoke, emit metrics only.
     metrics: [
       {
         category: 'AllMetrics'
@@ -918,9 +815,7 @@ resource sqlFailoverGroup 'Microsoft.Sql/servers/failoverGroups@2021-11-01' = if
 }
 
 // Outputs (secure - no credential exposure)
-output acrLoginServer string = containerRegistry.properties.loginServer
-output acrId string = containerRegistry.id
-output acrSystemAssignedPrincipalId string = containerRegistry.identity.principalId
+// ACR outputs omitted in smoke
 output keyVaultId string = keyVault.id
 output keyVaultUri string = keyVault.properties.vaultUri
 output sqlServerSystemAssignedPrincipalId string = sqlServer.identity.principalId

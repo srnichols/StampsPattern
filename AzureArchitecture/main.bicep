@@ -320,7 +320,8 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
         workload: 'stamps-pattern'
         costCenter: 'IT-Infrastructure'
       })
-      containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
+  containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
+  enableContainerRegistry: false
       containerAppName: cell.cellName
       baseDomain: cell.baseDomain
   globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
@@ -329,6 +330,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
   cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
   cosmosZoneRedundant: !useHttpForSmoke
   storageSkuName: (cell.?storageSkuName ?? storageSkuName)
+  createStorageAccount: false
   enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
   storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
   enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
@@ -375,9 +377,6 @@ output deploymentStampOutputs array = [
     geoName: cell.geoName
     regionName: cell.regionName
     cellName: cell.cellName
-    acrLoginServer: deploymentStampLayers[index].outputs.acrLoginServer
-    acrId: deploymentStampLayers[index].outputs.acrId
-    acrSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.acrSystemAssignedPrincipalId
     keyVaultId: deploymentStampLayers[index].outputs.keyVaultId
     keyVaultUri: deploymentStampLayers[index].outputs.keyVaultUri
     sqlServerSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.sqlServerSystemAssignedPrincipalId
