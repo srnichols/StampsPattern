@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+  "environmentProfile": { "value": "smoke" },
+  "useHttpForSmoke": { "value": true },
+    "dnsZoneName": { "value": "stamps.contoso.com" },
+    "trafficManagerName": { "value": "tm-stamps-global" },
+    "frontDoorName": { "value": "fd-stamps-global" },
+    "functionAppNamePrefix": { "value": "fa-stamps" },
+    "functionStorageNamePrefix": { "value": "stfastamps" },
+    "globalControlCosmosDbName": { "value": "cosmos-stamps-control" },
+    "primaryLocation": { "value": "eastus" },
+    "additionalLocations": { "value": ["westus2"] },
+    "functionAppRegions": { "value": ["eastus", "westus2"] },
+    "sqlAdminUsername": { "value": "sqladmin" },
+  "sqlAdminPassword": { "value": "P@ssw0rd!ChangeMe1234" },
+    "regions": {
+      "value": [
+        {
+          "geoName": "northamerica",
+          "regionName": "westus2",
+          "cells": ["cell1"],
+          "baseDomain": "westus2.stamps.contoso.com",
+          "keyVaultName": "kv-stamps-na-wus2",
+          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
+        }
+      ]
+    },
+    "cells": {
+      "value": [
+        {
+          "geoName": "northamerica",
+          "regionName": "westus2",
+          "cellName": "cell1",
+          "cellType": "Shared",
+          "availabilityZones": ["1", "2"],
+          "maxTenantCount": 100,
+          "baseDomain": "westus2.stamps.contoso.com",
+          "keyVaultName": "kv-stamps-na-wus2",
+          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
+        }
+      ]
+    },
+  "cosmosAdditionalLocations": { "value": [] },
+    "cosmosMultiWrite": { "value": false },
+  "storageSkuName": { "value": "Premium_ZRS" },
+    "enableStorageObjectReplication": { "value": false },
+    "enableSqlFailoverGroup": { "value": false }
+  }
+}

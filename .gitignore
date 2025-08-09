@@ -5,6 +5,7 @@
 !config/azure-region-mapping.json
 !traffic-routing.parameters.json
 !**/bicepconfig.json
+!AzureArchitecture/examples/main.sample.smoke.json
 
 # User-specific files
 *.docx
