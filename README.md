@@ -28,6 +28,12 @@ The Azure Stamps Pattern implements a sophisticated **GEO → Region → Availab
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
+    %% Layer colors
+    classDef global fill:#DBEAFE,stroke:#94A3B8,color:#1F2937;
+    classDef apim fill:#E0E7FF,stroke:#6366F1,color:#1F2937;
+    classDef az fill:#FEF3C7,stroke:#D97706,color:#1F2937;
+    classDef cell fill:#DCFCE7,stroke:#65A30D,color:#1F2937;
+    classDef region fill:#E0F2FE,stroke:#0891B2,color:#1F2937;
     subgraph "🌐 Global Layer - Worldwide Traffic Management"
         FD[🌍 Azure Front Door<br/>Global Load Balancing & WAF]
         GF[⚡ Global Functions<br/>Tenant Management & Routing]
@@ -65,7 +71,7 @@ flowchart TB
             end
         end
         
-        subgraph "🏢 Region: West US - DR & Scaling"
+    subgraph "🏢 Region: West US - DR & Scaling"
             APIM2[🔌 API Management<br/>Multi-Region Replica]
             subgraph "🛡️ AZ 1"
                 AG2[🚪 Application Gateway]
@@ -75,30 +81,16 @@ flowchart TB
         end
     end
     
-    subgraph "🌍 GEO: Europe - GDPR Compliance"
-        subgraph "🏢 Region: West Europe"
-            APIM3[🔌 API Management<br/>GDPR Compliant Gateway]
-            subgraph "🛡️ AZ 1"
-                AG3[🚪 Application Gateway]
-                CELL5[🏛️ Enterprise CELL-005<br/>🐳 GDPR Banking Client<br/>🗄️ Dedicated SQL<br/>🔐 Customer-Managed Keys]
-            end
-            COSMOS3[🌐 Cosmos DB<br/>EU Data Residency]
-        end
-    end
-    
     %% Traffic Flow
     FD --> APIM1
     FD --> APIM2
-    FD --> APIM3
     
     APIM1 --> AG1
     APIM2 --> AG2
-    APIM3 --> AG3
     
     AG1 --> CA1
     AG1 --> CA2
     AG2 --> CELL4
-    AG3 --> CELL5
     
     %% Data Layer Connections
     CA1 -.-> SQL1
@@ -110,9 +102,13 @@ flowchart TB
     
     GF -.-> COSMOS1
     GF -.-> COSMOS2
-    GF -.-> COSMOS3
-    
-    %% Styling removed to match default scheme
+
+    %% Apply layer classes
+    class FD,GF,TM global;
+    class APIM1,APIM2 apim;
+    class AG1,AG2 az;
+    class CA1,SQL1,REDIS1,CA2,SQL2,REDIS2,CA3,SQL3,CELL4 cell;
+    class COSMOS1,KV1,LA1,COSMOS2 region;
 ```
 
 ### 🎯 **Key Enterprise Services & Their Roles**
