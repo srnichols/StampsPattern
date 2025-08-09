@@ -6,6 +6,8 @@
 !traffic-routing.parameters.json
 !**/bicepconfig.json
 !AzureArchitecture/examples/main.sample.smoke.json
+!AzureArchitecture/examples/main.sample.silver.json
+!AzureArchitecture/examples/main.sample.platinum.json
 
 # User-specific files
 *.docx
