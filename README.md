@@ -75,7 +75,7 @@ flowchart TB
             end
         end
         
-    subgraph "🏢 Region: West US - DR & Scaling"
+    subgraph "🏢 Region: West US - Scaling"
             APIM2[🔌 API Management<br/>Multi-Region Replica]
             subgraph "🛡️ AZ 1"
                 AG2[🚪 Application Gateway]
