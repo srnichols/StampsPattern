@@ -51,10 +51,11 @@ graph LR
 7. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
 8. **🏢 [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)** - Map Stamps to Azure Landing Zones *(20 minutes)*
 
-### **Phase 3: Operations & Security (60-75 minutes)**
+### **Phase 3: Operations, Security & Cost (75-105 minutes)**
 7. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
 8. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(30 minutes)*
-9. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Resource naming standards *(15 minutes)*
+9. **💰 [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)** - Cost models and savings strategies *(15-30 minutes)*
+10. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Resource naming standards *(15 minutes)*
 
 ### **Phase 4: Status & Troubleshooting (As Needed)**
 10. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
@@ -83,10 +84,10 @@ Glossary → README → Architecture Guide → Simple Deployment
    15min     15min        30min              45min
 ```
 
-### 👨‍💻 **Experienced Developer** (1-2 hours total)
+### 👨‍💻 **Experienced Developer** (1.5-2.5 hours total)
 ```
-README → Deployment Guide → Known Issues
-  15min         45min           As needed
+README → Deployment Guide → Developer Security → Known Issues
+  15min         45min              20min            As needed
 ```
 
 ### 👨‍💼 **IT Leadership** (30-45 minutes total)
@@ -129,6 +130,47 @@ graph TD
     L --> M
     O --> M
 ```
+
+---
+
+
+## 📚 Documentation Overview
+
+A complete index of the documentation set. Use this as a quick catalog and to verify coverage.
+
+### Core Guides
+- 🏗️ Architecture: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
+- 🚀 Deployment: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+- ⚙️ Operations: [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)
+- 🛡️ Security: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
+- 💰 Cost Optimization: [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)
+- 🧩 Parameterization: [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)
+- 🏷️ Naming Conventions: [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)
+
+### Management Portal
+- 📘 User Guide: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
+- 📐 Plan: [MANAGEMENT_PORTAL_PLAN.md](./MANAGEMENT_PORTAL_PLAN.md)
+
+### Enterprise Alignment
+- 🧭 CAF/WAF Compliance Analysis: [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
+- 🗺️ Azure Landing Zones: [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)
+
+### Developer & Authoring
+- 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
+- 🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
+- 📝 Mermaid Theme Sample (deprecated): [mermaid-theme-sample.md](./mermaid-theme-sample.md)
+
+### One-Pagers & Checklists
+- 🧾 Production SaaS Checklist (Printable): [one-pagers/production-saas-checklist.md](./one-pagers/production-saas-checklist.md)
+
+### Reference & Support
+- 📖 Glossary: [GLOSSARY.md](./GLOSSARY.md)
+- 🧰 Known Issues: [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
+
+### Archive
+- 🗄️ Recommendations Report: [archive/RECOMMENDATIONS_REPORT.md](./archive/RECOMMENDATIONS_REPORT.md)
+- 🗄️ Implementation Status: [archive/IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)
+- 🗄️ Implementation Report: [archive/IMPLEMENTATION_REPORT.md](./archive/IMPLEMENTATION_REPORT.md)
 
 ---
 
@@ -258,6 +300,8 @@ journey
 | 📊 **Enhanced Monitoring** | [Monitoring Bicep](../AzureArchitecture/enhancedMonitoring.bicep) | Cache performance and security alerts |
 | 📖 **API Documentation** | [Documentation Function](../AzureArchitecture/DocumentationFunction.cs) | Interactive Swagger UI |
 | 🛠️ **Troubleshooting** | [Known Issues Guide](./KNOWN_ISSUES.md) | 400+ lines of practical solutions |
+| 💰 **Cost Optimization** | [Cost Optimization Guide](./COST_OPTIMIZATION_GUIDE.md) | Savings levers and staged models |
+| 🔐 **Developer Security** | [Developer Security Guide](./DEVELOPER_SECURITY_GUIDE.md) | JWT, MI, caching, and DI patterns |
 
 ### ⚙️ **Operations Quick Links**
 | Task | Documentation | Time Required |
