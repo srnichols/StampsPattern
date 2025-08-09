@@ -346,7 +346,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
     enabledForDeployment: false
     enabledForDiskEncryption: false
     enabledForTemplateDeployment: true
-    enableSoftDelete: true
     softDeleteRetentionInDays: 90
     enablePurgeProtection: true
     publicNetworkAccess: 'Enabled' // Can be set to 'Disabled' for private access
@@ -421,10 +420,6 @@ resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
     logs: diagMetricsOnly ? [] : [
       {
         category: 'AuditEvent'
-        enabled: true
-      }
-      {
-        category: 'AzurePolicyEvaluationDetails'
         enabled: true
       }
     ]
