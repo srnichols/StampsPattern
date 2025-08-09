@@ -180,52 +180,43 @@ Learn more:
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-flowchart TB
-  %% Top section: stack Shared Services above Platform/Connectivity (portrait)
+flowchart TD
+  %% Top: Edge and connectivity
   subgraph "Edge and Connectivity"
     direction TB
-
-    subgraph "Shared Services (Edge)"
-      direction TB
-      FD["🌍 Azure Front Door"]
-      APIM["🔌 API Management (Global)"]
-    end
-
-    subgraph "Platform / Connectivity (Hub Subscription)"
-      direction TB
-      HUBVNET["🕸️ Hub VNet"]
-      AFW["🧱 Azure Firewall"]
-      PDNS["🔏 Private DNS Zones"]
-      DDOS["🛡️ DDoS Protection Plan"]
-    end
+    FD["Azure Front Door"]
+    APIM["API Management (Global)"]
   end
 
-  %% Second section: Workload spokes stacked (portrait)
-  subgraph "Workload Landing Zones (Spokes)"
+  %% Middle: Workloads (stacked spokes)
+  subgraph "Workloads"
     direction TB
-
-    subgraph "Workload LZ - Spoke (CELL-001 Subscription)"
+    subgraph "Spoke: CELL-001"
       direction TB
-      SP1VNET["🕸️ Spoke VNet (CELL-001)"]
-      AGW1["🚪 Application Gateway (WAF)"]
-      CAE1["🐳 Container Apps Env\n(VNet-injected)"]
-      PEP_SQL1["🔗 Private Endpoint: SQL"]
-      PEP_ST1["🔗 Private Endpoint: Storage"]
-      PEP_KV1["🔗 Private Endpoint: Key Vault"]
+      SP1VNET["Spoke VNet (CELL-001)"]
+      AGW1["App Gateway (WAF)"]
+      CAE1["Container Apps Env"]
+      PEP1["Private Endpoints (SQL/Storage/KV)"]
     end
-
-    subgraph "Workload LZ - Spoke (CELL-002 Subscription)"
+    subgraph "Spoke: CELL-002"
       direction TB
-      SP2VNET["🕸️ Spoke VNet (CELL-002)"]
-      AGW2["🚪 Application Gateway (WAF)"]
-      CAE2["🐳 Container Apps Env\n(VNet-injected)"]
-      PEP_SQL2["🔗 Private Endpoint: SQL"]
-      PEP_ST2["🔗 Private Endpoint: Storage"]
-      PEP_KV2["🔗 Private Endpoint: Key Vault"]
+      SP2VNET["Spoke VNet (CELL-002)"]
+      AGW2["App Gateway (WAF)"]
+      CAE2["Container Apps Env"]
+      PEP2["Private Endpoints (SQL/Storage/KV)"]
     end
   end
 
-  %% Edge to regional ingress
+  %% Bottom: Hub VNet and shared services
+  subgraph "Hub VNet and Security"
+    direction TB
+    HUBVNET["Hub VNet"]
+    PDNS["Private DNS Zones"]
+    AFW["Azure Firewall"]
+    DDOS["DDoS Protection Plan"]
+  end
+
+  %% Flows from Edge to Workloads
   FD --> APIM
   APIM --> AGW1
   APIM --> AGW2
@@ -244,16 +235,9 @@ flowchart TB
   SP1VNET -. "default route/inspection" .-> AFW
   SP2VNET -. "default route/inspection" .-> AFW
 
-  %% Private endpoints to data services within spokes
-  CAE1 -.-> PEP_SQL1
-  CAE1 -.-> PEP_ST1
-  CAE1 -.-> PEP_KV1
-  CAE2 -.-> PEP_SQL2
-  CAE2 -.-> PEP_ST2
-  CAE2 -.-> PEP_KV2
-
-  %% Layout helper to stack spokes vertically (subtle dotted connector)
-  PEP_KV1 -.-> SP2VNET
+  %% Private endpoints aggregation per spoke
+  CAE1 -.-> PEP1
+  CAE2 -.-> PEP2
 ```
 
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
