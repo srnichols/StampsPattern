@@ -13,7 +13,7 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 - **Proven Compliance**: Pre-built compliance frameworks for HIPAA, SOC 2, PCI-DSS, and GDPR with automated audit trails and policy enforcement ([CAF/WAF Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md))
 - **AI-Driven Operations**: Predictive scaling and intelligent monitoring reduce operational overhead by 25-40% while providing real-time insights through executive dashboards ([Operations Guide](./docs/OPERATIONS_GUIDE.md))
 - **Economic Flexibility**: Mixed tenancy models support growth from startup to enterprise scale with seamless migration paths and tier-based pricing ([Architecture Guide](./docs/ARCHITECTURE_GUIDE.md))
-- **Global Resilience**: Multi-region, multi-zone deployment with automated failover and disaster recovery ensures 99.99%+ availability ([AZ Architecture](docs/ARCHITECTURE_GUIDE.md#availability-zone-architecture))
+- **Global Resilience**: Multi-region, multi-zone deployment with automated failover and disaster recovery ensures 99.99%+ availability ([AZ Architecture](./docs/ARCHITECTURE_GUIDE.md#availability-zone-architecture))
 - **Cloud Capacity Management**: Modular design enables rapid deployment in alternative locations when regions reach capacity, ensuring business continuity despite cloud supply constraints
 - **Developer Velocity**: Parameterized templates, comprehensive documentation, and CI/CD integration accelerate time-to-market by 60-80% ([Parameterization Guide](./docs/PARAMETERIZATION_GUIDE.md))
 
