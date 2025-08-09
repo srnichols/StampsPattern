@@ -95,6 +95,13 @@ param sqlSecondaryServerId string = ''
 @description('Create the storage account in this deployment (set false to use an existing account)')
 param createStorageAccount bool = true
 
+@description('Diagnostics mode for this CELL. Use metricsOnly to minimize categories in constrained environments (smoke).')
+@allowed(['metricsOnly','standard'])
+param diagnosticsMode string = 'metricsOnly'
+
+var diagMetricsOnly = diagnosticsMode == 'metricsOnly'
+
+
 // Create a new Azure Container Registry for the region with security hardening
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = if (enableContainerRegistry) {
   name: containerRegistryName
@@ -200,7 +207,7 @@ resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   scope: cellCosmosDb
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
+    logs: diagMetricsOnly ? [] : [
       {
         category: 'DataPlaneRequests'
         enabled: true
@@ -411,7 +418,7 @@ resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   scope: keyVault
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
+    logs: diagMetricsOnly ? [] : [
       {
         category: 'AuditEvent'
         enabled: true
@@ -690,7 +697,7 @@ resource applicationGatewayDiagnostics 'Microsoft.Insights/diagnosticSettings@20
   scope: applicationGateway
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
+    logs: diagMetricsOnly ? [] : [
       {
         category: 'ApplicationGatewayAccessLog'
         enabled: true
@@ -819,7 +826,7 @@ resource sqlFailoverGroup 'Microsoft.Sql/servers/failoverGroups@2021-11-01' = if
 output keyVaultId string = keyVault.id
 output keyVaultUri string = keyVault.properties.vaultUri
 output sqlServerSystemAssignedPrincipalId string = sqlServer.identity.principalId
-output storageAccountSystemAssignedPrincipalId string = storageAccount.identity.principalId
+output storageAccountSystemAssignedPrincipalId string = createStorageAccount ? string(storageAccount.identity.principalId) : 'not-assigned'
 output cosmosDbId string = cellCosmosDb.id
 output cosmosDbEndpoint string = cellCosmosDb.properties.documentEndpoint
 output applicationGatewayId string = enableApplicationGateway && !empty(applicationGatewaySubnetId) ? applicationGateway.id : 'not-deployed'

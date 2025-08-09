@@ -343,6 +343,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
   enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
   sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
   enableCellTrafficManager: false
+  diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
     }
     dependsOn: [
       regionalLayers
