@@ -1,20 +1,6 @@
-name: Markdown Lint
+name: Markdown Lint (Manual Only)
 
 on:
-  pull_request:
-    branches:
-      - main
-      - master
-    paths:
-      - '**/*.md'
-      - '.github/workflows/markdownlint.yml'
-      - '.markdownlint.jsonc'
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - '.markdownlint.jsonc'
   workflow_dispatch: {}
 
 concurrency:
