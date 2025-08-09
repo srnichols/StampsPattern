@@ -25,183 +25,183 @@ env:
 jobs:
   # Bicep Validation and Linting
   bicep-validation:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     name: 'Bicep Validation'
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       
-    - name: Setup Azure CLI
-      uses: azure/setup-azure-cli@v1
+      - name: Setup Azure CLI
+        uses: azure/setup-azure-cli@v1
       
-    - name: Azure CLI Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: Install Bicep CLI
-      run: az bicep install
+      - name: Install Bicep CLI
+        run: az bicep install
       
-    - name: Bicep Build and Validate
-      run: |
-        cd AzureArchitecture
-        echo "Building main.bicep..."
-        az bicep build --file main.bicep
+      - name: Bicep Build and Validate
+        run: |
+          cd AzureArchitecture
+          echo "Building main.bicep..."
+          az bicep build --file main.bicep
+          
+          echo "Building deploymentStampLayer.bicep..."
+          az bicep build --file deploymentStampLayer.bicep
+          
+          echo "Building globalLayer.bicep..."
+          az bicep build --file globalLayer.bicep --ignore-warnings
+          
+          echo "Building regionalLayer.bicep..."
+          az bicep build --file regionalLayer.bicep --ignore-warnings
         
-        echo "Building deploymentStampLayer.bicep..."
-        az bicep build --file deploymentStampLayer.bicep
-        
-        echo "Building globalLayer.bicep..."
-        az bicep build --file globalLayer.bicep --ignore-warnings
-        
-        echo "Building regionalLayer.bicep..."
-        az bicep build --file regionalLayer.bicep --ignore-warnings
-        
-    - name: Bicep What-If Deployment
-      run: |
-        cd AzureArchitecture
-        az deployment group what-if \
-          --resource-group rg-stamps-dev \
-          --template-file main.bicep \
-          --parameters main.parameters.json \
-          --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD }}"
-      continue-on-error: true
+      - name: Bicep What-If Deployment
+        run: |
+          cd AzureArchitecture
+          az deployment group what-if \
+            --resource-group rg-stamps-dev \
+            --template-file main.bicep \
+            --parameters main.parameters.json \
+            --parameters sqlAdminPassword="${{ secrets.SQL_ADMIN_PASSWORD }}"
+        continue-on-error: true
 
   # .NET Build and Test
   dotnet-build-test:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     name: 'Build and Test .NET Functions'
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
         
-    - name: Restore NuGet packages
-      run: |
-        cd AzureArchitecture
-        dotnet restore AzureArchitecture.sln
+      - name: Restore NuGet packages
+        run: |
+          cd AzureArchitecture
+          dotnet restore AzureArchitecture.sln
         
-    - name: Build Functions
-      run: |
-        cd AzureArchitecture
-        dotnet build AzureArchitecture.sln --configuration Release --no-restore
+      - name: Build Functions
+        run: |
+          cd AzureArchitecture
+          dotnet build AzureArchitecture.sln --configuration Release --no-restore
         
-    - name: Run Unit Tests
-      run: |
-        cd AzureArchitecture
-        dotnet test Tests/CreateTenantFunctionTests.cs --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      - name: Run Unit Tests
+        run: |
+          cd AzureArchitecture
+          dotnet test Tests/CreateTenantFunctionTests.cs --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
         
-    - name: Upload Code Coverage
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./AzureArchitecture/TestResults/*/coverage.cobertura.xml
-        flags: unittests
-        name: stamps-pattern-coverage
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./AzureArchitecture/TestResults/*/coverage.cobertura.xml
+          flags: unittests
+          name: stamps-pattern-coverage
 
   # Security Scanning
   security-scan:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     name: 'Security and Code Quality'
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       
-    - name: Run Bandit Security Scan
-      uses: tj-actions/bandit@v5
-      with:
-        options: "-r . -f json -o bandit-report.json"
-      continue-on-error: true
+      - name: Run Bandit Security Scan
+        uses: tj-actions/bandit@v5
+        with:
+          options: "-r . -f json -o bandit-report.json"
+        continue-on-error: true
 
-    # Enhanced Static Code Analysis with SonarCloud
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=azure-stamps-pattern
-          -Dsonar.organization=your-org
-          -Dsonar.sources=AzureArchitecture
-          -Dsonar.exclusions=**/bin/**,**/obj/**
-          -Dsonar.cs.dotcover.reportsPaths=coverage.xml
+      # Enhanced Static Code Analysis with SonarCloud
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=azure-stamps-pattern
+            -Dsonar.organization=your-org
+            -Dsonar.sources=AzureArchitecture
+            -Dsonar.exclusions=**/bin/**,**/obj/**
+            -Dsonar.cs.dotcover.reportsPaths=coverage.xml
         
-    - name: Run CodeQL Analysis
-      uses: github/codeql-action/init@v2
-      with:
-        languages: csharp
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/init@v2
+        with:
+          languages: csharp
         
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
         
-    - name: Build for CodeQL
-      run: |
-        cd AzureArchitecture
-        dotnet build AzureArchitecture.sln --configuration Release
+      - name: Build for CodeQL
+        run: |
+          cd AzureArchitecture
+          dotnet build AzureArchitecture.sln --configuration Release
         
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
 
-    # Automated Penetration Testing
-    - name: OWASP ZAP Security Scan
-      uses: zaproxy/action-baseline@v0.7.0
-      with:
-        target: 'https://fa-stamps-eastus-dev.azurewebsites.net'
-        rules_file_name: '.zap/rules.tsv'
-        cmd_options: '-a'
+      # Automated Penetration Testing
+      - name: OWASP ZAP Security Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: 'https://fa-stamps-eastus-dev.azurewebsites.net'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
 
   # Load Testing
   load-testing:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     name: 'Performance and Load Testing'
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       
-    - name: Setup k6
-      run: |
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-        echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-        sudo apt-get update
-        sudo apt-get install k6
+      - name: Setup k6
+        run: |
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
 
-    - name: Run Load Tests
-      run: |
-        k6 run --out json=load-test-results.json ./scripts/load-test.js
-      env:
-        TEST_URL: ${{ secrets.TEST_ENDPOINT }}
+      - name: Run Load Tests
+        run: |
+          k6 run --out json=load-test-results.json ./scripts/load-test.js
+        env:
+          TEST_URL: ${{ secrets.TEST_ENDPOINT }}
 
-    - name: Azure Load Testing
-      uses: azure/load-testing@v1
-      with:
-        loadTestConfigFile: 'scripts/azure-load-test.yaml'
-        loadTestResource: 'stamps-load-testing'
-        resourceGroup: 'rg-stamps-dev'
-        env: |
-          [
-            {
-              "name": "webapp_url",
-              "value": "${{ secrets.TEST_ENDPOINT }}"
-            }
-          ]
+      - name: Azure Load Testing
+        uses: azure/load-testing@v1
+        with:
+          loadTestConfigFile: 'scripts/azure-load-test.yaml'
+          loadTestResource: 'stamps-load-testing'
+          resourceGroup: 'rg-stamps-dev'
+          env: |
+            [
+              {
+                "name": "webapp_url",
+                "value": "${{ secrets.TEST_ENDPOINT }}"
+              }
+            ]
 
-    - name: Upload Load Test Results
-      uses: actions/upload-artifact@v3
-      with:
-        name: load-test-results
-        path: |
-          load-test-results.json
-          LoadTestResults/
+      - name: Upload Load Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-results
+          path: |
+            load-test-results.json
+            LoadTestResults/
 
   # Cache Performance Monitoring
   cache-monitoring:
