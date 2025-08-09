@@ -1,4 +1,3 @@
-
 # ⚙️ Azure Stamps Pattern - AI-Driven Operations Guide
 
 Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
@@ -82,16 +81,7 @@ graph LR
   
 ```
 
----
-
-
----
-
-## 🎯 Operations Overview
-
-This guide provides comprehensive operational procedures for managing, monitoring, and maintaining the Azure Stamps Pattern infrastructure in production environments.
-
----
+_Figure: Operational maturity curve from reactive to autonomous; use to set quarterly improvement targets._
 
 ## 📊 Monitoring & Observability
 
@@ -122,6 +112,8 @@ Effective monitoring and observability in the Azure Stamps Pattern goes beyond t
     ├─ API response times per tenant
     └─ Tenant-specific KPIs
 ```
+
+_Diagram: Layered monitoring scope from global to CELL; align dashboards and alerts to each layer._
 
 ### 📈 **Key Performance Indicators (KPIs)**
 
@@ -158,6 +150,8 @@ Effective monitoring and observability in the Azure Stamps Pattern goes beyond t
 }
 ```
 
+_Block: Suggested global SLO/SLA indicators and alert thresholds for baseline monitoring._
+
 #### CELL-Level KPIs:
 ```json
 {
@@ -185,6 +179,8 @@ Effective monitoring and observability in the Azure Stamps Pattern goes beyond t
   }
 }
 ```
+
+_Block: CELL-level KPIs to guide scaling, capacity, and tenant experience SLIs._
 
 ### 🚨 **Alert Configuration**
 

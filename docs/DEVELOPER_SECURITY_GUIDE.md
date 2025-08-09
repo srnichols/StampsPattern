@@ -46,6 +46,8 @@ How to implement zero‑trust security in code and infra: JWT validation, privat
 
 ## 🚨 Critical Security Changes (August 2025)
 
+Read this section first when upgrading existing services; it highlights breaking changes and performance wins that affect code, infra, and configuration.
+
 ### ⚠️ **Breaking Changes**
 - **Cosmos DB**: Public access now **PERMANENTLY DISABLED** by default
 - **SQL Server**: Firewall rules are **conditional** based on private endpoint configuration
@@ -58,6 +60,8 @@ How to implement zero‑trust security in code and infra: JWT validation, privat
 - **Caching**: Redis implementation reduces database hits by 80-90%
 
 ## 🔧 Developer Implementation Guide
+
+This section provides before/after examples for JWT validation, data access, DI, caching, and error handling to achieve zero-trust with strong performance.
 
 ### 1. **Enhanced JWT Validation Implementation**
 

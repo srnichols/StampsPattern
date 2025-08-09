@@ -86,6 +86,8 @@ graph LR
   
 ```
 
+_Figure: Security maturity path from basic controls to AI-driven zero-trust. Use it to benchmark your current posture and plan improvements._
+
 ---
 
 ## 🔒 Security Overview
@@ -120,6 +122,8 @@ This guide establishes security baselines and best practices for the Azure Stamp
 | SQL Private Access | ✅ **Deployed** | Critical | Conditional firewall rules |
 | Error Handling | ✅ **Deployed** | Medium | Structured logging |
 
+_Table: Snapshot of live security controls and their impact to help prioritize audits and reviews._
+
 ## 🏗️ Security Architecture
 
 ### 🌐 **Defense in Depth Strategy**
@@ -143,6 +147,8 @@ This guide establishes security baselines and best practices for the Azure Stamp
     ├─ Storage Account Access Controls
     └─ Managed Identity Authentication
 ```
+
+_Diagram: Defense-in-depth layers across global, regional, and CELL tiers; apply controls at each layer._
 
 ### 🚪 **API Management Security**
 
