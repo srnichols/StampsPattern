@@ -428,10 +428,10 @@ _logger.LogInformation("Cache {CacheResult} for tenant {TenantId}",
 
 ## 📚 Additional Resources
 
-- [Azure Functions Best Practices](https://learn.microsoft.com/en-us/azure/azure-functions/functions-best-practices)
-- [Cosmos DB Performance Tips](https://learn.microsoft.com/en-us/azure/cosmos-db/performance-tips)
-- [Azure B2C Custom Policies](https://learn.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview)
-- [Redis Caching Patterns](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-best-practices)
+- <a href="https://learn.microsoft.com/azure/azure-functions/functions-best-practices" target="_blank" rel="noopener">Azure Functions Best Practices</a>
+- <a href="https://learn.microsoft.com/azure/cosmos-db/performance-tips" target="_blank" rel="noopener">Cosmos DB Performance Tips</a>
+- <a href="https://learn.microsoft.com/azure/active-directory-b2c/custom-policy-overview" target="_blank" rel="noopener">Azure B2C Custom Policies</a>
+- <a href="https://learn.microsoft.com/azure/azure-cache-for-redis/cache-best-practices" target="_blank" rel="noopener">Redis Caching Patterns</a>
 
 ## 🔗 Related Documentation
 
