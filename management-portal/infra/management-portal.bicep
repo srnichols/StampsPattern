@@ -74,6 +74,15 @@ resource tenantsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/co
           ]
         ]
       }
+      // Note: Unique keys are enforced per-partition. With pk = /tenantId, a unique key on /domain does not enforce global uniqueness.
+      // Consider registering domains in the 'catalogs' container (type='domains', id=<domain>) to guarantee global uniqueness.
+      uniqueKeyPolicy: {
+        uniqueKeys: [
+          {
+            paths: [ '/domain' ]
+          }
+        ]
+      }
     }
     options: {}
   }

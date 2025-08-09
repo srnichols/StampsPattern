@@ -164,7 +164,11 @@ erDiagram
   - Keep `consistent` indexing with selective included paths for high‑cardinality fields
   - Add composite indexes to speed lookups: e.g., `(domain ASC, status ASC)` on `tenants`
 - Unique keys
-  - Tenants: `domain` must be unique; optionally `(tenantId)` enforced via id
+  - Tenants: `domain` should be unique. Note Cosmos unique keys are per-partition; with pk `/tenantId` they won’t enforce global uniqueness.
+  - Recommended: Reserve domains in `catalogs` (type: `domains`, id: `<domain>`). Create reservation before tenant create; delete on decommission.
+- Domain reservation flow (GraphQL)
+  mutation ReserveDomain($d: Catalog_input!) { createCatalog(item: $d) { id } }
+  // $d = { id: "contoso.com", type: "domains" }
 - TTL
   - Apply TTL on `operations` (e.g., 60–90 days) to control storage costs; exempt retained/compliance operations by setting `ttl = -1` per item
 
