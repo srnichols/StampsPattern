@@ -126,6 +126,8 @@ graph TD
 
 ```
 
+Caption: CAF and WAF pillar scores visualized against enterprise benchmarks.
+
 ### 🚀 **Competitive Advantage Matrix**
 
 ```mermaid
@@ -151,6 +153,8 @@ graph LR
     A4 -->|+27 Points| B4
 
 ```
+
+Caption: Competitive comparison highlighting advantages over industry average.
 
 ---
 
