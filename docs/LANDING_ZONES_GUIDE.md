@@ -181,75 +181,36 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
-  %% Hidden style for layout anchors
-  classDef hidden fill:transparent,stroke:transparent,color:transparent;
-
-  %% Top: Edge and connectivity
-  subgraph "Edge and Connectivity"
+  %% Top: Edge + Hub (single group)
+  subgraph "Edge + Hub"
     direction TB
-    TopA[" "]
     FD["Front Door"]
     APIM["APIM (Global)"]
-  end
-
-  %% Middle: Workloads (stacked spokes)
-  subgraph "Workloads"
-    direction TB
-    MidA[" "]
-    subgraph "Spoke CELL-001"
-      direction TB
-      SP1VNET["VNet<br/>(CELL-001)"]
-      AGW1["App Gateway<br/>(WAF)"]
-      CAE1["Container Apps Env"]
-      PEP1["Private Endpoints<br/>(SQL/Storage/KV)"]
-    end
-    subgraph "Spoke CELL-002"
-      direction TB
-      SP2VNET["VNet<br/>(CELL-002)"]
-      AGW2["App Gateway<br/>(WAF)"]
-      CAE2["Container Apps Env"]
-      PEP2["Private Endpoints<br/>(SQL/Storage/KV)"]
-    end
-  end
-
-  %% Bottom: Hub VNet and shared services
-  subgraph "Hub (Connectivity)"
-    direction TB
-    BotA[" "]
     HUBVNET["Hub VNet"]
     PDNS["Private DNS"]
     AFW["Azure Firewall"]
     DDOS["DDoS Plan"]
   end
 
-  %% Anchor chain to enforce top-middle-bottom stacking
-  TopA --> MidA --> BotA
+  %% Bottom: Workloads (each cell as a single node to avoid truncation)
+  subgraph "Workloads"
+    direction TB
+    CELL1["CELL-001<br/>VNet, App GW, CAE<br/>PE: SQL/Stor/KV"]
+    CELL2["CELL-002<br/>VNet, App GW, CAE<br/>PE: SQL/Stor/KV"]
+  end
 
   %% Flows from Edge to Workloads
   FD --> APIM
-  APIM --> AGW1
-  APIM --> AGW2
-  AGW1 --> CAE1
-  AGW2 --> CAE2
+  APIM --> CELL1
+  APIM --> CELL2
 
-  %% Hub-spoke peering
-  HUBVNET ---|Peering| SP1VNET
-  HUBVNET ---|Peering| SP2VNET
-
-  %% Private DNS resolution across spokes
-  SP1VNET -. "name resolution" .-> PDNS
-  SP2VNET -. "name resolution" .-> PDNS
-
-  %% Optional: traffic inspection via Azure Firewall
-  SP1VNET -. "default route/inspection" .-> AFW
-  SP2VNET -. "default route/inspection" .-> AFW
-
-  %% Private endpoints aggregation per spoke
-  CAE1 -.-> PEP1
-  CAE2 -.-> PEP2
-
-  %% Hide anchors
-  class TopA,MidA,BotA hidden;
+  %% Hub-to-spoke relationships
+  HUBVNET ---|Peering| CELL1
+  HUBVNET ---|Peering| CELL2
+  CELL1 -. "name resolution" .-> PDNS
+  CELL2 -. "name resolution" .-> PDNS
+  CELL1 -. "default route/inspection" .-> AFW
+  CELL2 -. "default route/inspection" .-> AFW
 ```
 
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
