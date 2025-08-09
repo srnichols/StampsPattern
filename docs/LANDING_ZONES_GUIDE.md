@@ -146,6 +146,27 @@ module diagnostics './policy/assign-diagnostics.bicep' = {
 }
 ```
 
+### 🖼️ Visual: Policy-as-Code Flow (Scopes → Diagnostics)
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart LR
+  MG[Management Group\n(Platform / Landing Zones)] --> INIT[Policy/Initiative\nAssignment]
+  INIT --> SUBS[Subscriptions]
+  SUBS --> RES[Resources\n(Apps, Data, Networking)]
+  RES --> DIAG[Diagnostic Settings]
+  DIAG --> LAW[Log Analytics Workspace\n(Management Sub)]
+  SUBS --> DEF[Defender for Cloud\n(Plan Assignments)]
+```
+
+Caption: Policies/initiatives assigned at MG scope inherit to subscriptions and resources; diagnostic settings route logs to central Log Analytics; Defender plans are enabled across scopes.
+
+Learn more:
+- Azure Policy overview: <a href="https://learn.microsoft.com/azure/governance/policy/overview" target="_blank" rel="noopener" title="Opens in a new tab">Docs</a>&nbsp;<sup>↗</sup>
+- Management groups: <a href="https://learn.microsoft.com/azure/governance/management-groups/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Policy initiatives (policy sets): <a href="https://learn.microsoft.com/azure/governance/policy/concepts/initiative-definition" target="_blank" rel="noopener" title="Opens in a new tab">Concepts</a>&nbsp;<sup>↗</sup>
+- Diagnostic settings: <a href="https://learn.microsoft.com/azure/azure-monitor/essentials/diagnostic-settings" target="_blank" rel="noopener" title="Opens in a new tab">Guide</a>&nbsp;<sup>↗</sup>
+
 ---
 
 ## 🌐 Networking & Connectivity
@@ -243,6 +264,28 @@ Tip — other helpful visuals to consider in this guide:
 - Platform team owns Platform subscriptions; workload teams own CELL subscriptions.
 - Managed identities everywhere (Functions/Apps/APIM/CAE); separate Key Vault per CELL; platform KV for shared secrets.
 
+### 🖼️ Visual: Ownership, RBAC, and Managed Identities
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+graph TB
+  PT[Platform Team\n(PIM-enabled)] --> PSubs[Platform Subs\n(Management/Connectivity/Shared-Services)]
+  WT[Workload Team\n(PIM-enabled)] --> WSubs[CELL Subs\n(Per-CELL subscriptions)]
+  WSubs --> Apps[Apps / Functions / APIM / CAE]
+  Apps --> MI[Managed Identities]
+  MI --> KV[Key Vault (per CELL)]
+  PT -. RBAC roles .-> PSubs
+  WT -. RBAC roles .-> WSubs
+```
+
+Caption: Platform and Workload teams assume time-bound access via PIM and apply RBAC at subscription/resource scopes. Workloads use managed identities to access per-CELL Key Vault and other services.
+
+Learn more:
+- Azure RBAC: <a href="https://learn.microsoft.com/azure/role-based-access-control/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Privileged Identity Management (PIM): <a href="https://learn.microsoft.com/entra/privileged-identity-management/pim-configure" target="_blank" rel="noopener" title="Opens in a new tab">Configure PIM</a>&nbsp;<sup>↗</sup>
+- Managed identities: <a href="https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Azure Key Vault: <a href="https://learn.microsoft.com/azure/key-vault/general/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+
 ---
 
 ## 🧭 Monitoring & Security
@@ -250,6 +293,34 @@ Tip — other helpful visuals to consider in this guide:
 - Central Log Analytics workspace(s) in Platform/Management; optional per-CELL workspaces for autonomy.
 - Defender for Cloud enabled across Platform and Landing Zones; Sentinel in Management.
 - Standardize diagnostic settings via policy; use workbooks/dashboards (see `monitoringDashboards.bicep`).
+
+### 🖼️ Visual: Signals Flow (Diagnostics, Defender, SIEM)
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart LR
+  subgraph Workloads (CELLs)
+    RES[Apps / Functions / APIM / CAE / Data]
+    DIAG[Diagnostic Settings]
+    RES --> DIAG
+  end
+  subgraph Platform Management
+    LAW[Log Analytics Workspace]
+    SENT[Microsoft Sentinel]
+    DEF[Defender for Cloud]
+  end
+  DIAG --> LAW
+  LAW --> SENT
+  RES --> DEF
+```
+
+Caption: Resources emit logs/metrics via diagnostic settings to a central Log Analytics workspace; Sentinel consumes from LAW; Defender for Cloud analyzes resource posture and alerts across scopes.
+
+Learn more:
+- Log Analytics: <a href="https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Microsoft Sentinel: <a href="https://learn.microsoft.com/azure/sentinel/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Defender for Cloud: <a href="https://learn.microsoft.com/azure/defender-for-cloud/defender-for-cloud-introduction" target="_blank" rel="noopener" title="Opens in a new tab">Introduction</a>&nbsp;<sup>↗</sup>
+- Diagnostic settings: <a href="https://learn.microsoft.com/azure/azure-monitor/essentials/diagnostic-settings" target="_blank" rel="noopener" title="Opens in a new tab">Guide</a>&nbsp;<sup>↗</sup>
 
 ---
 
