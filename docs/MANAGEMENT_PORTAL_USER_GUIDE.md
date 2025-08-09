@@ -57,17 +57,17 @@ The Management Portal is a thin control‑plane app for administering tenants an
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-  U[Operator/Admin] -->|OIDC (Entra ID)| P[Blazor Server Portal]
-  P -->|HTTP + headers| DAB[(Data API Builder)]
-  DAB -->|GraphQL/REST| C[(Cosmos DB\ncontrol-plane)]
-  P -->|Commands| F[Azure Functions]
-  F -->|Automation| AZ[Azure Resources\n(CELL infra)]
+  U[👤 Operator/Admin] -->|OIDC (Entra ID)| P[🖥️ Blazor Server Portal]
+  P -->|HTTP + headers| DAB[(🔧 Data API Builder)]
+  DAB -->|GraphQL/REST| C[(🌌 Cosmos DB\ncontrol-plane)]
+  P -->|Commands| F[⚙️ Azure Functions]
+  F -->|Automation| AZ[☁️ Azure Resources\n(CELL infra)]
 
   subgraph Hosting
-    ACA[Azure Container Apps] --- P
-    ACA --- DAB
-    KV[Key Vault]:::kv
-    AI[App Insights]:::ai
+  ACA[🐳 Azure Container Apps] --- P
+  ACA --- DAB
+  KV[🔐 Key Vault]:::kv
+  AI[📈 App Insights]:::ai
   end
 
   classDef kv fill:#F3F4F6,stroke:#94A3B8,color:#1F2937

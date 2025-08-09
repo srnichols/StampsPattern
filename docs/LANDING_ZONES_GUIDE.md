@@ -151,12 +151,12 @@ module diagnostics './policy/assign-diagnostics.bicep' = {
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-  MG[Management Group\n(Platform and Landing Zones)] --> INIT[Policy + Initiative\nAssignment]
-  INIT --> SUBS[Subscriptions]
-  SUBS --> RES[Resources\n(Apps, Data, Networking)]
-  RES --> DIAG[Diagnostic Settings]
-  DIAG --> LAW[Log Analytics Workspace\n(Mgmt Sub)]
-  SUBS --> DEF[Defender for Cloud\n(Plan Assignments)]
+  MG[🏢 Management Group\n(Platform and Landing Zones)] --> INIT[⚙️ Policy + Initiative\nAssignment]
+  INIT --> SUBS[🧾 Subscriptions]
+  SUBS --> RES[🛠️ Resources\n(Apps, Data, Networking)]
+  RES --> DIAG[📋 Diagnostic Settings]
+  DIAG --> LAW[📊 Log Analytics Workspace\n(Mgmt Sub)]
+  SUBS --> DEF[🛡️ Defender for Cloud\n(Plan Assignments)]
 ```
 
 Caption: Policies/initiatives assigned at MG scope inherit to subscriptions and resources; diagnostic settings route logs to central Log Analytics; Defender plans are enabled across scopes.
@@ -188,10 +188,10 @@ flowchart TB
   subgraph "Platform / Connectivity (Hub Subscription)"
     direction TB
     hub_spacer[" "]
-    HUBVNET["Hub VNet"]
-    AFW["Azure Firewall"]
-    PDNS["Private DNS Zones"]
-    DDOS["DDoS Protection Plan"]
+    HUBVNET["🕸️ Hub VNet"]
+    AFW["🧱 Azure Firewall"]
+    PDNS["🔏 Private DNS Zones"]
+    DDOS["🛡️ DDoS Protection Plan"]
   end
 
   %% Second row: Edge + Workloads arranged horizontally
@@ -201,30 +201,30 @@ flowchart TB
     subgraph "Shared Services (Edge)"
       direction TB
       ss_spacer[" "]
-      FD["Azure Front Door"]
-      APIM["API Management (Global)"]
+      FD["🌍 Azure Front Door"]
+      APIM["🔌 API Management (Global)"]
     end
 
     subgraph "Workload LZ - Spoke (CELL-001 Subscription)"
       direction TB
       sp1_spacer[" "]
-      SP1VNET["Spoke VNet (CELL-001)"]
-      AGW1["Application Gateway (WAF)"]
-      CAE1["Container Apps Env\n(VNet-injected)"]
-      PEP_SQL1["Private Endpoint: SQL"]
-      PEP_ST1["Private Endpoint: Storage"]
-      PEP_KV1["Private Endpoint: Key Vault"]
+      SP1VNET["🕸️ Spoke VNet (CELL-001)"]
+      AGW1["🚪 Application Gateway (WAF)"]
+      CAE1["🐳 Container Apps Env\n(VNet-injected)"]
+      PEP_SQL1["🔗 Private Endpoint: SQL"]
+      PEP_ST1["🔗 Private Endpoint: Storage"]
+      PEP_KV1["🔗 Private Endpoint: Key Vault"]
     end
 
     subgraph "Workload LZ - Spoke (CELL-002 Subscription)"
       direction TB
       sp2_spacer[" "]
-      SP2VNET["Spoke VNet (CELL-002)"]
-      AGW2["Application Gateway (WAF)"]
-      CAE2["Container Apps Env\n(VNet-injected)"]
-      PEP_SQL2["Private Endpoint: SQL"]
-      PEP_ST2["Private Endpoint: Storage"]
-      PEP_KV2["Private Endpoint: Key Vault"]
+      SP2VNET["🕸️ Spoke VNet (CELL-002)"]
+      AGW2["🚪 Application Gateway (WAF)"]
+      CAE2["🐳 Container Apps Env\n(VNet-injected)"]
+      PEP_SQL2["🔗 Private Endpoint: SQL"]
+      PEP_ST2["🔗 Private Endpoint: Storage"]
+      PEP_KV2["🔗 Private Endpoint: Key Vault"]
     end
 
   end
@@ -241,8 +241,8 @@ flowchart TB
   HUBVNET ---|Peering| SP2VNET
 
   %% Private DNS resolution across spokes
-  SP1VNET -. name resolution .-> PDNS
-  SP2VNET -. name resolution .-> PDNS
+  SP1VNET -. "name resolution" .-> PDNS
+  SP2VNET -. "name resolution" .-> PDNS
 
   %% Optional: traffic inspection via Azure Firewall
   SP1VNET -. default route/inspection .-> AFW
@@ -288,13 +288,13 @@ Tip — other helpful visuals to consider in this guide:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
-  PT[Platform Team\n(PIM-enabled)] --> PSubs[Platform Subs\n(Management/Connectivity/Shared-Services)]
-  WT[Workload Team\n(PIM-enabled)] --> WSubs[CELL Subs\n(Per-CELL subscriptions)]
-  WSubs --> Apps[Apps / Functions / APIM / CAE]
-  Apps --> MI[Managed Identities]
-  MI --> KV[Key Vault (per CELL)]
-  PT -. RBAC roles .-> PSubs
-  WT -. RBAC roles .-> WSubs
+  PT[👥 Platform Team\n(PIM-enabled)] --> PSubs[🧾 Platform Subs\n(Management/Connectivity/Shared-Services)]
+  WT[👥 Workload Team\n(PIM-enabled)] --> WSubs[🧾 CELL Subs\n(Per-CELL subscriptions)]
+  WSubs --> Apps[🐳 Apps / Functions / APIM / CAE]
+  Apps --> MI[🆔 Managed Identities]
+  MI --> KV[🔐 Key Vault (per CELL)]
+  PT -. "RBAC roles" .-> PSubs
+  WT -. "RBAC roles" .-> WSubs
 ```
 
 Caption: Platform and Workload teams assume time-bound access via PIM and apply RBAC at subscription/resource scopes. Workloads use managed identities to access per-CELL Key Vault and other services.
@@ -438,11 +438,11 @@ These are conservative, non-destructive starters you can extend with your own po
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-  params["Parameters (IDs, Regions)"] --> entry["Entry Bicep"]
-  entry --> global_mod["Global Edge Module"]
-  entry --> control_mod["Control Plane Module"]
-  entry --> cell_mod["Cell Module"]
-  cell_mod --> sub_target["Workload Subscription"]
+  params["🧩 Parameters (IDs, Regions)"] --> entry["🏗️ Entry Bicep"]
+  entry --> global_mod["🌍 Global Edge Module"]
+  entry --> control_mod["🧭 Control Plane Module"]
+  entry --> cell_mod["📦 Cell Module"]
+  cell_mod --> sub_target["🧾 Workload Subscription"]
 ```
 
 ---
@@ -460,4 +460,3 @@ flowchart LR
 
 - Azure CAF – Landing Zones: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">docs</a>
 - Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener">docs</a>
-- Repo docs: `ARCHITECTURE_GUIDE.md`, `OPERATIONS_GUIDE.md`, `SECURITY_GUIDE.md`, `NAMING_CONVENTIONS_GUIDE.md`

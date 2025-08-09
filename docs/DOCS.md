@@ -166,7 +166,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 ### Developer & Authoring
 - 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
 - 🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
-- 📝 Mermaid Theme Sample (deprecated): [mermaid-theme-sample.md](./mermaid-theme-sample.md)
+ 
 
 ### One-Pagers & Checklists
 - 🧾 Production SaaS Checklist (Printable): [one-pagers/production-saas-checklist.md](./one-pagers/production-saas-checklist.md)

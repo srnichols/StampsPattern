@@ -217,10 +217,10 @@ Each layer of the Azure Stamps Pattern offers specific opportunities for cost op
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-    A[Assess Traffic Patterns] --> B[Right-size Front Door]
-    B --> C[Optimize Cosmos DB Replication]
-    C --> D[Consolidate DNS Zones]
-    D --> E[Monitor & Adjust]
+    A[📈 Assess Traffic Patterns] --> B[🌍 Right-size Front Door]
+    B --> C[🌐 Optimize Cosmos DB Replication]
+    C --> D[🧭 Consolidate DNS Zones]
+    D --> E[📊 Monitor & Adjust]
     E --> A
 
 ```
@@ -334,14 +334,14 @@ flowchart TD
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-    A[Monitor Utilization] --> B{Resource Usage}
-    B -->|High| C[Scale Up]
-    B -->|Normal| D[Maintain]
-    B -->|Low| E[Scale Down]
+    A[📊 Monitor Utilization] --> B{📈 Resource Usage}
+    B -->|High| C[⬆️ Scale Up]
+    B -->|Normal| D[🟰 Maintain]
+    B -->|Low| E[⬇️ Scale Down]
     
-    C --> F[Cost Impact: +15-30%<br/>Performance: Improved]
-    D --> G[Cost Impact: Stable<br/>Performance: Consistent]
-    E --> H[Cost Impact: -20-40%<br/>Performance: Adequate]
+    C --> F[💵 Cost Impact: +15-30%<br/>⚡ Performance: Improved]
+    D --> G[💵 Cost Impact: Stable<br/>⚖️ Performance: Consistent]
+    E --> H[💵 Cost Impact: -20-40%<br/>✅ Performance: Adequate]
 
 ```
 
