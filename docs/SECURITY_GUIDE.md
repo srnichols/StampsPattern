@@ -654,10 +654,10 @@ actions:
 ## 📚 Security Resources
 
 ### 📖 **Documentation References**
-- [Azure Security Benchmark](https://learn.microsoft.com/en-us/security/benchmark/azure/)
-- [Azure Well-Architected Security Pillar](https://learn.microsoft.com/en-us/azure/architecture/framework/security/)
-- [CIS Azure Foundations Benchmark](https://www.cisecurity.org/benchmark/azure)
-- [Microsoft Entra External ID (Azure AD B2C) docs](https://learn.microsoft.com/entra/external-id/)
+- <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener">Azure Security Benchmark</a>
+- <a href="https://learn.microsoft.com/azure/architecture/framework/security/" target="_blank" rel="noopener">Azure Well-Architected Security Pillar</a>
+- <a href="https://www.cisecurity.org/benchmark/azure" target="_blank" rel="noopener">CIS Azure Foundations Benchmark</a>
+- <a href="https://learn.microsoft.com/entra/external-id/" target="_blank" rel="noopener">Microsoft Entra External ID (Azure AD B2C) docs</a>
 
 ### 🛠️ **Security Tools**
 - **Azure Security Center**: Unified security management

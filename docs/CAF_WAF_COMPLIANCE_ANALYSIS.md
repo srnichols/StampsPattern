@@ -1016,10 +1016,10 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Known Issues](./KNOWN_ISSUES.md)
 - [All Docs Index](./DOCS.md)
 
-- [Azure Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/)
-- [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/architecture/framework/)
-- [Azure Security Benchmark](https://learn.microsoft.com/en-us/security/benchmark/azure/)
-- [Azure Naming Conventions](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
+- <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/" target="_blank" rel="noopener">Azure Cloud Adoption Framework</a>
+- <a href="https://learn.microsoft.com/azure/architecture/framework/" target="_blank" rel="noopener">Azure Well-Architected Framework</a>
+- <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener">Azure Security Benchmark</a>
+- <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener">Azure Naming Conventions</a>
 
 ---
 

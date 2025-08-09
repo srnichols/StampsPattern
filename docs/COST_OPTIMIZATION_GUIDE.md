@@ -560,10 +560,10 @@ graph TD
 ## 🔗 Resources & Tools
 
 ### 📚 **Essential Reading**
- [Azure Cost Management Documentation](https://learn.microsoft.com/en-us/azure/cost-management-billing/)
- [Azure Pricing Calculator](https://azure.microsoft.com/en-us/pricing/calculator/)
- [Well-Architected Cost Optimization](https://learn.microsoft.com/en-us/azure/architecture/framework/cost/)
- [Azure Reserved Instances Guide](https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/)
+ <a href="https://learn.microsoft.com/azure/cost-management-billing/" target="_blank" rel="noopener">Azure Cost Management Documentation</a>
+ <a href="https://azure.microsoft.com/pricing/calculator/" target="_blank" rel="noopener">Azure Pricing Calculator</a>
+ <a href="https://learn.microsoft.com/azure/architecture/framework/cost/" target="_blank" rel="noopener">Well-Architected Cost Optimization</a>
+ <a href="https://learn.microsoft.com/azure/cost-management-billing/reservations/" target="_blank" rel="noopener">Azure Reserved Instances Guide</a>
 
 ### 🛠️ **Optimization Tools**
 | Tool | Purpose | Cost | Setup Complexity |

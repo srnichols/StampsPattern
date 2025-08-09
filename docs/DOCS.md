@@ -25,6 +25,14 @@ Your single source of truth for the Azure Stamps Pattern, organized by role and 
 
 ---
 
+## 🔣 Symbols & Conventions
+
+- External links to Microsoft Learn and other sites are formatted to open in a new tab/window using HTML anchors with target="_blank". Some viewers (GitHub, VS Code preview) may ignore target. Tip: use Ctrl+Click (Windows/Linux) or Cmd+Click (macOS) to open in a new tab.
+- When JSON examples include comments, we use jsonc code fences.
+- Use the standard Mermaid template in docs/mermaid-template.md for consistent theming.
+
+---
+
 ## 🧭 **Progressive Learning Path (Recommended for New Users)**
 
 Follow this sequence to build understanding logically from concepts to implementation:
@@ -363,10 +371,10 @@ If you find gaps or areas for improvement in this documentation:
 - **Security Concerns**: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
 
 ### 📚 **Additional Resources**
-- **Azure Documentation**: [Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/)
-- **Azure Stamps Pattern**: [Azure Application Architecture Guide](https://learn.microsoft.com/en-us/azure/architecture/guide/)
-- **Multi-Tenant SaaS**: [SaaS Architecture Guidance](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/apps/sap-production)
- - **Azure Landing Zones**: [Landing Zones overview](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/)
+- **Azure Documentation**: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener">Azure Architecture Center</a>
+- **Azure Stamps Pattern**: <a href="https://learn.microsoft.com/azure/architecture/guide/" target="_blank" rel="noopener">Azure Application Architecture Guide</a>
+- **Multi-Tenant SaaS**: <a href="https://learn.microsoft.com/azure/architecture/solution-ideas/articles/saas-multitenant-database-sharding-pattern" target="_blank" rel="noopener">SaaS architecture and patterns</a>
+- **Azure Landing Zones**: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">Landing Zones overview</a>
 
 ### 🔐 **Security Highlights**
 - Multi-layer WAF protection

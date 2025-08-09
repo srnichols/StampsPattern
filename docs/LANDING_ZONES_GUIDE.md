@@ -288,6 +288,6 @@ flowchart LR
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
 
-- Azure CAF – Landing Zones: https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/
-- Azure Architecture Center: https://learn.microsoft.com/azure/architecture/
+- Azure CAF – Landing Zones: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">docs</a>
+- Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener">docs</a>
 - Repo docs: `ARCHITECTURE_GUIDE.md`, `OPERATIONS_GUIDE.md`, `SECURITY_GUIDE.md`, `NAMING_CONVENTIONS_GUIDE.md`

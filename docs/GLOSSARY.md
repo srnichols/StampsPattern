@@ -7,6 +7,8 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 - Best for: Newcomers, engineers/DevOps, architects, and business/IT leaders
 - Outcomes: Shared vocabulary that improves collaboration and decision-making
 
+> Symbols & Conventions: External links use HTML anchors with target="_blank" to open in a new tab/window (some viewers may ignore target). Use Ctrl+Click/Cmd+Click as needed. JSON code with comments uses jsonc code fences; diagrams follow docs/mermaid-template.md.
+
 ## 👤 Who Should Read This Guide?
 
 - **Newcomers:** Get up to speed on Azure Stamps Pattern terminology
