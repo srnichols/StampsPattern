@@ -24,7 +24,8 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 | [🏠 Tenancy Models](#-tenancy-models) | Multi-tenancy, assignment | Architects, DevOps |
 | [🔒 Security Terms](#-security-terms) | Security, identity, endpoints | Security, DevOps |
 | [⚡ Performance & Scaling](#-performance--scaling-terms) | Caching, scaling, load balancing | DevOps |
-| [🛠️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
+| [🗄️ Data & Storage](#-data--storage-terms) | Cosmos DB, partitioning, TTL | Architects, Devs |
+| [�️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
 | [📊 Monitoring & Operations](#-monitoring--operations-terms) | Observability, metrics | Operations |
 | [💰 Cost & Business](#-cost--business-terms) | TCO, optimization | IT Leaders |
 | [🏛️ Compliance & Governance](#-compliance--governance-terms) | CAF, WAF, standards | Compliance |
@@ -89,7 +90,34 @@ An isolated application instance that hosts one or more tenants.
 - **Dedicated CELL**: Single-tenant, compliance-focused (1 tenant per CELL)
 - **Analogy**: Shared CELL = apartment building; Dedicated CELL = private house
 
----
+### **Azure Container Apps (ACA)**
+Serverless container hosting for microservices and background processing.
+- **Use Cases**: Frontends, APIs, background workers in stamps
+- **Scale**: KEDA-based scale to zero and event-driven scale out
+- **Docs**: <a href="https://learn.microsoft.com/azure/container-apps/overview" target="_blank" rel="noopener">Azure Container Apps overview</a>
+
+### **Azure Functions**
+Event-driven, serverless compute for background tasks and APIs.
+- **Use Cases**: Control-plane operations (e.g., tenant provisioning)
+- **Bindings**: Triggers for HTTP, Timer, Queue, Service Bus, etc.
+- **Docs**: <a href="https://learn.microsoft.com/azure/azure-functions/functions-overview" target="_blank" rel="noopener">Azure Functions overview</a>
+
+### **Azure API Management (APIM)**
+Unified gateway for APIs with policy-based controls.
+- **Use Cases**: Routing, auth, rate limiting, observability across stamps
+- **Policies**: JWT validation, header transforms, CORS, caching
+- **Docs**: <a href="https://learn.microsoft.com/azure/api-management/api-management-key-concepts" target="_blank" rel="noopener">API Management key concepts</a>
+
+### **Azure Key Vault**
+Secure store for secrets, keys, and certificates.
+- **Integration**: Managed identity; reference secrets in app settings and Bicep
+- **Docs**: <a href="https://learn.microsoft.com/azure/key-vault/general/overview" target="_blank" rel="noopener">Key Vault overview</a>
+
+### **Data API Builder (DAB)**
+Runtime that exposes databases as REST/GraphQL with role-based access.
+- **Use Cases**: Data plane for the Management Portal with Easy Auth headers
+- **Docs**: <a href="https://learn.microsoft.com/azure/data-api-builder/overview" target="_blank" rel="noopener">Data API Builder overview</a>
+
 
 ## 🏠 **Tenancy Models**
 
@@ -127,11 +155,13 @@ Security model that assumes no implicit trust - everything must be verified.
 Azure feature that provides secure connectivity to services over a private network.
 - **Benefit**: Eliminates exposure to public internet
 - **Example**: Database only accessible via private network, not public IP
+ - **Docs**: <a href="https://learn.microsoft.com/azure/private-link/private-endpoint-overview" target="_blank" rel="noopener">Azure Private Endpoint overview</a>
 
 ### **Managed Identity**
 Azure feature that provides applications with an automatically managed identity in Azure AD.
 - **Benefit**: No need to store credentials in code
 - **Types**: System-assigned (tied to resource) or User-assigned (shared across resources)
+ - **Docs**: <a href="https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview" target="_blank" rel="noopener">Managed identities for Azure resources</a>
 
 ### **JWT (JSON Web Token)**
 A secure way to transmit information between parties as a JSON object.
@@ -161,7 +191,41 @@ Distributing incoming requests across multiple servers.
 
 ---
 
-## 🛠️ **Infrastructure & DevOps Terms**
+## �️ **Data & Storage Terms**
+
+### **Azure Cosmos DB (NoSQL)**
+Globally distributed, multi-model database used for the control-plane in this repo.
+- **Benefits**: Low latency, elastic scale, multi-region replication
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/overview" target="_blank" rel="noopener">Cosmos DB for NoSQL overview</a>
+
+### **Container (Cosmos DB)**
+The unit of scalability and distribution; holds JSON items with a partition key.
+- **Design**: Model by access patterns; avoid cross-partition hot keys
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/best-practice-modeling" target="_blank" rel="noopener">Data modeling best practices</a>
+
+### **Partition Key**
+Attribute used to distribute items across logical partitions.
+- **In This Repo**: /tenantId, /cellId, or /type based on entity
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/partitioning-overview" target="_blank" rel="noopener">Partitioning overview</a>
+
+### **Time to Live (TTL)**
+Automatic expiration for items after a configured duration.
+- **Use Case**: Operations/logs lifecycle management
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/time-to-live" target="_blank" rel="noopener">TTL in Azure Cosmos DB</a>
+
+### **Composite Indexes**
+Indexes on multiple properties to optimize complex queries.
+- **In This Repo**: Used for common filters/sorts in the portal
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/index-policy#composite-indexes" target="_blank" rel="noopener">Composite indexes</a>
+
+### **Throughput (RU/s)**
+Provisioned request units per second for predictable performance.
+- **Modes**: Standard, Autoscale
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/set-throughput" target="_blank" rel="noopener">Set throughput on containers and databases</a>
+
+---
+
+## �🛠️ **Infrastructure & DevOps Terms**
 
 ### **Infrastructure as Code (IaC)**
 Managing infrastructure through machine-readable definition files.
@@ -172,17 +236,20 @@ Managing infrastructure through machine-readable definition files.
 Azure's domain-specific language for deploying Azure resources.
 - **Advantage**: Simpler than ARM templates, compiles to JSON
 - **Example**: Declarative syntax for defining Azure resources
+ - **Docs**: <a href="https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview" target="_blank" rel="noopener">Bicep overview</a>
 
 ### **CI/CD (Continuous Integration/Continuous Deployment)**
 Automated practices for building, testing, and deploying code.
 - **CI**: Automatically test code changes
 - **CD**: Automatically deploy tested changes
 - **Tools**: GitHub Actions, Azure DevOps
+ - **Docs**: <a href="https://learn.microsoft.com/devops/what-is-devops" target="_blank" rel="noopener">What is DevOps?</a>
 
 ### **Azure Resource Manager (ARM)**
 Azure's deployment and management service.
 - **Function**: Provides management layer for creating, updating, deleting resources
 - **Templates**: JSON files that define infrastructure
+ - **Docs**: <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/overview" target="_blank" rel="noopener">ARM overview</a>
 
 ---
 
@@ -192,16 +259,19 @@ Azure's deployment and management service.
 The ability to measure system's internal state by examining its outputs.
 - **Three Pillars**: Logs, Metrics, Traces
 - **Tools**: Application Insights, Log Analytics, Azure Monitor
+ - **Docs**: <a href="https://learn.microsoft.com/azure/azure-monitor/overview" target="_blank" rel="noopener">Azure Monitor overview</a>
 
 ### **Application Insights**
 Azure's application performance monitoring service.
 - **Capabilities**: Request tracking, dependency monitoring, exception tracking
 - **Integration**: SDKs for various programming languages
+ - **Docs**: <a href="https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview" target="_blank" rel="noopener">Application Insights overview</a>
 
 ### **Log Analytics**
 Azure service for collecting and analyzing log data.
 - **Query Language**: KQL (Kusto Query Language)
 - **Use Cases**: Troubleshooting, performance analysis, security monitoring
+ - **Docs**: <a href="https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview" target="_blank" rel="noopener">Log Analytics workspace</a>
 
 ### **SLA/SLO/SLI**
 - **SLA**: Service Level Agreement (what you promise customers)
@@ -286,3 +356,5 @@ README → ARCHITECTURE → DEPLOYMENT → SECURITY → OPERATIONS → KNOWN_ISS
 ---
 
 *This glossary is maintained alongside the documentation. Last updated: August 2025*
+
+> Authoring tip: When code examples contain comments, use `jsonc` code fences. For diagrams, prefer the standard Mermaid template in `docs/mermaid-template.md`.
