@@ -151,12 +151,12 @@ module diagnostics './policy/assign-diagnostics.bicep' = {
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-  MG[🏢 Management Group\n(Platform and Landing Zones)] --> INIT[⚙️ Policy + Initiative\nAssignment]
-  INIT --> SUBS[🧾 Subscriptions]
-  SUBS --> RES[🛠️ Resources\n(Apps, Data, Networking)]
-  RES --> DIAG[📋 Diagnostic Settings]
-  DIAG --> LAW[📊 Log Analytics Workspace\n(Mgmt Sub)]
-  SUBS --> DEF[🛡️ Defender for Cloud\n(Plan Assignments)]
+  MG["Management Group<br/>(Platform and Landing Zones)"] --> INIT["Policy + Initiative<br/>Assignment"]
+  INIT --> SUBS["Subscriptions"]
+  SUBS --> RES["Resources<br/>(Apps, Data, Networking)"]
+  RES --> DIAG["Diagnostic Settings"]
+  DIAG --> LAW["Log Analytics Workspace<br/>(Mgmt Sub)"]
+  SUBS --> DEF["Defender for Cloud<br/>(Plan Assignments)"]
 ```
 
 Caption: Policies/initiatives assigned at MG scope inherit to subscriptions and resources; diagnostic settings route logs to central Log Analytics; Defender plans are enabled across scopes.
@@ -288,11 +288,11 @@ Tip — other helpful visuals to consider in this guide:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
-  PT[👥 Platform Team\n(PIM-enabled)] --> PSubs[🧾 Platform Subs\n(Management/Connectivity/Shared-Services)]
-  WT[👥 Workload Team\n(PIM-enabled)] --> WSubs[🧾 CELL Subs\n(Per-CELL subscriptions)]
-  WSubs --> Apps[🐳 Apps / Functions / APIM / CAE]
-  Apps --> MI[🆔 Managed Identities]
-  MI --> KV[🔐 Key Vault (per CELL)]
+  PT["Platform Team<br/>(PIM-enabled)"] --> PSubs["Platform Subs<br/>(Management/Connectivity/Shared-Services)"]
+  WT["Workload Team<br/>(PIM-enabled)"] --> WSubs["CELL Subs<br/>(Per-CELL subscriptions)"]
+  WSubs --> Apps["Apps / Functions / APIM / CAE"]
+  Apps --> MI["Managed Identities"]
+  MI --> KV["Key Vault (per CELL)"]
   PT -. "RBAC roles" .-> PSubs
   WT -. "RBAC roles" .-> WSubs
 ```
