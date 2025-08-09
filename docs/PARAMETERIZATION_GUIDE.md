@@ -336,6 +336,32 @@ az deployment group validate `
 ---
 
 
+## 🧪 Environment Profiles
+
+Use `environmentProfile` to steer safe defaults across templates:
+
+- smoke: minimal footprint; disables optional global components and uses metrics-only diagnostics.
+- dev: enables most features with reasonable defaults.
+- prod: enables full features, higher resiliency, and richer diagnostics.
+
+Backward compatibility: `useHttpForSmoke` still works. Effective smoke mode is derived as:
+
+isSmoke = useHttpForSmoke || environmentProfile == 'smoke'
+
+Recommended usage in parameters:
+
+- Smoke: set `environmentProfile` to `smoke` and keep `useHttpForSmoke` if needed for HTTP listeners.
+- Dev/Prod: set `environmentProfile` to `dev` or `prod`. You typically don’t need `useHttpForSmoke`.
+
+## 📈 Diagnostics Modes
+
+The CELL (stamp) module supports a `diagnosticsMode` parameter to control diagnostic categories:
+
+- metricsOnly: emits AllMetrics only (default in smoke), avoiding region/tier-specific log category mismatches.
+- standard: enables common logs for Cosmos DB, Key Vault, and Application Gateway in addition to metrics.
+
+The orchestrator sets `diagnosticsMode` automatically based on `environmentProfile`. You can override per-cell if required.
+
 ## 📚 Related Documentation
 
 - [README.md](../README.md) – Main onboarding and navigation
