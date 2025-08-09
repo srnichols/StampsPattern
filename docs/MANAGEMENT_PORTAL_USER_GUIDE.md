@@ -172,6 +172,8 @@ erDiagram
 - TTL
   - Apply TTL on `operations` (e.g., 60–90 days) to control storage costs; exempt retained/compliance operations by setting `ttl = -1` per item
 
+> Note: For this test framework, a global domain reservation isn’t required—use Azure base domains/hostnames. For production SaaS, adopt a reservation strategy to avoid tenant domain collisions. See “Domain naming and global uniqueness” in the Management Portal Plan.
+
 See also: `management-portal/infra/management-portal.bicep` and `docs/MANAGEMENT_PORTAL_PLAN.md`.
 
 ---
