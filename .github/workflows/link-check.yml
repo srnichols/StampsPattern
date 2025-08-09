@@ -7,6 +7,11 @@ on:
       - '**/*.md'
       - '.github/workflows/link-check.yml'
       - 'lychee.toml'
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/link-check.yml'
+      - 'lychee.toml'
   workflow_dispatch: {}
 
 concurrency:

@@ -3,8 +3,20 @@ name: Azure Stamps Pattern CI/CD
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - 'AzureArchitecture/**'
+      - 'infra/**'
+      - 'management-portal/**'
+      - 'scripts/*.js'
+      - '.github/workflows/ci-cd.yml'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - 'AzureArchitecture/**'
+      - 'infra/**'
+      - 'management-portal/**'
+      - 'scripts/*.js'
+      - '.github/workflows/ci-cd.yml'
 
 env:
   DOTNET_VERSION: '6.0.x'
