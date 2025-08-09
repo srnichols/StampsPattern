@@ -21,6 +21,8 @@ Thanks for helping improve the Azure Stamps Pattern! This guide explains how to 
 | [Security & Responsible Disclosure](#-security--responsible-disclosure) | Security reporting |
 | [License](#-license) | MIT |
 
+Last updated: August 2025
+
 ---
 
 ## 🌟 Code of Conduct

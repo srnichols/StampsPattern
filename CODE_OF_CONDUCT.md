@@ -21,6 +21,8 @@ A safe, inclusive, and respectful community helps everyone build better software
 | [Appeals](#-appeals) | Requesting a review of enforcement decisions |
 | [Attribution](#-attribution) | Acknowledgments and sources |
 
+Last updated: August 2025
+
 ---
 
 ## 🔎 Scope
