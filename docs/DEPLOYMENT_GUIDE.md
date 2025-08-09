@@ -1140,3 +1140,25 @@ az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAM
 ---
 
 *Last updated: August 2025*
+
+## ✅ CI Checks: Bicep Lint and What-If
+
+This repo includes two lightweight GitHub Actions to keep deployments safe:
+
+- Bicep Lint: Builds all .bicep files and treats warnings as errors
+  - File: .github/workflows/bicep-lint.yml
+  - Triggers: Pull requests that touch AzureArchitecture/**/*.bicep or bicepconfig.json
+  - What it does: Installs Bicep CLI and runs bicep build -w on each template
+
+- What-If (Smoke): Manual workflow to preview changes using the smoke parameters
+  - File: .github/workflows/bicep-whatif.yml
+  - Triggers: Manual (workflow_dispatch)
+  - Inputs: resourceGroup (default rg-stamps-smoke), subscriptionId, location (default eastus)
+  - Secrets required (OIDC): AZURE_CLIENT_ID, AZURE_TENANT_ID. Alternatively, switch to azure/login@v1 with a single AZURE_CREDENTIALS secret (JSON) if OIDC isn’t available.
+
+How to run What-If:
+1) In GitHub Actions, select "Bicep What-If (Smoke)"
+2) Provide your Subscription ID; use or change the default Resource Group and Location
+3) Ensure required secrets exist as noted above
+
+Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and validates with az deployment group what-if.
