@@ -41,7 +41,7 @@ Last updated: August 2025
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph LR
+flowchart LR
   platform["Platform / Shared-Services"] --- fd["Front Door / Traffic Manager"]
   platform --- apim["APIM (Global)"]
   platform --- control["Control Plane"]
@@ -87,7 +87,7 @@ Tenant Root Group (TRG)
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
   trg["TRG"] --> platform_mg["Platform MG"]
   trg --> lz_mg["Landing Zones MG"]
   platform_mg --> mgmt_sub["Management Sub"]
@@ -180,7 +180,7 @@ Learn more:
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TB
+flowchart TB
   subgraph "Platform / Connectivity (Hub Subscription)"
     HUBVNET["Hub VNet"]
     AFW["Azure Firewall"]
@@ -193,7 +193,7 @@ graph TB
     APIM["API Management (Global)"]
   end
 
-  subgraph "Workload LZ — Spoke (CELL-001 Subscription)"
+  subgraph "Workload LZ - Spoke (CELL-001 Subscription)"
     SP1VNET["Spoke VNet (CELL-001)"]
     AGW1["Application Gateway (WAF)"]
     CAE1["Container Apps Env\n(VNet-injected)"]
@@ -202,7 +202,7 @@ graph TB
     PEP_KV1["Private Endpoint: Key Vault"]
   end
 
-  subgraph "Workload LZ — Spoke (CELL-002 Subscription)"
+  subgraph "Workload LZ - Spoke (CELL-002 Subscription)"
     SP2VNET["Spoke VNet (CELL-002)"]
     AGW2["Application Gateway (WAF)"]
     CAE2["Container Apps Env\n(VNet-injected)"]
@@ -268,7 +268,7 @@ Tip — other helpful visuals to consider in this guide:
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TB
+flowchart TB
   PT[Platform Team\n(PIM-enabled)] --> PSubs[Platform Subs\n(Management/Connectivity/Shared-Services)]
   WT[Workload Team\n(PIM-enabled)] --> WSubs[CELL Subs\n(Per-CELL subscriptions)]
   WSubs --> Apps[Apps / Functions / APIM / CAE]
@@ -299,12 +299,12 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-  subgraph Workloads (CELLs)
+  subgraph "Workloads (CELLs)"
     RES[Apps / Functions / APIM / CAE / Data]
     DIAG[Diagnostic Settings]
     RES --> DIAG
   end
-  subgraph Platform Management
+  subgraph "Platform Management"
     LAW[Log Analytics Workspace]
     SENT[Microsoft Sentinel]
     DEF[Defender for Cloud]
