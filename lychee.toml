@@ -1,0 +1,35 @@
+# lychee configuration for docs link checking
+# See https://github.com/lycheeverse/lychee for options
+
+# Inputs are passed via action arguments (/**/*.md)
+
+# Cache to speed up repeated runs
+cache = true
+max_cache_age = "2d"
+
+# Treat HTTP 429 as a warning by retrying and not failing the job
+retry_wait_time = 2
+max_retries = 2
+
+# Timeouts
+timeout = 20
+
+# Exclusions: private/internal or known transient domains
+exclude = [
+  "mailto:",
+  "^#",                     # page anchors handled by renderer
+  "https://aka.ms/.*",      # shortlinks often redirect
+  "https://help.github.com/.*",
+]
+
+# Accept some status codes as valid (e.g., 429 throttling)
+accept = [200, 201, 202, 203, 204, 206, 300, 301, 302, 303, 307, 308]
+
+# GitHub API token for rate limits (provided by action)
+[github]
+# use token from env
+
+# Output report files
+[output]
+format = "detailed"
+save = "lychee-out.txt"

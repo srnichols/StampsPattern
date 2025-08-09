@@ -1,0 +1,28 @@
+{
+  // Base rules
+  "default": true,
+
+  // Line length: allow long URLs/tables
+  "MD013": false,
+
+  // Multiple headings with same content are OK in long guides
+  "MD024": false,
+
+  // Allow inline HTML (for mermaid, badges, etc.)
+  "MD033": false,
+
+  // Allow duplicate headers across files
+  "MD025": {
+    "level": 1,
+    "front_matter_title": "^$"
+  },
+
+  // Require blank line before/after lists for readability
+  "MD032": true,
+
+  // Emphasis used sparingly; allow current style
+  "MD036": false,
+
+  // Links: allow reference-style or inline
+  "MD011": true
+}
