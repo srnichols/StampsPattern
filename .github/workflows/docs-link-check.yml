@@ -1,15 +1,7 @@
-name: Docs link check
+name: Docs link check (Manual Only)
 
 on:
-  pull_request:
-    paths:
-      - '**/*.md'
-      - 'scripts/verify-doc-links.ps1'
-  push:
-    branches: [ master ]
-    paths:
-      - '**/*.md'
-      - 'scripts/verify-doc-links.ps1'
+  workflow_dispatch: {}
 
 jobs:
   link-check:

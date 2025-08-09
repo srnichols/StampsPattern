@@ -56,6 +56,8 @@ Parameterization means making every deployment flexible and reusable—no more h
 
 The Azure Stamps Pattern templates have been enhanced with comprehensive parameterization to make them reusable across different organizations, geographies, and environments. All previously hardcoded values are now configurable parameters, enabling **enterprise-grade multi-organization support** with custom domains, branding, and geographic deployment strategies.
 
+Read this section as the “contract” between your parameter files, Bicep templates, and scripts: it explains the inputs you control, the outputs you get, and how they flow through deployment.
+
 ### 📊 **Parameterization Architecture Overview**
 
 ```mermaid
@@ -89,6 +91,8 @@ graph TD
 
 ```
 
+_Figure: How organization, geography, and tagging parameters propagate into Bicep, scripts, and parameter files, producing global, regional, and CELL resources._
+
 ### 🔄 **Before vs After: Template Flexibility**
 
 ```mermaid
@@ -115,6 +119,8 @@ graph LR
 
 ```
 
+_Figure: Migration path from hardcoded values to configurable parameters; use as a checklist when refactoring older templates._
+
 ## 🔧 New Parameters Added
 
 ### **Organization Parameters**
@@ -127,16 +133,22 @@ graph LR
 | `workloadName` | The workload name for resource tagging | `stamps-pattern` | Resource tagging |
 | `ownerEmail` | The owner email for resource tagging | `platform-team@contoso.com` | Resource tagging |
 
+_Table: Organization-scoped parameters for identity, cost allocation, and ownership._
+
 ### **Geography Parameters**
 | Parameter | Description | Default Value | Usage |
 |-----------|-------------|---------------|-------|
 | `geoName` | The geography name (e.g., northamerica, europe, asia) | `northamerica` | Resource naming, tagging |
 | `baseDnsZoneName` | The base DNS zone name (without domain) | `stamps` | DNS zone construction |
 
+_Table: Geography-scoped parameters that drive DNS and region naming conventions._
+
 ### **Computed Parameters**
 | Parameter | Description | Computed From |
 |-----------|-------------|---------------|
 | `dnsZoneName` | The complete DNS zone name | `${baseDnsZoneName}.${organizationDomain}` |
+
+_Note: Computed parameters reduce duplication and prevent drift across files._
 
 ## 🏗️ Template Changes Made
 
@@ -153,6 +165,8 @@ param geoName string = 'northamerica'
 param baseDnsZoneName string = 'stamps'
 ```
 
+_Snippet: New inputs added to templates; defaults are safe for local testing but should be overridden per environment._
+
 ### **2. Dynamic DNS Zone Construction**
 ```bicep
 // Before (hardcoded):
@@ -162,6 +176,8 @@ param dnsZoneName string = 'stamps.contoso.com'
 param dnsZoneName string = '${baseDnsZoneName}.${organizationDomain}'
 ```
 
+_Change: Replace hardcoded DNS with computed patterns to enable multi-organization reuse._
+
 ### **3. Dynamic Base Domains**
 ```bicep
 // Before (hardcoded):
@@ -170,6 +186,8 @@ baseDomain: 'eastus.stamps.contoso.com'
 // After (computed):
 baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
 ```
+
+_Change: Ensure regional base domains derive from parameters rather than fixed strings._
 
 ### **4. Parameterized Tags**
 ```bicep
@@ -188,6 +206,8 @@ var baseTags = {
 }
 ```
 
+_Change: Uniform tagging enables governance, ownership tracking, and cost allocation._
+
 ### **5. Parameterized Geography**
 ```bicep
 // Before (hardcoded):
@@ -196,6 +216,8 @@ geoName: 'northamerica'
 // After (parameterized):
 geoName: geoName
 ```
+
+_Change: Geography becomes an input so deployments adapt to your landing zone topology._
 
 ## 🚀 PowerShell Script Updates
 
@@ -211,6 +233,8 @@ geoName: geoName
 [string]$BaseDnsZoneName = "stamps"
 ```
 
+_Snippet: Script inputs align with template parameters to keep a single source of truth._
+
 ### **Updated Domain Construction**
 ```powershell
 # Before (hardcoded):
@@ -219,6 +243,8 @@ baseDomain = "$Location.stamps.contoso.com"
 # After (parameterized):
 baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
 ```
+
+_Change: Domain construction switches to parameterized composition for consistent naming across regions._
 
 ## 📝 Usage Examples
 
