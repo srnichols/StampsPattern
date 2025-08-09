@@ -181,36 +181,33 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
-  %% Top: Edge + Hub (single group)
-  subgraph "Edge + Hub"
+  subgraph "Networking (Edge, Hub, Workloads)"
     direction TB
+    %% Edge
     FD["Front Door"]
     APIM["APIM (Global)"]
+    
+    %% Hub
     HUBVNET["Hub VNet"]
     PDNS["Private DNS"]
     AFW["Azure Firewall"]
     DDOS["DDoS Plan"]
+
+    %% Workloads (collapsed per cell)
+    CELL1["CELL-001<br/>VNet • App GW • CAE<br/>PE: SQL/KV/Stor"]
+    CELL2["CELL-002<br/>VNet • App GW • CAE<br/>PE: SQL/KV/Stor"]
+
+    %% Edges inside the single group
+    FD --> APIM
+    APIM --> CELL1
+    APIM --> CELL2
+    HUBVNET ---|Peering| CELL1
+    HUBVNET ---|Peering| CELL2
+    CELL1 -. "name resolution" .-> PDNS
+    CELL2 -. "name resolution" .-> PDNS
+    CELL1 -. "default route/inspection" .-> AFW
+    CELL2 -. "default route/inspection" .-> AFW
   end
-
-  %% Bottom: Workloads (each cell as a single node to avoid truncation)
-  subgraph "Workloads"
-    direction TB
-    CELL1["CELL-001<br/>VNet, App GW, CAE<br/>PE: SQL/Stor/KV"]
-    CELL2["CELL-002<br/>VNet, App GW, CAE<br/>PE: SQL/Stor/KV"]
-  end
-
-  %% Flows from Edge to Workloads
-  FD --> APIM
-  APIM --> CELL1
-  APIM --> CELL2
-
-  %% Hub-to-spoke relationships
-  HUBVNET ---|Peering| CELL1
-  HUBVNET ---|Peering| CELL2
-  CELL1 -. "name resolution" .-> PDNS
-  CELL2 -. "name resolution" .-> PDNS
-  CELL1 -. "default route/inspection" .-> AFW
-  CELL2 -. "default route/inspection" .-> AFW
 ```
 
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
