@@ -38,30 +38,36 @@ flowchart TB
         FD[🌍 Azure Front Door<br/>Global Load Balancing & WAF]
         GF[⚡ Global Functions<br/>Tenant Management & Routing]
         TM[🌐 Traffic Manager<br/>DNS-based Routing]
+        GL_ANCHOR[ ]
     end
     
     subgraph "🗺️ GEO: North America"
+        NA_ANCHOR[ ]
         subgraph "🏢 Region: East US"
             subgraph "🏗️ APIM Layer"
                 APIM1[🔌 API Management<br/>Premium Multi-Region<br/>• Tenant Isolation<br/>• Rate Limiting<br/>• Developer Portal]
             end
-            subgraph "🛡️ AZ 1 - High Availability"
-                AG1[🚪 Application Gateway<br/>Zone-Redundant WAF]
-                subgraph "📦 CELL-001 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    CA1[🐳 Container Apps<br/>50 SMB Tenants]
-                    SQL1[🗄️ Azure SQL<br/>Multi-tenant DB]
-                    REDIS1[⚡ Redis Cache<br/>Shared Performance]
+            %% Group AZs left-to-right: AZ 1 then AZ 2
+            subgraph "Availability Zones"
+                direction LR
+                subgraph "🛡️ AZ 1 - High Availability"
+                    AG1[🚪 Application Gateway<br/>Zone-Redundant WAF]
+                    subgraph "📦 CELL-001 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        CA1[🐳 Container Apps<br/>50 SMB Tenants]
+                        SQL1[🗄️ Azure SQL<br/>Multi-tenant DB]
+                        REDIS1[⚡ Redis Cache<br/>Shared Performance]
+                    end
+                    subgraph "🏢 CELL-002 — Dedicated<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        CA2[🐳 Container Apps<br/>1 Enterprise Tenant]
+                        SQL2[🗄️ Azure SQL<br/>Dedicated DB]
+                        REDIS2[⚡ Redis Cache<br/>Dedicated Performance]
+                    end
                 end
-                subgraph "🏢 CELL-002 — Dedicated<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    CA2[🐳 Container Apps<br/>1 Enterprise Tenant]
-                    SQL2[🗄️ Azure SQL<br/>Dedicated DB]
-                    REDIS2[⚡ Redis Cache<br/>Dedicated Performance]
-                end
-            end
-            subgraph "🛡️ AZ 2 - High Availability"
-                subgraph "📦 CELL-003 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    CA3[🐳 Container Apps<br/>30 Mid-Market Tenants]
-                    SQL3[🗄️ Azure SQL<br/>Multi-tenant DB]
+                subgraph "🛡️ AZ 2 - High Availability"
+                    subgraph "📦 CELL-003 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        CA3[🐳 Container Apps<br/>30 Mid-Market Tenants]
+                        SQL3[🗄️ Azure SQL<br/>Multi-tenant DB]
+                    end
                 end
             end
             subgraph "🌍 Regional Services"
@@ -82,6 +88,9 @@ flowchart TB
     end
     
     %% Traffic Flow
+    %% Centering nudge: align Global above North America
+    GL_ANCHOR --> NA_ANCHOR
+
     FD --> APIM1
     FD --> APIM2
     
