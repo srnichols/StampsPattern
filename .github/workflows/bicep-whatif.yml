@@ -1,0 +1,52 @@
+name: Bicep What-If (Smoke)
+
+on:
+  workflow_dispatch:
+    inputs:
+      resourceGroup:
+        description: 'Resource group to run what-if against'
+        required: true
+        default: 'rg-stamps-smoke'
+      subscriptionId:
+        description: 'Azure subscription ID'
+        required: true
+      location:
+        description: 'Resource group location (created if not exists)'
+        required: true
+        default: 'eastus'
+
+env:
+  BICEP_FILE_PATH: './AzureArchitecture/main.bicep'
+  PARAMETERS_FILE_PATH: './AzureArchitecture/examples/main.sample.smoke.json'
+
+jobs:
+  whatif:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ github.event.inputs.subscriptionId }}
+
+      - name: Ensure Resource Group
+        run: |
+          az group create \
+            --name '${{ github.event.inputs.resourceGroup }}' \
+            --location '${{ github.event.inputs.location }}'
+
+      - name: What-If
+        run: |
+          az deployment group what-if \
+            --subscription '${{ github.event.inputs.subscriptionId }}' \
+            --resource-group '${{ github.event.inputs.resourceGroup }}' \
+            --template-file '${{ env.BICEP_FILE_PATH }}' \
+            --parameters '@${{ env.PARAMETERS_FILE_PATH }}' \
+            --result-format 'ResourceIdOnly' \
+            --no-pretty-print

@@ -32,6 +32,10 @@ param baseDnsZoneName string = 'stamps'
 @allowed(['dev', 'test', 'staging', 'prod'])
 param environment string = 'dev'
 
+@description('High-level environment profile to drive safe defaults (smoke/dev/prod). Smoke keeps footprint minimal and disables optional features; dev/prod enable full features.')
+@allowed(['smoke','dev','prod'])
+param environmentProfile string = 'dev'
+
 @description('Minimum number of availability zones required')
 @minValue(1)
 @maxValue(3)
@@ -152,6 +156,9 @@ param cells array = [
 @description('Use HTTP for Application Gateway listeners in lab/smoke (no Key Vault cert required)')
 param useHttpForSmoke bool = true
 
+// Derived flag: treat either explicit useHttpForSmoke or environmentProfile==smoke as smoke mode
+var isSmoke = useHttpForSmoke || environmentProfile == 'smoke'
+
 // ============ OPTIONAL DATA HA/DR KNOBS (safe defaults) ============
 // Note: These knobs apply to CELL-layer resources only. Global control plane replication
 // is configured in globalLayer and is not tenant/team configurable.
@@ -211,9 +218,9 @@ module globalLayer './globalLayer.bicep' = {
     globalControlCosmosDbName: globalControlCosmosDbName
     primaryLocation: primaryLocation
   additionalLocations: additionalLocations
-  cosmosZoneRedundant: !useHttpForSmoke // disable zones in lab if constrained
-  enableGlobalFunctions: !useHttpForSmoke // skip Functions in smoke to avoid quota
-  enableGlobalCosmos: !useHttpForSmoke // skip global Cosmos in smoke to avoid regional capacity
+  cosmosZoneRedundant: !isSmoke // disable zones in lab if constrained
+  enableGlobalFunctions: !isSmoke // skip Functions in smoke to avoid quota
+  enableGlobalCosmos: !isSmoke // skip global Cosmos in smoke to avoid regional capacity
   }
 }
 
@@ -245,7 +252,7 @@ module regionalLayers './regionalLayer.bicep' = [
       sslCertSecretId: 'https://${region.keyVaultName}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
       cellCount: length(region.cells)
   cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
-  enableHttps: !useHttpForSmoke
+  enableHttps: !isSmoke
       tags: union(baseTags, {
         geo: region.geoName
         region: region.regionName
@@ -328,7 +335,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
   // Optional HA/DR knobs
   cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
   cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
-  cosmosZoneRedundant: !useHttpForSmoke
+  cosmosZoneRedundant: !isSmoke
   storageSkuName: (cell.?storageSkuName ?? storageSkuName)
   createStorageAccount: false
   enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
