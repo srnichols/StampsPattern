@@ -44,6 +44,61 @@ Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predict
 
 ---
 
+## 🧪 Environment profiles and diagnostics (Ops quick-start)
+
+Profiles let you run lighter or fuller deployments depending on the operational need. Diagnostics mode controls logging vs. metrics to keep smoke tests fast and reliable.
+
+- Profiles: smoke, dev, prod
+  - smoke: minimal, fast-to-provision, metrics-only diagnostics, HTTPS off where allowed (HTTP for lab/app gateway paths), optional services disabled (e.g., ACR)
+  - dev: fuller diagnostics (logs+metrics), HTTPS enabled, suitable for non-prod testing
+  - prod: production-hardened footprint; HTTPS everywhere, comprehensive diagnostics
+- Diagnostics mode (wired from main to stamp layer):
+  - metricsOnly: emit platform metrics only (robust across SKUs/regions; best for smoke)
+  - standard: enable logs where supported + metrics (best for dev/prod)
+
+### Run What-If by profile
+
+Use the helper to validate changes safely. It creates the resource group if missing.
+
+```powershell
+# Default smoke profile in eastus
+./scripts/what-if.ps1
+
+# Explicit profile and location
+./scripts/what-if.ps1 -Profile dev -ResourceGroup rg-stamps-dev -Location eastus2
+
+# Target a specific subscription
+./scripts/what-if.ps1 -Profile prod -SubscriptionId <00000000-0000-0000-0000-000000000000>
+```
+
+### Deploy by profile
+
+This uses profile-specific example parameters and ensures the resource group exists.
+
+```powershell
+# Smoke (defaults to rg-stamps-smoke, eastus)
+./scripts/deploy.ps1
+
+# Dev with explicit RG/location
+./scripts/deploy.ps1 -Profile dev -ResourceGroup rg-stamps-dev -Location eastus2
+
+# Prod targeting a subscription with verbose output
+./scripts/deploy.ps1 -Profile prod -SubscriptionId <00000000-0000-0000-0000-000000000000> -VerboseOutput
+```
+
+Notes:
+- Parameter files used per profile:
+  - smoke → `AzureArchitecture/examples/main.sample.smoke.json`
+  - dev → `AzureArchitecture/examples/main.sample.silver.json`
+  - prod → `AzureArchitecture/examples/main.sample.platinum.json`
+- Default resource group per profile (overridable):
+  - smoke → `rg-stamps-smoke`
+  - dev → `rg-stamps-dev`
+  - prod → `rg-stamps-prod`
+- Expect smoke deployments to be minimal and fast; dev/prod enable richer diagnostics and HTTPS.
+
+---
+
 ## 📚 For Newcomers to Azure Stamps Pattern Operations
 
 **What is Operations in the Azure Stamps Pattern?**
