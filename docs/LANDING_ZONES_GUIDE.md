@@ -155,6 +155,86 @@ module diagnostics './policy/assign-diagnostics.bicep' = {
 - Container Apps: use VNet-injected CAE in each CELL subscription; ensure hub-spoke peering/vWAN route propagation and Private DNS resolution.
 - Private Endpoints for SQL/Storage/etc. in CELL spokes; integrate with central Private DNS.
 
+### 🖼️ Visual: Networking (Hub-Spoke, Peering, Private Endpoints)
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+graph TB
+  subgraph "Platform / Connectivity (Hub Subscription)"
+    HUBVNET["Hub VNet"]
+    AFW["Azure Firewall"]
+    PDNS["Private DNS Zones"]
+    DDOS["DDoS Protection Plan"]
+  end
+
+  subgraph "Shared Services (Edge)"
+    FD["Azure Front Door"]
+    APIM["API Management (Global)"]
+  end
+
+  subgraph "Workload LZ — Spoke (CELL-001 Subscription)"
+    SP1VNET["Spoke VNet (CELL-001)"]
+    AGW1["Application Gateway (WAF)"]
+    CAE1["Container Apps Env\n(VNet-injected)"]
+    PEP_SQL1["Private Endpoint: SQL"]
+    PEP_ST1["Private Endpoint: Storage"]
+    PEP_KV1["Private Endpoint: Key Vault"]
+  end
+
+  subgraph "Workload LZ — Spoke (CELL-002 Subscription)"
+    SP2VNET["Spoke VNet (CELL-002)"]
+    AGW2["Application Gateway (WAF)"]
+    CAE2["Container Apps Env\n(VNet-injected)"]
+    PEP_SQL2["Private Endpoint: SQL"]
+    PEP_ST2["Private Endpoint: Storage"]
+    PEP_KV2["Private Endpoint: Key Vault"]
+  end
+
+  %% Edge to regional ingress
+  FD --> APIM
+  APIM --> AGW1
+  APIM --> AGW2
+  AGW1 --> CAE1
+  AGW2 --> CAE2
+
+  %% Hub-spoke peering
+  HUBVNET ---|Peering| SP1VNET
+  HUBVNET ---|Peering| SP2VNET
+
+  %% Private DNS resolution across spokes
+  SP1VNET -. name resolution .-> PDNS
+  SP2VNET -. name resolution .-> PDNS
+
+  %% Optional: traffic inspection via Azure Firewall
+  SP1VNET -. default route/inspection .-> AFW
+  SP2VNET -. default route/inspection .-> AFW
+
+  %% Private endpoints to data services within spokes
+  CAE1 -.-> PEP_SQL1
+  CAE1 -.-> PEP_ST1
+  CAE1 -.-> PEP_KV1
+  CAE2 -.-> PEP_SQL2
+  CAE2 -.-> PEP_ST2
+  CAE2 -.-> PEP_KV2
+```
+
+Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
+
+Learn more:
+- Hub-spoke topology: <a href="https://learn.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/hub-spoke" target="_blank" rel="noopener" title="Opens in a new tab">Reference architecture</a>&nbsp;<sup>↗</sup>
+- Virtual WAN overview: <a href="https://learn.microsoft.com/azure/virtual-wan/virtual-wan-about" target="_blank" rel="noopener" title="Opens in a new tab">Azure Virtual WAN</a>&nbsp;<sup>↗</sup>
+- VNet peering: <a href="https://learn.microsoft.com/azure/virtual-network/virtual-network-peering-overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Private Link & Private Endpoints: <a href="https://learn.microsoft.com/azure/private-link/private-link-overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- Private DNS zones: <a href="https://learn.microsoft.com/azure/dns/private-dns-privatednszone" target="_blank" rel="noopener" title="Opens in a new tab">Concepts</a>&nbsp;<sup>↗</sup>
+- Container Apps networking: <a href="https://learn.microsoft.com/azure/container-apps/networking" target="_blank" rel="noopener" title="Opens in a new tab">Networking options</a>&nbsp;<sup>↗</sup>
+- Application Gateway: <a href="https://learn.microsoft.com/azure/application-gateway/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
+- APIM networking: <a href="https://learn.microsoft.com/azure/api-management/virtual-network-concepts" target="_blank" rel="noopener" title="Opens in a new tab">VNet concepts</a>&nbsp;<sup>↗</sup>
+
+Tip — other helpful visuals to consider in this guide:
+- Governance & Policy: a small “policy-as-code flow” diagram showing MG-scope assignment → subscription/resource inheritance → diagnostic settings to Log Analytics.
+- Identity & Access: a “ownership and RBAC” diagram mapping Platform vs Workload teams, with PIM and managed identities.
+- Monitoring & Security: a “signals flow” diagram from resources and Private Endpoints to LAW, Defender for Cloud, and Sentinel.
+
 ---
 
 ## 🔐 Identity & Access
