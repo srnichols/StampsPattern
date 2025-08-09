@@ -143,6 +143,7 @@ graph TB
 ![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
 ![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
 ![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
+![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)
 
 ---
 
