@@ -74,6 +74,8 @@ Our CI runs the same check on pull requests and pushes. Fix any reported links (
 
 ## 📖 Key Concepts Before You Start
 
+Use this section to align on terminology and deployment flow before you run scripts. It summarizes tenancy choices, the GEO/Region/CELL hierarchy, and shows how a deployment progresses from prerequisites to validation.
+
 ### **Tenancy Models Explained**
 | Model | Analogy | Best For | Cost per Tenant |
 |-------|---------|----------|-----------------|
@@ -116,6 +118,8 @@ graph TD
 
 ```
 
+_Figure: End-to-end deployment decision tree from prerequisites through tenancy choice to validation._
+
 ### **What Gets Deployed**
 - **Global Layer**: DNS routing, CDN, global tenant directory
 - **Regional Layer**: Security gateways, monitoring, regional services  
@@ -142,6 +146,8 @@ graph TD
 The Azure Stamps Pattern offers flexible deployment options designed to meet different organizational needs, from rapid prototyping to enterprise-scale production deployments. Each option provides different levels of automation, customization, and operational complexity. Choose your deployment path based on your tenancy requirements, operational maturity, and business goals.
 
 **Enterprise Multi-Tenant Architecture with CAF/WAF Compliance**
+
+The following sections map these concepts to concrete commands, parameters, and CI/CD examples so you can pick the path that fits your team today and scale it later without rework.
 
 
 ---
@@ -201,6 +207,8 @@ For deployments using custom domains, organization names, or multi-geography req
 
 **Total estimated starting cost: $88-348/month** (varies by tenancy model and scale)
 
+_Table: Starting SKUs and rough monthly costs to budget initial environments; adjust by tenancy model and availability zone count._
+
 
 ---
 
@@ -217,6 +225,8 @@ For deployments using custom domains, organization names, or multi-geography req
 ## 🎯 Deployment Overview
 
 This guide provides comprehensive instructions for deploying the Azure Stamps Pattern infrastructure with **intelligent tenant assignment** and **automated capacity management**. The implementation supports multiple tenancy models within the same architecture.
+
+At a glance: You’ll run a parameterized deployment that creates global, regional, and CELL resources; then you’ll validate health, tenancy routing, and cost signals.
 
 ## 🚀 Enhanced Deployment Options
 
@@ -240,6 +250,8 @@ graph TD
     H --> K[Dynamic Assignment<br/>Cost + Security Optimized]
 ```
 
+_Figure: Choosing shared, dedicated, or hybrid determines script flags and expected cost/SLA._
+
 #### **Shared Tenancy Deployment**
 ```powershell
 # Cost-optimized for SMBs (multiple tenants per CELL) with basic HA
@@ -261,6 +273,8 @@ graph TD
 # SLA: 99.95% availability
 # Best for: Development, testing, cost-sensitive workloads with basic HA
 ```
+
+_Caption: Use shared CELLs to minimize per-tenant cost; enforce isolation at the application and data schema level._
 
 #### **Dedicated Tenancy Deployment**
 ```powershell
@@ -284,6 +298,8 @@ graph TD
 # Best for: Compliance, security-sensitive, high-performance workloads
 ```
 
+_Caption: Dedicated CELLs maximize isolation and compliance at higher cost; ideal for regulated or high-throughput tenants._
+
 #### **Mixed Tenancy Deployment**
 ```powershell
 # Intelligent assignment based on tenant requirements with maximum resilience
@@ -306,6 +322,8 @@ graph TD
 # SLA: 99.99% availability for all CELLs
 # Best for: Multi-tier platforms with diverse tenant needs and high availability requirements
 ```
+
+_Caption: Hybrid deployments let you start tenants in shared CELLs and promote to dedicated when requirements change._
 
 ### 🏢 **Organization Parameters**
 

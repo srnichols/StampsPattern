@@ -112,6 +112,8 @@ graph TB
     AG3 --> C6
 ```
 
+_Figure: Global-to-CELL hierarchy with zone-aware deployment. Azure Front Door and Traffic Manager route to regional Application Gateways, which direct traffic to shared or dedicated CELLs per tenant policy and capacity._
+
 ### 🎯 **Key Design Principles (Explained)**
 
 | Principle | What It Means | Real-World Analogy | Implementation |
@@ -195,6 +197,8 @@ GEO: Europe
        └─ CELL: banking-enterprise-eu-dr (1 dedicated tenant)
 ```
 
+_Example: Mixed deployment across GEOs showing shared and dedicated CELLs for different tenant profiles; use as a reference when planning capacity and isolation._
+
 ### 🎯 **Tenant Decision Matrix**
 
 | Tenant Profile | Recommended Model | Primary Benefits | Use Cases |
@@ -204,6 +208,8 @@ GEO: Europe
 | **Enterprise** | Dedicated CELL | Performance guarantees, customization | High volume, custom requirements |
 | **Regulated Industries** | Dedicated CELL | Complete data isolation, audit trails | Healthcare, finance, government |
 | **High-Growth** | Start Shared → Migrate to Dedicated | Cost optimization with growth path | Scaling businesses |
+
+_Table: Use this decision matrix to select shared vs dedicated CELLs based on tenant profile, compliance needs, and growth expectations._
 
 ## 🔄 **Availability Zone Architecture**
 
@@ -251,6 +257,8 @@ graph TD
     TM[Traffic Manager<br/>Global DNS] --> AG
 ```
 
+_Figure: Regional architecture distributing traffic across zone-pinned instances. Application Gateway is zone-redundant and fans in to per-zone resources._
+
 ### 📊 **Zone-Aware Service Configuration**
 
 #### **Zone-Redundant Services (Recommended)**
@@ -294,6 +302,8 @@ graph TD
   ]
 }
 ```
+
+_Listing: Example CELL configuration demonstrating how to express tenancy model and availability zones per CELL._
 
 ### 🚨 **Zone Failure Scenarios**
 
@@ -356,6 +366,8 @@ graph TD
     end
 ```
 
+_Figure: Layered view (GEO → Region → Zone → CELL) highlighting where isolation and redundancy are applied._
+
 **📐 Architecture Dimensions:**
 - **Depth**: 4 layers (GEO → Region → Zone → CELL)
 - **Width**: Unlimited expansion at each layer
@@ -392,6 +404,8 @@ GEO: Europe
 ## 🏛 Architecture Layers
 
 The Azure Stamps Pattern is built using a carefully orchestrated five-layer architecture that provides clear separation of concerns while maintaining scalability and operational excellence. Each layer serves a specific purpose in the overall system, from global traffic distribution down to individual tenant workloads. This layered approach enables independent scaling, clear operational boundaries, and simplified troubleshooting.
+
+Use this section as a map: start at the Global Layer for entry points and control plane, then follow down to the CELL Layer for tenant workloads. Cross-cutting layers (Geodes, Monitoring) provide shared capabilities across all tiers.
 
 ### 1️⃣ **Global Layer** (`globalLayer.bicep`)
 **Purpose**: Worldwide traffic distribution and control plane
@@ -460,6 +474,8 @@ The Azure Stamps Pattern is built using a carefully orchestrated five-layer arch
 
 Understanding how requests flow through the Azure Stamps Pattern is crucial for troubleshooting, performance optimization, and security analysis. This section explains the journey from user request to response with visual diagrams.
 
+At a glance: Global ingress (Front Door/Traffic Manager) enforces security and georouting, APIM applies policy and resolves tenant → the request is routed to the correct CELL (shared or dedicated) where business logic executes.
+
 ### 🎯 **Traffic Flow Explained (For Beginners)**
 
 Think of the traffic flow like ordering food delivery:
@@ -506,6 +522,8 @@ graph TD
     FD --> User
 ```
 
+_Figure: End-to-end request path with tenant resolution. Note how APIM consults the global directory to select a CELL before regional routing occurs._
+
 ### 🔍 **Detailed: Tenant Resolution Process**
 
 **Step 1: Request Analysis**
@@ -523,6 +541,8 @@ graph LR
     TID --> LOOKUP[Query Global Directory]
     LOOKUP --> ROUTE[Route to Correct CELL]
 ```
+
+_Figure: Tenant identification sequence from JWT to routing decision._
 
 **Step 3: CELL Assignment Logic**
 | Tenant Type | Criteria | Target CELL | Isolation Level |
@@ -545,7 +565,11 @@ graph LR
 
 **Total End-to-End**: **43-200ms** (Target: < 100ms for 95th percentile)
 
+_Table: Typical latency by layer; use for SLO planning and performance baselining._
+
 ## 🏗️ Deployment Architecture
+
+This section connects the conceptual layers to the actual deployment templates. Start with the orchestrator, understand the dependency chain, then apply the parameterization strategy.
 
 ### 📂 Template Orchestration
 
@@ -564,6 +588,8 @@ graph LR
        ↓
    CELL Resources (Apps, Databases, Storage)
    ```
+
+_Figure: Orchestration and dependency flow from global to regional to CELL resources._
 
 ### 🎯 Parameterization Strategy
 
