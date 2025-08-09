@@ -149,6 +149,28 @@ param cells array = [
   }
 ]
 
+@description('Use HTTP for Application Gateway listeners in lab/smoke (no Key Vault cert required)')
+param useHttpForSmoke bool = true
+
+// ============ OPTIONAL DATA HA/DR KNOBS (safe defaults) ============
+// Note: These knobs apply to CELL-layer resources only. Global control plane replication
+// is configured in globalLayer and is not tenant/team configurable.
+@description('Additional Cosmos DB locations to add to each CELL (optional)')
+param cosmosAdditionalLocations array = []
+
+@description('Enable multi-write for Cosmos DB across locations (A/A)')
+param cosmosMultiWrite bool = false
+
+@allowed([ 'Premium_ZRS', 'Standard_GZRS', 'Standard_RAGZRS' ])
+@description('Default storage SKU for CELL storage accounts')
+param storageSkuName string = 'Premium_ZRS'
+
+@description('Enable Blob Object Replication (ORS) from each CELL to a destination account')
+param enableStorageObjectReplication bool = false
+
+@description('Enable SQL Auto-failover Group for each CELL')
+param enableSqlFailoverGroup bool = false
+
 // ============ VARIABLES ============
 var baseTags = {
   environment: environment
@@ -180,7 +202,8 @@ module globalLayer './globalLayer.bicep' = {
     dnsZoneName: dnsZoneName
     trafficManagerName: trafficManagerName
     frontDoorName: frontDoorName
-    globalLogAnalyticsWorkspaceId: '' // Will be updated after workspace creation
+  // Use first regional monitoring workspace as the global diagnostics sink
+  globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
     functionAppNamePrefix: functionAppNamePrefix
     functionStorageNamePrefix: functionStorageNamePrefix
     tags: baseTags
@@ -188,6 +211,8 @@ module globalLayer './globalLayer.bicep' = {
     globalControlCosmosDbName: globalControlCosmosDbName
     primaryLocation: primaryLocation
     additionalLocations: additionalLocations
+  cosmosZoneRedundant: !useHttpForSmoke // disable zones in lab if constrained
+  enableGlobalFunctions: !useHttpForSmoke // skip Functions in smoke to avoid quota
   }
 }
 
@@ -214,11 +239,12 @@ module regionalLayers './regionalLayer.bicep' = [
     params: {
       location: region.regionName
       appGatewayName: 'agw-${region.geoName}-${region.regionName}'
-      subnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Network/virtualNetworks/vnet-${region.geoName}-${region.regionName}/subnets/subnet-agw'
-      publicIpId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Network/publicIPAddresses/pip-agw-${region.geoName}-${region.regionName}'
+      subnetId: regionalNetworks[index].outputs.subnetId
+      publicIpId: regionalNetworks[index].outputs.publicIpId
       sslCertSecretId: 'https://${region.keyVaultName}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
       cellCount: length(region.cells)
-      cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
+  cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
+  enableHttps: !useHttpForSmoke
       tags: union(baseTags, {
         geo: region.geoName
         region: region.regionName
@@ -228,7 +254,27 @@ module regionalLayers './regionalLayer.bicep' = [
     }
     dependsOn: [
       keyVaults
+      regionalNetworks
     ]
+  }
+]
+
+// ============ REGIONAL NETWORK PREREQS ============
+module regionalNetworks './regionalNetwork.bicep' = [
+  for (region, index) in regions: {
+    name: 'regionalNetwork-${region.geoName}-${region.regionName}'
+    params: {
+      location: region.regionName
+      geoName: region.geoName
+      regionName: region.regionName
+      vnetName: 'vnet-${region.geoName}-${region.regionName}'
+      subnetName: 'subnet-agw'
+      publicIpName: 'pip-agw-${region.geoName}-${region.regionName}'
+      tags: union(baseTags, {
+        geo: region.geoName
+        region: region.regionName
+      })
+    }
   }
 ]
 
@@ -274,7 +320,16 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
       containerAppName: cell.cellName
       baseDomain: cell.baseDomain
-      globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+  globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+  // Optional HA/DR knobs
+  cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
+  cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
+  cosmosZoneRedundant: !useHttpForSmoke
+  storageSkuName: (cell.?storageSkuName ?? storageSkuName)
+  enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
+  storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
+  enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
+  sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
     }
     dependsOn: [
       regionalLayers

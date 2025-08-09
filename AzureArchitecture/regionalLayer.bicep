@@ -36,6 +36,16 @@ param healthProbePath string = '/health'
 @description('The name of the Automation Account for this region')
 param automationAccountName string = '${appGatewayName}-automation'
 
+@description('Enable HTTPS listener for Application Gateway (set false for lab/smoke to use HTTP)')
+param enableHttps bool = true
+
+// Derived settings for HTTP/HTTPS toggling
+var frontendPortName = enableHttps ? 'httpsPort' : 'httpPort'
+var backendPort = enableHttps ? 443 : 80
+var backendProtocol = enableHttps ? 'Https' : 'Http'
+var probeProtocol = enableHttps ? 'Https' : 'Http'
+var listenerName = enableHttps ? 'httpsListener' : 'httpListener'
+
 // Generate backend pools, http settings, and probes for each CELL
 var backendPools = [
   for i in range(0, cellCount): {
@@ -54,8 +64,8 @@ var backendHttpSettings = [
   for i in range(0, cellCount): {
     name: 'cell${i + 1}-http-settings'
     properties: {
-      port: 443
-      protocol: 'Https'
+      port: backendPort
+      protocol: backendProtocol
       probe: {
         id: resourceId('Microsoft.Network/applicationGateways/probes', appGatewayName, 'cell${i + 1}-probe')
       }
@@ -69,7 +79,7 @@ var probes = [
   for i in range(0, cellCount): {
     name: 'cell${i + 1}-probe'
     properties: {
-      protocol: 'Https'
+  protocol: probeProtocol
       host: cellBackendFqdns[i]
       path: healthProbePath
       interval: 30
@@ -83,16 +93,17 @@ var probes = [
 ]
 
 // Application Gateway resource
-resource appGateway 'Microsoft.Network/applicationGateways@2023-05-01' = {
+// Note: Using a stable API version to align with current Bicep type definitions.
+resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
   name: appGatewayName
   location: location
-  sku: {
-    name: 'WAF_v2'
-    tier: 'WAF_v2'
-    capacity: 2
-  }
   zones: ['1', '2'] // Deploy Application Gateway across at least two zones
   properties: {
+    sku: {
+      name: 'WAF_v2'
+      tier: 'WAF_v2'
+      capacity: 2
+    }
     gatewayIPConfigurations: [
       {
         name: 'appGatewayIpConfig'
@@ -115,37 +126,53 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-05-01' = {
     ]
     frontendPorts: [
       {
-        name: 'httpsPort'
+        name: frontendPortName
         properties: {
-          port: 443
+          port: backendPort
         }
       }
     ]
-    sslCertificates: [
+    sslCertificates: enableHttps ? [
       {
         name: 'gatewayCert'
         properties: {
           keyVaultSecretId: sslCertSecretId
         }
       }
-    ]
-    httpListeners: [
-      {
-        name: 'httpsListener'
-        properties: {
-          frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGatewayFrontendIp')
-          }
-          frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, 'httpsPort')
-          }
-          protocol: 'Https'
-          sslCertificate: {
-            id: resourceId('Microsoft.Network/applicationGateways/sslCertificates', appGatewayName, 'gatewayCert')
+    ] : []
+    httpListeners: concat(
+      enableHttps ? [
+        {
+          name: 'httpsListener'
+          properties: {
+            frontendIPConfiguration: {
+              id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGatewayFrontendIp')
+            }
+            frontendPort: {
+              id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, frontendPortName)
+            }
+            protocol: 'Https'
+            sslCertificate: {
+              id: resourceId('Microsoft.Network/applicationGateways/sslCertificates', appGatewayName, 'gatewayCert')
+            }
           }
         }
-      }
-    ]
+      ] : [],
+      !enableHttps ? [
+        {
+          name: 'httpListener'
+          properties: {
+            frontendIPConfiguration: {
+              id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGatewayFrontendIp')
+            }
+            frontendPort: {
+              id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, frontendPortName)
+            }
+            protocol: 'Http'
+          }
+        }
+      ] : []
+    )
     backendAddressPools: backendPools
     backendHttpSettingsCollection: backendHttpSettings
     probes: probes
@@ -182,7 +209,7 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-05-01' = {
         properties: {
           ruleType: 'PathBasedRouting'
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, 'httpsListener')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, listenerName)
           }
           urlPathMap: {
             id: resourceId('Microsoft.Network/applicationGateways/urlPathMaps', appGatewayName, 'cellPathMap')

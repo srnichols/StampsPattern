@@ -59,6 +59,34 @@ param enableApplicationGateway bool = false
 @description('Application Gateway subnet resource ID')
 param applicationGatewaySubnetId string = ''
 
+// ---------------- Data HA/DR Optional Parameters (all optional, safe defaults) ----------------
+// These apply to CELL-layer resources only. Global control plane data replication is configured
+// in the global layer and is not affected by these parameters.
+@description('Additional Cosmos DB locations for this CELL (optional)')
+param cosmosAdditionalLocations array = []
+
+@description('Enable Cosmos DB multi-write across locations (Active/Active)')
+param cosmosMultiWrite bool = false
+
+@allowed([ 'Premium_ZRS', 'Standard_GZRS', 'Standard_RAGZRS' ])
+@description('Storage redundancy SKU (zone or geo-redundant)')
+param storageSkuName string = 'Premium_ZRS'
+
+@description('Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)')
+param cosmosZoneRedundant bool = true
+
+@description('Enable Storage Object Replication (Blob ORS) to a destination storage account')
+param enableStorageObjectReplication bool = false
+
+@description('Destination storage account resource ID for Blob Object Replication (when enabled)')
+param storageReplicationDestinationId string = ''
+
+@description('Enable SQL Auto-failover Group to a partner server in another region')
+param enableSqlFailoverGroup bool = false
+
+@description('Resource ID of the partner SQL Server for Auto-failover Group')
+param sqlSecondaryServerId string = ''
+
 // Create a new Azure Container Registry for the region with security hardening
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   name: containerRegistryName
@@ -157,7 +185,24 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
   }
 }
 
-// Cosmos DB for CELL with zone redundancy and enhanced backup configuration
+// Compose Cosmos DB locations list (primary + any additional)
+var cosmosAdditionalLocationObjs = [
+  for (loc, idx) in cosmosAdditionalLocations: {
+    locationName: loc
+    failoverPriority: idx + 1
+  isZoneRedundant: cosmosZoneRedundant
+  }
+]
+
+var cosmosDbLocations = concat([
+  {
+    locationName: location
+    failoverPriority: 0
+  isZoneRedundant: cosmosZoneRedundant
+  }
+], cosmosAdditionalLocationObjs)
+
+// Cosmos DB for CELL with zone redundancy and enhanced backup configuration (optional multi-region)
 resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
   name: cosmosDbStampName
   location: location
@@ -166,14 +211,8 @@ resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
     consistencyPolicy: {
       defaultConsistencyLevel: 'Session'
     }
-    locations: [
-      {
-        locationName: location
-        failoverPriority: 0
-        isZoneRedundant: true // Enable zone redundancy for CELL Cosmos DB
-      }
-    ]
-    enableMultipleWriteLocations: false
+    locations: cosmosDbLocations
+    enableMultipleWriteLocations: cosmosMultiWrite
     databaseAccountOfferType: 'Standard'
     // Enhanced backup configuration
     backupPolicy: {
@@ -185,7 +224,7 @@ resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
     // Security and compliance features
     enableFreeTier: false
     enableAnalyticalStorage: false
-    enableAutomaticFailover: true
+    enableAutomaticFailover: length(cosmosAdditionalLocations) > 0
     disableKeyBasedMetadataWriteAccess: true
     networkAclBypass: 'AzureServices'
     networkAclBypassResourceIds: []
@@ -222,12 +261,12 @@ resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 
-// Storage Account for CELL with Premium_ZRS SKU for zone redundancy and security hardening
+// Storage Account for CELL with configurable redundancy SKU and security hardening
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
   location: location
   sku: {
-    name: 'Premium_ZRS' // Use zone-redundant storage
+  name: storageSkuName
   }
   kind: 'StorageV2'
   identity: {
@@ -262,6 +301,26 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     }
   }
   tags: tags
+}
+
+// Optional: Blob Object Replication Policy to destination account
+resource storageObjectReplication 'Microsoft.Storage/storageAccounts/objectReplicationPolicies@2021-09-01' = if (enableStorageObjectReplication && !empty(storageReplicationDestinationId)) {
+  parent: storageAccount
+  name: 'cell-replication'
+  properties: {
+    sourceAccount: storageAccount.id
+    destinationAccount: storageReplicationDestinationId
+    rules: [
+      {
+        ruleId: 'rule-1'
+        sourceContainer: 'appdata'
+        destinationContainer: 'appdata'
+        filters: {
+          prefixMatch: []
+        }
+      }
+    ]
+  }
 }
 
 // Storage lifecycle management policy for cost optimization
@@ -817,6 +876,27 @@ resource sqlServerDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-
         enabled: true
       }
     ]
+  }
+}
+
+// Optional: SQL Auto-failover Group to partner server
+resource sqlFailoverGroup 'Microsoft.Sql/servers/failoverGroups@2021-11-01' = if (enableSqlFailoverGroup && !empty(sqlSecondaryServerId)) {
+  name: 'fg-${sqlServerName}'
+  parent: sqlServer
+  properties: {
+    partnerServers: [
+      {
+        id: sqlSecondaryServerId
+      }
+    ]
+    databases: [ sqlDatabase.id ]
+    readWriteEndpoint: {
+      failoverPolicy: 'Automatic'
+      failoverWithDataLossGracePeriodMinutes: 120
+    }
+    readOnlyEndpoint: {
+      failoverPolicy: 'Enabled'
+    }
   }
 }
 

@@ -288,13 +288,13 @@ param globalControlCosmosDbName string
 @description('Primary location for the global Cosmos DB')
 param primaryLocation string
 
-@description('Additional locations for geo-replication (array of objects with locationName, failoverPriority)')
+@description('Additional locations for geo-replication (array of region names, e.g., ["westus2"])')
 param additionalLocations array
 
 // Flatten the list of Cosmos DB locations
-var additionalCosmosDbLocations = [for loc in additionalLocations: {
-  locationName: loc.locationName
-  failoverPriority: loc.failoverPriority
+var additionalCosmosDbLocations = [for (loc, idx) in additionalLocations: {
+  locationName: string(loc)
+  failoverPriority: idx + 1
   isZoneRedundant: true
 }]
 

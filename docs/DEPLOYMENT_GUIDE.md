@@ -439,6 +439,29 @@ pwsh --version
 
 ### 🌟 **Option 1: Simple Two-Region Setup** (Manual Bicep Deployment)
 
+#### Quick start with sample parameters
+
+Use the ready-to-run sample parameter files under `AzureArchitecture/examples/`:
+- `main.sample.smoke.json` — minimal, lab-friendly (HTTP, no certs)
+- `main.sample.silver.json` — moderate HA, still lab-friendly
+- `main.sample.platinum.json` — higher HA/DR settings, still lab-friendly
+
+Notes:
+- In lab mode, set `useHttpForSmoke: true` (already set in the samples). This enables HTTP on the regional Application Gateway so you don’t need a Key Vault certificate to start.
+- Network prerequisites (VNet/Subnet/Public IP) are created automatically by the template via the regional network module; no pre-created networking is required for a first run.
+
+PowerShell example (what-if then deploy) using the smoke sample:
+
+```powershell
+$rg = "rg-stamps-smoke"
+$tmpl = "AzureArchitecture/main.bicep"
+$params = "AzureArchitecture/examples/main.sample.smoke.json"
+
+az group create --name $rg --location eastus
+az deployment group what-if --resource-group $rg --template-file $tmpl --parameters @$params
+az deployment group create --resource-group $rg --template-file $tmpl --parameters @$params --verbose
+```
+
 #### Configuration (`traffic-routing.parameters.json`):
 ```jsonc
 {
@@ -474,7 +497,9 @@ pwsh --version
     "geoName": { "value": "northamerica" },
     "baseDnsZoneName": { "value": "stamps" },
     "primaryLocation": { "value": "eastus" },
-    "additionalLocations": { "value": ["westus2"] },
+  "additionalLocations": { "value": ["westus2"] },
+  // Lab toggle: use HTTP-only listeners to avoid Key Vault certs
+  "useHttpForSmoke": { "value": true },
     "functionAppRegions": { "value": ["eastus", "westus2"] },
     "sqlAdminUsername": { "value": "sqladmin" },
     "sqlAdminPassword": { "value": "P@ssw0rd123!" }
@@ -548,7 +573,9 @@ az deployment group create \
     "geoName": { "value": "northamerica" },
     "baseDnsZoneName": { "value": "stamps" },
     "primaryLocation": { "value": "eastus" },
-    "additionalLocations": { "value": ["westus2"] },
+  "additionalLocations": { "value": ["westus2"] },
+  // Optional: leave true for lab runs; set to false for HTTPS with Key Vault certs
+  "useHttpForSmoke": { "value": true },
     "functionAppRegions": { "value": ["eastus", "westus2"] },
     "sqlAdminUsername": { "value": "sqladmin" },
     "sqlAdminPassword": { "value": "YourSecurePassword123!" }
@@ -561,6 +588,8 @@ az deployment group create \
 > - `westus2.stamps.contoso.com` (computed from parameters)
 > - DNS zone: `stamps.contoso.com` (computed from `baseDnsZoneName.organizationDomain`)
 
+> Additional locations format: For `AzureArchitecture/main.bicep`, `additionalLocations` is an array of region name strings (e.g., `["westus2", "westeurope"]`). Failover priority is computed internally by the template; you do not need to provide `{locationName, failoverPriority}` objects.
+
 #### Enterprise Multi-Geography Example:
 ```jsonc
 {
@@ -570,33 +599,13 @@ az deployment group create \
   "baseDnsZoneName": { "value": "api" },
   "ownerEmail": { "value": "platform@globalcorp.com" },
   "primaryLocation": { "value": "westeurope" },
-  "additionalLocations": { "value": ["northeurope"] }
+  "additionalLocations": { "value": ["northeurope"] },
+  "useHttpForSmoke": { "value": true }
 }
 ```
 This results in:
 - DNS Zone: `api.globalcorp.com`
 - Regional domains: `westeurope.api.globalcorp.com`, `northeurope.api.globalcorp.com`
-              "cells": ["tenant-banking-eu", "tenant-fintech"],
-              "logAnalyticsWorkspaceName": "law-stamps-eu-west",
-              "baseDomain": "eu-west.contoso.com"
-            }
-          ]
-        }
-      ]
-    },
-    "apimName": { "value": "apim-stamps-global" },
-    "apimPublisherEmail": { "value": "admin@contoso.com" },
-    "apimPublisherName": { "value": "Contoso API Team" },
-    "globalControlCosmosDbName": { "value": "cosmos-stamps-global" },
-    "primaryLocation": { "value": "eastus" },
-    "additionalLocations": {
-      "value": [
-        { "locationName": "westus", "failoverPriority": 1 },
-        { "locationName": "westeurope", "failoverPriority": 2 }
-      ]
-    }
-  }
-}
 ```
 
 #### Deployment:
@@ -608,6 +617,17 @@ az deployment group create \
   --parameters @main.parameters.json \
   --verbose
 ```
+
+---
+
+### 🔧 HTTPS vs. HTTP (lab toggle)
+
+- For lab/testing runs, set `useHttpForSmoke: true` (as in the sample files). The regional Application Gateway will expose port 80 with an HTTP listener and no certificate requirements.
+- For production, set `useHttpForSmoke: false` so the template enables HTTPS listeners. Ensure a Key Vault certificate is provisioned and referenced where required by the template.
+
+### 🕸️ Networking prerequisites
+
+The template provisions per-region networking (VNet, `subnet-agw`, and Standard Public IP) automatically via a regional network module. You don’t need to pre-create these for first deployments. Bring your own network later by wiring custom IDs in parameters if desired.
 
 ---
 

@@ -1,4 +1,3 @@
-
 # 🏗️ Azure Stamps Pattern - Enterprise Architecture Guide (CAF/WAF Compliant)
 
 > 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — framework mapping and scoring details.
@@ -798,8 +797,9 @@ az deployment group create \
 - [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
- - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
- - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
+- [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
+- [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
+- [Data Strategy Guide](./DATA_STRATEGY_GUIDE.md)
 
 ---
 

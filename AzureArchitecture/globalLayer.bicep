@@ -38,8 +38,14 @@ param globalControlCosmosDbName string
 @description('Primary location for the global Cosmos DB')
 param primaryLocation string
 
-@description('Additional locations for geo-replication (array of objects with locationName, failoverPriority)')
+@description('Additional locations for geo-replication (array of region names, e.g., ["westus2"])')
 param additionalLocations array
+
+@description('Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)')
+param cosmosZoneRedundant bool = true
+
+@description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
+param enableGlobalFunctions bool = true
 
 // DNS Zone
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
@@ -85,8 +91,11 @@ var functionApps = [for region in functionAppRegions: {
   location: region
 }]
 
+// Effective arrays based on toggle
+var functionAppsEff = enableGlobalFunctions ? functionApps : []
+
 // Storage Accounts for Function Apps
-resource functionStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = [for app in functionApps: {
+resource functionStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = [for app in functionAppsEff: {
   name: app.storageName
   location: app.location
   sku: {
@@ -97,7 +106,7 @@ resource functionStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = [for a
 }]
 
 // Consumption (Dynamic) plans for Azure Functions (not Web Apps)
-resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = [for app in functionApps: {
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = [for app in functionAppsEff: {
   name: '${app.name}-plan'
   location: app.location
   sku: {
@@ -108,7 +117,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = [for app in fun
 }]
 
 // Function Apps
-resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functionApps: {
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functionAppsEff: {
   name: app.name
   location: app.location
   kind: 'functionapp'
@@ -135,10 +144,10 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functio
 }]
 
 // Cosmos DB Account for global control plane
-var additionalCosmosDbLocations = [for loc in additionalLocations: {
-  locationName: loc.locationName
-  failoverPriority: loc.failoverPriority
-  isZoneRedundant: true
+var additionalCosmosDbLocations = [for (loc, idx) in additionalLocations: {
+  locationName: string(loc)
+  failoverPriority: idx + 1
+  isZoneRedundant: cosmosZoneRedundant
 }]
 
 var cosmosDbLocations = concat(
@@ -146,7 +155,7 @@ var cosmosDbLocations = concat(
     {
       locationName: primaryLocation
       failoverPriority: 0
-      isZoneRedundant: true
+  isZoneRedundant: cosmosZoneRedundant
     }
   ],
   additionalCosmosDbLocations
@@ -167,7 +176,7 @@ resource globalControlCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15
 }
 
 // Diagnostics for Function Apps
-resource functionAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for (app, i) in functionApps: {
+resource functionAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for (app, i) in functionAppsEff: {
   name: '${app.name}-diagnostics'
   scope: functionApp[i]
   properties: {
@@ -188,7 +197,7 @@ resource functionAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-0
 }]
 
 // Diagnostics for Storage Accounts
-resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for (app, i) in functionApps: {
+resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for (app, i) in functionAppsEff: {
   name: '${app.storageName}-diagnostics'
   scope: functionStorage[i]
   properties: {
