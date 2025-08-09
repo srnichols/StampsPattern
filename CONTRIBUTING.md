@@ -104,7 +104,9 @@ Use this style for all Markdown under `docs/` and the root `README.md` where app
 ```
 
 - Use triple backticks with `mermaid`.
-- Prefer `\n` line breaks in labels instead of `<br/>`.
+- Always use `flowchart` (LR/TD/TB) headers, not `graph`.
+- Prefer `\n` line breaks in labels; `<br/>` is acceptable for tighter layout.
+- Icon helpers encouraged: prefix short node labels with small emoji (e.g., 🌍 Front Door, 🔌 APIM, 🚪 App Gateway, 🐳 Container Apps, 🗄️ SQL, 🌐 Cosmos DB, 🔐 Key Vault, 📊 Log Analytics) to improve scannability.
 - Keep diagrams minimal and readable.
 
 ### Links & Anchors
