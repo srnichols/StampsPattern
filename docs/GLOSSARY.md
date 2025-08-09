@@ -25,9 +25,12 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 | [🔒 Security Terms](#-security-terms) | Security, identity, endpoints | Security, DevOps |
 | [⚡ Performance & Scaling](#-performance--scaling-terms) | Caching, scaling, load balancing | DevOps |
 | [🗄️ Data & Storage](#-data--storage-terms) | Cosmos DB, partitioning, TTL | Architects, Devs |
+| [🌐 Networking & Routing](#-networking--routing-terms) | Global vs regional routing, private connectivity | Architects, DevOps |
+| [🔗 Integration & Messaging](#-integration--messaging-terms) | Queues and messaging patterns | Devs, DevOps |
 | [�️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
 | [📊 Monitoring & Operations](#-monitoring--operations-terms) | Observability, metrics | Operations |
-| [💰 Cost & Business](#-cost--business-terms) | TCO, optimization | IT Leaders |
+| [�️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
+| [�💰 Cost & Business](#-cost--business-terms) | TCO, optimization | IT Leaders |
 | [🏛️ Compliance & Governance](#-compliance--governance-terms) | CAF, WAF, standards | Compliance |
 | [🚀 Getting Started Tips](#-getting-started-tips) | Learning path, resources | Newcomers |
 | [📞 Need Help?](#-need-help) | Support, troubleshooting | All readers |
@@ -168,6 +171,16 @@ A secure way to transmit information between parties as a JSON object.
 - **Use Case**: Authentication and authorization
 - **Performance**: Enhanced with caching (85-90% improvement in this implementation)
 
+### **Microsoft Entra ID (formerly Azure AD)**
+Cloud-based identity and access management.
+- **Use Cases**: Workforce identities, service principals, app registrations
+- **Docs**: <a href="https://learn.microsoft.com/entra/fundamentals/whatis" target="_blank" rel="noopener">What is Microsoft Entra ID?</a>
+
+### **Microsoft Entra External ID (B2C)**
+Customer identity and access management for external users.
+- **Use Cases**: Public-facing apps with social and local accounts
+- **Docs**: <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener">What is External ID for customers?</a>
+
 ---
 
 ## ⚡ **Performance & Scaling Terms**
@@ -197,6 +210,23 @@ Distributing incoming requests across multiple servers.
 Globally distributed, multi-model database used for the control-plane in this repo.
 - **Benefits**: Low latency, elastic scale, multi-region replication
 - **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/overview" target="_blank" rel="noopener">Cosmos DB for NoSQL overview</a>
+
+## 🌐 **Networking & Routing Terms**
+
+### **Azure Front Door (AFD)**
+Global layer 7 entry point for HTTP(S) with CDN, WAF, and path-based routing.
+- **Use Cases**: Global routing across GEOs/regions; edge caching; WAF at the edge
+- **Docs**: <a href="https://learn.microsoft.com/azure/frontdoor/front-door-overview" target="_blank" rel="noopener">Azure Front Door overview</a>
+
+### **Application Gateway (AppGW)**
+Regional layer 7 load balancer with WAF and policy-based routing.
+- **Use Cases**: In-region traffic, mTLS, header rewrites, per-stamp routing
+- **Docs**: <a href="https://learn.microsoft.com/azure/application-gateway/overview" target="_blank" rel="noopener">Application Gateway overview</a>
+
+### **Private Link and Private DNS Zones**
+Service endpoints mapped into your VNET with private DNS for name resolution.
+- **Use Cases**: Private connectivity to PaaS (Cosmos, Key Vault, etc.)
+- **Docs**: <a href="https://learn.microsoft.com/azure/private-link/private-link-overview" target="_blank" rel="noopener">Private Link overview</a> · <a href="https://learn.microsoft.com/azure/dns/private-dns-privatednszone" target="_blank" rel="noopener">Private DNS zones</a>
 
 ### **Container (Cosmos DB)**
 The unit of scalability and distribution; holds JSON items with a partition key.
@@ -251,6 +281,21 @@ Azure's deployment and management service.
 - **Templates**: JSON files that define infrastructure
  - **Docs**: <a href="https://learn.microsoft.com/azure/azure-resource-manager/management/overview" target="_blank" rel="noopener">ARM overview</a>
 
+### **Azure Container Registry (ACR)**
+Private registry for container images and OCI artifacts.
+- **Use Cases**: Supply chain for ACA/Functions containers; content trust, scanning
+- **Docs**: <a href="https://learn.microsoft.com/azure/container-registry/container-registry-intro" target="_blank" rel="noopener">Azure Container Registry overview</a>
+
+### **Azure Policy and Defender for Cloud**
+Governance and security posture management.
+- **Use Cases**: Compliance, drift detection, secure scores, recommendations
+- **Docs**: <a href="https://learn.microsoft.com/azure/governance/policy/overview" target="_blank" rel="noopener">Azure Policy</a> · <a href="https://learn.microsoft.com/azure/defender-for-cloud/defender-for-cloud-introduction" target="_blank" rel="noopener">Defender for Cloud</a>
+
+### **KEDA-based autoscaling**
+Event-driven autoscaling for containers and serverless workloads.
+- **Use Cases**: Scale on queue length, HTTP RPS, CPU, custom metrics
+- **Docs**: <a href="https://learn.microsoft.com/azure/container-apps/scale-app#scale-rules" target="_blank" rel="noopener">Scale rules in ACA (KEDA)</a>
+
 ---
 
 ## 📊 **Monitoring & Operations Terms**
@@ -279,6 +324,18 @@ Azure service for collecting and analyzing log data.
 - **SLI**: Service Level Indicator (what you actually measure)
 
 ---
+
+## 🔗 **Integration & Messaging Terms**
+
+### **Azure Service Bus**
+Enterprise messaging with queues and topics (pub/sub).
+- **Use Cases**: Decoupling services, retry/poison handling, FIFO with sessions
+- **Docs**: <a href="https://learn.microsoft.com/azure/service-bus-messaging/service-bus-messaging-overview" target="_blank" rel="noopener">Service Bus overview</a>
+
+### **Azure Storage Queues**
+Simple queueing service built on Azure Storage.
+- **Use Cases**: Lightweight background processing; cost-effective queues
+- **Docs**: <a href="https://learn.microsoft.com/azure/storage/queues/storage-queues-introduction" target="_blank" rel="noopener">Storage Queues introduction</a>
 
 ## 💰 **Cost & Business Terms**
 
