@@ -440,7 +440,7 @@ pwsh --version
 ### 🌟 **Option 1: Simple Two-Region Setup** (Manual Bicep Deployment)
 
 #### Configuration (`traffic-routing.parameters.json`):
-```json
+```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
@@ -459,7 +459,7 @@ pwsh --version
 ```
 
 #### Main Template Configuration (`AzureArchitecture/main.parameters.json`):
-```json
+```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
@@ -483,7 +483,7 @@ pwsh --version
 ```
 
 #### Enterprise Configuration (`traffic-routing.parameters.enterprise.json`):
-```json
+```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
@@ -533,7 +533,7 @@ az deployment group create \
 ### 🌍 **Option 2: Global Multi-GEO Setup** (Advanced Manual Deployment)
 
 #### Configuration (`AzureArchitecture/main.parameters.json`):
-```json
+```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
@@ -562,7 +562,7 @@ az deployment group create \
 > - DNS zone: `stamps.contoso.com` (computed from `baseDnsZoneName.organizationDomain`)
 
 #### Enterprise Multi-Geography Example:
-```json
+```jsonc
 {
   "environment": { "value": "prod" },
   "organizationDomain": { "value": "globalcorp.com" },

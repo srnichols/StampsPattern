@@ -28,6 +28,7 @@ Last updated: August 2025
 | Section | Focus Area | Time | Best for |
 |---|---|---:|---|
 | [Overview & Architecture](#-overview--architecture) | How it works end‑to‑end | 4 min | All |
+| [Getting Started (Operators)](#-getting-started-operators) | First tasks after sign‑in | 2 min | Operators |
 | [Roles & Authentication](#-roles--authentication) | Sign‑in and permissions | 3 min | Admins, Ops |
 | [Local Development](#-local-development) | Run locally and smoke test | 4 min | Devs, Ops |
 | [Concepts](#-concepts) | Tenant, Cell, Operation | 3 min | All |
@@ -41,6 +42,15 @@ Last updated: August 2025
 ---
 
 ## 🏗️ Overview & Architecture
+
+## 🚦 Getting Started (Operators)
+
+1. Sign in with your Entra ID account. If you see read‑only views, ask for operator or admin access.
+2. Verify your role under your profile. Operators can edit routing and run safe operations; only admins can create/delete tenants.
+3. Onboard a test tenant: Tenants → New Tenant. Use a unique tenant ID and select an existing cell for placement.
+4. Update routing: Set strategy (geo/performance/compliance) and, if multi‑homed, weight targets.
+5. Monitor operations: Open Operations to track long‑running tasks and review errors.
+6. Need production? Review Domain Naming policy below to decide on domain reservation.
 
 The Management Portal is a thin control‑plane app for administering tenants and cells. It exposes safe, role‑scoped CRUD over a Cosmos DB data model via Data API Builder (DAB), and optionally kicks off operational workflows via Azure Functions.
 
