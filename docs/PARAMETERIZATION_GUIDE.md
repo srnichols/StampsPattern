@@ -62,7 +62,7 @@ Read this section as the “contract” between your parameter files, Bicep temp
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     A[🏢 Organization Parameters] --> D[🏗️ Template Processing]
     B[🌍 Geography Parameters] --> D
     C[🏷️ Tagging Parameters] --> D
@@ -97,7 +97,7 @@ _Figure: How organization, geography, and tagging parameters propagate into Bice
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph LR
+flowchart LR
     subgraph "❌ Before: Hardcoded"
         A1[Fixed Domain:<br/>stamps.contoso.com]
         A2[Fixed Tags:<br/>project: StampsPattern<br/>owner: platform-team]

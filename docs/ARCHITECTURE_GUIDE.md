@@ -65,7 +65,7 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TB
+flowchart TB
     subgraph "🌐 Global Layer"
         FD[Azure Front Door<br/>Global Load Balancing]
         TM[Traffic Manager<br/>DNS-based Routing]
@@ -230,7 +230,7 @@ Azure Availability Zones provide **intra-region high availability** by distribut
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     subgraph "🌍 GEO: United States"
         subgraph "🏢 Region: eastus"
             subgraph "Zone 1"
@@ -335,7 +335,7 @@ _Listing: Example CELL configuration demonstrating how to express tenancy model 
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     subgraph "🌍 GEO Layer"
         G1[UnitedStates]
         G2[Europe]
@@ -491,7 +491,7 @@ Think of the traffic flow like ordering food delivery:
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     User[👤 User Request<br/>api.myapp.com/v1/data] --> FD[🌍 Azure Front Door<br/>Global CDN + WAF]
     
     FD --> TM[🗺️ Traffic Manager<br/>DNS Geo-routing]
@@ -537,7 +537,7 @@ Headers: Authorization: Bearer JWT_TOKEN
 **Step 2: Tenant Identification**
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph LR
+flowchart LR
     REQ[API Request] --> JWT[Extract JWT Token]
     JWT --> TID[Extract Tenant ID]
     TID --> LOOKUP[Query Global Directory]

@@ -130,7 +130,7 @@ Understanding the cost implications of different deployment scenarios is crucial
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TB
+flowchart TB
     subgraph "💰 Monthly Cost Analysis"
         A[Small Scale: 1-50 Tenants]
         B[Medium Scale: 51-500 Tenants]
@@ -216,7 +216,7 @@ Each layer of the Azure Stamps Pattern offers specific opportunities for cost op
 **💡 Global Layer Optimization Workflow:**
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph LR
+flowchart LR
     A[Assess Traffic Patterns] --> B[Right-size Front Door]
     B --> C[Optimize Cosmos DB Replication]
     C --> D[Consolidate DNS Zones]
@@ -249,7 +249,7 @@ graph LR
 #### **Database Services Cost Analysis**
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TB
+flowchart TB
     subgraph "Database Cost Comparison"
         A[Shared Database Model]
         B[Dedicated Database Model]
@@ -294,7 +294,7 @@ graph TB
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     A[📊 Analyze Current Spend] --> B[🎯 Identify Optimization Targets]
     B --> C[📋 Prioritize by Impact/Effort]
     C --> D[🚀 Implement Changes]
@@ -333,7 +333,7 @@ graph TD
 #### **2. Auto-Scaling Configuration**
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph LR
+flowchart LR
     A[Monitor Utilization] --> B{Resource Usage}
     B -->|High| C[Scale Up]
     B -->|Normal| D[Maintain]
@@ -388,7 +388,7 @@ ROI = (Annual Savings - Implementation Cost) / Implementation Cost × 100%
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     subgraph "Budget Hierarchy"
         A[Master Budget<br/>$50,000/month]
         B[Production<br/>$30,000/month]
@@ -458,7 +458,7 @@ pie title Monthly Cost Allocation ($45,000)
 **Optimization Journey:**
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph LR
+flowchart LR
     A[Month 1-3<br/>Baseline<br/>$3,500/month] --> B[Month 4-6<br/>Add Monitoring<br/>$3,200/month]
     B --> C[Month 7-9<br/>Auto-scaling<br/>$4,200/month]
     C --> D[Month 10-12<br/>Mixed Model<br/>$8,500/month]
@@ -499,7 +499,7 @@ graph LR
 #### **Playbook 1: Quarterly Cost Review Process**
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-graph TD
+flowchart TD
     A[Week 1: Data Collection] --> B[Week 2: Analysis & Recommendations]
     B --> C[Week 3: Implementation Planning]
     C --> D[Week 4: Execute Changes]
