@@ -206,7 +206,7 @@ This solution is designed for:
 5. **Deploy using scripts or portal:**
     - PowerShell: `./scripts/deploy-stamps.ps1`
     - Bash: `./scripts/deploy-stamps.sh`
-    - Azure Portal: <a href="https://aka.ms/deploytoazurebutton" target="_blank" rel="noopener">Deploy to Azure</a>
+        - Azure Portal: <a href="https://aka.ms/deploytoazurebutton" target="_blank" rel="noopener" title="Opens in a new tab">Deploy to Azure</a>&nbsp;<sup>↗</sup>
 6. **Test your deployment:** Use provided scripts and dashboards.
 
 ---
@@ -239,8 +239,8 @@ This solution is designed for:
 
 ### 📋 Before You Begin
 Ensure you have these tools installed:
-- ✅ <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli" target="_blank" rel="noopener">Azure CLI</a> (v2.50.0+)  
-- ✅ <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install" target="_blank" rel="noopener">Bicep CLI</a> (v0.20.0+)
+- ✅ <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli" target="_blank" rel="noopener" title="Opens in a new tab">Azure CLI</a>&nbsp;<sup>↗</sup> (v2.50.0+)  
+- ✅ <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install" target="_blank" rel="noopener" title="Opens in a new tab">Bicep CLI</a>&nbsp;<sup>↗</sup> (v0.20.0+)
 - ✅ PowerShell 7+ (for enhanced deployment script)
 - ✅ Azure subscription with **Contributor** access
 
@@ -324,19 +324,19 @@ We welcome contributions! Please see our contribution guidelines:
 
 ### 💬 Getting Help
 - 📚 **Documentation**: Start with our comprehensive guides
-- 🐛 **Issues**: <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener">GitHub Issues</a> for bugs and feature requests
- - 💡 **Q&A**: Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener">GitHub Issues</a> with the `question` label
+- 🐛 **Issues**: <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener" title="Opens in a new tab">GitHub Issues</a>&nbsp;<sup>↗</sup> for bugs and feature requests
+ - 💡 **Q&A**: Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener" title="Opens in a new tab">GitHub Issues</a>&nbsp;<sup>↗</sup> with the `question` label
 - 📧 **Enterprise Support**: Contact your Microsoft representative
 
 ---
 
 ## � Contributors
 
-<a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener"><img src="https://img.shields.io/github/contributors/srnichols/StampsPattern" alt="Contributors" /></a>
+<a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab"><img src="https://img.shields.io/github/contributors/srnichols/StampsPattern" alt="Contributors" /></a>&nbsp;<sup>↗</sup>
 
 Thanks to all the amazing people who have contributed to this project. Want to help? See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-— View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener">https://github.com/srnichols/StampsPattern/graphs/contributors</a>
+— View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab">https://github.com/srnichols/StampsPattern/graphs/contributors</a>&nbsp;<sup>↗</sup>
 
 ---
 

@@ -70,7 +70,7 @@ Please be respectful and considerate in all interactions. See our [Code of Condu
 
 ## 🐛 Reporting Issues & 💡 Ideas
 
-- Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener">GitHub Issues</a>.
+- Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener" title="Opens in a new tab">GitHub Issues</a>&nbsp;<sup>↗</sup>.
 - Include: expected vs actual behavior, repro steps, environment, logs/screenshots.
 - Tag with `bug`, `enhancement`, or `question` as appropriate.
 

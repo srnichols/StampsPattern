@@ -11,7 +11,7 @@ A concise tour of the Azure Stamps Pattern architecture—layers, flows, and cor
 - Best for: Architects, developers, IT leaders, and security teams
 - Outcomes: Clear mental model, reference diagrams, and practical design guidance
 
-> Symbols & Conventions: External links are formatted to open in a new tab/window via HTML anchors with target="_blank" (some viewers may ignore this). Use jsonc for commented JSON, and the standard Mermaid template for diagrams.
+> Symbols & Conventions: External links open in a new tab/window using HTML anchors with target="_blank" and carry a small ↗ cue; some viewers may ignore target. Use jsonc for commented JSON, and the standard Mermaid template for diagrams.
 
 ## 👤 Who Should Read This Guide?
 

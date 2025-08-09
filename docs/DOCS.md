@@ -27,7 +27,7 @@ Your single source of truth for the Azure Stamps Pattern, organized by role and 
 
 ## 🔣 Symbols & Conventions
 
-- External links to Microsoft Learn and other sites are formatted to open in a new tab/window using HTML anchors with target="_blank". Some viewers (GitHub, VS Code preview) may ignore target. Tip: use Ctrl+Click (Windows/Linux) or Cmd+Click (macOS) to open in a new tab.
+- External links to Microsoft Learn and other sites: we use HTML anchors with target="_blank" and rel="noopener", plus a small visual cue ↗. Some viewers (GitHub, VS Code preview) may ignore target. Tip: use Ctrl+Click (Windows/Linux) or Cmd+Click (macOS) to open in a new tab.
 - When JSON examples include comments, we use jsonc code fences.
 - Use the standard Mermaid template in docs/mermaid-template.md for consistent theming.
 
@@ -371,10 +371,10 @@ If you find gaps or areas for improvement in this documentation:
 - **Security Concerns**: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
 
 ### 📚 **Additional Resources**
-- **Azure Documentation**: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener">Azure Architecture Center</a>
-- **Azure Stamps Pattern**: <a href="https://learn.microsoft.com/azure/architecture/guide/" target="_blank" rel="noopener">Azure Application Architecture Guide</a>
-- **Multi-Tenant SaaS**: <a href="https://learn.microsoft.com/azure/architecture/solution-ideas/articles/saas-multitenant-database-sharding-pattern" target="_blank" rel="noopener">SaaS architecture and patterns</a>
-- **Azure Landing Zones**: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">Landing Zones overview</a>
+- **Azure Documentation**: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Architecture Center</a>&nbsp;<sup>↗</sup>
+- **Azure Stamps Pattern**: <a href="https://learn.microsoft.com/azure/architecture/guide/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Application Architecture Guide</a>&nbsp;<sup>↗</sup>
+- **Multi-Tenant SaaS**: <a href="https://learn.microsoft.com/azure/architecture/solution-ideas/articles/saas-multitenant-database-sharding-pattern" target="_blank" rel="noopener" title="Opens in a new tab">SaaS architecture and patterns</a>&nbsp;<sup>↗</sup>
+- **Azure Landing Zones**: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener" title="Opens in a new tab">Landing Zones overview</a>&nbsp;<sup>↗</sup>
 
 ### 🔐 **Security Highlights**
 - Multi-layer WAF protection

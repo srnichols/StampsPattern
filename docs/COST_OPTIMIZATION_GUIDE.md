@@ -560,10 +560,10 @@ graph TD
 ## 🔗 Resources & Tools
 
 ### 📚 **Essential Reading**
- <a href="https://learn.microsoft.com/azure/cost-management-billing/" target="_blank" rel="noopener">Azure Cost Management Documentation</a>
- <a href="https://azure.microsoft.com/pricing/calculator/" target="_blank" rel="noopener">Azure Pricing Calculator</a>
- <a href="https://learn.microsoft.com/azure/architecture/framework/cost/" target="_blank" rel="noopener">Well-Architected Cost Optimization</a>
- <a href="https://learn.microsoft.com/azure/cost-management-billing/reservations/" target="_blank" rel="noopener">Azure Reserved Instances Guide</a>
+ <a href="https://learn.microsoft.com/azure/cost-management-billing/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Cost Management Documentation</a>&nbsp;<sup>↗</sup>
+ <a href="https://azure.microsoft.com/pricing/calculator/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Pricing Calculator</a>&nbsp;<sup>↗</sup>
+ <a href="https://learn.microsoft.com/azure/architecture/framework/cost/" target="_blank" rel="noopener" title="Opens in a new tab">Well-Architected Cost Optimization</a>&nbsp;<sup>↗</sup>
+ <a href="https://learn.microsoft.com/azure/cost-management-billing/reservations/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Reserved Instances Guide</a>&nbsp;<sup>↗</sup>
 
 ### 🛠️ **Optimization Tools**
 | Tool | Purpose | Cost | Setup Complexity |

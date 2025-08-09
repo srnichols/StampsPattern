@@ -99,29 +99,29 @@ An isolated application instance that hosts one or more tenants.
 Serverless container hosting for microservices and background processing.
 - **Use Cases**: Frontends, APIs, background workers in stamps
 - **Scale**: KEDA-based scale to zero and event-driven scale out
-- **Docs**: <a href="https://learn.microsoft.com/azure/container-apps/overview" target="_blank" rel="noopener">Azure Container Apps overview</a>
+- **Docs**: <a href="https://learn.microsoft.com/azure/container-apps/overview" target="_blank" rel="noopener" title="Opens in a new tab">Azure Container Apps overview</a>&nbsp;<sup>↗</sup>
 
 ### **Azure Functions**
 Event-driven, serverless compute for background tasks and APIs.
 - **Use Cases**: Control-plane operations (e.g., tenant provisioning)
 - **Bindings**: Triggers for HTTP, Timer, Queue, Service Bus, etc.
-- **Docs**: <a href="https://learn.microsoft.com/azure/azure-functions/functions-overview" target="_blank" rel="noopener">Azure Functions overview</a>
+- **Docs**: <a href="https://learn.microsoft.com/azure/azure-functions/functions-overview" target="_blank" rel="noopener" title="Opens in a new tab">Azure Functions overview</a>&nbsp;<sup>↗</sup>
 
 ### **Azure API Management (APIM)**
 Unified gateway for APIs with policy-based controls.
 - **Use Cases**: Routing, auth, rate limiting, observability across stamps
 - **Policies**: JWT validation, header transforms, CORS, caching
-- **Docs**: <a href="https://learn.microsoft.com/azure/api-management/api-management-key-concepts" target="_blank" rel="noopener">API Management key concepts</a>
+- **Docs**: <a href="https://learn.microsoft.com/azure/api-management/api-management-key-concepts" target="_blank" rel="noopener" title="Opens in a new tab">API Management key concepts</a>&nbsp;<sup>↗</sup>
 
 ### **Azure Key Vault**
 Secure store for secrets, keys, and certificates.
 - **Integration**: Managed identity; reference secrets in app settings and Bicep
-- **Docs**: <a href="https://learn.microsoft.com/azure/key-vault/general/overview" target="_blank" rel="noopener">Key Vault overview</a>
+- **Docs**: <a href="https://learn.microsoft.com/azure/key-vault/general/overview" target="_blank" rel="noopener" title="Opens in a new tab">Key Vault overview</a>&nbsp;<sup>↗</sup>
 
 ### **Data API Builder (DAB)**
 Runtime that exposes databases as REST/GraphQL with role-based access.
 - **Use Cases**: Data plane for the Management Portal with Easy Auth headers
-- **Docs**: <a href="https://learn.microsoft.com/azure/data-api-builder/overview" target="_blank" rel="noopener">Data API Builder overview</a>
+- **Docs**: <a href="https://learn.microsoft.com/azure/data-api-builder/overview" target="_blank" rel="noopener" title="Opens in a new tab">Data API Builder overview</a>&nbsp;<sup>↗</sup>
 
 
 ## 🏠 **Tenancy Models**
@@ -160,13 +160,13 @@ Security model that assumes no implicit trust - everything must be verified.
 Azure feature that provides secure connectivity to services over a private network.
 - **Benefit**: Eliminates exposure to public internet
 - **Example**: Database only accessible via private network, not public IP
- - **Docs**: <a href="https://learn.microsoft.com/azure/private-link/private-endpoint-overview" target="_blank" rel="noopener">Azure Private Endpoint overview</a>
+ - **Docs**: <a href="https://learn.microsoft.com/azure/private-link/private-endpoint-overview" target="_blank" rel="noopener" title="Opens in a new tab">Azure Private Endpoint overview</a>&nbsp;<sup>↗</sup>
 
 ### **Managed Identity**
 Azure feature that provides applications with an automatically managed identity in Azure AD.
 - **Benefit**: No need to store credentials in code
 - **Types**: System-assigned (tied to resource) or User-assigned (shared across resources)
- - **Docs**: <a href="https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview" target="_blank" rel="noopener">Managed identities for Azure resources</a>
+ - **Docs**: <a href="https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview" target="_blank" rel="noopener" title="Opens in a new tab">Managed identities for Azure resources</a>&nbsp;<sup>↗</sup>
 
 ### **JWT (JSON Web Token)**
 A secure way to transmit information between parties as a JSON object.
@@ -176,12 +176,12 @@ A secure way to transmit information between parties as a JSON object.
 ### **Microsoft Entra ID (formerly Azure AD)**
 Cloud-based identity and access management.
 - **Use Cases**: Workforce identities, service principals, app registrations
-- **Docs**: <a href="https://learn.microsoft.com/entra/fundamentals/whatis" target="_blank" rel="noopener">What is Microsoft Entra ID?</a>
+- **Docs**: <a href="https://learn.microsoft.com/entra/fundamentals/whatis" target="_blank" rel="noopener" title="Opens in a new tab">What is Microsoft Entra ID?</a>&nbsp;<sup>↗</sup>
 
 ### **Microsoft Entra External ID (B2C)**
 Customer identity and access management for external users.
 - **Use Cases**: Public-facing apps with social and local accounts
-- **Docs**: <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener">What is External ID for customers?</a>
+- **Docs**: <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener" title="Opens in a new tab">What is External ID for customers?</a>&nbsp;<sup>↗</sup>
 
 ---
 
@@ -211,7 +211,7 @@ Distributing incoming requests across multiple servers.
 ### **Azure Cosmos DB (NoSQL)**
 Globally distributed, multi-model database used for the control-plane in this repo.
 - **Benefits**: Low latency, elastic scale, multi-region replication
-- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/overview" target="_blank" rel="noopener">Cosmos DB for NoSQL overview</a>
+- **Docs**: <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/overview" target="_blank" rel="noopener" title="Opens in a new tab">Cosmos DB for NoSQL overview</a>&nbsp;<sup>↗</sup>
 
 ## 🌐 **Networking & Routing Terms**
 
