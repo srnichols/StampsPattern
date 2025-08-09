@@ -204,9 +204,9 @@ This solution is designed for:
 3. **Install prerequisites:** Azure CLI, Bicep CLI, PowerShell 7+ (see [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)).
 4. **Choose your tenancy model:** Shared, Dedicated, or Mixed (see [Quick Start](#-quick-start---choose-your-tenancy-model)).
 5. **Deploy using scripts or portal:**
-   - PowerShell: `./scripts/deploy-stamps.ps1`
-   - Bash: `./scripts/deploy-stamps.sh`
-   - Azure Portal: [Deploy to Azure](https://aka.ms/deploytoazurebutton)
+    - PowerShell: `./scripts/deploy-stamps.ps1`
+    - Bash: `./scripts/deploy-stamps.sh`
+    - Azure Portal: <a href="https://aka.ms/deploytoazurebutton" target="_blank" rel="noopener">Deploy to Azure</a>
 6. **Test your deployment:** Use provided scripts and dashboards.
 
 ---
@@ -239,8 +239,8 @@ This solution is designed for:
 
 ### 📋 Before You Begin
 Ensure you have these tools installed:
-- ✅ [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) (v2.50.0+)  
-- ✅ [Bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) (v0.20.0+)
+- ✅ <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli" target="_blank" rel="noopener">Azure CLI</a> (v2.50.0+)  
+- ✅ <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install" target="_blank" rel="noopener">Bicep CLI</a> (v0.20.0+)
 - ✅ PowerShell 7+ (for enhanced deployment script)
 - ✅ Azure subscription with **Contributor** access
 
@@ -324,19 +324,19 @@ We welcome contributions! Please see our contribution guidelines:
 
 ### 💬 Getting Help
 - 📚 **Documentation**: Start with our comprehensive guides
-- 🐛 **Issues**: [GitHub Issues](https://github.com/srnichols/StampsPattern/issues) for bugs and feature requests
- - 💡 **Q&A**: Use [GitHub Issues](https://github.com/srnichols/StampsPattern/issues) with the `question` label
+- 🐛 **Issues**: <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener">GitHub Issues</a> for bugs and feature requests
+ - 💡 **Q&A**: Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener">GitHub Issues</a> with the `question` label
 - 📧 **Enterprise Support**: Contact your Microsoft representative
 
 ---
 
 ## � Contributors
 
-[![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)](https://github.com/srnichols/StampsPattern/graphs/contributors)
+<a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener"><img src="https://img.shields.io/github/contributors/srnichols/StampsPattern" alt="Contributors" /></a>
 
 Thanks to all the amazing people who have contributed to this project. Want to help? See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-— View the full list: https://github.com/srnichols/StampsPattern/graphs/contributors
+— View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener">https://github.com/srnichols/StampsPattern/graphs/contributors</a>
 
 ---
 
