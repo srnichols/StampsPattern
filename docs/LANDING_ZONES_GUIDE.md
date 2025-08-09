@@ -151,11 +151,11 @@ module diagnostics './policy/assign-diagnostics.bicep' = {
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-  MG[Management Group\n(Platform / Landing Zones)] --> INIT[Policy/Initiative\nAssignment]
+  MG[Management Group\n(Platform and Landing Zones)] --> INIT[Policy + Initiative\nAssignment]
   INIT --> SUBS[Subscriptions]
   SUBS --> RES[Resources\n(Apps, Data, Networking)]
   RES --> DIAG[Diagnostic Settings]
-  DIAG --> LAW[Log Analytics Workspace\n(Management Sub)]
+  DIAG --> LAW[Log Analytics Workspace\n(Mgmt Sub)]
   SUBS --> DEF[Defender for Cloud\n(Plan Assignments)]
 ```
 
@@ -181,10 +181,13 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
+  %% Hidden class to keep spacers invisible (declare before use)
+  classDef hidden fill:transparent,stroke:transparent,color:transparent;
+
   %% Top: Hub/Connectivity
   subgraph "Platform / Connectivity (Hub Subscription)"
     direction TB
-    hub_spacer[""]
+    hub_spacer[" "]
     HUBVNET["Hub VNet"]
     AFW["Azure Firewall"]
     PDNS["Private DNS Zones"]
@@ -192,19 +195,19 @@ flowchart TB
   end
 
   %% Second row: Edge + Workloads arranged horizontally
-  subgraph "Regional & Edge"
+  subgraph "Regional and Edge"
     direction LR
 
     subgraph "Shared Services (Edge)"
       direction TB
-      ss_spacer[""]
+      ss_spacer[" "]
       FD["Azure Front Door"]
       APIM["API Management (Global)"]
     end
 
     subgraph "Workload LZ - Spoke (CELL-001 Subscription)"
       direction TB
-      sp1_spacer[""]
+      sp1_spacer[" "]
       SP1VNET["Spoke VNet (CELL-001)"]
       AGW1["Application Gateway (WAF)"]
       CAE1["Container Apps Env\n(VNet-injected)"]
@@ -215,7 +218,7 @@ flowchart TB
 
     subgraph "Workload LZ - Spoke (CELL-002 Subscription)"
       direction TB
-      sp2_spacer[""]
+      sp2_spacer[" "]
       SP2VNET["Spoke VNet (CELL-002)"]
       AGW2["Application Gateway (WAF)"]
       CAE2["Container Apps Env\n(VNet-injected)"]
@@ -252,9 +255,6 @@ flowchart TB
   CAE2 -.-> PEP_SQL2
   CAE2 -.-> PEP_ST2
   CAE2 -.-> PEP_KV2
-
-  %% Hidden class to keep spacers invisible
-  classDef hidden fill:transparent,stroke:transparent,color:transparent;
   class hub_spacer,ss_spacer,sp1_spacer,sp2_spacer hidden;
 ```
 
