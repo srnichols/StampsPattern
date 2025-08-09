@@ -225,9 +225,9 @@ This solution is designed for:
 | 🚀 Deployment Guide | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |
 | ⚙️ Operations Guide | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
 | 🛡️ Security Guide | Security baseline, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./docs/SECURITY_GUIDE.md) |
-| � Azure Landing Zones Guide | Placement within ALZ (MG hierarchy, guardrails, IaC) | Platform/ALZ Teams, Solution Architects | [LANDING_ZONES_GUIDE.md](./docs/LANDING_ZONES_GUIDE.md) |
+| 🏆 CAF/WAF Compliance | Enterprise compliance scorecard and framework alignment | C-Level, Enterprise Architects | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) |
+| 🌐 Azure Landing Zones Guide | Placement within ALZ (MG hierarchy, guardrails, IaC) | Platform/ALZ Teams, Solution Architects | [LANDING_ZONES_GUIDE.md](./docs/LANDING_ZONES_GUIDE.md) |
 | 💰 Cost Optimization Guide | Cost levers, tenancy economics, scaling patterns | Architects, Finance, Platform Teams | [COST_OPTIMIZATION_GUIDE.md](./docs/COST_OPTIMIZATION_GUIDE.md) |
-| �🏆 CAF/WAF Compliance | Enterprise compliance scorecard and framework alignment | C-Level, Enterprise Architects | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) |
 | 📋 Naming Conventions | Resource naming standards and policy enforcement | All Teams | [NAMING_CONVENTIONS_GUIDE.md](./docs/NAMING_CONVENTIONS_GUIDE.md) |
 | 📝 Glossary | Key terms and concepts | All | [GLOSSARY.md](./docs/GLOSSARY.md) |
 | ❓ FAQ / Known Issues | Troubleshooting and common questions | All | [KNOWN_ISSUES.md](./docs/KNOWN_ISSUES.md) |
