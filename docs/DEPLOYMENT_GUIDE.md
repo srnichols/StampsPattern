@@ -989,6 +989,45 @@ curl -X GET "https://func-stamps-management.azurewebsites.net/api/GetTenantInfo/
 
 ---
 
+## 🧾 Production SaaS Checklist
+
+Use this quick checklist before promoting a test deployment to production. Cross‑reference the linked guides for details.
+
+- Printable one‑pager: [Production SaaS Checklist (PDF-friendly)](./one-pagers/production-saas-checklist.md)
+
+- Domain naming and uniqueness
+  - Implement global domain reservation to guarantee tenant domain uniqueness. See “Domain naming and global uniqueness” in the Management Portal Plan.
+  - Enforce reservation in the API layer (reject duplicates) and include cleanup on tenant delete.
+- Authentication and authorization
+  - Enable built‑in auth for Azure Container Apps and Functions; require login for all endpoints.
+  - Map Entra ID groups to application roles (e.g., platform.admin). Disable anonymous access and lock down CORS.
+  - Propagate platform roles to DAB; ensure non‑admins have read‑only or least‑privilege permissions.
+- API/DAB hardening
+  - Disable public schema mutation where not needed; restrict filters/projections; rate‑limit externally exposed routes via APIM/App Gateway.
+  - Turn off development features in production (verbose errors, GraphQL introspection if policy requires).
+- Data and Cosmos DB settings
+  - Validate partition keys (tenants: /tenantId, operations TTL, catalogs: /type). Keep composite indexes aligned with read patterns.
+  - Configure RU limits/auto‑scale, backup/restore (PITR), failover priority, and consistency as required.
+  - Use managed identity for all data access; store secrets in Key Vault only.
+- Networking and zero‑trust
+  - Private endpoints for data planes; VNET integration for Container Apps; restrict egress and inbound paths.
+  - WAF policies in front of public entry points; baseline DDoS and NSG rules; validate no public exposure for data services.
+- Observability and operations
+  - App Insights + Log Analytics wired; dashboards for availability/latency/error rate/Throttle (429) on Cosmos.
+  - Alerts for tenant‑critical SLOs, RU consumption, container restarts, and auth failures.
+- Resilience, DR, and readiness
+  - Region pairs defined; validate failover runbooks; periodic restore tests from backups.
+  - Chaos/latency drills on non‑prod; capacity and scale‑out rules reviewed.
+- Cost controls
+  - Budgets and anomaly alerts; log retention policies; image and artifact retention; scale bounds for ACA/jobs.
+- Governance and compliance
+  - Azure Policy (policy as code) assigned; Defender for Cloud recommendations addressed; audit logs retained.
+
+References:
+- Management Portal Plan: Domain reservation and control‑plane data model (./MANAGEMENT_PORTAL_PLAN.md)
+- Security Baseline: Zero‑trust, identity, and network controls (./SECURITY_GUIDE.md)
+- Parameterization: Organization/geography/DNS inputs (./PARAMETERIZATION_GUIDE.md)
+
 ## 🛠️ Troubleshooting Common Issues
 
 ### ❌ **Issue 1: Resource Name Conflicts**
@@ -1076,6 +1115,7 @@ az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAM
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
+- [Production SaaS Checklist — One‑Pager](./one-pagers/production-saas-checklist.md)
 
 ---
 
