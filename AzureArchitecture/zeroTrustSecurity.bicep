@@ -66,11 +66,11 @@ resource zeroTrustNSG 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
           direction: 'Inbound'
         }
       }
-      // Allow internal communication between app services
+  // Allow internal communication within workload subnet(s)
       {
         name: 'AllowInternalComm'
         properties: {
-          description: 'Allow internal communication between app services'
+          description: 'Allow internal communication within workload subnet(s)'
           protocol: 'Tcp'
           sourcePortRange: '*'
           destinationPortRanges: ['80', '443']

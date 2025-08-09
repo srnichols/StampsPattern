@@ -80,4 +80,23 @@ public class InMemoryDataService : IDataService
         Operations.RemoveAll(o => o.Id == id);
         return Task.CompletedTask;
     }
+
+    // Catalogs / Domain reservations (in-memory)
+    private static readonly HashSet<string> ReservedDomains = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "contoso.com", "fabrikam.io"
+    };
+
+    public Task<bool> ReserveDomainAsync(string domain, string ownerTenantId, CancellationToken ct = default)
+    {
+        if (ReservedDomains.Contains(domain)) return Task.FromResult(false);
+        ReservedDomains.Add(domain);
+        return Task.FromResult(true);
+    }
+
+    public Task ReleaseDomainAsync(string domain, CancellationToken ct = default)
+    {
+        ReservedDomains.Remove(domain);
+        return Task.CompletedTask;
+    }
 }

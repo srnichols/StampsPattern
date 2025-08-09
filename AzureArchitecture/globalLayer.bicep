@@ -96,7 +96,7 @@ resource functionStorage 'Microsoft.Storage/storageAccounts@2022-09-01' = [for a
   properties: {}
 }]
 
-// App Service Plans for Function Apps
+// Consumption (Dynamic) plans for Azure Functions (not Web Apps)
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = [for app in functionApps: {
   name: '${app.name}-plan'
   location: app.location

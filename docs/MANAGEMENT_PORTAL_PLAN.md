@@ -101,7 +101,7 @@ Partitioning & Transactions
 - Services
   - Azure Container Apps Environment (global mgmt)
   - Container App: Blazor Portal
-  - Container App or App Service: DAB API
+  - Container App: DAB API (preferred). App Service optional alternative if required.
   - Azure Functions (Consumption/Premium) for command handlers
   - Cosmos DB account + DB + containers
   - Event Grid topic (optional initially)

@@ -9,9 +9,10 @@
     "connection-string": "@env('COSMOS_CONNECTION_STRING')"
   },
   "runtime": {
-    "rest": { "enabled": true, "path": "/api" },
-    "graphql": { "enabled": true, "path": "/graphql" },
-    "cors": { "origins": ["*"], "allow-credentials": false }
+  "rest": { "enabled": true, "path": "/api" },
+  "graphql": { "enabled": true, "path": "/graphql" },
+  "cors": { "origins": ["*"], "allow-credentials": false },
+  "authentication": { "provider": "AppService" }
   },
   "entities": {
     "Tenant": {

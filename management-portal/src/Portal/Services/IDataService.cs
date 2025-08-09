@@ -22,4 +22,8 @@ public interface IDataService
     Task<Operation> CreateOperationAsync(Operation op, CancellationToken ct = default);
     Task<Operation> UpdateOperationAsync(Operation op, CancellationToken ct = default);
     Task DeleteOperationAsync(string id, string partitionKey, CancellationToken ct = default);
+
+    // Catalogs / Domain reservations
+    Task<bool> ReserveDomainAsync(string domain, string ownerTenantId, CancellationToken ct = default);
+    Task ReleaseDomainAsync(string domain, CancellationToken ct = default);
 }

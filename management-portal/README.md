@@ -2,6 +2,13 @@
 
 Run locally with one command or via the AppHost. Defaults to in-memory data; set DAB_GRAPHQL_URL to point to your Data API Builder GraphQL endpoint to use real data.
 
+## Auth and roles (production)
+
+- Hosting: Azure Container Apps (ACA) for the portal and DAB API; Azure Functions for command handlers.
+- DAB auth provider: AppService (uses Easy Auth-compatible headers). In ACA and Functions, enable the built-in authentication and require login.
+- Roles in DAB: `authenticated` (read) and `platform.admin` (CRUD).
+- Map Entra ID security groups to roles via `X-MS-CLIENT-PRINCIPAL` claims emitted by ACA/Functions auth. Ensure your admin group objectId resolves to `platform.admin`.
+
 ## Local Run (one command)
 - Start: pwsh -File .\scripts\run-local.ps1
 - Stop: pwsh -File .\scripts\stop-local.ps1
@@ -36,3 +43,11 @@ Troubleshooting
 ## CRUD
 - Tenants, Cells, and Operations pages support create/update/delete when GraphQL is enabled (DAB provides mutations).
 - For in-memory mode, operations affect only the running process.
+
+## Smoke test (GraphQL)
+
+After starting the local stack, run a minimal CRUD test against DAB:
+
+- pwsh -File .\scripts\graphql-smoke-test.ps1 -AsAdmin
+
+The script lists tenants, creates a temporary tenant, and deletes it (using partitionKeyValue = tenantId). Use -AsAdmin to simulate the `platform.admin` role via X-MS-CLIENT-PRINCIPAL.
