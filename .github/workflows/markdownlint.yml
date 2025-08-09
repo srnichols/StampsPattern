@@ -2,13 +2,17 @@ name: Markdown Lint
 
 on:
   pull_request:
-    branches: [ master ]
+    branches:
+      - main
+      - master
     paths:
       - '**/*.md'
       - '.github/workflows/markdownlint.yml'
       - '.markdownlint.jsonc'
   push:
-    branches: [ master ]
+    branches:
+      - main
+      - master
     paths:
       - '.markdownlint.jsonc'
   workflow_dispatch: {}

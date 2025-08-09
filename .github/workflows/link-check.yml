@@ -1,17 +1,12 @@
 name: Docs Link Check
 
 on:
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '**/*.md'
-      - '.github/workflows/link-check.yml'
-      - 'lychee.toml'
   push:
     branches: [ master ]
     paths:
       - '.github/workflows/link-check.yml'
       - 'lychee.toml'
+      - '**/*.md'
   workflow_dispatch: {}
 
 concurrency:
