@@ -48,7 +48,7 @@ Last updated: August 2025
 
 ---
 
-## �️ Control-plane Data Model (Cosmos DB)
+## 🗂️ Control-plane Data Model (Cosmos DB)
 
 This portal uses a control-plane Cosmos DB database (`stamps-control-plane`) to store tenant metadata, cell registry, and long‑running operations.
 
@@ -65,6 +65,8 @@ Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
 ### 📘 Entity shapes (JSON examples)
 
 - Tenants (container: `tenants`, pk: `/pk` today → `/tenantId` recommended)
+
+  ```jsonc
   {
     "id": "contoso",
     "pk": "contoso",           // current pk value (maps to /pk)
@@ -83,8 +85,11 @@ Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
     "createdAt": "2025-08-01T10:00:00Z",
     "updatedAt": "2025-08-01T10:00:00Z"
   }
+  ```
 
 - Cells (container: `cells`, pk: `/pk` today → `/cellId` recommended)
+
+  ```jsonc
   {
     "id": "cell-eastus-1",
     "pk": "cell-eastus-1",
@@ -96,8 +101,11 @@ Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
     "capacityTotal": 100,
     "features": { "dedicated": false, "zones": 3 }
   }
+  ```
 
 - Operations (container: `operations`, pk: `/pk` today → `/tenantId` recommended)
+
+  ```jsonc
   {
     "id": "op-001",
     "pk": "contoso",               // current pk → tenantId
@@ -112,13 +120,17 @@ Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
     "updatedAt": "2025-08-01T10:20:00Z",
     "error": null
   }
+  ```
 
 - Catalogs (container: `catalogs`, pk: `/type`) — recommended addition
+
+  ```jsonc
   {
     "id": "tiers-v1",
     "type": "tiers",
     "values": ["startup", "smb", "enterprise"]
   }
+  ```
 
 ### 🧩 Relationships (ER view)
 
@@ -167,8 +179,20 @@ erDiagram
   - Tenants: `domain` should be unique. Note Cosmos unique keys are per-partition; with pk `/tenantId` they won’t enforce global uniqueness.
   - Recommended: Reserve domains in `catalogs` (type: `domains`, id: `<domain>`). Create reservation before tenant create; delete on decommission.
 - Domain reservation flow (GraphQL)
-  mutation ReserveDomain($d: Catalog_input!) { createCatalog(item: $d) { id } }
-  // $d = { id: "contoso.com", type: "domains" }
+
+  ```graphql
+  mutation ReserveDomain($d: Catalog_input!) {
+    createCatalog(item: $d) { id }
+  }
+  ```
+
+  Variables:
+
+  ```json
+  {
+    "d": { "id": "contoso.com", "type": "domains" }
+  }
+  ```
 - TTL
   - Apply TTL on `operations` (e.g., 60–90 days) to control storage costs; exempt retained/compliance operations by setting `ttl = -1` per item
 
@@ -178,7 +202,7 @@ See also: `management-portal/infra/management-portal.bicep` and `docs/MANAGEMENT
 
 ---
 
-## �🖼️ Visual Workflows
+## 🖼️ Visual Workflows
 
 ### 🚀 Tenant Onboarding Flow
 
