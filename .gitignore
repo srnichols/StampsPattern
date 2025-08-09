@@ -4,6 +4,7 @@
 !*.parameters.json.example
 !config/azure-region-mapping.json
 !traffic-routing.parameters.json
+!**/bicepconfig.json
 
 # User-specific files
 *.docx
