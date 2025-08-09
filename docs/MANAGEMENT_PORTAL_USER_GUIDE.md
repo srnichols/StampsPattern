@@ -1,25 +1,25 @@
 # 🧭 Management Portal - User Guide
 
----
----
-
 Last updated: August 2025
+
+---
 
 ## 👤 Who Should Read This Guide?
 
-- Platform administrators
-- Operators/SREs
-- Support engineers
+- Platform administrators (platform.admin)
+- Operators/SREs (operator)
+- Support engineers (reader)
 
 ---
 
-## ✅ Prerequisites
+## 🎯 What You Can Do With The Portal
 
-- Entra ID account with one of the following roles:
-  - Platform.Admin (full admin)
-  - Operator (manage routing and operations)
-  - Reader (read-only)
-- Network access to the portal URL
+- Onboard new tenants with validated placement and naming
+- Update routing strategy and traffic weights per tenant
+- Migrate tenants between cells (shared → dedicated or cell-to-cell)
+- Suspend/resume and decommission tenants with auditability
+- Review cell health/capacity and constrain new placements
+- Track long‑running operations and review outcomes/errors
 
 ---
 
@@ -27,16 +27,73 @@ Last updated: August 2025
 
 | Section | Focus Area | Time | Best for |
 |---|---|---:|---|
-| [📚 Concepts](#-concepts) | Tenant, Cell, Operation | 3 min | All |
-| [🚀 Onboard a Tenant](#-onboarding-a-new-tenant) | Create and validate tenants | 5 min | Admins |
-| [🧩 Routing Rules](#-updating-routing-rules) | Routing strategies and weights | 4 min | Operators |
-| [🔁 Tenant Migration](#-migrating-a-tenant) | Shared → Dedicated or cell-to-cell | 6 min | Admins, Ops |
-| [⏸️ Suspend/Resume](#-suspendingresuming-a-tenant) | Lifecycle controls | 2 min | Ops |
-| [🗑️ Decommission](#-decommissioning-a-tenant) | Offboarding with retention | 3 min | Admins |
-| [🏠 Manage Cells](#-managing-cells) | Health, capacity, constraints | 4 min | Ops |
-| [🧾 Audit & Reporting](#-audit--reporting) | Changes and exports | 3 min | Compliance |
-| [🛠️ Troubleshooting](#-troubleshooting) | Common fixes | 3 min | Support |
-| [❓ FAQ](#-faq) | Quick answers | 3 min | All |
+| [Overview & Architecture](#-overview--architecture) | How it works end‑to‑end | 4 min | All |
+| [Roles & Authentication](#-roles--authentication) | Sign‑in and permissions | 3 min | Admins, Ops |
+| [Local Development](#-local-development) | Run locally and smoke test | 4 min | Devs, Ops |
+| [Concepts](#-concepts) | Tenant, Cell, Operation | 3 min | All |
+| [Data Model](#-control-plane-data-model-cosmos-db) | Entities and JSON shapes | 6 min | Admins, Devs |
+| [Workflows](#-workflows) | Onboarding/Migration/etc. | 7 min | Admins, Ops |
+| [API (GraphQL)](#-api-graphql-quick-reference) | Examples and headers | 5 min | Devs |
+| [Domain Naming (Test vs Prod)](#-domain-naming-test-vs-production) | Reservation policy | 3 min | Admins |
+| [Troubleshooting](#-troubleshooting) | Common fixes | 4 min | Support |
+| [Related Guides](#-related-guides) | Deep dives | 2 min | All |
+
+---
+
+## 🏗️ Overview & Architecture
+
+The Management Portal is a thin control‑plane app for administering tenants and cells. It exposes safe, role‑scoped CRUD over a Cosmos DB data model via Data API Builder (DAB), and optionally kicks off operational workflows via Azure Functions.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart LR
+  U[Operator/Admin] -->|OIDC (Entra ID)| P[Blazor Server Portal]
+  P -->|HTTP + headers| DAB[(Data API Builder)]
+  DAB -->|GraphQL/REST| C[(Cosmos DB\ncontrol-plane)]
+  P -->|Commands| F[Azure Functions]
+  F -->|Automation| AZ[Azure Resources\n(CELL infra)]
+
+  subgraph Hosting
+    ACA[Azure Container Apps] --- P
+    ACA --- DAB
+    KV[Key Vault]:::kv
+    AI[App Insights]:::ai
+  end
+
+  classDef kv fill:#F3F4F6,stroke:#94A3B8,color:#1F2937
+  classDef ai fill:#F3F4F6,stroke:#94A3B8,color:#1F2937
+```
+
+Key points:
+- Hosting: Azure Container Apps for Portal and DAB; Azure Functions for ops
+- Auth: Built‑in auth (Easy Auth model) emits headers that DAB consumes
+- Data: Cosmos (NoSQL) with explicit partition keys and TTL for operations
+- Observability: App Insights + Log Analytics wired across components
+
+---
+
+## 🔐 Roles & Authentication
+
+- Sign‑in: Entra ID via built‑in auth on Azure Container Apps and Functions
+- Role mapping: Entra ID groups → application roles (platform.admin, operator, reader)
+- DAB auth: Provider is set to accept Easy Auth compatible headers
+  - Example headers: `X-MS-CLIENT-PRINCIPAL`, `X-MS-CLIENT-PRINCIPAL-IDP`
+  - DAB authorizes mutations to admins only; readers/operators are scoped
+- CORS: Restrict to trusted origins in production
+
+Tip (local testing): The `scripts/graphql-smoke-test.ps1` simulates roles by injecting Easy Auth headers; use `-AsAdmin` for admin flows.
+
+---
+
+## 🧪 Local Development
+
+- Prereqs: PowerShell 7+, Cosmos DB Emulator (or live), Node (for DAB if needed)
+- Start locally:
+  - `scripts/run-local.ps1` spins up the portal, DAB, and points to your emulator/instance
+  - `scripts/graphql-smoke-test.ps1` validates list/create/delete paths; `-AsAdmin` sets platform.admin
+- Seeder: The management data seeder aligns with current partition keys; run it to bootstrap sample cells/tenants.
+
+> Troubleshooting tip: If GraphQL denies a mutation, verify your headers (role) and the entity’s partition key fields in variables.
 
 ---
 
@@ -202,9 +259,14 @@ See also: `management-portal/infra/management-portal.bicep` and `docs/MANAGEMENT
 
 ---
 
-## 🖼️ Visual Workflows
+## 🔄 Workflows
 
-### 🚀 Tenant Onboarding Flow
+### 🚀 Tenant Onboarding
+
+1. Open Tenants → New Tenant
+2. Provide: Tenant ID (immutable), Display Name, Domain, Tier, Compliance, Placement (Cell/Region/AZ), Base Domain, APIM Product (optional)
+3. Save to create the record; an event may be emitted (`TenantCreated`) for infra automation
+4. If production domain uniqueness is required, reserve domain first (see [Domain Naming](#-domain-naming-test-vs-production))
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
@@ -218,7 +280,19 @@ flowchart TD
   emit --> done(["Done"])
 ```
 
-### 🔁 Tenant Migration (Shared → Dedicated or Cell-to-Cell)
+### 🧩 Update Routing Rules
+
+1. Tenants → Select → Routing tab
+2. Choose strategy (geo, performance, compliance) and base domain
+3. Optional: Set weights for multi‑homing
+4. Save; a `RouteUpdated` event can be emitted for downstream sync
+
+### 🔁 Tenant Migration (Shared → Dedicated or Cell‑to‑Cell)
+
+1. Tenants → Select → Actions → Migrate Tenant
+2. Choose destination cell and confirm compliance
+3. Operation created with steps: provisionTarget → syncData → drainAndCutover → validate
+4. Track progress; approve or rollback as needed
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
@@ -237,106 +311,90 @@ sequenceDiagram
   P-->>U: Approve/Complete
 ```
 
-### 🧩 Routing Strategy Decision
+### ⏸️ Suspend/Resume & 🗑️ Decommission
 
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-flowchart TD
-  input_req["Routing Update Request"] --> strategy{"Strategy"}
-  strategy -->|"Geo"| geo_node["Geo-based Rule"]
-  strategy -->|"Performance"| perf_node["Latency-based Rule"]
-  strategy -->|"Compliance"| comp_node["Compliance Region Pinning"]
-  geo_node --> save["Save + Emit RouteUpdated"]
-  perf_node --> save
-  comp_node --> save
-  save --> done(["Done"])
-```
+- Suspend/Resume from Tenant → Actions; traffic behavior follows policy
+- Decommission executes export/retention as configured and marks tenant decommissioned
 
 ---
 
-## 🚀 Onboarding a New Tenant
+## 🔌 API (GraphQL) Quick Reference
 
-1. Open the portal and navigate to Tenants → New Tenant
-2. Provide:
-   - Tenant ID (immutable) and Display Name
-   - Organization Domain (e.g., contoso.com)
-   - Tier (startup/smb/enterprise)
-   - Compliance Flags (HIPAA, PCI, GDPR)
-   - Initial Placement (Cell, Geo/Region, AZ)
-   - Base Domain and APIM Product (if applicable)
-3. Save to create the tenant record
-4. Monitor status; the system emits a TenantCreated event (infra automation optional)
+Headers (Easy Auth compatible) used by DAB for auth:
+- `X-MS-CLIENT-PRINCIPAL` (base64 JSON with claims/roles)
+- `X-MS-CLIENT-PRINCIPAL-IDP`
 
-### ✅ Validations
+Examples:
 
-- Tenant ID must be unique
-- Placement must reference an existing Cell
-- Compliance + region pinning rules enforced
+- List Tenants
 
----
+  ```graphql
+  query ListTenants {
+    tenants { items { id tenantId displayName domain status cellId tier } }
+  }
+  ```
 
-## 🧩 Updating Routing Rules
+- Create Tenant (admin only; provide partition key fields)
 
-1. Open Tenants → Select Tenant → Routing tab
-2. Update strategy (geo, performance, compliance) and base domain
-3. (Optional) Set traffic weights when multi-homing
-4. Save; a RouteUpdated event is emitted
+  ```graphql
+  mutation CreateTenant($t: Tenant_input!) {
+    createTenant(item: $t) { id tenantId domain status }
+  }
+  ```
 
----
+  Variables:
 
-## 🔁 Migrating a Tenant
+  ```json
+  {
+    "t": {
+      "id": "contoso",
+      "tenantId": "contoso",
+      "displayName": "Contoso",
+      "domain": "contoso.com",
+      "status": "active",
+      "tier": "enterprise",
+      "cellId": "cell-eastus-1"
+    }
+  }
+  ```
 
-1. Open Tenants → Select Tenant → Actions → Migrate Tenant
-2. Choose destination Cell and confirm compliance
-3. The portal creates a Migration Operation with steps:
-   - provisionTarget → syncData → drainAndCutover → validate
-4. Track progress under Operations; approve/rollback as needed
+- Reserve Domain (recommended for production)
 
----
+  ```graphql
+  mutation ReserveDomain($d: Catalog_input!) { createCatalog(item: $d) { id } }
+  ```
 
-## ⏸️ Suspending/Resuming a Tenant
+  Variables:
 
-- From Tenant page: Actions → Suspend (or Resume)
-- Status updates reflect immediately; traffic may be shed/blocked per policy
+  ```json
+  { "d": { "id": "contoso.com", "type": "domains" } }
+  ```
 
----
-
-## 🗑️ Decommissioning a Tenant
-
-- From Tenant page: Actions → Decommission → Confirm
-- Data export/retention executed per policy; status moves to decommissioned
-
----
-
-## 🏠 Managing Cells
-
-- Navigate to Cells:
-  - Review health, capacity, and utilization snapshots
-  - Mark Cell as constrained to prevent new placements
+Tip: Use `scripts/graphql-smoke-test.ps1 -AsAdmin` to simulate admin role locally.
 
 ---
 
-## 🧾 Audit & Reporting
+## 🌐 Domain Naming (Test vs Production)
 
-- Operations log lists who changed what, when
-- Export audit trail for compliance reviews
+- Test framework: No global domain reservation required. Use Azure base domains/hostnames for Container Apps/Functions.
+- Production: Implement global domain reservation to guarantee uniqueness across tenants. Enforce in API (reject duplicates) and clean up on decommission.
+  - Pattern: `catalogs` container with `type = "domains"`, `id = <domain>` as reservation
+  - See: Management Portal Plan → “Domain naming and global uniqueness”
+  - Also see: Deployment Guide → “🧾 Production SaaS Checklist — One‑Pager”
 
 ---
 
 ## 🛠️ Troubleshooting
 
-- If changes don’t appear immediately, refresh (Cosmos eventual consistency)
-- Check App Insights for errors (portal/backend)
-- For migration failures: review Operation details → retry failed step or rollback
+- 401/403 on mutations: Check role headers and that DAB maps your roles correctly
+- GraphQL errors mentioning partition keys: Ensure required key fields (e.g., tenantId) are present in variables
+- Domain conflict in production: Verify reservation exists or clear stale reservation on tenant delete
+- Cosmos throttling (429): Review RU settings/auto‑scale and indexes; watch App Insights logs
+- Nothing changes right away: Cosmos eventual consistency; refresh or re‑query
 
----
-
-## ❓ FAQ
-
-- Q: Can I change the Tenant ID?
-  - A: No. Tenant ID is immutable; use Display Name for changes.
-- Q: Can I move tenants across geos with compliance flags?
-  - A: Not unless the policy allows; the portal will block or require an exception.
+Known limitations:
+- Cosmos unique keys are per partition; use catalogs‑based reservation for global uniqueness
+- GraphQL introspection may be disabled in strict environments
 
 ---
 
@@ -346,3 +404,5 @@ flowchart TD
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Security Guide](./SECURITY_GUIDE.md)
+- [Management Portal Plan](./MANAGEMENT_PORTAL_PLAN.md)
+- [Production SaaS Checklist — One‑Pager](./one-pagers/production-saas-checklist.md)
