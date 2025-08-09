@@ -33,7 +33,26 @@ Practical ways to reduce spend across compute, storage, networking, data, and op
 
 ---
 
+Last updated: August 2025
+
+
 ## 📚 For Newcomers
+Caption: Visual comparison of monthly costs across deployment models and scales.
+
+
+Caption: Workflow to right-size global edge and data replication for cost.
+
+
+Caption: Cost trade-offs of shared, dedicated, and hybrid database models.
+
+
+Caption: Strategic loop for continuous cost optimization.
+
+
+Caption: Auto-scaling decision flow with cost impact.
+
+
+Caption: Budget hierarchy and alert thresholds to prevent overruns.
 
 **What is this guide for?**
 > This guide is your onboarding reference for understanding and optimizing costs in the Azure Stamps Pattern. It explains key cost drivers, provides visual breakdowns, and offers step-by-step workflows for reducing spend and maximizing ROI.

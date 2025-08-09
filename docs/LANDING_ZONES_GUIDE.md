@@ -55,6 +55,8 @@ graph LR
   control -.-> cell_ded
 ```
 
+Caption: High-level placement of global edge, control plane, and CELL subscriptions across landing zones.
+
 ---
 
 ## 🗂️ Management Groups and Subscriptions
@@ -96,6 +98,8 @@ graph TD
   lz_mg --> sandbox_mg["Sandbox MG"]
   online_mg --> workload_cells["Workload Cell Subscriptions"]
 ```
+
+Caption: CAF-aligned management group hierarchy and subscription layout.
 
 ### 📦 Subscriptions at a Glance
 
