@@ -1016,10 +1016,10 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Known Issues](./KNOWN_ISSUES.md)
 - [All Docs Index](./DOCS.md)
 
-- <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/" target="_blank" rel="noopener">Azure Cloud Adoption Framework</a>
-- <a href="https://learn.microsoft.com/azure/architecture/framework/" target="_blank" rel="noopener">Azure Well-Architected Framework</a>
-- <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener">Azure Security Benchmark</a>
-- <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener">Azure Naming Conventions</a>
+- <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Cloud Adoption Framework</a> <sup>↗</sup>
+- <a href="https://learn.microsoft.com/azure/architecture/framework/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Well-Architected Framework</a> <sup>↗</sup>
+- <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Security Benchmark</a> <sup>↗</sup>
+- <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener" title="Opens in a new tab">Azure Naming Conventions</a> <sup>↗</sup>
 
 ---
 

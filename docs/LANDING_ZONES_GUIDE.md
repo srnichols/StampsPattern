@@ -245,8 +245,8 @@ flowchart TB
   SP2VNET -. "name resolution" .-> PDNS
 
   %% Optional: traffic inspection via Azure Firewall
-  SP1VNET -. default route/inspection .-> AFW
-  SP2VNET -. default route/inspection .-> AFW
+  SP1VNET -. "default route/inspection" .-> AFW
+  SP2VNET -. "default route/inspection" .-> AFW
 
   %% Private endpoints to data services within spokes
   CAE1 -.-> PEP_SQL1
@@ -459,4 +459,5 @@ flowchart LR
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
 
 - Azure CAF – Landing Zones: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">docs</a>
-- Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener">docs</a>
+  <sup>↗</sup>
+- Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener" title="Opens in a new tab">docs</a> <sup>↗</sup>
