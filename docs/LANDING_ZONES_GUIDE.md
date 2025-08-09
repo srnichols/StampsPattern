@@ -181,9 +181,15 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
-  %% Top row: Platform/Connectivity beside Shared Services (Edge)
+  %% Top section: stack Shared Services above Platform/Connectivity (portrait)
   subgraph "Edge and Connectivity"
-    direction LR
+    direction TB
+
+    subgraph "Shared Services (Edge)"
+      direction TB
+      FD["🌍 Azure Front Door"]
+      APIM["🔌 API Management (Global)"]
+    end
 
     subgraph "Platform / Connectivity (Hub Subscription)"
       direction TB
@@ -191,12 +197,6 @@ flowchart TB
       AFW["🧱 Azure Firewall"]
       PDNS["🔏 Private DNS Zones"]
       DDOS["🛡️ DDoS Protection Plan"]
-    end
-
-    subgraph "Shared Services (Edge)"
-      direction TB
-      FD["🌍 Azure Front Door"]
-      APIM["🔌 API Management (Global)"]
     end
   end
 
@@ -251,6 +251,9 @@ flowchart TB
   CAE2 -.-> PEP_SQL2
   CAE2 -.-> PEP_ST2
   CAE2 -.-> PEP_KV2
+
+  %% Layout helper to stack spokes vertically (subtle dotted connector)
+  PEP_KV1 -.-> SP2VNET
 ```
 
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
