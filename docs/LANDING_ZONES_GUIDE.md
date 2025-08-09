@@ -181,40 +181,49 @@ Learn more:
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
+  %% Hidden style for layout anchors
+  classDef hidden fill:transparent,stroke:transparent,color:transparent;
+
   %% Top: Edge and connectivity
   subgraph "Edge and Connectivity"
     direction TB
-    FD["Azure Front Door"]
-    APIM["API Management (Global)"]
+    TopA[" "]
+    FD["Front Door"]
+    APIM["APIM (Global)"]
   end
 
   %% Middle: Workloads (stacked spokes)
   subgraph "Workloads"
     direction TB
-    subgraph "Spoke: CELL-001"
+    MidA[" "]
+    subgraph "Spoke CELL-001"
       direction TB
-      SP1VNET["Spoke VNet (CELL-001)"]
-      AGW1["App Gateway (WAF)"]
+      SP1VNET["VNet<br/>(CELL-001)"]
+      AGW1["App Gateway<br/>(WAF)"]
       CAE1["Container Apps Env"]
-      PEP1["Private Endpoints (SQL/Storage/KV)"]
+      PEP1["Private Endpoints<br/>(SQL/Storage/KV)"]
     end
-    subgraph "Spoke: CELL-002"
+    subgraph "Spoke CELL-002"
       direction TB
-      SP2VNET["Spoke VNet (CELL-002)"]
-      AGW2["App Gateway (WAF)"]
+      SP2VNET["VNet<br/>(CELL-002)"]
+      AGW2["App Gateway<br/>(WAF)"]
       CAE2["Container Apps Env"]
-      PEP2["Private Endpoints (SQL/Storage/KV)"]
+      PEP2["Private Endpoints<br/>(SQL/Storage/KV)"]
     end
   end
 
   %% Bottom: Hub VNet and shared services
-  subgraph "Hub VNet and Security"
+  subgraph "Hub (Connectivity)"
     direction TB
+    BotA[" "]
     HUBVNET["Hub VNet"]
-    PDNS["Private DNS Zones"]
+    PDNS["Private DNS"]
     AFW["Azure Firewall"]
-    DDOS["DDoS Protection Plan"]
+    DDOS["DDoS Plan"]
   end
+
+  %% Anchor chain to enforce top-middle-bottom stacking
+  TopA --> MidA --> BotA
 
   %% Flows from Edge to Workloads
   FD --> APIM
@@ -238,6 +247,9 @@ flowchart TD
   %% Private endpoints aggregation per spoke
   CAE1 -.-> PEP1
   CAE2 -.-> PEP2
+
+  %% Hide anchors
+  class TopA,MidA,BotA hidden;
 ```
 
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
