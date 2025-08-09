@@ -33,3 +33,9 @@ Or use the helper to run What-If by profile (smoke/dev/prod):
 ```powershell
 ./scripts/what-if.ps1 -Profile smoke -ResourceGroup rg-stamps-smoke -Location eastus
 ```
+
+To deploy by profile (smoke/dev/prod):
+
+```powershell
+./scripts/deploy.ps1 -Profile smoke -ResourceGroup rg-stamps-smoke -Location eastus
+```
