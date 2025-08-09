@@ -94,6 +94,7 @@ flowchart TB
     
     AG1 --> CA1
     AG1 --> CA2
+    AG1 --> CA3
     AG2 --> CELL4
     
     %% Data Layer Connections
