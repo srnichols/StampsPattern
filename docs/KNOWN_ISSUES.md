@@ -211,6 +211,22 @@ az deployment group create \
 
 ---
 
+### Issue: Storage diagnostics categories unsupported in smoke
+
+**Problem**: Storage diagnostic log categories vary by storage kind/SKU. In some subscriptions/regions, neither Blob* nor Storage* categories were accepted for the existing account used in smoke deployments, causing deployment failures like:
+
+```
+BadRequest: Category 'StorageRead' is not supported
+```
+
+**Resolution (Smoke)**: For smoke deployments, enable metrics-only for Storage diagnostics to avoid category mismatches. This preserves observability while keeping deployments reliable and fast.
+
+**Notes**:
+- This applies only to smoke. For full environments, switch to explicit categories appropriate for the storage kind (Blob* for BlockBlobStorage; Storage* for GPv2) once confirmed in your subscription/region.
+- The Bicep now emits only `AllMetrics` for Storage in smoke mode; revisit if you need detailed logs.
+
+---
+
 ## 🔧 Development Issues
 
 ### Issue: Cosmos DB Emulator Connection Failures
@@ -686,4 +702,4 @@ If you encounter issues not covered here:
 
 **🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to report issues, suggest improvements, or contribute fixes.
 
-*This document is updated regularly. Last updated: August 6, 2025*
+*This document is updated regularly. Last updated: August 9, 2025*
