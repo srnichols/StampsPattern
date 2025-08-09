@@ -1,12 +1,6 @@
-name: Docs Link Check
+name: Docs Link Check (Manual Only)
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-      - '.github/workflows/link-check.yml'
-      - 'lychee.toml'
-      - '**/*.md'
   workflow_dispatch: {}
 
 concurrency:
