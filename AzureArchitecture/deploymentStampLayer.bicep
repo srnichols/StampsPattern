@@ -59,6 +59,9 @@ param enableApplicationGateway bool = false
 @description('Application Gateway subnet resource ID')
 param applicationGatewaySubnetId string = ''
 
+@description('Enable a per-cell Traffic Manager profile (disabled in smoke; global TM is managed in global layer)')
+param enableCellTrafficManager bool = false
+
 // ---------------- Data HA/DR Optional Parameters (all optional, safe defaults) ----------------
 // These apply to CELL-layer resources only. Global control plane data replication is configured
 // in the global layer and is not affected by these parameters.
@@ -116,9 +119,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
         status: 'enabled'
       }
     }
-    encryption: {
-      status: 'enabled'
-    }
+  // Use Microsoft-managed encryption by default in smoke; CMK can be configured post-deployment
   }
   tags: tags
 }
@@ -158,16 +159,19 @@ resource frontDoor 'Microsoft.Cdn/profiles@2023-05-01' = {
 var trafficManagerEndpoints = [
   for cell in frontDoorBackendPools: {
     name: cell.name
-    type: 'ExternalEndpoints'
+  // Use the fully qualified endpoint type per API spec
+  type: 'Microsoft.Network/trafficManagerProfiles/externalEndpoints'
     properties: {
       target: cell.backends[0].address
       endpointStatus: 'Enabled'
+  // Required for ExternalEndpoints with Performance routing
+  endpointLocation: location
     }
   }
 ]
 
 // Traffic Manager resource definition
-resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = {
+resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = if (enableCellTrafficManager) {
   name: 'myTrafficManager'
   location: 'global'
   properties: {
@@ -186,11 +190,12 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
 }
 
 // Compose Cosmos DB locations list (primary + any additional)
+// Map additional locations to Cosmos location objects (ensure parameters avoid duplicates of primary)
 var cosmosAdditionalLocationObjs = [
   for (loc, idx) in cosmosAdditionalLocations: {
-    locationName: loc
+    locationName: string(loc)
     failoverPriority: idx + 1
-  isZoneRedundant: cosmosZoneRedundant
+    isZoneRedundant: cosmosZoneRedundant
   }
 ]
 
@@ -268,7 +273,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   sku: {
   name: storageSkuName
   }
-  kind: 'StorageV2'
+  // Premium_ZRS requires kind BlockBlobStorage; otherwise use StorageV2
+  kind: storageSkuName == 'Premium_ZRS' ? 'BlockBlobStorage' : 'StorageV2'
   identity: {
     type: 'SystemAssigned'
   }
@@ -292,10 +298,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
           enabled: true
           keyType: 'Account'
         }
-        file: {
-          enabled: true
-          keyType: 'Account'
-        }
       }
       keySource: 'Microsoft.Storage'
     }
@@ -304,7 +306,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 }
 
 // Optional: Blob Object Replication Policy to destination account
-resource storageObjectReplication 'Microsoft.Storage/storageAccounts/objectReplicationPolicies@2021-09-01' = if (enableStorageObjectReplication && !empty(storageReplicationDestinationId)) {
+resource storageObjectReplication 'Microsoft.Storage/storageAccounts/objectReplicationPolicies@2021-09-01' = if (storageSkuName != 'Premium_ZRS' && enableStorageObjectReplication && !empty(storageReplicationDestinationId)) {
   parent: storageAccount
   name: 'cell-replication'
   properties: {
@@ -324,7 +326,8 @@ resource storageObjectReplication 'Microsoft.Storage/storageAccounts/objectRepli
 }
 
 // Storage lifecycle management policy for cost optimization
-resource storageLifecyclePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2022-09-01' = {
+// Not supported on Premium BlockBlobStorage
+resource storageLifecyclePolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2022-09-01' = if (storageSkuName != 'Premium_ZRS') {
   parent: storageAccount
   name: 'default'
   properties: {
@@ -779,7 +782,21 @@ resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
   scope: storageAccount
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
+    // Premium BlockBlobStorage uses Blob* categories; GPv2 uses Storage* categories
+    logs: storageSkuName == 'Premium_ZRS' ? [
+      {
+        category: 'BlobRead'
+        enabled: true
+      }
+      {
+        category: 'BlobWrite'
+        enabled: true
+      }
+      {
+        category: 'BlobDelete'
+        enabled: true
+      }
+    ] : [
       {
         category: 'StorageRead'
         enabled: true

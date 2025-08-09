@@ -210,9 +210,10 @@ module globalLayer './globalLayer.bicep' = {
     functionAppRegions: functionAppRegions
     globalControlCosmosDbName: globalControlCosmosDbName
     primaryLocation: primaryLocation
-    additionalLocations: additionalLocations
+  additionalLocations: additionalLocations
   cosmosZoneRedundant: !useHttpForSmoke // disable zones in lab if constrained
   enableGlobalFunctions: !useHttpForSmoke // skip Functions in smoke to avoid quota
+  enableGlobalCosmos: !useHttpForSmoke // skip global Cosmos in smoke to avoid regional capacity
   }
 }
 
@@ -300,12 +301,14 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
     name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-${cell.cellName}'
     params: {
       location: cell.regionName
-      sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+  sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       sqlAdminUsername: sqlAdminUsername
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-      storageAccountName: 'st${cell.geoName}${cell.regionName}${cell.cellName}'
-      keyVaultName: 'kv-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+  // Storage account names must be 3-24 chars, lowercase letters and numbers only
+  storageAccountName: toLower('st${uniqueString(resourceGroup().id, cell.regionName, cell.cellName)}')
+  // Key Vault names must be 3-24 alphanumeric only (no hyphens)
+  keyVaultName: toLower('kv${uniqueString(resourceGroup().id, 'kv', cell.regionName, cell.cellName)}')
       cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       tags: union(baseTags, {
         geo: cell.geoName
@@ -330,6 +333,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
   storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
   enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
   sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
+  enableCellTrafficManager: false
     }
     dependsOn: [
       regionalLayers

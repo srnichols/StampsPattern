@@ -47,6 +47,9 @@ param cosmosZoneRedundant bool = true
 @description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
 param enableGlobalFunctions bool = true
 
+@description('Enable deployment of the global control plane Cosmos DB (disable in smoke/lab to avoid regional capacity issues)')
+param enableGlobalCosmos bool = true
+
 // DNS Zone
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
@@ -63,7 +66,9 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
     profileStatus: 'Enabled'
     trafficRoutingMethod: 'Performance'
     dnsConfig: {
-      relativeName: dnsZoneName
+  // Traffic Manager requires a single-label relative name, not a FQDN.
+  // Derive a label from the dnsZoneName by taking the first label before the dot.
+  relativeName: split(toLower(dnsZoneName), '.')[0]
       ttl: 60
     }
     monitorConfig: {
@@ -83,6 +88,12 @@ resource frontDoor 'Microsoft.Cdn/profiles@2021-06-01' = {
   }
   tags: tags
 }
+
+@description('Enable diagnostic settings for Front Door (some categories may be restricted by SKU/region).')
+param enableFrontDoorDiagnostics bool = false
+
+@description('Enable diagnostic settings for Traffic Manager (categories vary; disabled in smoke).')
+param enableTrafficManagerDiagnostics bool = false
 
 // Define Function Apps array
 var functionApps = [for region in functionAppRegions: {
@@ -161,7 +172,7 @@ var cosmosDbLocations = concat(
   additionalCosmosDbLocations
 )
 
-resource globalControlCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
+resource globalControlCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = if (enableGlobalCosmos) {
   name: globalControlCosmosDbName
   location: primaryLocation
   kind: 'GlobalDocumentDB'
@@ -226,7 +237,7 @@ resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 }]
 
 // Diagnostics for Cosmos DB
-resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableGlobalCosmos) {
   name: 'cosmosdb-diagnostics'
   scope: globalControlCosmosDb
   properties: {
@@ -251,16 +262,13 @@ resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
 }
 
 // Diagnostics for Front Door
-resource frontDoorDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+resource frontDoorDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableFrontDoorDiagnostics) {
   name: 'frontdoor-diagnostics'
   scope: frontDoor
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
+    // Use categories commonly available; AccessLog may not be supported on all SKUs
     logs: [
-      {
-        category: 'FrontdoorAccessLog'
-        enabled: true
-      }
       {
         category: 'FrontdoorWebApplicationFirewallLog'
         enabled: true
@@ -276,16 +284,13 @@ resource frontDoorDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-
 }
 
 // Diagnostics for Traffic Manager
-resource trafficManagerDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+resource trafficManagerDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableTrafficManagerDiagnostics) {
   name: 'trafficmanager-diagnostics'
   scope: trafficManager
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
     logs: [
-      {
-        category: 'ProbeHealthStatus'
-        enabled: true
-      }
+      // Category availability varies; start with EndpointHealthStatus only
       {
         category: 'EndpointHealthStatus'
         enabled: true
@@ -301,25 +306,7 @@ resource trafficManagerDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-0
 }
 
 // Diagnostics for DNS Zone
-resource dnsZoneDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'dnszone-diagnostics'
-  scope: dnsZone
-  properties: {
-    workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
-      {
-        category: 'DnsQueries'
-        enabled: true
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-      }
-    ]
-  }
-}
+// Note: Microsoft.Network/dnsZones does not support diagnostic settings; removing unsupported diagnostics.
 
 // Outputs
 output functionAppNames array = [for app in functionApps: app.name]

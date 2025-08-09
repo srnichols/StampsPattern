@@ -30,6 +30,11 @@ param tags object = {}
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   name: publicIpName
   location: location
+  // Ensure the Public IP uses the same zones as the Application Gateway
+  zones: [
+    '1'
+    '2'
+  ]
   sku: {
     name: 'Standard'
     tier: 'Regional'

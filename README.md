@@ -148,7 +148,7 @@ flowchart TB
 
 ---
 
-Note: See CAF/WAF Compliance Analysis (./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the Azure Landing Zones Guide (./docs/LANDING_ZONES_GUIDE.md).
+Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
 
 ## 🚀 Quick Links
 
@@ -331,7 +331,7 @@ We welcome contributions! Please see our contribution guidelines:
 
 ---
 
-## � Contributors
+## 👥 Contributors
 
 <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab"><img src="https://img.shields.io/github/contributors/srnichols/StampsPattern" alt="Contributors" /></a>&nbsp;<sup>↗</sup>
 
@@ -341,7 +341,7 @@ Thanks to all the amazing people who have contributed to this project. Want to h
 
 ---
 
-## �📄 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

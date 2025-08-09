@@ -39,6 +39,9 @@ param automationAccountName string = '${appGatewayName}-automation'
 @description('Enable HTTPS listener for Application Gateway (set false for lab/smoke to use HTTP)')
 param enableHttps bool = true
 
+@description('Enable creation of a regional Automation Account (disabled in smoke)')
+param enableAutomation bool = false
+
 // Derived settings for HTTP/HTTPS toggling
 var frontendPortName = enableHttps ? 'httpsPort' : 'httpPort'
 var backendPort = enableHttps ? 443 : 80
@@ -208,6 +211,8 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
         name: 'cellRoutingRule'
         properties: {
           ruleType: 'PathBasedRouting'
+          // Priority is required starting from api-version 2021-08-01
+          priority: 100
           httpListener: {
             id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, listenerName)
           }
@@ -228,9 +233,11 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
 }
 
 // Azure Automation Account for regional automation and runbooks
-resource automationAccount 'Microsoft.Automation/automationAccounts@2020-01-13-preview' = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2020-01-13-preview' = if (enableAutomation) {
   name: automationAccountName
   location: location
+  // Minimal properties to satisfy API; using preview types can vary, so keep lean for smoke
+  properties: {}
   tags: tags
 }
 
@@ -244,7 +251,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2022-05-01' existing = {
 output regionalEndpointIpAddress string = publicIp.properties.ipAddress
 
 // Output the Automation Account resource ID for integration or runbook assignment
-output automationAccountId string = automationAccount.id
+output automationAccountId string = enableAutomation ? automationAccount.id : ''
 
 // Comments:
 // - Each CELL gets its own backend pool, HTTP settings, and health probe.
