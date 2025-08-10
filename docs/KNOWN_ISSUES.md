@@ -19,7 +19,7 @@ Practical fixes and workarounds for common issues across development, deployment
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, B2C | DevOps |
+| [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, External ID | DevOps |
 | [🔧 Development Issues](#-development-issues) | Emulator, Redis, local dev | Developers |
 | [⚡ Performance Issues](#-performance-issues) | JWT, Cosmos DB, scaling | DevOps |
 | [🔐 Security Issues](#-security-issues) | Defender, Key Vault | Security, DevOps |

@@ -174,6 +174,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 ### Reference & Support
 - 📖 Glossary: [GLOSSARY.md](./GLOSSARY.md)
 - 🧰 Known Issues: [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
+- 📰 Release Notes: [releases/](./releases)
 
 ### Archive
 - 🗄️ Recommendations Report: [archive/RECOMMENDATIONS_REPORT.md](./archive/RECOMMENDATIONS_REPORT.md)
@@ -310,6 +311,8 @@ journey
 | 🛠️ **Troubleshooting** | [Known Issues Guide](./KNOWN_ISSUES.md) | 400+ lines of practical solutions |
 | 💰 **Cost Optimization** | [Cost Optimization Guide](./COST_OPTIMIZATION_GUIDE.md) | Savings levers and staged models |
 | 🔐 **Developer Security** | [Developer Security Guide](./DEVELOPER_SECURITY_GUIDE.md) | JWT, MI, caching, and DI patterns |
+| 🧪 **Run Locally** | [Deployment Guide → Run locally](./DEPLOYMENT_GUIDE.md#-run-locally-functions--emulator) | Functions + Cosmos Emulator quick-start |
+| ✅ **CI What-If** | [Deployment Guide → CI Checks](./DEPLOYMENT_GUIDE.md#-ci-checks-bicep-lint-and-what-if) | Bicep lint and what-if workflows |
 
 ### ⚙️ **Operations Quick Links**
 | Task | Documentation | Time Required |

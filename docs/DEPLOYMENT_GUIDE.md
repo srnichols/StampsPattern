@@ -461,6 +461,7 @@ pwsh --version
   - EXTERNAL_ID_CLIENT_ID
   - EXTERNAL_ID_USER_FLOW
   - (Legacy B2C_* keys are still read for backward compatibility)
+  - Note: The `AzureArchitecture/b2c-setup.bicep` file is now an informational no‑op. External ID/B2C tenants cannot be created or linked via Bicep/ARM. Create and configure your tenant and user flows in the Azure portal.
 
 - **Azure subscription** with Contributor access
 - **Resource Provider registrations**:
@@ -1169,6 +1170,18 @@ az group delete --name $RESOURCE_GROUP_NAME --yes --no-wait
 az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAME --query "[?contains(type, 'Microsoft.Network')].id" -o tsv)
 ```
 
+### 🧪 Local Dev Cleanup
+```powershell
+# Stop local stack (Cosmos Emulator/DAB/Portal) if you started it
+pwsh -File ./scripts/stop-local.ps1
+
+# Optional: Clear Azurite local data used during functions development
+Remove-Item -LiteralPath "./AzureArchitecture/.azurite" -Recurse -Force -ErrorAction SilentlyContinue
+
+# Optional: Clean function app build artifacts
+dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
+```
+
 ---
 
 
@@ -1204,6 +1217,11 @@ This repo includes two lightweight GitHub Actions to keep deployments safe:
   - Triggers: Manual (workflow_dispatch)
   - Inputs: resourceGroup (default rg-stamps-smoke), subscriptionId, location (default eastus)
   - Secrets required (OIDC): AZURE_CLIENT_ID, AZURE_TENANT_ID. Alternatively, switch to azure/login@v1 with a single AZURE_CREDENTIALS secret (JSON) if OIDC isn’t available.
+
+- What-If (Matrix): Optional workflow to preview changes across profiles/regions in parallel
+  - File: .github/workflows/bicep-whatif-matrix.yml
+  - Profiles covered: smoke (metrics-only, HTTP lab), dev, prod
+  - Purpose: Catch profile-specific issues early
 
 How to run What-If:
 1) In GitHub Actions, select "Bicep What-If (Smoke)"

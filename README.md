@@ -10,6 +10,7 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 
 **Key business benefits include:**
 - **Enterprise-Ready Security**: End-to-end zero-trust network design with 85-90% JWT validation performance improvement, private endpoints, and automated policy enforcement ([Security Guide](./docs/SECURITY_GUIDE.md))
+- **Modern Identity**: Microsoft Entra External ID (customers) integration with legacy B2C fallback for gradual migration ([Developer Security Guide](./docs/DEVELOPER_SECURITY_GUIDE.md))
 - **Proven Compliance**: Pre-built compliance frameworks for HIPAA, SOC 2, PCI-DSS, and GDPR with automated audit trails and policy enforcement ([CAF/WAF Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md))
 - **AI-Driven Operations**: Predictive scaling and intelligent monitoring reduce operational overhead by 25-40% while providing real-time insights through executive dashboards ([Operations Guide](./docs/OPERATIONS_GUIDE.md))
 - **Economic Flexibility**: Mixed tenancy models support growth from startup to enterprise scale with seamless migration paths and tier-based pricing ([Architecture Guide](./docs/ARCHITECTURE_GUIDE.md))
@@ -153,12 +154,14 @@ Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) f
 ## 🚀 Quick Links
 
 - [📚 Documentation Hub](./docs/DOCS.md)
+- [🧪 Run Locally (Functions + Emulator)](./docs/DEPLOYMENT_GUIDE.md#-run-locally-functions--emulator)
 - [🏗️ Architecture Guide](./docs/ARCHITECTURE_GUIDE.md)
 - [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
 - [⚙️ Operations Guide](./docs/OPERATIONS_GUIDE.md)
 - [🛡️ Security Guide](./docs/SECURITY_GUIDE.md)
 - [🏆 CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
+- [🆕 What’s New](./docs/releases/v0.9.0-local-run.md)
 - [Known Issues](./docs/KNOWN_ISSUES.md)
 - [Contributing](#contributing)
 - [Support](#support--community)
