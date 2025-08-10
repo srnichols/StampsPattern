@@ -154,6 +154,7 @@ Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) f
 ## 🚀 Quick Links
 
 - [📚 Documentation Hub](./docs/DOCS.md)
+- [👩‍💻 Developer Quickstart](./docs/DEVELOPER_QUICKSTART.md)
 - [🧪 Run Locally (Functions + Emulator)](./docs/DEPLOYMENT_GUIDE.md#-run-locally-functions--emulator)
 - [🏗️ Architecture Guide](./docs/ARCHITECTURE_GUIDE.md)
 - [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)

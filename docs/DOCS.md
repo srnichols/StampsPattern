@@ -165,7 +165,8 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 ### Developer & Authoring
 - 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
-- 🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
+- �‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
+- �🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
  
 
 ### One-Pagers & Checklists
@@ -299,6 +300,7 @@ journey
 | 🌟 **Simple 2-Region Setup** | [DEPLOYMENT_GUIDE - Option 1](./DEPLOYMENT_GUIDE.md#-option-1-simple-two-region-setup-manual-bicep-deployment) | 45 minutes |
 | 🌍 **Enterprise Multi-GEO** | [DEPLOYMENT_GUIDE - Option 2](./DEPLOYMENT_GUIDE.md#-option-2-global-multi-geo-setup-advanced-manual-deployment) | 2-3 hours |
 | 🔧 **Automation Setup** | [DEPLOYMENT_GUIDE - Methods](./DEPLOYMENT_GUIDE.md#-deployment-methods) | 30 minutes |
+| 👩‍💻 **Run Locally (Dev)** | [DEVELOPER_QUICKSTART](./DEVELOPER_QUICKSTART.md) | 10-15 minutes |
 
 ### 🆕 **Implementation Quick Links**
 | Feature | Documentation | Implementation Details |

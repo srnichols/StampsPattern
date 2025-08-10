@@ -379,6 +379,8 @@ public class CreateTenantFunctionIntegrationTests
 
 Note: For Microsoft Entra External ID (customers), the user flow name continues to follow the familiar `B2C_1_...` pattern. Keep using `EXTERNAL_ID_USER_FLOW` for configuration; the app will also read `B2C_POLICY` for backward compatibility if present.
 
+For end-to-end local setup steps, see [Developer Quickstart](./DEVELOPER_QUICKSTART.md).
+
 ### **Required NuGet Packages**
 ```xml
 <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />

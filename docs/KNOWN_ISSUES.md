@@ -346,6 +346,8 @@ func start --verbose
 - If the process exits immediately, inspect the last log lines for unhandled exceptions (e.g., missing env var).
 - Ensure only one host instance is running to prevent port conflicts.
 
+For a step-by-step setup, see [Developer Quickstart](./DEVELOPER_QUICKSTART.md).
+
 ---
 
 ## ⚡ Performance Issues

@@ -64,6 +64,8 @@ Our CI runs the same check on pull requests and pushes. Fix any reported links (
 
 Use this quick-start to run the Functions app and local data services for development.
 
+Developer-focused, step-by-step path: see [Developer Quickstart](./DEVELOPER_QUICKSTART.md) for a concise workflow and deeper troubleshooting.
+
 Prerequisites:
 - .NET SDK 6.x or newer (for build)
 - Node.js + npm (to install Azure Functions Core Tools)
