@@ -49,6 +49,19 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 
 ---
 
+## 📚 For Newcomers to Azure Stamps Pattern Deployment
+
+**What is the Azure Stamps Pattern?**
+> Imagine deploying a network of identical, secure “application factories” (CELLs) worldwide. Each can serve many customers (shared) or VIPs (dedicated), all managed with zero-trust security and automated scaling. This guide helps you set up, customize, and validate your own global, multi-tenant Azure platform.
+
+**Why use this pattern?**
+> - **Predictable scaling:** Add more “factories” as you grow
+> - **Isolation:** Issues in one CELL don’t affect others
+> - **Global reach:** Serve users from the nearest location
+> - **Compliance:** Built-in security and governance
+
+---
+
 ## 🆕 New Developer Onboarding: Docs Health Check
 
 Before opening your first PR, run the Markdown link checker locally to ensure there are no broken links:
@@ -100,19 +113,6 @@ Tips:
 - Cosmos TLS trust: the run-local.ps1 script imports the emulator certificate into CurrentUser/Root; if calls fail, open https://localhost:8085/_explorer/emulator.pem once in a browser to trust the cert.
 - Functions task in VS Code: use the default “build (functions)” task, then start with func start from the AzureArchitecture folder.
 
-
-## 📚 For Newcomers to Azure Stamps Pattern Deployment
-
-**What is the Azure Stamps Pattern?**
-> Imagine deploying a network of identical, secure “application factories” (CELLs) worldwide. Each can serve many customers (shared) or VIPs (dedicated), all managed with zero-trust security and automated scaling. This guide helps you set up, customize, and validate your own global, multi-tenant Azure platform.
-
-**Why use this pattern?**
-> - **Predictable scaling:** Add more “factories” as you grow
-> - **Isolation:** Issues in one CELL don’t affect others
-> - **Global reach:** Serve users from the nearest location
-> - **Compliance:** Built-in security and governance
-
----
 
 ## 📖 Key Concepts Before You Start
 

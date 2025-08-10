@@ -44,6 +44,43 @@ Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predicti
 
 ---
 
+## 📚 For Newcomers to Azure Stamps Pattern Operations
+
+**What is Operations in the Azure Stamps Pattern?**
+> Think of operations as running a global network of “smart factories” (CELLs) that are monitored, maintained, and optimized by AI. This guide helps you keep everything healthy, secure, and cost-effective, whether you’re responding to incidents, scaling up, or automating routine tasks.
+
+**Why is this important?**
+> - **Proactive monitoring:** Spot issues before they impact users
+> - **Automated maintenance:** Reduce manual toil and errors
+> - **Predictive analytics:** Plan for growth and optimize costs
+> - **Resilience:** Rapid, automated incident response
+
+---
+
+
+### 🎛️ **AI-Driven Operational Maturity**
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart LR
+  A[Level 1\n🟡 Reactive] --> B[Level 2\n🟠 Proactive]
+  B --> C[Level 3\n🔴 Predictive]
+  C --> D[Level 4\n🟣 Autonomous]
+    
+  A1[Manual Monitoring\nIssue Resolution\nBasic Alerts]
+  B1[Automated Monitoring\nPolicy Enforcement\nSLA Tracking]
+  C1[AI Predictive Analytics\nIntelligent Scaling\nCost Optimization]
+  D1[Self-Healing Systems\nAutonomous Operations\nZero-Touch Governance]
+    
+  A --- A1
+  B --- B1
+  C --- C1
+  D --- D1
+  
+```
+
+_Figure: Operational maturity curve from reactive to autonomous; use to set quarterly improvement targets._
+
 ## 🧪 Environment profiles and diagnostics (Ops quick-start)
 
 Profiles let you run lighter or fuller deployments depending on the operational need. Diagnostics mode controls logging vs. metrics to keep smoke tests fast and reliable.
@@ -98,43 +135,6 @@ Notes:
 - Expect smoke deployments to be minimal and fast; dev/prod enable richer diagnostics and HTTPS.
 
 ---
-
-## 📚 For Newcomers to Azure Stamps Pattern Operations
-
-**What is Operations in the Azure Stamps Pattern?**
-> Think of operations as running a global network of “smart factories” (CELLs) that are monitored, maintained, and optimized by AI. This guide helps you keep everything healthy, secure, and cost-effective, whether you’re responding to incidents, scaling up, or automating routine tasks.
-
-**Why is this important?**
-> - **Proactive monitoring:** Spot issues before they impact users
-> - **Automated maintenance:** Reduce manual toil and errors
-> - **Predictive analytics:** Plan for growth and optimize costs
-> - **Resilience:** Rapid, automated incident response
-
----
-
-
-### 🎛️ **AI-Driven Operational Maturity**
-
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-flowchart LR
-  A[Level 1\n🟡 Reactive] --> B[Level 2\n🟠 Proactive]
-  B --> C[Level 3\n🔴 Predictive]
-  C --> D[Level 4\n🟣 Autonomous]
-    
-  A1[Manual Monitoring\nIssue Resolution\nBasic Alerts]
-  B1[Automated Monitoring\nPolicy Enforcement\nSLA Tracking]
-  C1[AI Predictive Analytics\nIntelligent Scaling\nCost Optimization]
-  D1[Self-Healing Systems\nAutonomous Operations\nZero-Touch Governance]
-    
-  A --- A1
-  B --- B1
-  C --- C1
-  D --- D1
-  
-```
-
-_Figure: Operational maturity curve from reactive to autonomous; use to set quarterly improvement targets._
 
 ## 📈 Monitoring & Observability
 

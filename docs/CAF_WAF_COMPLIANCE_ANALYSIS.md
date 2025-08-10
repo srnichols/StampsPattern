@@ -25,20 +25,6 @@ The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to 
 
 ---
 
-## 👋 For Newcomers
-
-**What is this guide for?**
-> This guide provides a comprehensive analysis of how the Azure Stamps Pattern aligns with Microsoft's Cloud Adoption Framework (CAF) and Well-Architected Framework (WAF). It is your reference for understanding compliance, best practices, and how to leverage these frameworks for enterprise success.
->
-> Complementary: Map CAF/WAF outcomes to landing zone implementation with the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
-
-**Why is this important?**
-> - **Onboarding:** Ramp up quickly on CAF/WAF principles in the context of Azure Stamps
-> - **Strategic alignment:** Ensure your architecture meets industry benchmarks
-> - **Continuous improvement:** Integrate compliance and best practices into daily operations
-
----
-
  
 
 ## 👤 Who Should Read This Guide?
@@ -66,6 +52,20 @@ The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to 
 | [Priority Recommendations](#-priority-recommendations) | Action items | All |
 | [Next Steps](#-next-steps) | Roadmap | All |
 | [References](#-references) | Further reading | All |
+
+---
+
+## 👋 For Newcomers
+
+**What is this guide for?**
+> This guide provides a comprehensive analysis of how the Azure Stamps Pattern aligns with Microsoft's Cloud Adoption Framework (CAF) and Well-Architected Framework (WAF). It is your reference for understanding compliance, best practices, and how to leverage these frameworks for enterprise success.
+>
+> Complementary: Map CAF/WAF outcomes to landing zone implementation with the [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
+
+**Why is this important?**
+> - **Onboarding:** Ramp up quickly on CAF/WAF principles in the context of Azure Stamps
+> - **Strategic alignment:** Ensure your architecture meets industry benchmarks
+> - **Continuous improvement:** Integrate compliance and best practices into daily operations
 
 ---
 
