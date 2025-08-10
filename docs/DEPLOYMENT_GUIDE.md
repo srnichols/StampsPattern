@@ -39,6 +39,7 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 | [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | 10 min | Architects, DevOps |
 | [⚡ Deployment Options](#-deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
 | [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | 10 min | All readers |
+| [🧪 Run locally (Functions + Emulator)](#-run-locally-functions--emulator) | Local dev/test | 5 min | Devs |
 | [🔧 Manual/Legacy Deployment](#-manuallegacy-deployment-options) | Manual/legacy steps | 10 min | DevOps |
 | [🚪 Enterprise API Management](#-enterprise-api-management-deployment) | APIM deployment | 10 min | Security, DevOps |
 | [🧪 Post-Deployment Validation](#-post-deployment-testing--validation) | Testing, health checks | 10 min | DevOps |
@@ -57,6 +58,45 @@ pwsh -File ./scripts/verify-doc-links.ps1 -IncludeImages -CheckExternal
 ```
 
 Our CI runs the same check on pull requests and pushes. Fix any reported links (relative or external) before submitting your PR to avoid CI failures.
+
+
+## 🧪 Run locally (Functions + Emulator)
+
+Use this quick-start to run the Functions app and local data services for development.
+
+Prerequisites:
+- .NET SDK 6.x or newer (for build)
+- Node.js + npm (to install Azure Functions Core Tools)
+- Docker Desktop (for Cosmos DB Emulator)
+
+Steps:
+1) Start local data stack (Cosmos Emulator, DAB, Portal) [optional]
+  - PowerShell (Windows):
+    - pwsh -File ./scripts/run-local.ps1
+  - Default ports: Cosmos Emulator 8085, DAB 8082, Portal 8081
+
+2) Ensure local.settings.json
+  - File: AzureArchitecture/local.settings.json
+  - CosmosDbConnection should point to https://localhost:8085/
+
+3) Install Azure Functions Core Tools v4
+  - npm i -g azure-functions-core-tools@4
+  - If func isn’t found, ensure your npm global bin is on PATH.
+
+4) Build and run the Functions host
+  - From repo root: cd AzureArchitecture
+  - Build: dotnet build
+  - Start: func start
+
+5) Verify endpoints
+  - Health:    http://localhost:7071/api/health
+  - SwaggerUI: http://localhost:7071/api/swagger/ui
+  - ApiInfo:   http://localhost:7071/api/api/info
+
+Tips:
+- Port busy? Run: func start --port 7072
+- Cosmos TLS trust: the run-local.ps1 script imports the emulator certificate into CurrentUser/Root; if calls fail, open https://localhost:8085/_explorer/emulator.pem once in a browser to trust the cert.
+- Functions task in VS Code: use the default “build (functions)” task, then start with func start from the AzureArchitecture folder.
 
 
 ## 📚 For Newcomers to Azure Stamps Pattern Deployment
@@ -413,6 +453,15 @@ pwsh --version
 ```
 
 ### 🔐 Azure Access Requirements
+### 👥 Identity Prerequisite (Microsoft Entra External ID for customers)
+- Create your External ID tenant in the Azure portal (replacement for Azure AD B2C)
+- Configure app registrations and user flows (e.g., signupsignin)
+- In your function app configuration, set:
+  - EXTERNAL_ID_TENANT
+  - EXTERNAL_ID_CLIENT_ID
+  - EXTERNAL_ID_USER_FLOW
+  - (Legacy B2C_* keys are still read for backward compatibility)
+
 - **Azure subscription** with Contributor access
 - **Resource Provider registrations**:
   ```bash

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Caching.Memory;
 using AzureStampsPattern.Services;
 using System;
 
@@ -93,15 +94,21 @@ namespace AzureStampsPattern
             _logger = logger;
         }
 
-        public Task<AzureStampsPattern.Models.CachedTenantRouting> GetTenantRoutingAsync(string tenantId)
+        public Task<AzureStampsPattern.Models.CachedTenantRouting?> GetTenantRoutingAsync(string tenantId)
         {
-            _cache.TryGetValue($"tenant:routing:{tenantId}", out AzureStampsPattern.Models.CachedTenantRouting routing);
+            var routing = _cache.Get<AzureStampsPattern.Models.CachedTenantRouting>($"tenant:routing:{tenantId}");
             return Task.FromResult(routing);
         }
 
         public Task SetTenantRoutingAsync(string tenantId, AzureStampsPattern.Models.CachedTenantRouting routing)
         {
-            _cache.Set($"tenant:routing:{tenantId}", routing, routing.CacheExpiry);
+            _cache.Set(
+                $"tenant:routing:{tenantId}",
+                routing,
+                new Microsoft.Extensions.Caching.Memory.MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = routing.CacheExpiry
+                });
             return Task.CompletedTask;
         }
 
@@ -111,15 +118,21 @@ namespace AzureStampsPattern
             return Task.CompletedTask;
         }
 
-        public Task<AzureStampsPattern.Models.CellInfo> GetCellInfoAsync(string cellId)
+        public Task<AzureStampsPattern.Models.CellInfo?> GetCellInfoAsync(string cellId)
         {
-            _cache.TryGetValue($"cell:info:{cellId}", out AzureStampsPattern.Models.CellInfo cellInfo);
+            var cellInfo = _cache.Get<AzureStampsPattern.Models.CellInfo>($"cell:info:{cellId}");
             return Task.FromResult(cellInfo);
         }
 
         public Task SetCellInfoAsync(string cellId, AzureStampsPattern.Models.CellInfo cellInfo)
         {
-            _cache.Set($"cell:info:{cellId}", cellInfo, TimeSpan.FromMinutes(30));
+            _cache.Set(
+                $"cell:info:{cellId}",
+                cellInfo,
+                new Microsoft.Extensions.Caching.Memory.MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                });
             return Task.CompletedTask;
         }
 

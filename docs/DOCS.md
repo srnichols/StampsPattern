@@ -378,7 +378,7 @@ If you find gaps or areas for improvement in this documentation:
 
 ### 🔐 **Security Highlights**
 - Multi-layer WAF protection
-- Azure B2C multi-tenant identity
+- Microsoft Entra External ID (customers) multi-tenant identity
 - End-to-end encryption
 - Compliance-ready (SOC 2, ISO 27001, HIPAA, GDPR)
 

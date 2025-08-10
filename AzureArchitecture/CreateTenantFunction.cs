@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using AzureStampsPattern.Models;
 
 public class CreateTenantFunction
 {
@@ -374,99 +375,4 @@ public class CreateTenantFunction
     {
         return int.Parse(Environment.GetEnvironmentVariable("MaxTenantsPerSharedCell") ?? "100");
     }
-}
-
-/// <summary>
-/// Enhanced tenant information supporting flexible tenancy models
-/// </summary>
-public class TenantInfo
-{
-    public string tenantId { get; set; }
-    public string subdomain { get; set; }
-    public string cellBackendPool { get; set; }
-    public string cellName { get; set; }
-    public TenantTier? tenantTier { get; set; } = TenantTier.Shared;
-    public string region { get; set; } = "eastus";
-    public List<string> complianceRequirements { get; set; } = new List<string>();
-    public TenantStatus status { get; set; } = TenantStatus.Active;
-    public DateTime createdDate { get; set; }
-    public DateTime? lastModifiedDate { get; set; }
-    public int estimatedMonthlyApiCalls { get; set; } = 10000;
-    public string contactEmail { get; set; }
-    public string organizationName { get; set; }
-}
-
-/// <summary>
-/// CELL information for capacity and assignment tracking
-/// </summary>
-public class CellInfo
-{
-    public string cellId { get; set; }
-    public string cellName { get; set; }
-    public CellType cellType { get; set; }
-    public string region { get; set; }
-    public string backendPool { get; set; }
-    public int maxTenantCount { get; set; }
-    public int currentTenantCount { get; set; }
-    public CellStatus status { get; set; }
-    public List<string> complianceFeatures { get; set; } = new List<string>();
-    public DateTime createdDate { get; set; }
-    public DateTime? lastModifiedDate { get; set; }
-    public double cpuUtilization { get; set; }
-    public double memoryUtilization { get; set; }
-    public double storageUtilization { get; set; }
-}
-
-/// <summary>
-/// Result of CELL assignment operation
-/// </summary>
-public class CellAssignmentResult
-{
-    public bool Success { get; set; }
-    public string CellBackendPool { get; set; }
-    public string CellName { get; set; }
-    public string ErrorMessage { get; set; }
-}
-
-/// <summary>
-/// Tenant tier enumeration for flexible tenancy models
-/// </summary>
-public enum TenantTier
-{
-    Startup,     // Small tenants, shared CELLs, cost-optimized
-    SMB,         // Small-medium business, shared CELLs, standard features
-    Shared,      // General shared tenancy model
-    Enterprise,  // Large enterprise, dedicated CELLs, premium features
-    Dedicated    // Dedicated infrastructure, full isolation
-}
-
-/// <summary>
-/// CELL type enumeration
-/// </summary>
-public enum CellType
-{
-    Shared,      // Multi-tenant CELL (10-100 tenants)
-    Dedicated    // Single-tenant CELL (1 enterprise tenant)
-}
-
-/// <summary>
-/// Tenant status enumeration
-/// </summary>
-public enum TenantStatus
-{
-    Active,
-    Inactive,
-    Suspended,
-    Migrating
-}
-
-/// <summary>
-/// CELL status enumeration
-/// </summary>
-public enum CellStatus
-{
-    Active,
-    Provisioning,
-    Maintenance,
-    Deprecated
 }

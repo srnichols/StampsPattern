@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+// Timer extension optional: guarded below with compile symbol
+using AzureStampsPattern.Models;
 
 /// <summary>
 /// Azure Function for CELL management and monitoring
@@ -31,23 +33,35 @@ public class CellManagementFunction
     }
 
     /// <summary>
-    /// Timer-triggered function for automated CELL capacity monitoring and provisioning
-    /// Runs every 15 minutes to check CELL capacity and provision new CELLs when needed
+    /// Capacity monitoring entrypoint (Timer, optional) or HTTP fallback when Timer extension not available
     /// </summary>
+#if TIMER_TRIGGER
     [Function("MonitorCellCapacity")]
-    public async Task MonitorCapacity(
-        [TimerTrigger("0 */15 * * * *")] TimerInfo timer) // Every 15 minutes
+    public async Task MonitorCapacity([TimerTrigger("0 */15 * * * *")] Microsoft.Azure.Functions.Worker.Extensions.Timer.TimerInfo timer)
+    {
+        await RunCapacityMonitoringAsync();
+    }
+#endif
+
+    [Function("MonitorCellCapacityNow")]
+    public async Task<HttpResponseData> MonitorCapacityNow(
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "cells/capacity/run")] HttpRequestData req)
+    {
+        await RunCapacityMonitoringAsync();
+        var resp = req.CreateResponse(HttpStatusCode.Accepted);
+        await resp.WriteStringAsync("Capacity monitoring executed.");
+        return resp;
+    }
+
+    private async Task RunCapacityMonitoringAsync()
     {
         try
         {
             var capacityReport = await GenerateCapacityReportAsync();
-            
             foreach (var regionReport in capacityReport.RegionReports)
             {
                 await CheckAndProvisionCellsAsync(regionReport);
             }
-
-            // Log capacity report (would integrate with Azure Monitor in production)
             Console.WriteLine($"Capacity monitoring completed at {DateTime.UtcNow}");
             Console.WriteLine($"Total CELLs: {capacityReport.TotalCells}");
             Console.WriteLine($"Shared CELLs at capacity: {capacityReport.SharedCellsAtCapacity}");

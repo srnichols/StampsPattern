@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using AzureStampsPattern.Models;
 
 /// <summary>
 /// Azure Function for migrating tenants between CELL types (Shared → Dedicated)
@@ -136,8 +137,8 @@ public class TenantMigrationFunction
 
             while (iterator.HasMoreResults)
             {
-                var response = await iterator.ReadNextAsync();
-                cells.AddRange(response);
+                var page = await iterator.ReadNextAsync();
+                cells.AddRange(page);
             }
 
             var capacityInfo = cells.Select(c => new CellCapacityInfo
@@ -154,8 +155,8 @@ public class TenantMigrationFunction
                 Status = c.status
             }).ToList();
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteAsJsonAsync(new
+            var ok = req.CreateResponse(HttpStatusCode.OK);
+            await ok.WriteAsJsonAsync(new
             {
                 TotalCells = capacityInfo.Count,
                 SharedCells = capacityInfo.Count(c => c.CellType == CellType.Shared),
@@ -163,7 +164,7 @@ public class TenantMigrationFunction
                 AverageCapacity = capacityInfo.Average(c => c.CapacityPercentage),
                 Cells = capacityInfo
             });
-            return response;
+            return ok;
         }
         catch (Exception ex)
         {
@@ -180,8 +181,8 @@ public class TenantMigrationFunction
     {
         try
         {
-            var response = await _tenantsContainer.ReadItemAsync<TenantInfo>(tenantId, new PartitionKey(tenantId));
-            return response.Resource;
+            var read = await _tenantsContainer.ReadItemAsync<TenantInfo>(tenantId, new PartitionKey(tenantId));
+            return read.Resource;
         }
         catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
@@ -393,8 +394,8 @@ public class TenantMigrationFunction
         
         while (iterator.HasMoreResults)
         {
-            var response = await iterator.ReadNextAsync();
-            foreach (var cell in response)
+            var page = await iterator.ReadNextAsync();
+            foreach (var cell in page)
             {
                 cell.currentTenantCount = Math.Max(0, cell.currentTenantCount - 1);
                 cell.lastModifiedDate = DateTime.UtcNow;

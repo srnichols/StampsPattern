@@ -636,31 +636,23 @@ Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth st
 
 ### 🔐 Identity & Access Management
 
-#### 🎫 **Azure B2C Integration**
+#### 🎫 **Microsoft Entra External ID (customers) Integration**
 
 **⚠️ Important Deployment Notes:**
-- Azure AD B2C tenants **cannot be created via Bicep or ARM templates**
-- You must first create your Azure AD B2C tenant manually in the Azure Portal
-- The provided `b2c-setup.bicep` file links an existing B2C tenant to your subscription
+- External ID (formerly Azure AD B2C) tenants cannot be created or linked via Bicep/ARM
+- Create and configure your External ID tenant manually in the Azure portal
+- Register applications (client APIs/web apps) and configure user flows/policies (sign-up/sign-in, password reset) there
 
 **Deployment Steps:**
-1. Create your Azure AD B2C tenant in the Azure Portal
-2. Deploy `b2c-setup.bicep` to link the tenant to your subscription  
-3. Deploy the rest of your solution (`main.bicep` and related modules)
+1. Create your External ID tenant in the Azure portal (customers)
+2. Create app registrations and user flows required by this app (e.g., signupsignin)
+3. Set function app settings: EXTERNAL_ID_TENANT, EXTERNAL_ID_CLIENT_ID, EXTERNAL_ID_USER_FLOW (legacy B2C_* also supported)
+4. Deploy the rest of your solution (`main.bicep` and related modules)
 
 **Multi-Tenant Identity Architecture:**
-```bicep
-// B2C Tenant Configuration (b2c-setup.bicep)
-resource b2cTenant 'Microsoft.AzureActiveDirectory/b2cDirectories@2021-04-01' = {
-  name: 'contoso-stamps-b2c'
-  location: 'United States'
-  properties: {
-    createTenantProperties: {
-      displayName: 'Contoso Stamps B2C'
-      countryCode: 'US'
-    }
-  }
-}
+```text
+// External ID for customers cannot be created via Bicep/ARM.
+// Use the Azure portal to create the tenant and configure user flows.
 ```
 
 **Security Policies:**

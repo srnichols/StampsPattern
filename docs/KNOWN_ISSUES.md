@@ -190,9 +190,9 @@ param resourceToken string = take(uniqueString(resourceGroup().id), 6)
 
 ---
 
-### Issue: Azure B2C Deployment Limitations
+### Issue: Microsoft Entra External ID (customers) Deployment Limitations
 
-**Problem**: Azure AD B2C tenants cannot be created via Bicep/ARM templates.
+**Problem**: External ID (formerly Azure AD B2C) tenants cannot be created via Bicep/ARM templates.
 
 **Symptoms**:
 ```
@@ -201,12 +201,12 @@ Error: Resource type 'Microsoft.AzureActiveDirectory/b2cDirectories' not support
 
 **Workaround**:
 ```bash
-# 1. Manually create B2C tenant in Azure Portal first
-# 2. Then deploy the b2c-setup.bicep to link it:
+# 1. Manually create the External ID tenant in the Azure portal first
+# 2. Configure app registrations and user flows there
+# 3. Set EXTERNAL_ID_* app settings in your function app
 az deployment group create \
   --resource-group rg-stamps-dev \
-  --template-file b2c-setup.bicep \
-  --parameters b2cTenantName=your-existing-tenant
+    # No ARM/Bicep support to create/link tenants as of today
 ```
 
 ---

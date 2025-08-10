@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using AzureStampsPattern.Models;
 
 public class GetTenantInfoFunction
 {
@@ -30,7 +31,7 @@ public class GetTenantInfoFunction
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tenant/{tenantId}")] HttpRequestData req,
         string tenantId)
     {
-        // Validate Azure AD B2C JWT token
+    // Validate Microsoft Entra External ID (customers, formerly Azure AD B2C) JWT token
         var principal = await JwtValidator.ValidateTokenAsync(req);
         if (principal == null)
         {
@@ -79,9 +80,25 @@ public static class JwtValidator
         try
         {
             // These values should be set in your configuration/environment
-            var tenant = Environment.GetEnvironmentVariable("B2C_TENANT") ?? throw new InvalidOperationException("B2C_TENANT not configured");
-            var clientId = Environment.GetEnvironmentVariable("B2C_CLIENT_ID") ?? throw new InvalidOperationException("B2C_CLIENT_ID not configured");
-            var policy = Environment.GetEnvironmentVariable("B2C_POLICY") ?? throw new InvalidOperationException("B2C_POLICY not configured");
+            // Prefer new Microsoft Entra External ID keys; fall back to legacy B2C_* for compatibility
+            var tenant =
+                Environment.GetEnvironmentVariable("EXTERNAL_ID_TENANT") ??
+                Environment.GetEnvironmentVariable("EXTERNALID_TENANT") ??
+                Environment.GetEnvironmentVariable("B2C_TENANT") ??
+                throw new InvalidOperationException("External ID tenant not configured (set EXTERNAL_ID_TENANT)");
+
+            var clientId =
+                Environment.GetEnvironmentVariable("EXTERNAL_ID_CLIENT_ID") ??
+                Environment.GetEnvironmentVariable("EXTERNALID_CLIENT_ID") ??
+                Environment.GetEnvironmentVariable("B2C_CLIENT_ID") ??
+                throw new InvalidOperationException("External ID client id not configured (set EXTERNAL_ID_CLIENT_ID)");
+
+            var policy =
+                Environment.GetEnvironmentVariable("EXTERNAL_ID_USER_FLOW") ??
+                Environment.GetEnvironmentVariable("EXTERNAL_ID_POLICY") ??
+                Environment.GetEnvironmentVariable("EXTERNALID_USER_FLOW") ??
+                Environment.GetEnvironmentVariable("B2C_POLICY") ??
+                throw new InvalidOperationException("External ID user flow/policy not configured (set EXTERNAL_ID_USER_FLOW)");
 
             var authority = $"https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/v2.0/";
             var metadataAddress = $"{authority}.well-known/openid-configuration";
@@ -130,9 +147,4 @@ public static class JwtValidator
     }
 }
 
-public class TenantInfo
-{
-    public string tenantId { get; set; }
-    public string subdomain { get; set; }
-    public string cellBackendPool { get; set; }
-}
+// Models are defined in AzureStampsPattern.Models (SharedModels.cs)

@@ -1,9 +1,13 @@
 using System;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using AzureStampsPattern.Models;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.Cosmos;
 
 namespace AzureStampsPattern.Services
 {

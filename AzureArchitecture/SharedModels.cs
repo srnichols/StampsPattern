@@ -9,6 +9,20 @@ using System.Collections.Generic;
 namespace AzureStampsPattern.Models
 {
     /// <summary>
+    /// Cached representation of tenant routing details to speed up lookups
+    /// </summary>
+    public class CachedTenantRouting
+    {
+        public string TenantId { get; set; }
+        public string CellBackendPool { get; set; }
+        public string Region { get; set; }
+        public string Subdomain { get; set; }
+        public TenantTier TenantTier { get; set; } = TenantTier.Shared;
+        public DateTime LastModified { get; set; } = DateTime.UtcNow;
+        public TimeSpan CacheExpiry { get; set; } = TimeSpan.FromHours(1);
+    }
+
+    /// <summary>
     /// Enhanced tenant information supporting flexible tenancy models
     /// </summary>
     public class TenantInfo

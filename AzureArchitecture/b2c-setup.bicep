@@ -1,27 +1,18 @@
 // --------------------------------------------------------------------------------------
-// Azure AD B2C Tenant Setup (one-time, global, not per CELL)
-// Note: Azure AD B2C tenant creation is not supported directly in Bicep/ARM.
-// This template creates an Azure AD B2C resource in your subscription, referencing an existing B2C tenant.
+// Microsoft Entra External ID for customers (formerly Azure AD B2C) - Legacy Template Notice
+// IMPORTANT: Creating or linking an External ID (B2C) tenant is not supported via Bicep/ARM.
+// Action: Create/configure your External ID tenant manually in the Azure portal and configure app registrations & user flows there.
+// This file is intentionally a no-op to keep CI green and document intent.
 // --------------------------------------------------------------------------------------
 
-@description('The name of your Azure AD B2C tenant (e.g., sdpsaasb2c.onmicrosoft.com)')
-param b2cTenantName string
+@description('Optional: external ID (B2C) tenant name for documentation only (e.g., contosoextid.onmicrosoft.com)')
+param externalIdTenantName string = ''
 
-@description('The location for the B2C resource (must be "United States")')
-param location string = 'United States'
+@description('Informational message output')
+output message string = 'External ID tenant must be created and configured manually in the Azure portal. This template is a no-op.'
 
-resource b2cDirectory 'Microsoft.AzureActiveDirectory/b2cDirectories@2019-01-01-preview' = {
-  name: b2cTenantName
-  location: location
-  properties: {
-    // No additional properties required for linking
-  }
-}
-
-output b2cTenantResourceId string = b2cDirectory.id
-output b2cTenantName string = b2cTenantName
-
-// --------------------------------------------------------------------------------------
-// NOTE: You must create the actual Azure AD B2C tenant via the Azure Portal first.
-// This Bicep file links the B2C tenant to your subscription for resource management.
+@description('Echo of provided tenant name (if any)')
+output externalIdTenant string = externalIdTenantName
+// NOTE: Create your Microsoft Entra External ID (customers) tenant via the Azure portal first.
+// There is no ARM/Bicep support to create or link these tenants.
 // --------------------------------------------------------------------------------------

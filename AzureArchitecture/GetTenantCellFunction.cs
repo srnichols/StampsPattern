@@ -6,6 +6,7 @@ using Microsoft.Azure.Cosmos;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AzureStampsPattern.Models;
 
 public class GetTenantCellFunction
 {
@@ -30,7 +31,7 @@ public class GetTenantCellFunction
         var query = new QueryDefinition("SELECT * FROM c WHERE c.subdomain = @subdomain")
             .WithParameter("@subdomain", subdomain);
 
-        var iterator = _container.GetItemQueryIterator<TenantInfo>(query);
+    var iterator = _container.GetItemQueryIterator<TenantInfo>(query);
         TenantInfo tenant = null;
         while (iterator.HasMoreResults)
         {
@@ -60,47 +61,4 @@ public class GetTenantCellFunction
         });
         return response;
     }
-}
-
-/// <summary>
-/// Enhanced tenant information supporting flexible tenancy models
-/// </summary>
-public class TenantInfo
-{
-    public string tenantId { get; set; }
-    public string subdomain { get; set; }
-    public string cellBackendPool { get; set; }
-    public string cellName { get; set; }
-    public TenantTier? tenantTier { get; set; } = TenantTier.Shared;
-    public string region { get; set; } = "eastus";
-    public List<string> complianceRequirements { get; set; } = new List<string>();
-    public TenantStatus status { get; set; } = TenantStatus.Active;
-    public DateTime createdDate { get; set; }
-    public DateTime? lastModifiedDate { get; set; }
-    public int estimatedMonthlyApiCalls { get; set; } = 10000;
-    public string contactEmail { get; set; }
-    public string organizationName { get; set; }
-}
-
-/// <summary>
-/// Tenant tier enumeration for flexible tenancy models
-/// </summary>
-public enum TenantTier
-{
-    Startup,     // Small tenants, shared CELLs, cost-optimized
-    SMB,         // Small-medium business, shared CELLs, standard features
-    Shared,      // General shared tenancy model
-    Enterprise,  // Large enterprise, dedicated CELLs, premium features
-    Dedicated    // Dedicated infrastructure, full isolation
-}
-
-/// <summary>
-/// Tenant status enumeration
-/// </summary>
-public enum TenantStatus
-{
-    Active,
-    Inactive,
-    Suspended,
-    Migrating
 }

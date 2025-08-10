@@ -178,7 +178,7 @@ Cloud-based identity and access management.
 - **Use Cases**: Workforce identities, service principals, app registrations
 - **Docs**: <a href="https://learn.microsoft.com/entra/fundamentals/whatis" target="_blank" rel="noopener" title="Opens in a new tab">What is Microsoft Entra ID?</a>&nbsp;<sup>↗</sup>
 
-### **Microsoft Entra External ID (B2C)**
+### **Microsoft Entra External ID (customers, formerly Azure AD B2C)**
 Customer identity and access management for external users.
 - **Use Cases**: Public-facing apps with social and local accounts
 - **Docs**: <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener" title="Opens in a new tab">What is External ID for customers?</a>&nbsp;<sup>↗</sup>

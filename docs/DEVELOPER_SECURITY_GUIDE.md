@@ -51,7 +51,7 @@ Read this section first when upgrading existing services; it highlights breaking
 ### ⚠️ **Breaking Changes**
 - **Cosmos DB**: Public access now **PERMANENTLY DISABLED** by default
 - **SQL Server**: Firewall rules are **conditional** based on private endpoint configuration
-- **JWT Validation**: Enhanced validation requires proper B2C configuration
+- **JWT Validation**: Enhanced validation requires proper External ID configuration
 - **Connection Strings**: Must use managed identities or Key Vault references
 
 ### ✅ **Performance Improvements**
@@ -367,9 +367,13 @@ public class CreateTenantFunctionIntegrationTests
   "TenantsContainerName": "tenants",
   "CellsContainerName": "cells",
   "RedisConnection": "your-redis-connection-string",
-  "B2C_TENANT": "your-b2c-tenant",
-  "B2C_CLIENT_ID": "your-client-id",
-  "B2C_POLICY": "your-policy"
+    "EXTERNAL_ID_TENANT": "your-tenant",
+    "EXTERNAL_ID_CLIENT_ID": "your-client-id",
+    "EXTERNAL_ID_USER_FLOW": "B2C_1_signupsignin",
+    // Legacy keys still supported:
+    "B2C_TENANT": "your-b2c-tenant",
+    "B2C_CLIENT_ID": "your-client-id",
+    "B2C_POLICY": "your-policy"
 }
 ```
 
@@ -409,7 +413,7 @@ public class CreateTenantFunctionIntegrationTests
    - ✅ Ensure managed identity has proper permissions
 
 2. **JWT Validation Errors**
-   - ✅ Verify B2C tenant configuration
+    - ✅ Verify External ID tenant and user flow configuration
    - ✅ Check JWKS cache is being populated
    - ✅ Validate audience and issuer settings
 
@@ -430,7 +434,7 @@ _logger.LogInformation("Cache {CacheResult} for tenant {TenantId}",
 
 - <a href="https://learn.microsoft.com/azure/azure-functions/functions-best-practices" target="_blank" rel="noopener">Azure Functions Best Practices</a>
 - <a href="https://learn.microsoft.com/azure/cosmos-db/performance-tips" target="_blank" rel="noopener">Cosmos DB Performance Tips</a>
-- <a href="https://learn.microsoft.com/azure/active-directory-b2c/custom-policy-overview" target="_blank" rel="noopener">Azure B2C Custom Policies</a>
+- <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener">Microsoft Entra External ID for customers</a>
 - <a href="https://learn.microsoft.com/azure/azure-cache-for-redis/cache-best-practices" target="_blank" rel="noopener">Redis Caching Patterns</a>
 
 ## 🔗 Related Documentation

@@ -186,7 +186,7 @@ Caption: Competitive comparison highlighting advantages over industry average.
 **What We've Achieved:**
 - ✅ Production-ready Azure landing zones with governance controls
 - ✅ Network topology design with hub-spoke and mesh patterns
-- ✅ Identity and access management with Azure AD B2C integration
+- ✅ Identity and access management with Microsoft Entra External ID (customers) integration
 - ✅ Security baseline with zero-trust architecture
 - ✅ Monitoring and alerting infrastructure with AI-driven insights
 

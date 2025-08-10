@@ -1,0 +1,56 @@
+name: Bicep What-If (Profiles)
+
+on:
+  workflow_dispatch:
+    inputs:
+      subscriptionId:
+        description: 'Azure subscription ID'
+        required: true
+
+jobs:
+  whatif:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: smoke
+            resourceGroup: rg-stamps-smoke
+            location: eastus
+            params: ./AzureArchitecture/examples/main.sample.smoke.json
+          - profile: dev
+            resourceGroup: rg-stamps-dev
+            location: eastus2
+            params: ./AzureArchitecture/examples/main.sample.silver.json
+          - profile: prod
+            resourceGroup: rg-stamps-prod
+            location: eastus
+            params: ./AzureArchitecture/examples/main.sample.platinum.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ github.event.inputs.subscriptionId }}
+
+      - name: Ensure Resource Group
+        run: |
+          az group create \
+            --name '${{ matrix.resourceGroup }}' \
+            --location '${{ matrix.location }}'
+
+      - name: What-If (${{ matrix.profile }})
+        run: |
+          az deployment group what-if \
+            --subscription '${{ github.event.inputs.subscriptionId }}' \
+            --resource-group '${{ matrix.resourceGroup }}' \
+            --template-file './AzureArchitecture/main.bicep' \
+            --parameters '@${{ matrix.params }}' \
+            --result-format 'ResourceIdOnly' \
+            --no-pretty-print

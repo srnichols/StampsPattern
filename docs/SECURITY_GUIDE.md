@@ -30,7 +30,7 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—netw
 |---------|------------|--------------|----------|
 | [🎯 Security Overview](#-security-overview) | Baselines, recent enhancements | 5 min | All readers |
 | [🏗️ Zero-Trust Architecture](#-zero-trust-architecture) | Network micro-segmentation | 20 min | Architects |
-| [🔐 Identity & Access](#-identity--access-management) | Managed identity, B2C | 30 min | DevOps, IT |
+| [🔐 Identity & Access](#-identity--access-management) | Managed identity, External ID (customers) | 30 min | DevOps, IT |
 | [🌐 Network Security](#-network-security) | WAF, NSG, DDoS | 25 min | DevOps |
 | [🗄️ Data Protection](#-data-protection) | Encryption, classification | 30 min | Security, Compliance |
 | [📜 Governance & Policy](#-governance--policy-enforcement) | Policy as Code | 20 min | DevOps, Compliance |
@@ -246,21 +246,11 @@ _Diagram: Defense-in-depth layers across global, regional, and CELL tiers; apply
 
 Identity and Access Management (IAM) forms the cornerstone of the zero-trust security model in the Azure Stamps Pattern. By implementing 100% managed identity adoption and sophisticated identity-based access controls, we eliminate password-based authentication vulnerabilities while ensuring seamless, secure access to resources. This approach provides granular control over who can access what resources, when they can access them, and under what conditions.
 
-### 🎫 **Azure B2C Integration**
+### 🎫 **Microsoft Entra External ID (customers) Integration**
 
 #### Multi-Tenant Identity Architecture:
 ```bicep
-// B2C Tenant Configuration (b2c-setup.bicep)
-resource b2cTenant 'Microsoft.AzureActiveDirectory/b2cDirectories@2021-04-01' = {
-  name: 'contoso-stamps-b2c'
-  location: 'United States'
-  properties: {
-    createTenantProperties: {
-      displayName: 'Contoso Stamps B2C'
-      countryCode: 'US'
-    }
-  }
-}
+// External ID tenants cannot be created via Bicep/ARM. Configure in portal.
 ```
 
 #### Security Policies:
@@ -624,7 +614,7 @@ actions:
 ### ✅ **Pre-Production Security Review**
 
 #### Identity & Access:
-- [ ] Azure AD B2C configured with MFA
+- [ ] External ID (customers) configured with MFA
 - [ ] Privileged Identity Management (PIM) enabled
 - [ ] Service principals use managed identities
 - [ ] Role-based access control (RBAC) implemented
@@ -657,7 +647,7 @@ actions:
  - <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Security Benchmark</a>&nbsp;<sup>↗</sup>
  - <a href="https://learn.microsoft.com/azure/architecture/framework/security/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Well-Architected Security Pillar</a>&nbsp;<sup>↗</sup>
  - <a href="https://www.cisecurity.org/benchmark/azure" target="_blank" rel="noopener" title="Opens in a new tab">CIS Azure Foundations Benchmark</a>&nbsp;<sup>↗</sup>
- - <a href="https://learn.microsoft.com/entra/external-id/" target="_blank" rel="noopener" title="Opens in a new tab">Microsoft Entra External ID (Azure AD B2C) docs</a>&nbsp;<sup>↗</sup>
+ - <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener" title="Opens in a new tab">Microsoft Entra External ID for customers</a>&nbsp;<sup>↗</sup>
 
 ### 🛠️ **Security Tools**
 - **Azure Security Center**: Unified security management

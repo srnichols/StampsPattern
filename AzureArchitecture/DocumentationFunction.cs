@@ -1,5 +1,4 @@
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
@@ -23,13 +22,12 @@ namespace AzureStampsPattern.Functions
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/html");
 
-            var html = """
-<!DOCTYPE html>
-<html lang="en">
+            var html = @"<!DOCTYPE html>
+<html lang=""en"">
 <head>
-    <meta charset="UTF-8">
+    <meta charset=""UTF-8"">
     <title>Azure Stamps Pattern API Documentation</title>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui.css" />
+    <link rel=""stylesheet"" type=""text/css"" href=""https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui.css"" />
     <style>
         html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
         *, *:before, *:after { box-sizing: inherit; }
@@ -37,9 +35,9 @@ namespace AzureStampsPattern.Functions
     </style>
 </head>
 <body>
-    <div id="swagger-ui"></div>
-    <script src="https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui-bundle.js"></script>
-    <script src="https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui-standalone-preset.js"></script>
+    <div id=""swagger-ui""></div>
+    <script src=""https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui-bundle.js""></script>
+    <script src=""https://unpkg.com/swagger-ui-dist@3.25.0/swagger-ui-standalone-preset.js""></script>
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
@@ -53,13 +51,12 @@ namespace AzureStampsPattern.Functions
                 plugins: [
                     SwaggerUIBundle.plugins.DownloadUrl
                 ],
-                layout: "StandaloneLayout"
+                layout: ""StandaloneLayout""
             });
         };
     </script>
 </body>
-</html>
-""";
+</html>";
 
             await response.WriteStringAsync(html);
             return response;
