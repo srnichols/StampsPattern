@@ -438,7 +438,7 @@ _logger.LogInformation("Cache {CacheResult} for tenant {TenantId}",
 
 - <a href="https://learn.microsoft.com/azure/azure-functions/functions-best-practices" target="_blank" rel="noopener">Azure Functions Best Practices</a>
 - <a href="https://learn.microsoft.com/azure/cosmos-db/performance-tips" target="_blank" rel="noopener">Cosmos DB Performance Tips</a>
-- <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener">Microsoft Entra External ID for customers</a>
+- <a href="https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam" target="_blank" rel="noopener">Microsoft Entra External ID for customers</a>
 - <a href="https://learn.microsoft.com/azure/azure-cache-for-redis/cache-best-practices" target="_blank" rel="noopener">Redis Caching Patterns</a>
 
 ## 🔗 Related Documentation

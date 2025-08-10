@@ -646,7 +646,7 @@ actions:
  - <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Security Benchmark</a>&nbsp;<sup>↗</sup>
  - <a href="https://learn.microsoft.com/azure/architecture/framework/security/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Well-Architected Security Pillar</a>&nbsp;<sup>↗</sup>
  - <a href="https://www.cisecurity.org/benchmark/azure" target="_blank" rel="noopener" title="Opens in a new tab">CIS Azure Foundations Benchmark</a>&nbsp;<sup>↗</sup>
- - <a href="https://learn.microsoft.com/entra/external-id/customers/overview" target="_blank" rel="noopener" title="Opens in a new tab">Microsoft Entra External ID for customers</a>&nbsp;<sup>↗</sup>
+ - <a href="https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam" target="_blank" rel="noopener" title="Opens in a new tab">Microsoft Entra External ID for customers</a>&nbsp;<sup>↗</sup>
 
 ### 🛠️ **Security Tools**
 - **Azure Security Center**: Unified security management
