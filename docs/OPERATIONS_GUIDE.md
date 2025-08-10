@@ -22,12 +22,12 @@ Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predicti
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| 🎯 Operations Overview | What operations covers | 5 min | All readers |
-| 📈 Monitoring & Observability | Multi-layer monitoring | 15 min | Ops, DevOps |
-| 🚨 Incident Response | Emergency procedures | 10 min | Ops, SRE |
-| 🔧 Maintenance Procedures | Routine/automated tasks | 10 min | Ops, DevOps |
-| 📊 Performance & Scaling | Optimization, scaling | 10 min | Ops, IT Leaders |
-| 📚 Related Guides | More docs | 2 min | All readers |
+| [🎯 Environment profiles and diagnostics](#-environment-profiles-and-diagnostics-ops-quick-start) | What operations covers | 5 min | All readers |
+| [📈 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | 15 min | Ops, DevOps |
+| [🚨 Incident Response](#-incident-response) | Emergency procedures | 10 min | Ops, SRE |
+| [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | 10 min | Ops, DevOps |
+| [📊 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
+| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
 
 ### 🔗 **Key Subsections You Can Jump To:**
 - 🎛️ AI-Driven Operational Maturity

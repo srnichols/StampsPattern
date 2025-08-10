@@ -21,10 +21,10 @@ Practical ways to reduce spend across compute, storage, networking, data, and op
 | Section | Focus Area | Best for |
 |---------|------------|----------|
 | [📊 Deployment Cost Analysis](#-deployment-cost-analysis) | Compare deployment options | Architects, Decision makers |
-| [🏗️ Cost by Architecture Layer](#%EF%B8%8F-cost-optimization-by-layer) | Layer-specific strategies | Technical teams |
-| [💡 Optimization Strategies](#-cost-optimization-strategies) | Cost-saving techniques | DevOps, Operations |
-| [📈 Monitoring & Governance](#-cost-monitoring--governance) | Cost control tools/processes | Finance, Operations |
-| [🔧 Practical Examples](#-practical-optimization-examples) | Real-world scenarios | Implementation teams |
+| [🏗️ Cost Optimization by Layer](#-cost-optimization-by-layer) | Layer-specific strategies | Technical teams |
+| [💡 Cost Optimization Strategies](#-cost-optimization-strategies) | Cost-saving techniques | DevOps, Operations |
+| [📈 Cost Monitoring & Governance](#-cost-monitoring--governance) | Cost control tools/processes | Finance, Operations |
+| [🔧 Practical Optimization Examples](#-practical-optimization-examples) | Real-world scenarios | Implementation teams |
 | [🔗 Resources & Tools](#-resources--tools) | Best practices, tools | All |
 
 ---

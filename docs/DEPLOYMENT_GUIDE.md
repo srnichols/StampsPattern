@@ -35,14 +35,14 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🎯 Deployment Overview](#-deployment-overview) | What you're building | 5 min | All readers |
+| [🎯 Deployment Overview](#-deployment-overview-for-new-users) | What you're building | 5 min | All readers |
 | [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | 10 min | Architects, DevOps |
-| [⚡ Deployment Options](#-deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
+| [⚡ Deployment Options](#-enhanced-deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
 | [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | 10 min | All readers |
 | [🧪 Run locally (Functions + Emulator)](#-run-locally-functions--emulator) | Local dev/test | 5 min | Devs |
 | [🔧 Manual/Legacy Deployment](#-manuallegacy-deployment-options) | Manual/legacy steps | 10 min | DevOps |
 | [🚪 Enterprise API Management](#-enterprise-api-management-deployment) | APIM deployment | 10 min | Security, DevOps |
-| [🧪 Post-Deployment Validation](#-post-deployment-testing--validation) | Testing, health checks | 10 min | DevOps |
+| [🧪 Post-Deployment Validation](#-post-deployment-validation) | Testing, health checks | 10 min | DevOps |
 | [🛠️ Troubleshooting](#-troubleshooting-common-issues) | Common issues | 5 min | All readers |
 | [🔄 Updating Deployments](#-updating-existing-deployments) | Add/expand/cleanup | 5 min | DevOps |
 | [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |

@@ -43,7 +43,7 @@ The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to 
 | [🏆 Framework Scorecard](#-framework-scorecard) | Compliance overview | All |
 | [🚀 What Makes This Architecture Exceptional](#-what-makes-this-architecture-exceptional) | Key differentiators | Decision makers |
 | [CAF Excellence](#-1-cloud-adoption-framework-caf-excellence) | CAF pillar details | Architects |
-| [WAF Excellence](#-2-well-architected-framework-waf-excellence) | WAF pillar details | Technical teams |
+| [WAF Excellence](#-well-architected-framework-waf-assessment) | WAF pillar details | Technical teams |
 | [Competitive Differentiators](#-competitive-differentiators) | Unique strengths | All |
 | [Business Outcomes & ROI](#-business-outcomes--roi) | Value delivered | Leadership |
 | [Industry Recognition & Standards](#-industry-recognition--standards) | Certifications | Compliance teams |

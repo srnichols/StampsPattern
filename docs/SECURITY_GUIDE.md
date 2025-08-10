@@ -27,16 +27,16 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern, netwo
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| 🎯 Security Overview | Baselines, recent enhancements | 5 min | All readers |
-| 🏗️ Zero-Trust Architecture | Network micro-segmentation | 20 min | Architects |
-| 🔐 Identity & Access | Managed identity, External ID (customers) | 30 min | DevOps, IT |
-| 🌐 Network Security | WAF, NSG, DDoS | 25 min | DevOps |
-| 🗄️ Data Protection | Encryption, classification | 30 min | Security, Compliance |
-| 📜 Governance & Policy | Policy as Code | 20 min | DevOps, Compliance |
-| 📈 Security Monitoring | Threat detection, Sentinel | 25 min | Security Ops |
-| ✅ Compliance | Regulatory readiness | 20 min | Compliance |
-| 🛠️ Security Operations | IR, automation, checklists | 20 min | Security Ops |
-| 📚 Related Guides | More docs | 2 min | All readers |
+| [🎯 Security Overview](#-security-overview) | Baselines, recent enhancements | 5 min | All readers |
+| [🏗️ Security Architecture](#-security-architecture) | Network micro-segmentation | 20 min | Architects |
+| [🔐 Identity & Access](#-identity--access-management) | Managed identity, External ID (customers) | 30 min | DevOps, IT |
+| [🌐 Network Security](#-network-security) | WAF, NSG, DDoS | 25 min | DevOps |
+| [� Data Protection](#-data-protection) | Encryption, classification | 30 min | Security, Compliance |
+| [� Security Monitoring](#-security-monitoring) | Threat detection, Sentinel | 25 min | Security Ops |
+| [✅ Security Baseline Compliance](#-security-baseline-compliance) | Benchmark alignment | 15 min | Compliance |
+| [🛠️ Security Operations](#-security-operations) | IR, automation, checklists | 20 min | Security Ops |
+| [� Security Checklist](#-security-checklist) | Pre-prod review | 10 min | DevOps |
+| [�📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
 
 ---
 

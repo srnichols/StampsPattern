@@ -25,12 +25,12 @@ A concise tour of the Azure Stamps Pattern architecture, layers, flows, and core
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
+| [� Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
 | [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | 15 min | Architects, Devs |
 | [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | 10 min | DevOps, Network |
-| [🔒 Security](#-security-architecture) | Multi-layer security | 15 min | Security Teams |
-| [📊 Monitoring](#-monitoring--observability) | Observability strategy | 10 min | Operations |
-| [🌱 Scaling](#-scaling-strategies) | Growth/expansion | 5 min | IT Leaders |
+| [🔒 Security Architecture](#-security-architecture) | Multi-layer security | 15 min | Security Teams |
+| [📊 Monitoring & Observability](#-monitoring--observability) | Observability strategy | 10 min | Operations |
+| [🌱 Scaling Strategies](#-scaling-strategies) | Growth/expansion | 5 min | IT Leaders |
 
 ---
 
