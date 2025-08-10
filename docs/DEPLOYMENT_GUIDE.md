@@ -465,6 +465,16 @@ pwsh --version
   - (Legacy B2C_* keys are still read for backward compatibility)
   - Note: The `AzureArchitecture/b2c-setup.bicep` file is now an informational no‑op. External ID/B2C tenants cannot be created or linked via Bicep/ARM. Create and configure your tenant and user flows in the Azure portal.
 
+#### Portal setup prerequisites (summary)
+Before running Bicep, prepare these in the Microsoft Entra admin center (External ID → Customers):
+- Create/select your External ID tenant (confirm tenant short name, e.g., contoso)
+- App registrations: one for the client app (SPA/web) and one for the protected API (if validating aud)
+- Expose an API: set Application ID URI to match your audience (e.g., api://stamps-pattern)
+- Create a user flow for sign-up/sign-in (e.g., B2C_1_signupsignin)
+- Collect and map values to app settings: EXTERNAL_ID_TENANT, EXTERNAL_ID_CLIENT_ID, EXTERNAL_ID_USER_FLOW
+
+For detailed, step-by-step instructions, see Security Guide → Microsoft Entra External ID (customers) → [Portal setup prerequisites](./SECURITY_GUIDE.md#portal-setup-prerequisites-do-this-before-running-bicep).
+
 - **Azure subscription** with Contributor access
 - **Resource Provider registrations**:
   ```bash

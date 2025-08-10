@@ -252,6 +252,51 @@ Identity and Access Management (IAM) forms the cornerstone of the zero-trust sec
 // External ID tenants cannot be created via Bicep/ARM. Configure in portal.
 ```
 
+#### Portal setup prerequisites (do this before running Bicep)
+
+Because External ID (customers, formerly Azure AD B2C) tenants can’t be created via Bicep/ARM, prepare these items in the Azure portal first:
+
+1) Create or select your External ID tenant (CIAM)
+- Portal: Microsoft Entra admin center → External ID → Customers
+- Confirm the tenant name (e.g., contoso) and primary domain (e.g., contoso.onmicrosoft.com)
+
+2) Create an App registration for your client app (SPA or web app)
+- Name: Stamps Client (example)
+- Supported account types: Accounts in this organizational directory only
+- Redirect URIs: add your local and prod URIs (e.g., http://localhost:3000, https://app.contoso.com)
+- Certificates & secrets: create a client secret only if your app type requires it (not needed for SPA PKCE)
+
+3) Create an App registration for your protected API (if validating aud)
+- Name: Stamps API (example)
+- Expose an API → Set Application ID URI to match your audience
+  - Example: api://stamps-pattern (or your custom URI)
+- Add at least one scope (e.g., access_as_user)
+- Note: This must align with the APIM policy in this guide that validates aud "api://stamps-pattern". If you use a different URI, update the APIM policy to match.
+
+4) Create a user flow (policy) for sign-up/sign-in
+- External ID → User flows → New user flow → Sign up and sign in
+- Name: B2C_1_signupsignin (recommended conventional naming)
+- Add identity providers and attributes/claims as needed
+
+5) Collect these values for app configuration
+- Tenant name: contoso (External ID tenant short name)
+- Client (application) ID: from the client app registration
+- User flow (policy) name: B2C_1_signupsignin
+- Audience / Application ID URI: api://stamps-pattern (or your chosen URI)
+
+6) Map to application settings (local and deployment)
+- Local development (local.settings.json):
+  - EXTERNAL_ID_TENANT: contoso
+  - EXTERNAL_ID_CLIENT_ID: <client-app-id>
+  - EXTERNAL_ID_USER_FLOW: B2C_1_signupsignin
+  - Optionally set an API audience if your validation requires a custom aud
+- Deployment (Function App / Container App settings): set the same keys as app settings
+
+Reference docs:
+- Microsoft Entra External ID (customers) overview: https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam
+- Create user flows: https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-user-flow-sign-up-sign-in-customers
+- Expose an API & scopes: https://learn.microsoft.com/en-us/entra/identity-platform/v2-permissions-and-consent
+
 #### Security Policies:
 - **Multi-Factor Authentication (MFA)**: Required for all admin accounts
 - **Conditional Access**: Location and device-based restrictions
