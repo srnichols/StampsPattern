@@ -173,6 +173,9 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 🧾 Production SaaS Checklist (Printable): [one-pagers/production-saas-checklist.md](./one-pagers/production-saas-checklist.md)
 - 💼 Executive Brief (CIO): [one-pagers/executive-brief-cio.md](./one-pagers/executive-brief-cio.md)
 
+### Whitepapers
+- 🧠 Concept Whitepaper: [Azure_Stamps_Pattern_Analysis_WhitePaper.md](./Azure_Stamps_Pattern_Analysis_WhitePaper.md)
+
 ### Reference & Support
 - 📖 Glossary: [GLOSSARY.md](./GLOSSARY.md)
 - 🧰 Known Issues: [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
@@ -207,9 +210,9 @@ journey
 
 **📋 Recommended Path:**
 1. **📄 [README.md](../README.md)** - Business value and project overview *(10 minutes)*
-2. **� [Executive Brief (CIO)](./one-pagers/executive-brief-cio.md)** - ROI, KPIs, phased adoption *(10 minutes)*
-2. **�📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
-3. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#%EF%B8%8F-architecture-overview)** - High-level architecture *(15 minutes)*
+2. **💼 [Executive Brief (CIO)](./one-pagers/executive-brief-cio.md)** - ROI, KPIs, phased adoption *(10 minutes)*
+2. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
+3. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#️-architecture-overview)** - High-level architecture *(15 minutes)*
 4. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md#-security-overview)** - Security and compliance posture *(15 minutes)*
 5. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md#-operations-overview)** - Operational model *(10 minutes)*
 
