@@ -307,6 +307,47 @@ public void ConfigureServices(IServiceCollection services)
 
 ---
 
+### Issue: Functions host exits on startup or endpoints not reachable locally
+
+**Problem**: `func start` builds the Functions app but the host exits quickly, or HTTP probes like `/api/health` or `/api/swagger/ui` return connection errors.
+
+**Checklist & Fixes**:
+```powershell
+# 1) Verify Azure Functions Core Tools v4 is installed and on PATH
+func --version  # Expect major version 4
+
+# 2) Build from the AzureArchitecture folder to catch compile issues
+cd ./AzureArchitecture
+dotnet build
+
+# 3) Start the host from the AzureArchitecture folder (don’t nest under bin/)
+func start
+
+# 4) Port in use? Try an alternate port
+func start --port 7072
+
+# 5) Ensure local.settings.json points to the emulator
+#   - CosmosDbConnection: https://localhost:8085/
+#   - The run-local.ps1 script imports the emulator cert; if SSL errors persist,
+#     open https://localhost:8085/_explorer/emulator.pem in a browser once to trust it.
+
+# 6) Avoid overlapping builds/hosts
+#    Stop any running VS Code build tasks and background function hosts before retrying.
+
+# 7) Optional: Start Azurite for Storage if your functions need it
+azurite --silent --location ./.azurite --debug ./.azurite/debug.log
+
+# 8) Check verbose logs for exceptions
+func start --verbose
+```
+
+**Notes**:
+- Start from the `AzureArchitecture` directory so the host picks up `host.json` and function assemblies.
+- If the process exits immediately, inspect the last log lines for unhandled exceptions (e.g., missing env var).
+- Ensure only one host instance is running to prevent port conflicts.
+
+---
+
 ## ⚡ Performance Issues
 
 ### Issue: High JWT Validation Latency
