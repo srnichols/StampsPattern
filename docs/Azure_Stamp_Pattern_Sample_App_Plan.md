@@ -42,7 +42,7 @@ The sample app will follow a microservices-inspired architecture, containerized 
   - Azure Blob Storage for media/uploads.
   - SQL Server for aggregated analytics.
 - **Caching**: Redis for session management and caching frequently accessed data.
-- **Authentication**: Basic login (e.g., Azure AD or custom JWT) to route users to their tenant's CELL instance.
+- **Authentication**: Basic login (e.g., Microsoft Entra ID or custom JWT) to route users to their tenant's CELL instance.
 - **Deployment**: Orchestrated via Azure Dev CLI (azd) from the management portal.
 - **Routing/Branding**: Custom subdomains (e.g., tenant1.example.com) and header personalization based on captured tenant metadata.
 

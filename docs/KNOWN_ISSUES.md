@@ -192,7 +192,7 @@ param resourceToken string = take(uniqueString(resourceGroup().id), 6)
 
 ### Issue: Microsoft Entra External ID (customers) Deployment Limitations
 
-**Problem**: External ID (formerly Azure AD B2C) tenants cannot be created via Bicep/ARM templates.
+**Problem**: Microsoft Entra External ID (customers, formerly Azure AD B2C) tenants cannot be created via Bicep/ARM templates.
 
 **Symptoms**:
 ```

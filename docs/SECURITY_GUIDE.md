@@ -557,7 +557,7 @@ resource sentinelSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-p
 #### Azure Security Benchmark:
 - ✅ **NS-1**: Implement security segmentation
 - ✅ **NS-2**: Connect private networks together  
-- ✅ **ID-1**: Standardize Azure Active Directory
+- ✅ **ID-1**: Standardize Microsoft Entra ID (formerly Azure AD)
 - ✅ **DP-1**: Discover, classify, and label sensitive data
 - ✅ **LT-1**: Enable threat detection for Azure resources
 

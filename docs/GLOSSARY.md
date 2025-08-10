@@ -163,7 +163,7 @@ Azure feature that provides secure connectivity to services over a private netwo
  - **Docs**: <a href="https://learn.microsoft.com/azure/private-link/private-endpoint-overview" target="_blank" rel="noopener" title="Opens in a new tab">Azure Private Endpoint overview</a>&nbsp;<sup>↗</sup>
 
 ### **Managed Identity**
-Azure feature that provides applications with an automatically managed identity in Azure AD.
+Azure feature that provides applications with an automatically managed identity in Microsoft Entra ID (formerly Azure AD).
 - **Benefit**: No need to store credentials in code
 - **Types**: System-assigned (tied to resource) or User-assigned (shared across resources)
  - **Docs**: <a href="https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview" target="_blank" rel="noopener" title="Opens in a new tab">Managed identities for Azure resources</a>&nbsp;<sup>↗</sup>

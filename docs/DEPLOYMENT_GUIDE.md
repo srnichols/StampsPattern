@@ -202,7 +202,7 @@ The following sections map these concepts to concrete commands, parameters, and 
 - **Azure Subscription**: Like having a building permit
   - Need **Contributor** access (ability to create resources)
   - Subscription with sufficient quota for required resources
-- **Azure Active Directory**: Like having security clearance
+- **Microsoft Entra ID**: Like having security clearance (formerly Azure AD)
   - Permissions to create App Registrations (for security)
   - Permission to assign roles to managed identities
 

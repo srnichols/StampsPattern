@@ -639,7 +639,7 @@ Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth st
 #### 🎫 **Microsoft Entra External ID (customers) Integration**
 
 **⚠️ Important Deployment Notes:**
-- External ID (formerly Azure AD B2C) tenants cannot be created or linked via Bicep/ARM
+- Microsoft Entra External ID (customers, formerly Azure AD B2C) tenants cannot be created or linked via Bicep/ARM
 - Create and configure your External ID tenant manually in the Azure portal
 - Register applications (client APIs/web apps) and configure user flows/policies (sign-up/sign-in, password reset) there
 
