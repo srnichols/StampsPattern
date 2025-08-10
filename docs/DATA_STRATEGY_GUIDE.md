@@ -2,7 +2,7 @@
 
 ---
 
-Practical blueprint for designing the CELL data plane—HA/DR tiers, replication topologies, tenancy-aware routing, and operational runbooks—so teams can deliver reliable, compliant, and cost-effective data services.
+Practical blueprint for designing the CELL data plane, HA/DR tiers, replication topologies, tenancy-aware routing, and operational runbooks, so teams can deliver reliable, compliant, and cost-effective data services.
 
 - What’s inside: Tiers and targets, topology patterns, service recipes (Cosmos/SQL/Postgres/Storage), routing, sharding, IaC knobs, runbooks, testing, observability, compliance, cost
 - Best for: Data/solution architects, platform engineers, SRE/operations, and compliance teams
@@ -132,7 +132,7 @@ When to choose which:
 
 - Azure Files
   - In‑region HA: ZRS (Standard/Premium options vary by region).
-  - Cross‑region: Standard often supports GZRS/RA‑GZRS (verify); Premium typically ZRS only—pair with backups or sync tooling.
+  - Cross‑region: Standard often supports GZRS/RA‑GZRS (verify); Premium typically ZRS only, pair with backups or sync tooling.
 
 ---
 

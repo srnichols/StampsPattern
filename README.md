@@ -51,19 +51,19 @@ flowchart TB
                 direction LR
                 subgraph "🛡️ AZ 1 - High Availability"
                     AG1[🚪 Application Gateway<br/>Zone-Redundant WAF]
-                    subgraph "📦 CELL-001 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    subgraph "📦 CELL-001, Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         CA1[🐳 Container Apps<br/>50 SMB Tenants]
                         SQL1[🗄️ Azure SQL<br/>Multi-tenant DB]
                         REDIS1[⚡ Redis Cache<br/>Shared Performance]
                     end
-                    subgraph "🏢 CELL-002 — Dedicated<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    subgraph "🏢 CELL-002, Dedicated<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         CA2[🐳 Container Apps<br/>1 Enterprise Tenant]
                         SQL2[🗄️ Azure SQL<br/>Dedicated DB]
                         REDIS2[⚡ Redis Cache<br/>Dedicated Performance]
                     end
                 end
                 subgraph "🛡️ AZ 2 - High Availability"
-                    subgraph "📦 CELL-003 — Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    subgraph "📦 CELL-003, Shared<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         CA3[🐳 Container Apps<br/>30 Mid-Market Tenants]
                         SQL3[🗄️ Azure SQL<br/>Multi-tenant DB]
                     end
@@ -183,7 +183,7 @@ Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) f
 **Why choose this for enterprise SaaS?**
 The pattern solves critical enterprise challenges with flexible tenancy models while maintaining the highest security and compliance standards. You can optimize costs with shared CELLs for smaller clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance, custom configurations, or performance guarantees ($3,200/tenant/month).
 
-This pattern is particularly powerful for regulated industries (healthcare, financial services, government) where dedicated isolation and comprehensive compliance aren't just preferred—they're mandatory for regulatory adherence.
+This pattern is particularly powerful for regulated industries (healthcare, financial services, government) where dedicated isolation and comprehensive compliance aren't just preferred, they're mandatory for regulatory adherence.
 
 ---
 
@@ -342,7 +342,7 @@ We welcome contributions! Please see our contribution guidelines:
 
 Thanks to all the amazing people who have contributed to this project. Want to help? See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-— View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab">https://github.com/srnichols/StampsPattern/graphs/contributors</a>&nbsp;<sup>↗</sup>
+, View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab">https://github.com/srnichols/StampsPattern/graphs/contributors</a>&nbsp;<sup>↗</sup>
 
 ---
 

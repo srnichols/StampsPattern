@@ -1,8 +1,8 @@
 <!-- Renamed from NAMING_CONVENTIONS.md to NAMING_CONVENTIONS_GUIDE.md for consistency -->
 
-# 📋 Azure Stamps Pattern - Naming Conventions Guide
+# 📝 Azure Stamps Pattern - Naming Conventions Guide
 
-Standard naming for the Azure Stamps Pattern—patterns per resource type, region abbreviations, tagging, and migration guidance to keep deployments consistent and compliant at scale.
+Standard naming for the Azure Stamps Pattern, patterns per resource type, region abbreviations, tagging, and migration guidance to keep deployments consistent and compliant at scale.
 
 - What's inside: Resource naming patterns, region abbreviations, zone-aware names, tagging, and helpers
 - Best for: DevOps, cloud engineers, solution architects, IT leaders, and operations teams
@@ -21,23 +21,23 @@ Standard naming for the Azure Stamps Pattern—patterns per resource type, regio
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🎯 Overview](#-overview) | Why naming conventions matter | 3 min | All readers |
-| [🌍 Resource Group Naming](#-resource-group-naming) | Patterns and examples | 5 min | DevOps, Architects |
-| [🗺️ Region Abbreviations](#-azure-region-abbreviations) | Standard short names | 3 min | DevOps |
-| [🏗️ Resource Naming Patterns](#-resource-naming-patterns) | Compute, data, network, security | 10 min | DevOps, Architects |
-| [🔄 Zone-Aware Naming](#-zone-aware-naming-considerations) | When/why to include zones | 5 min | DevOps |
-| [🏷️ Tagging Strategy](#-tagging-strategy) | Required/optional tags | 5 min | IT Leaders |
-| [📝 Implementation Guidelines](#-implementation-guidelines) | Template/script helpers | 10 min | DevOps |
-| [✅ Validation Rules](#-validation-rules) | Naming checks | 5 min | DevOps |
-| [🔧 Migration Guidelines](#-migration-guidelines) | Adopting new names | 5 min | Operations |
-| [📚 References](#-references) | More docs | 2 min | All readers |
+| 🎯 Overview | Why naming conventions matter | 3 min | All readers |
+| 🌍 Resource Group Naming | Patterns and examples | 5 min | DevOps, Architects |
+| 🗺️ Region Abbreviations | Standard short names | 3 min | DevOps |
+| 🏗️ Resource Naming Patterns | Compute, data, network, security | 10 min | DevOps, Architects |
+| 🌀 Zone-Aware Naming | When/why to include zones | 5 min | DevOps |
+| 🏷️ Tagging Strategy | Required/optional tags | 5 min | IT Leaders |
+| 📝 Implementation Guidelines | Template/script helpers | 10 min | DevOps |
+| ✅ Validation Rules | Naming checks | 5 min | DevOps |
+| 🔧 Migration Guidelines | Adopting new names | 5 min | Operations |
+| 📚 References | More docs | 2 min | All readers |
 
 ---
 
 ## 📚 For Newcomers to Azure Stamps Pattern Naming
 
 **What are Naming Conventions in the Azure Stamps Pattern?**
-> Naming conventions are the rules that make your Azure resources discoverable, manageable, and compliant. This guide shows you how to name every resource—across regions, zones, and environments—so your cloud is organized, scalable, and easy to operate.
+> Naming conventions are the rules that make your Azure resources discoverable, manageable, and compliant. This guide shows you how to name every resource, across regions, zones, and environments, so your cloud is organized, scalable, and easy to operate.
 
 **Why is this important?**
 > - **Clarity:** Instantly know what a resource is, where it lives, and who owns it
@@ -189,7 +189,7 @@ flowchart LR
 // Example: cosmos-shared-smb-z3-eus-prod
 
 // Storage Account (24 char limit, Zone-Aware)
-'st{geo}{regshort}{cell}z{zcount}{env}'
+' st{geo}{regshort}{cell}z{zcount}{env}'
 // Example: stuseusbankz3prd (17 chars), stuseusstartz2dev (17 chars)
 ```
 

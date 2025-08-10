@@ -232,7 +232,7 @@ Learn more:
 - Application Gateway: <a href="https://learn.microsoft.com/azure/application-gateway/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
 - APIM networking: <a href="https://learn.microsoft.com/azure/api-management/virtual-network-concepts" target="_blank" rel="noopener" title="Opens in a new tab">VNet concepts</a>&nbsp;<sup>↗</sup>
 
-Tip — other helpful visuals to consider in this guide:
+Tip, other helpful visuals to consider in this guide:
 - Governance & Policy: a small “policy-as-code flow” diagram showing MG-scope assignment → subscription/resource inheritance → diagnostic settings to Log Analytics.
 - Identity & Access: a “ownership and RBAC” diagram mapping Platform vs Workload teams, with PIM and managed identities.
 - Monitoring & Security: a “signals flow” diagram from resources and Private Endpoints to LAW, Defender for Cloud, and Sentinel.
@@ -390,8 +390,8 @@ module cell './AzureArchitecture/deploymentStampLayer.bicep' = {
 
 Starter Bicep templates are available under `infra/alz-starter/`:
 
-- `mg-policy-assign.bicep` — Minimal management group policy/initiative assignment.
-- `subscription-map.bicep` — Tenant-scope subscription mapping for platform/shared services and cells.
+- `mg-policy-assign.bicep`, Minimal management group policy/initiative assignment.
+- `subscription-map.bicep`, Tenant-scope subscription mapping for platform/shared services and cells.
 
 These are conservative, non-destructive starters you can extend with your own policy sets and subscription provisioning.
 

@@ -2,9 +2,9 @@
 
 This folder contains sample parameter sets for `AzureArchitecture/main.bicep`.
 
-- `main.sample.smoke.json` — minimal, lab-friendly. Sets `useHttpForSmoke: true` to avoid Key Vault certs; good for what-if and first deploys.
-- `main.sample.silver.json` — moderate HA; still lab-friendly.
-- `main.sample.platinum.json` — higher HA/DR toggles; still lab-friendly.
+- `main.sample.smoke.json`, minimal, lab-friendly. Sets `useHttpForSmoke: true` to avoid Key Vault certs; good for what-if and first deploys.
+- `main.sample.silver.json`, moderate HA; still lab-friendly.
+- `main.sample.platinum.json`, higher HA/DR toggles; still lab-friendly.
 
 Notes:
 - `additionalLocations` is an array of region name strings (e.g., ["westus2", "westeurope"]). Failover priority is computed internally by the template.

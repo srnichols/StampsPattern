@@ -1010,7 +1010,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Cost Optimization Guide](./COST_OPTIMIZATION_GUIDE.md)
 - [Developer Security Guide](./DEVELOPER_SECURITY_GUIDE.md)
-- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md) — see for full details on the **GEO → Region → Availability Zone → CELL** hierarchy and zone-aware naming/tagging
+- [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md), see for full details on the **GEO → Region → Availability Zone → CELL** hierarchy and zone-aware naming/tagging
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)

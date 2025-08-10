@@ -128,4 +128,4 @@ By contributing, you agree that your contributions will be licensed under the [M
 
 ---
 
-Thanks again for contributing — you make this project better for everyone! 🙌
+Thanks again for contributing, you make this project better for everyone! 🙌

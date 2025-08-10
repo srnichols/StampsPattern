@@ -2,7 +2,7 @@
 
 # 📋 Parameterization Guide for Azure Stamps Pattern
 
-Make deployments flexible and reusable with parameters—enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
+Make deployments flexible and reusable with parameters, enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
 
 - What's inside: Parameter types, template/script changes, usage examples, validation, and migration notes
 - Best for: DevOps, cloud engineers, solution architects, and operations teams
@@ -38,7 +38,7 @@ Make deployments flexible and reusable with parameters—enable multi-tenant, mu
 
 ## 🚀 Getting Started: What is Parameterization?
 
-Parameterization means making every deployment flexible and reusable—no more hardcoded values. You can deploy the same templates and scripts for any organization, region, or environment, simply by changing parameters. This approach unlocks:
+Parameterization means making every deployment flexible and reusable, no more hardcoded values. You can deploy the same templates and scripts for any organization, region, or environment, simply by changing parameters. This approach unlocks:
 
 - **Enterprise flexibility:** Deploy anywhere, for anyone, with a single codebase
 - **Operational excellence:** Consistent tagging, ownership, and cost tracking
@@ -364,17 +364,17 @@ The orchestrator sets `diagnosticsMode` automatically based on `environmentProfi
 
 ## 📚 Related Documentation
 
-- [README.md](../README.md) – Main onboarding and navigation
-- [DOCS.md](./DOCS.md) – Documentation index
-- [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) – Solution architecture
-- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) – Deployment procedures
-- [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md) – Zone-aware naming patterns
-- [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) – Security best practices
-- [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md) – Cost management
-- [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md) – Developer security
-- [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) – Compliance analysis
-- [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) – Known issues
-- [GLOSSARY.md](./GLOSSARY.md) – Key terms
+- [README.md](../README.md), Main onboarding and navigation
+- [DOCS.md](./DOCS.md), Documentation index
+- [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md), Solution architecture
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md), Deployment procedures
+- [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md), Zone-aware naming patterns
+- [SECURITY_GUIDE.md](./SECURITY_GUIDE.md), Security best practices
+- [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md), Cost management
+- [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md), Developer security
+- [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md), Compliance analysis
+- [KNOWN_ISSUES.md](./KNOWN_ISSUES.md), Known issues
+- [GLOSSARY.md](./GLOSSARY.md), Key terms
 - <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener">Azure Naming Conventions</a>
  - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
  - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)

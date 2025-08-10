@@ -173,7 +173,7 @@ Overall, pros outweigh cons for mid-to-large SaaS providers in regulated sectors
 
 ## Comparison to Other Cell-Based Architecture Styles
 
-Cell-based architectures partition systems into independent "cells" — self-contained units with their own services, data, and infrastructure — to enhance fault tolerance, scalability, and manageability. This contrasts with monoliths (single-unit) or basic microservices (shared infra risks cascading failures).
+Cell-based architectures partition systems into independent "cells", self-contained units with their own services, data, and infrastructure, to enhance fault tolerance, scalability, and manageability. This contrasts with monoliths (single-unit) or basic microservices (shared infra risks cascading failures).
 
 The following diagram compares key aspects:
 

@@ -1,6 +1,6 @@
 # 🧭 Management Portal - User Guide
 
-Practical guide to operating the Azure Stamps Management Portal—sign‑in and roles, safe tenant and cell operations, routing, migrations, and health monitoring—so teams can manage multi‑tenant control‑plane tasks with confidence and auditability.
+Practical guide to operating the Azure Stamps Management Portal, sign‑in and roles, safe tenant and cell operations, routing, migrations, and health monitoring, so teams can manage multi‑tenant control‑plane tasks with confidence and auditability.
 
 - What's inside: Overview & architecture, operator quick start, roles & authentication, data model, workflows (onboarding, routing, migration, suspend/resume, decommission), GraphQL API, domain naming, troubleshooting
 - Best for: Platform administrators, operators/SREs, support engineers, and developers integrating with the control plane
@@ -29,25 +29,7 @@ Last updated: August 2025
 
 ---
 
-## 🧭 Quick Navigation
-
-| Section | Focus Area | Time | Best for |
-|---|---|---:|---|
-| [Overview & Architecture](#-overview--architecture) | How it works end‑to‑end | 4 min | All |
-| [Getting Started (Operators)](#-getting-started-operators) | First tasks after sign‑in | 2 min | Operators |
-| [Roles & Authentication](#-roles--authentication) | Sign‑in and permissions | 3 min | Admins, Ops |
-| [Local Development](#-local-development) | Run locally and smoke test | 4 min | Devs, Ops |
-| [Concepts](#-concepts) | Tenant, Cell, Operation | 3 min | All |
-| [Data Model](#-control-plane-data-model-cosmos-db) | Entities and JSON shapes | 6 min | Admins, Devs |
-| [Workflows](#-workflows) | Onboarding/Migration/etc. | 7 min | Admins, Ops |
-| [API (GraphQL)](#-api-graphql-quick-reference) | Examples and headers | 5 min | Devs |
-| [Domain Naming (Test vs Prod)](#-domain-naming-test-vs-production) | Reservation policy | 3 min | Admins |
-| [Troubleshooting](#-troubleshooting) | Common fixes | 4 min | Support |
-| [Related Guides](#-related-guides) | Deep dives | 2 min | All |
-
----
-
-## 🏗️ Overview & Architecture
+## 🧭 Overview & Architecture
 
 ## 🚦 Getting Started (Operators)
 
@@ -195,7 +177,7 @@ Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
   }
   ```
 
-- Catalogs (container: `catalogs`, pk: `/type`) — recommended addition
+ - Catalogs (container: `catalogs`, pk: `/type`), recommended addition
 
   ```jsonc
   {
@@ -240,7 +222,7 @@ erDiagram
   }
 ```
 
-### 🔑 Partitioning, indexing, and constraints
+### 🔐 Partitioning, indexing, and constraints
 
 - Partition keys
   - Today: generic `/pk` set to `id` (tenants/cells) or `tenantId` (operations)
@@ -249,7 +231,7 @@ erDiagram
   - Keep `consistent` indexing with selective included paths for high‑cardinality fields
   - Add composite indexes to speed lookups: e.g., `(domain ASC, status ASC)` on `tenants`
 - Unique keys
-  - Tenants: `domain` should be unique. Note Cosmos unique keys are per-partition; with pk `/tenantId` they won’t enforce global uniqueness.
+  - Tenants: `domain` should be unique. Note Cosmos unique keys are per‑partition; with pk `/tenantId` they won’t enforce global uniqueness.
   - Recommended: Reserve domains in `catalogs` (type: `domains`, id: `<domain>`). Create reservation before tenant create; delete on decommission.
 - Domain reservation flow (GraphQL)
 
@@ -269,7 +251,7 @@ erDiagram
 - TTL
   - Apply TTL on `operations` (e.g., 60–90 days) to control storage costs; exempt retained/compliance operations by setting `ttl = -1` per item
 
-> Note: For this test framework, a global domain reservation isn’t required—use Azure base domains/hostnames. For production SaaS, adopt a reservation strategy to avoid tenant domain collisions. See “Domain naming and global uniqueness” in the Management Portal Plan.
+> Note: For this test framework, a global domain reservation isn’t required, use Azure base domains/hostnames. For production SaaS, adopt a reservation strategy to avoid tenant domain collisions. See “Domain naming and global uniqueness” in the Management Portal Plan.
 
 See also: `management-portal/infra/management-portal.bicep` and `docs/MANAGEMENT_PORTAL_PLAN.md`.
 
@@ -396,7 +378,7 @@ Tip: Use `scripts/graphql-smoke-test.ps1 -AsAdmin` to simulate admin role locall
 - Production: Implement global domain reservation to guarantee uniqueness across tenants. Enforce in API (reject duplicates) and clean up on decommission.
   - Pattern: `catalogs` container with `type = "domains"`, `id = <domain>` as reservation
   - See: Management Portal Plan → “Domain naming and global uniqueness”
-  - Also see: Deployment Guide → “🧾 Production SaaS Checklist — One‑Pager”
+  - Also see: Deployment Guide → “🧾 Production SaaS Checklist, One‑Pager”
 
 ---
 
@@ -421,4 +403,4 @@ Known limitations:
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Security Guide](./SECURITY_GUIDE.md)
 - [Management Portal Plan](./MANAGEMENT_PORTAL_PLAN.md)
-- [Production SaaS Checklist — One‑Pager](./one-pagers/production-saas-checklist.md)
+- [Production SaaS Checklist, One‑Pager](./one-pagers/production-saas-checklist.md)

@@ -1,7 +1,7 @@
 
 # 🚀 Azure Stamps Pattern - Deployment Guide
 
-Fast, reliable paths to deploy the Azure Stamps Pattern—from simple two-region setups to enterprise multi‑GEO—covering prerequisites, options, automation, validation, and troubleshooting.
+Fast, reliable paths to deploy the Azure Stamps Pattern, from simple two-region setups to enterprise multi‑GEO, covering prerequisites, options, automation, validation, and troubleshooting.
 
 - What’s inside: Prereqs, deployment paths (PS/Bicep/GitHub Actions), validation, and troubleshooting
 - Best for: DevOps, architects, and security/operations stakeholders
@@ -494,9 +494,9 @@ pwsh --version
 #### Quick start with sample parameters
 
 Use the ready-to-run sample parameter files under `AzureArchitecture/examples/`:
-- `main.sample.smoke.json` — minimal, lab-friendly (HTTP, no certs)
-- `main.sample.silver.json` — moderate HA, still lab-friendly
-- `main.sample.platinum.json` — higher HA/DR settings, still lab-friendly
+- `main.sample.smoke.json`, minimal, lab-friendly (HTTP, no certs)
+- `main.sample.silver.json`, moderate HA, still lab-friendly
+- `main.sample.platinum.json`, higher HA/DR settings, still lab-friendly
 
 Notes:
 - In lab mode, set `useHttpForSmoke: true` (already set in the samples). This enables HTTP on the regional Application Gateway so you don’t need a Key Vault certificate to start.
@@ -1199,7 +1199,7 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
-- [Production SaaS Checklist — One‑Pager](./one-pagers/production-saas-checklist.md)
+- [Production SaaS Checklist, One‑Pager](./one-pagers/production-saas-checklist.md)
 
 ---
 

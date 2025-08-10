@@ -1,9 +1,8 @@
-
 # 🛡️ Azure Stamps Pattern - Zero-Trust Security Guide
 
 ---
 
-Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—network micro‑segmentation, managed identity, private endpoints, threat protection, and automated governance.
+Practical blueprint to implement zero‑trust in the Azure Stamps Pattern, network micro‑segmentation, managed identity, private endpoints, threat protection, and automated governance.
 
 - What’s inside: Baselines, architecture, identity, network, data, policy, monitoring, operations
 - Best for: Security architects, DevOps/cloud engineers, IT leaders, and compliance teams
@@ -28,23 +27,23 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—netw
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🎯 Security Overview](#-security-overview) | Baselines, recent enhancements | 5 min | All readers |
-| [🏗️ Zero-Trust Architecture](#-zero-trust-architecture) | Network micro-segmentation | 20 min | Architects |
-| [🔐 Identity & Access](#-identity--access-management) | Managed identity, External ID (customers) | 30 min | DevOps, IT |
-| [🌐 Network Security](#-network-security) | WAF, NSG, DDoS | 25 min | DevOps |
-| [🗄️ Data Protection](#-data-protection) | Encryption, classification | 30 min | Security, Compliance |
-| [📜 Governance & Policy](#-governance--policy-enforcement) | Policy as Code | 20 min | DevOps, Compliance |
-| [📊 Security Monitoring](#-security-monitoring) | Threat detection, Sentinel | 25 min | Security Ops |
-| [✅ Compliance](#-compliance-frameworks) | Regulatory readiness | 20 min | Compliance |
-| [🛠️ Security Operations](#-security-operations) | IR, automation, checklists | 20 min | Security Ops |
-| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
+| 🎯 Security Overview | Baselines, recent enhancements | 5 min | All readers |
+| 🏗️ Zero-Trust Architecture | Network micro-segmentation | 20 min | Architects |
+| 🔐 Identity & Access | Managed identity, External ID (customers) | 30 min | DevOps, IT |
+| 🌐 Network Security | WAF, NSG, DDoS | 25 min | DevOps |
+| 🗄️ Data Protection | Encryption, classification | 30 min | Security, Compliance |
+| 📜 Governance & Policy | Policy as Code | 20 min | DevOps, Compliance |
+| 📈 Security Monitoring | Threat detection, Sentinel | 25 min | Security Ops |
+| ✅ Compliance | Regulatory readiness | 20 min | Compliance |
+| 🛠️ Security Operations | IR, automation, checklists | 20 min | Security Ops |
+| 📚 Related Guides | More docs | 2 min | All readers |
 
 ---
 
 ## 📚 For Newcomers to Stamps Pattern Security
 
 **What is Security in the Stamps Pattern?**
-> Security in the Stamps Pattern means building a fortress around every layer—network, identity, data, and operations—using zero-trust principles. This guide helps you understand how to protect sensitive data, enforce compliance, and automate threat response in a multi-tenant, cloud-native environment.
+> Security in the Stamps Pattern means building a fortress around every layer, network, identity, data, and operations, using zero-trust principles. This guide helps you understand how to protect sensitive data, enforce compliance, and automate threat response in a multi-tenant, cloud-native environment.
 
 **Why is this important?**
 > - **Zero-trust by default:** Every request is verified, every resource is isolated
@@ -58,7 +57,7 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern—netw
 
 > **🎯 Purpose**: Comprehensive zero-trust security implementation achieving **96/100 WAF Security score** with enterprise-grade controls, automated governance, network micro-segmentation, and comprehensive threat protection for regulated industries.
 >
-> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — how this implementation maps to Microsoft frameworks.
+> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** , how this implementation maps to Microsoft frameworks.
 >
 > 🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how these security controls align with CAF/WAF-aligned enterprise landing zones.
 
@@ -400,7 +399,7 @@ resource cellNSG 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
 }
 ```
 
-## 📊 Data Protection
+## 📈 Data Protection
 
 ### 🔐 **Encryption Standards**
 
@@ -485,7 +484,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 ## 🔍 Security Monitoring
 
-### 📊 **Azure Sentinel Integration**
+### 📈 **Azure Sentinel Integration**
 
 ```bicep
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {

@@ -1,7 +1,7 @@
 
 # 💰 Azure Stamps Pattern - Cost Optimization Guide
 
-Practical ways to reduce spend across compute, storage, networking, data, and operations—without sacrificing reliability or security—plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
+Practical ways to reduce spend across compute, storage, networking, data, and operations, without sacrificing reliability or security, plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
 
 - What’s inside: Deployment cost analysis, layer-by-layer tactics, monitoring/governance, examples, and checklists
 - Best for: Architects, DevOps, finance/FinOps, and IT leaders
@@ -111,7 +111,7 @@ The Azure Stamps Pattern is built on a four-tier hierarchy: **GEO → Region →
 
 **Tip:** For cost-sensitive tenants, start with z0/z1. For enterprise or regulated tenants, use z2/z3 for higher durability and compliance.
 
-This flexibility is a core advantage of the Azure Stamps Pattern—enabling you to right-size cost and resilience for every business scenario.
+This flexibility is a core advantage of the Azure Stamps Pattern, enabling you to right-size cost and resilience for every business scenario.
 
 ## 📊 Deployment Cost Analysis
 
@@ -629,6 +629,6 @@ flowchart TD
 
 ---
 
-**💰 Remember:** Cost optimization is not a one-time activity—it's an ongoing practice that should be integrated into your operational processes for maximum effectiveness!
+**💰 Remember:** Cost optimization is not a one-time activity, it's an ongoing practice that should be integrated into your operational processes for maximum effectiveness!
 
 **🚀 Ready to start optimizing?** Begin with the 5-minute assessment above, then follow the 30-day plan for systematic cost reduction.

@@ -1,10 +1,10 @@
 # 🏗️ Azure Stamps Pattern - Enterprise Architecture Guide (CAF/WAF Compliant)
 
-> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** — framework mapping and scoring details.
+> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**, framework mapping and scoring details.
 >
 > Alignment note: This guide references CAF/WAF throughout. To see how these translate into enterprise landing zones, use the companion [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
-A concise tour of the Azure Stamps Pattern architecture—layers, flows, and core decisions—so you can design, build, and scale compliant multi-tenant systems with confidence.
+A concise tour of the Azure Stamps Pattern architecture, layers, flows, and core decisions, so you can design, build, and scale compliant multi-tenant systems with confidence.
 
 - What’s inside: Architecture layers, traffic flow, security, monitoring, scaling principles
 - Best for: Architects, developers, IT leaders, and security teams

@@ -1,4 +1,4 @@
-# 🌟 Code of Conduct — Azure Stamps Pattern
+# 🌟 Code of Conduct, Azure Stamps Pattern
 
 A safe, inclusive, and respectful community helps everyone build better software. This Code of Conduct sets expectations for behavior and explains how to report concerns.
 

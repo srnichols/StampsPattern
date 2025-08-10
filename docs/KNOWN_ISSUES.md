@@ -1,6 +1,6 @@
 # 🛠️ Azure Stamps Pattern - Known Issues & Workarounds
 
-Practical fixes and workarounds for common issues across development, deployment, and operations of the Azure Stamps Pattern—aimed at developers, DevOps, ops, and support to restore health fast.
+Practical fixes and workarounds for common issues across development, deployment, and operations of the Azure Stamps Pattern, aimed at developers, DevOps, ops, and support to restore health fast.
 
 - What's inside: Deployment, development, performance, security, database, and ops issue playbooks
 - Best for: Developers, DevOps, operations, support, and newcomers
@@ -33,7 +33,7 @@ Practical fixes and workarounds for common issues across development, deployment
 ## 📚 For Newcomers to the Known Issues Guide
 
 **What is this guide for?**
-> This guide is your first stop when something goes wrong with the Stamps Pattern. It covers the most frequent issues, their symptoms, and proven solutions—so you can get back to building, deploying, and operating with confidence.
+> This guide is your first stop when something goes wrong with the Stamps Pattern. It covers the most frequent issues, their symptoms, and proven solutions, so you can get back to building, deploying, and operating with confidence.
 
 **Why is this important?**
 > - **Faster troubleshooting:** Find answers without searching endlessly

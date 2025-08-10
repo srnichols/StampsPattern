@@ -1,6 +1,6 @@
 # ⚙️ Azure Stamps Pattern - AI-Driven Operations Guide
 
-Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
+Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
 
 
@@ -22,25 +22,25 @@ Operational runbook for the Azure Stamps Pattern—AI-driven monitoring, predict
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [🎯 Operations Overview](#-operations-overview) | What operations covers | 5 min | All readers |
-| [📊 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | 15 min | Ops, DevOps |
-| [🚨 Incident Response](#-incident-response) | Emergency procedures | 10 min | Ops, SRE |
-| [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | 10 min | Ops, DevOps |
-| [📈 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
-| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
+| 🎯 Operations Overview | What operations covers | 5 min | All readers |
+| 📈 Monitoring & Observability | Multi-layer monitoring | 15 min | Ops, DevOps |
+| 🚨 Incident Response | Emergency procedures | 10 min | Ops, SRE |
+| 🔧 Maintenance Procedures | Routine/automated tasks | 10 min | Ops, DevOps |
+| 📊 Performance & Scaling | Optimization, scaling | 10 min | Ops, IT Leaders |
+| 📚 Related Guides | More docs | 2 min | All readers |
 
 ### 🔗 **Key Subsections You Can Jump To:**
-- [🎛️ AI-Driven Operational Maturity](#-ai-driven-operational-maturity)
-- [📈 Key Performance Indicators (KPIs)](#-key-performance-indicators-kpis)
-- [🚨 Alert Configuration](#-alert-configuration)  
-- [📊 Flexible Tenant Management Operations](#-flexible-tenant-management-operations)
-- [🔧 Tenant Onboarding Automation](#-tenant-onboarding-automation)
-- [📊 Custom Dashboards](#-custom-dashboards)
-- [🔄 Routine Maintenance Tasks](#-routine-maintenance-tasks)
-- [📋 Incident Classification](#-incident-classification)
-- [🔧 Incident Response Playbooks](#-incident-response-playbooks)
-- [📈 Growth Projections](#-growth-projections)
-- [🎯 Scaling Triggers](#-scaling-triggers)
+- 🎛️ AI-Driven Operational Maturity
+- 📊 Key Performance Indicators (KPIs)
+- 🚨 Alert Configuration  
+- 📈 Flexible Tenant Management Operations
+- 🔧 Tenant Onboarding Automation
+- 📊 Custom Dashboards
+- 🔄 Routine Maintenance Tasks
+- 📋 Incident Classification
+- 🔧 Incident Response Playbooks
+- 📊 Growth Projections
+- 🎯 Scaling Triggers
 
 ---
 
@@ -102,7 +102,7 @@ Notes:
 ## 📚 For Newcomers to Azure Stamps Pattern Operations
 
 **What is Operations in the Azure Stamps Pattern?**
-> Think of operations as running a global network of “smart factories” (CELLs) that are monitored, maintained, and optimized by AI. This guide helps you keep everything healthy, secure, and cost-effective—whether you’re responding to incidents, scaling up, or automating routine tasks.
+> Think of operations as running a global network of “smart factories” (CELLs) that are monitored, maintained, and optimized by AI. This guide helps you keep everything healthy, secure, and cost-effective, whether you’re responding to incidents, scaling up, or automating routine tasks.
 
 **Why is this important?**
 > - **Proactive monitoring:** Spot issues before they impact users
@@ -136,7 +136,7 @@ flowchart LR
 
 _Figure: Operational maturity curve from reactive to autonomous; use to set quarterly improvement targets._
 
-## 📊 Monitoring & Observability
+## 📈 Monitoring & Observability
 
 Effective monitoring and observability in the Azure Stamps Pattern goes beyond traditional metrics collection to provide intelligent, AI-driven insights that enable proactive operations. The multi-layer monitoring strategy provides comprehensive visibility from global traffic patterns down to individual tenant performance, enabling rapid issue identification, intelligent capacity planning, and automated optimization. This approach transforms reactive operations into predictive, data-driven decision making.
 
@@ -168,7 +168,7 @@ Effective monitoring and observability in the Azure Stamps Pattern goes beyond t
 
 _Diagram: Layered monitoring scope from global to CELL; align dashboards and alerts to each layer._
 
-### 📈 **Key Performance Indicators (KPIs)**
+### 📊 **Key Performance Indicators (KPIs)**
 
 #### Global KPIs:
 ```jsonc
@@ -335,7 +335,7 @@ az monitor metrics alert create \
 
 ---
 
-### 📊 **Flexible Tenant Management Operations**
+### 📈 **Flexible Tenant Management Operations**
 
 #### **🏠 Shared CELL Tenant Onboarding**
 ```bash
@@ -942,7 +942,7 @@ az containerapp revision deactivate \
     --revision app-$CELL_NAME--latest
 
 # 3. Update monitoring
-echo "📊 Updating monitoring configuration..."
+echo "📈 Updating monitoring configuration..."
 az monitor metrics alert update \
     --name "$CELL_NAME-Health-Alert" \
     --resource-group $RESOURCE_GROUP \
@@ -1095,9 +1095,9 @@ echo "✅ Data recovery completed for $TARGET_CELL"
 
 ---
 
-## 📈 Performance & Scaling (Capacity Planning)
+## 📊 Performance & Scaling (Capacity Planning)
 
-### 📈 **Growth Projections**
+### 📊 **Growth Projections**
 
 #### CELL Scaling Matrix:
 ```json

@@ -1,4 +1,4 @@
-# Production SaaS Checklist — One‑Pager
+# Production SaaS Checklist, One‑Pager
 
 A concise, printable pre‑go‑live checklist for promoting the Azure Stamps Pattern from test to production.
 
@@ -51,10 +51,10 @@ Last updated: August 8, 2025
 ---
 
 References
-- Deployment Guide — Production SaaS Checklist (docs/DEPLOYMENT_GUIDE.md)
-- Management Portal Plan — Domain reservation and data model (docs/MANAGEMENT_PORTAL_PLAN.md)
-- Security Baseline — Identity, network, and zero‑trust (docs/SECURITY_GUIDE.md)
-- Parameterization Guide — Org/geography/DNS inputs (docs/PARAMETERIZATION_GUIDE.md)
+- Deployment Guide, Production SaaS Checklist (docs/DEPLOYMENT_GUIDE.md)
+- Management Portal Plan, Domain reservation and data model (docs/MANAGEMENT_PORTAL_PLAN.md)
+- Security Baseline, Identity, network, and zero‑trust (docs/SECURITY_GUIDE.md)
+- Parameterization Guide, Org/geography/DNS inputs (docs/PARAMETERIZATION_GUIDE.md)
 
 ---
 

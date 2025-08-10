@@ -1,4 +1,4 @@
-# Data Strategy Plan — CELL Data Plane HA/DR
+# Data Strategy Plan, CELL Data Plane HA/DR
 
 Last updated: 2025-08-09
 Owners: Architecture Guild
@@ -29,7 +29,7 @@ Capture decisions, options, and runbooks for the CELL data plane so teams can im
 - RDBMS
   - Azure SQL Database (default RDBMS)
   - Azure Database for PostgreSQL – Flexible Server
-  - Cosmos DB for PostgreSQL (Citus) — distributed Postgres (advanced/optional)
+  - Cosmos DB for PostgreSQL (Citus), distributed Postgres (advanced/optional)
 - Non-SQL
   - Azure Cosmos DB (SQL API default; other APIs case-by-case)
 - Storage
@@ -94,22 +94,22 @@ Defaults
 
 Use these tiers as presets when designing per-workload data plans.
 
-- Bronze — In-region HA, no cross-region DR
+- Bronze, In-region HA, no cross-region DR
   - Targets: RPO 0 for zonal failures; RTO < 15 min; no regional DR target
   - Topology: Multi-AZ only (ZRS/Zone redundant)
   - Services: Storage ZRS, Cosmos zone redundant, SQL zone redundant tier
 
-- Silver — Geo-read + manual/auto failover
+- Silver, Geo-read + manual/auto failover
   - Targets: RPO ≤ 15 min; RTO 30–60 min
   - Topology: Primary + secondary region, single-write
   - Services: Cosmos additionalLocations + auto-failover, SQL Auto-failover Group (FOG), Storage RA-GZRS or Object Replication (one-way)
 
-- Gold — Active primary + warm standby
+- Gold, Active primary + warm standby
   - Targets: RPO ≤ 5 min; RTO ≤ 15–30 min
   - Topology: Paired CELLs, writes to leader, reads anywhere
   - Services: Cosmos single-write multi-region, SQL FOG, Storage Object Replication per container; standby compute sized low
 
-- Platinum — Active/Active
+- Platinum, Active/Active
   - Targets: RPO ~0 (conflict-tolerant), RTO ≤ 5–15 min
   - Topology: Paired (or multi) CELLs, multi-write where supported, read/write in both regions
   - Services: Cosmos multi-write with conflict policy; SQL remains single-write (use per-tenant leader or sharding); Storage bi-directional Object Replication with scoped prefixes
@@ -159,7 +159,7 @@ Document the exact resource names in Bicep once wired (see code comments in stam
 
 Two quick examples to make the knobs concrete. Aligns with `AzureArchitecture/main.bicep` and `deploymentStampLayer.bicep`.
 
-Example A — conservative defaults (Silver-ish) with per-cell overrides:
+Example A, conservative defaults (Silver-ish) with per-cell overrides:
 
 ```json
 {
@@ -205,7 +205,7 @@ Example A — conservative defaults (Silver-ish) with per-cell overrides:
 }
 ```
 
-Example B — Platinum for one CELL (Cosmos multi-write):
+Example B, Platinum for one CELL (Cosmos multi-write):
 
 ```json
 {
@@ -373,7 +373,7 @@ Decision drivers
 
 - Azure Files
   - Layout: Directory-per-tenant; snapshots + Azure Backup for restore.
-  - DR: ZRS for in-region; Standard may support GZRS/RA-GZRS (verify region); Premium is typically ZRS-only—pair with backups or sync tooling for cross-region.
+  - DR: ZRS for in-region; Standard may support GZRS/RA-GZRS (verify region); Premium is typically ZRS-only, pair with backups or sync tooling for cross-region.
 
 ### Guardrails and checks
 
