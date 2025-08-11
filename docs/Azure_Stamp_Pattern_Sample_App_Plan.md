@@ -44,7 +44,7 @@ The sample app will follow a microservices-inspired architecture, containerized 
 - **Backend/Data Access**: GraphQL API layer built with Data API Builder (DAB), querying Cosmos DB and SQL Server.
 - **Storage**:
   - Cosmos DB (SQL API) for primary task data.
-  - Azure Blob Storage for media/uploads.
+  - Azure Blob Storage for media/uploads (task attachments). Blob URIs are persisted with tasks in Cosmos DB.
   - SQL Server for aggregated analytics.
 - **Caching**: Redis for session management and caching frequently accessed data.
 - **Authentication**: Basic login (e.g., Microsoft Entra ID or custom JWT) to route users to their tenant's CELL instance.
@@ -69,17 +69,21 @@ The app will support multi-tenancy by:
   - Tagging: Add/remove tags on a task; tokenized tag chips with typeahead suggestions.
   - Sharing: Assign one or more team members (within the same tenant) to a task.
   - Search and filters: Quick search bar for tags and basic text; filters for category, priority, due (e.g., today/this week/overdue), and archived state.
+  - Attachments: Upload/remove media files (e.g., images, documents) to tasks; show thumbnail/filename list; download/view.
+  - Task icon/emoji: Pick an icon/emoji from a curated set; show icon on list rows and detail.
 
 ### 4.2 Backend/API
 - **Technology**: Data API Builder (GraphQL) over Cosmos DB (SQL API) and SQL for simple analytics.
 - **Core entities** (GraphQL types):
-  - Task: id, tenantId, title, description, categoryId?, priority, isArchived, dueDate?, createdByUserId, assigneeUserIds[], createdAtUtc, updatedAtUtc
+  - Task: id, tenantId, title, description, categoryId?, priority, isArchived, dueDate?, icon?, attachments[], createdByUserId, assigneeUserIds[], createdAtUtc, updatedAtUtc
   - Category: id, tenantId, name, sortOrder
   - Tag: id, tenantId, name
   - TaskTag (join): taskId, tagId
+  - Attachment (embedded on Task): id, blobUri, fileName, contentType, sizeBytes, uploadedByUserId, uploadedAtUtc
 - **Authorization & tenancy**:
   - All reads/writes scoped by tenantId derived from the user’s identity claims.
   - Row-level security via DAB policies: users can access tasks in their tenant; task edits allowed to creator or assignees.
+  - Attachments upload: client uploads via secure SAS to a tenant-scoped container or prefix; resulting blobUri is stored on the Task in Cosmos.
 
 ### 4.3 Data Model (minimal)
 - Task
@@ -88,6 +92,8 @@ The app will support multi-tenancy by:
   - priority (enum: High | Mid | Low)
   - isArchived (bool, default false)
   - dueDate (datetime, optional)
+  - icon (string, optional; emoji or icon key from curated set)
+  - attachments (array of Attachment)
   - assigneeUserIds (array of strings/UUIDs, same-tenant users)
   - createdByUserId (string/UUID), createdAtUtc (datetime), updatedAtUtc (datetime)
 - Category
@@ -96,6 +102,8 @@ The app will support multi-tenancy by:
   - id (GUID), tenantId, name (string)
 - TaskTag (many-to-many)
   - taskId (GUID), tagId (GUID)
+ - Attachment (embedded)
+   - id (GUID), blobUri (string), fileName (string), contentType (string), sizeBytes (int), uploadedByUserId (string/UUID), uploadedAtUtc (datetime)
 
 Notes:
 - Keep user profile minimal; reference users by their directory object identifier from Microsoft Entra ID.
@@ -105,6 +113,7 @@ Notes:
 - Client-side search backed by GraphQL query filters:
   - Filter by categoryId, priority, isArchived, dueDate ranges (e.g., overdue, today, next 7 days).
   - Tag search via tag names and the TaskTag join; basic contains match on title/description.
+  - Attachment filter: filter by hasAttachment true/false.
 - Future-friendly: Optionally integrate Azure AI Search if richer full-text or scoring is needed later, but not required for the sample.
 
 ## 5. Acceptance Criteria
@@ -142,6 +151,18 @@ Notes:
 - Every entity (Task, Category, Tag) is stamped with tenantId and enforced at the API layer.
 - Users only see and modify data from their tenant; cross-tenant access is blocked by policy.
 
+### 5.7 Attachments
+- Users can upload and remove attachments from a task; supported common media/document types.
+- Uploaded files are stored in Azure Blob Storage under a tenant-scoped container or prefix.
+- The blobUri, filename, content type, size, and audit info are persisted with the task in Cosmos DB.
+- Only same-tenant users with access to the task can list/download attachments.
+- Uploads use time-limited SAS; direct blob access without SAS is blocked.
+
+### 5.8 Task Icon/Emoji
+- Users can select an icon/emoji from a curated set.
+- Selected icon displays on task rows and task detail.
+- Icon value persists with the task and is optional.
+
 ## 6. UI Wireframes (ASCII Sketches)
 
 ### 6.1 Dashboard / Task List
@@ -154,14 +175,14 @@ Notes:
 | Filters: Category [▼]  Priority [▼]  Due [ All | Today | This Week | Overdue ]     |
 +----------------------------------------------------------------------------------+
 | Category: Engineering (3)                                                            |
-| [ ] ■ High  Migrate API to v2                    Due: 2025-08-20   #migration #api  |
+| [ ] ⭐ ■ High  Migrate API to v2                 Due: 2025-08-20   📎 2  #migration #api |
 | [ ] ■ Mid   Update README                        Due: —            #docs            |
 | [ ] ■ Low   Clean up backlog tags                Due: —            #hygiene         |
 |                                                                                      |
 | Category: Uncategorized (1)                                                           |
-| [ ] ■ Mid   Draft Q3 planning notes              Due: 2025-08-15   #planning        |
+| [ ] 📝 ■ Mid Draft Q3 planning notes             Due: 2025-08-15   📎 0  #planning   |
 +----------------------------------------------------------------------------------+
-Legend: [ ] checkbox; ■ priority color chip (High/Mid/Low); #tag token
+Legend: [ ] checkbox; ■ priority color chip (High/Mid/Low); #tag token; ⭐/📝 icon; 📎 attachment count
 ```
 
 ### 6.2 Task Detail / Drawer
@@ -169,12 +190,14 @@ Legend: [ ] checkbox; ■ priority color chip (High/Mid/Low); #tag token
 ```
 +-------------------------------- Task: Migrate API to v2 --------------------------------+
 | Title: [ Migrate API to v2                                     ]  Priority: [ High ▼ ]  |
-| Category: [ Engineering ▼ ]   Due: [ 2025-08-20 ▾ ]   Archived: ( ) No  ( ) Yes         |
+| Icon: [ ⭐ ▼ ]   Category: [ Engineering ▼ ]   Due: [ 2025-08-20 ▾ ]  Archived: ( ) No ( ) Yes |
 | Assignees (same-tenant): [ add @user ]  [ @alex.j | @maria.s ]                           |
 | Tags: [ #migration ] [ #api ]  [+ add tag]                                              |
 |-----------------------------------------------------------------------------------------|
 | Description:                                                                            |
 | [ Update to v2 endpoints and roll out gradually. Validate with canary traffic.       ] |
+|-----------------------------------------------------------------------------------------|
+| Attachments:  [ Upload file ]   [ 📄 api-v2-plan.pdf (112 KB) ]  [ 🖼️ diagram.png (340 KB) ] |
 |-----------------------------------------------------------------------------------------|
 | ( Save )   ( Archive )   ( Unarchive )   ( Delete )                                     |
 +-----------------------------------------------------------------------------------------+
