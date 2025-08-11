@@ -106,3 +106,76 @@ Notes:
   - Filter by categoryId, priority, isArchived, dueDate ranges (e.g., overdue, today, next 7 days).
   - Tag search via tag names and the TaskTag join; basic contains match on title/description.
 - Future-friendly: Optionally integrate Azure AI Search if richer full-text or scoring is needed later, but not required for the sample.
+
+## 5. Acceptance Criteria
+
+### 5.1 Categories
+- Users can create, rename, and delete categories within their tenant.
+- Tasks can be assigned zero or one category; uncategorized tasks appear under “Uncategorized.”
+- Category filter shows only tasks within the selected category.
+- Group by category view clusters tasks under category headings.
+- Category operations and visibility are tenant-scoped.
+
+### 5.2 Sharing (intra-tenant)
+- Task creator can assign or unassign one or more team members from the same tenant.
+- Only the creator or current assignees can edit a shared task.
+- Non-assignees in the same tenant cannot edit the task; visibility aligns with sharing intent (visible in shared views).
+- All read/write operations are tenant-scoped; cross-tenant access is not possible.
+
+### 5.3 Priority and Archive
+- Users can set priority to High, Mid, or Low from the list or detail view.
+- Archived tasks are excluded from the default list and can be revealed via a “Show archived” toggle.
+- Unarchiving a task returns it to the active list with its prior priority and metadata intact.
+
+### 5.4 Due Date
+- Tasks support an optional due date.
+- Tasks past their due date are visually highlighted as overdue.
+- Date quick-filters (Today, This Week, Overdue) return the correct task sets.
+
+### 5.5 Tagging and Search
+- Users can add and remove tag chips on a task with typeahead suggestions for existing tags.
+- Searching by keyword matches tag names and performs a basic contains match on title and description.
+- Search and filters can be combined (e.g., tags + category + priority + due window + archived state).
+- Search results are tenant-scoped and return within a reasonable latency for a sample app.
+
+### 5.6 Multi-Tenancy & Security
+- Every entity (Task, Category, Tag) is stamped with tenantId and enforced at the API layer.
+- Users only see and modify data from their tenant; cross-tenant access is blocked by policy.
+
+## 6. UI Wireframes (ASCII Sketches)
+
+### 6.1 Dashboard / Task List
+
+```
++----------------------------------------------------------------------------------+
+| Brand/Logo  | Tenant: Contoso North  | [ Search tasks & tags... ]  ( + New Task ) |
++----------------------------------------------------------------------------------+
+| Nav:  All  |  My Tasks  |  Shared  |  Archived  |  Settings                         |
+| Filters: Category [▼]  Priority [▼]  Due [ All | Today | This Week | Overdue ]     |
++----------------------------------------------------------------------------------+
+| Category: Engineering (3)                                                            |
+| [ ] ■ High  Migrate API to v2                    Due: 2025-08-20   #migration #api  |
+| [ ] ■ Mid   Update README                        Due: —            #docs            |
+| [ ] ■ Low   Clean up backlog tags                Due: —            #hygiene         |
+|                                                                                      |
+| Category: Uncategorized (1)                                                           |
+| [ ] ■ Mid   Draft Q3 planning notes              Due: 2025-08-15   #planning        |
++----------------------------------------------------------------------------------+
+Legend: [ ] checkbox; ■ priority color chip (High/Mid/Low); #tag token
+```
+
+### 6.2 Task Detail / Drawer
+
+```
++-------------------------------- Task: Migrate API to v2 --------------------------------+
+| Title: [ Migrate API to v2                                     ]  Priority: [ High ▼ ]  |
+| Category: [ Engineering ▼ ]   Due: [ 2025-08-20 ▾ ]   Archived: ( ) No  ( ) Yes         |
+| Assignees (same-tenant): [ add @user ]  [ @alex.j | @maria.s ]                           |
+| Tags: [ #migration ] [ #api ]  [+ add tag]                                              |
+|-----------------------------------------------------------------------------------------|
+| Description:                                                                            |
+| [ Update to v2 endpoints and roll out gradually. Validate with canary traffic.       ] |
+|-----------------------------------------------------------------------------------------|
+| ( Save )   ( Archive )   ( Unarchive )   ( Delete )                                     |
++-----------------------------------------------------------------------------------------+
+```
