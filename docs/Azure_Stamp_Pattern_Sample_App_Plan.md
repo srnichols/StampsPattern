@@ -202,3 +202,62 @@ Legend: [ ] checkbox; ■ priority color chip (High/Mid/Low); #tag token; ⭐/�
 | ( Save )   ( Archive )   ( Unarchive )   ( Delete )                                     |
 +-----------------------------------------------------------------------------------------+
 ```
+
+## 7. Attachment Upload Flow (SAS)
+
+### 7.1 Sequence (ASCII)
+
+```
+User/Browser         Frontend (Blazor)         Backend (Token API)         Azure Blob Storage
+  |                        |                           |                          |
+1.   |  Click "Upload"       |                           |                          |
+2.   |----------------------->|                           |                          |
+3.   |                        |  Request SAS (taskId)     |                          |
+4.   |                        |-------------------------->|  AuthN/Z (tenant, task)  |
+5.   |                        |                           |  Gen SAS (write, 10 min) |
+6.   |                        |  SAS URL + blob path <----|                          |
+7.   |                        |                           |                          |
+8.   |  PUT file to SAS URL   |-------------------------->|  Store blob              |
+9.   |                        |                           |  (201 Created)           |
+10.  |                        |  GraphQL mutation: addAttachment(taskId, blobUri,...) |
+11.  |                        |-------------------------->|  Persist metadata (Cosmos)|
+12.  |                        |  Update UI (thumb/list)   |                          |
+```
+
+Notes:
+- The SAS is time-limited and permission-scoped (create/write) to a tenant-scoped container or prefix.
+- The backend token API can be a small Azure Function or API endpoint; it validates tenant and task access before issuing SAS.
+- Client performs upload directly to Blob via SAS, then saves attachment metadata via GraphQL.
+- Consider optional checksum (Content-MD5), size limits, and future malware scanning as follow-ups.
+
+### 7.2 SAS Policy
+- Expiration: 10 minutes (configurable)
+- Permissions: create, write; no read/list to avoid unintended exposure
+- Scope: tenant container or prefix (e.g., /tenants/{tenantId}/tasks/{taskId}/)
+- Content-type preserved; client supplies file name; server derives path and returns in SAS response
+
+## 8. Curated Icon/Emoji Set
+
+The UI exposes a small, accessible set of icons/emojis. Only a stable key is stored in the Task.icon field; the frontend maps it to a themed glyph.
+
+### 8.1 Suggested Set (keys → glyph examples)
+- general.star → ⭐  (general important)
+- general.check → ✅  (done/complete)
+- planning.note → 📝  (notes/planning)
+- bug.issue → 🐞  (bug/issue)
+- docs.book → 📚  (documentation)
+- design.palette → 🎨  (design/UX)
+- meeting.talk → 🗣️  (meeting/discussion)
+- ops.wrench → 🔧  (operations)
+- data.db → 🗄️  (data/storage)
+- code.brackets → 🧩  (coding/task)
+- review.magnifier → 🔎  (review)
+- test.lab → 🧪  (testing)
+- deploy.rocket → 🚀  (deployment)
+- alert.warning → ⚠️  (attention/blocked)
+- time.clock → 🕒  (time-sensitive)
+- idea.bulb → 💡  (idea)
+
+### 8.2 Accessibility & Theming
+- Provide text alt and tooltip for each icon; ensure sufficient contrast in dark/light modes.
+- Allow users to switch to a font-icon pack if emoji rendering is inconsistent across platforms.
