@@ -149,6 +149,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 ### Core Guides
 - 🏗️ Architecture: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
 - 🚀 Deployment: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+- 📐 Deployment Architecture Patterns: [DEPLOYMENT_ARCHITECTURE_GUIDE.md](./DEPLOYMENT_ARCHITECTURE_GUIDE.md)
 - ⚙️ Operations: [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)
 - 🛡️ Security: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
 - 💰 Cost Optimization: [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)
@@ -304,6 +305,7 @@ journey
 ### 🚀 **Deployment Quick Links**
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
+| 📐 **Choose Deployment Pattern** | [DEPLOYMENT_ARCHITECTURE_GUIDE](./DEPLOYMENT_ARCHITECTURE_GUIDE.md) | 10 minutes |
 | 🌟 **Simple 2-Region Setup** | [DEPLOYMENT_GUIDE - Option 1](./DEPLOYMENT_GUIDE.md#-option-1-simple-two-region-setup-manual-bicep-deployment) | 45 minutes |
 | 🌍 **Enterprise Multi-GEO** | [DEPLOYMENT_GUIDE - Option 2](./DEPLOYMENT_GUIDE.md#-option-2-global-multi-geo-setup-advanced-manual-deployment) | 2-3 hours |
 | 🔧 **Automation Setup** | [DEPLOYMENT_GUIDE - Methods](./DEPLOYMENT_GUIDE.md#-deployment-methods) | 30 minutes |
