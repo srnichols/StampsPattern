@@ -784,7 +784,7 @@ az deployment group create \
 
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Operations Runbook](./OPERATIONS_GUIDE.md)
-- [Regional Layer Fixes](../REGIONAL_LAYER_FIXES.md)
+- [Regional Layer Fixes](./archive/REGIONAL_LAYER_FIXES.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
 - [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)
