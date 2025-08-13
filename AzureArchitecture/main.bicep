@@ -55,6 +55,10 @@ param trafficManagerName string = 'tm-stamps-global'
 @description('Name of the Front Door instance')
 param frontDoorName string = 'fd-stamps-global'
 
+@description('Azure Front Door SKU - Standard_AzureFrontDoor (minimum) or Premium_AzureFrontDoor (for Private Link)')
+@allowed(['Standard_AzureFrontDoor', 'Premium_AzureFrontDoor'])
+param frontDoorSku string = 'Standard_AzureFrontDoor'
+
 @description('Prefix for Function App names')
 param functionAppNamePrefix string = 'fa-stamps'
 
@@ -209,6 +213,7 @@ module globalLayer './globalLayer.bicep' = {
     dnsZoneName: dnsZoneName
     trafficManagerName: trafficManagerName
     frontDoorName: frontDoorName
+    frontDoorSku: frontDoorSku
   // Use first regional monitoring workspace as the global diagnostics sink
   globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
     functionAppNamePrefix: functionAppNamePrefix

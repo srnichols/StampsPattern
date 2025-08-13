@@ -11,6 +11,9 @@
     "frontDoorName": {
       "value": "fd-stamps-global"
     },
+    "frontDoorSku": {
+      "value": "Standard_AzureFrontDoor"
+    },
     "functionAppNamePrefix": {
       "value": "fa-stamps"
     },
