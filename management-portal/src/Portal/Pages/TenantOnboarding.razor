@@ -1,0 +1,406 @@
+@page "/onboarding"
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+@inject Stamps.ManagementPortal.Services.IDataService Data
+@inject IJSRuntime JSRuntime
+
+<h1>🚀 New Tenant Onboarding</h1>
+<p class="lead">Welcome to the Azure Stamps Pattern SaaS Platform. Let's get your organization set up!</p>
+
+<div class="onboarding-wizard">
+    @if (currentStep == 1)
+    {
+        <div class="step-card">
+            <h3>Step 1: Organization Details</h3>
+            <EditForm Model="onboardingModel" OnValidSubmit="NextStep">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                
+                <div class="form-group">
+                    <label>Organization Name</label>
+                    <InputText @bind-Value="onboardingModel.OrganizationName" class="form-control" placeholder="Contoso Corporation" />
+                    <ValidationMessage For="@(() => onboardingModel.OrganizationName)" />
+                </div>
+                
+                <div class="form-group">
+                    <label>Custom Domain</label>
+                    <InputText @bind-Value="onboardingModel.Domain" class="form-control" placeholder="contoso.com" />
+                    <small class="form-text text-muted">This will be your unique identifier in our platform</small>
+                    <ValidationMessage For="@(() => onboardingModel.Domain)" />
+                </div>
+                
+                <div class="form-group">
+                    <label>Primary Contact Email</label>
+                    <InputText @bind-Value="onboardingModel.ContactEmail" class="form-control" placeholder="admin@contoso.com" />
+                    <ValidationMessage For="@(() => onboardingModel.ContactEmail)" />
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Next: Choose Your Plan →</button>
+            </EditForm>
+        </div>
+    }
+    else if (currentStep == 2)
+    {
+        <div class="step-card">
+            <h3>Step 2: Select Your SaaS Tier</h3>
+            <div class="tier-selection">
+                <div class="tier-card @(onboardingModel.SelectedTier == "startup" ? "selected" : "")" 
+                     @onclick="() => SelectTier("startup")">
+                    <h4>🚀 Startup</h4>
+                    <div class="price">$8-16/month per tenant</div>
+                    <ul>
+                        <li>Shared infrastructure</li>
+                        <li>Standard SLA (99.9%)</li>
+                        <li>Email support</li>
+                        <li>Up to 50 tenants per cell</li>
+                    </ul>
+                </div>
+                
+                <div class="tier-card @(onboardingModel.SelectedTier == "smb" ? "selected" : "")" 
+                     @onclick="() => SelectTier("smb")">
+                    <h4>🏢 SMB</h4>
+                    <div class="price">$50-100/month per tenant</div>
+                    <ul>
+                        <li>Shared infrastructure with priority</li>
+                        <li>Enhanced SLA (99.95%)</li>
+                        <li>Phone + email support</li>
+                        <li>Advanced monitoring</li>
+                    </ul>
+                </div>
+                
+                <div class="tier-card @(onboardingModel.SelectedTier == "enterprise" ? "selected" : "")" 
+                     @onclick="() => SelectTier("enterprise")">
+                    <h4>🏆 Enterprise</h4>
+                    <div class="price">$3,200+/month per tenant</div>
+                    <ul>
+                        <li>Dedicated infrastructure</li>
+                        <li>Premium SLA (99.99%)</li>
+                        <li>24/7 dedicated support</li>
+                        <li>Compliance (HIPAA, SOC2)</li>
+                        <li>Private endpoints</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="step-actions">
+                <button class="btn btn-secondary" @onclick="PreviousStep">← Back</button>
+                <button class="btn btn-primary" @onclick="NextStep" disabled="@(string.IsNullOrEmpty(onboardingModel.SelectedTier))">
+                    Next: Regional Preferences →
+                </button>
+            </div>
+        </div>
+    }
+    else if (currentStep == 3)
+    {
+        <div class="step-card">
+            <h3>Step 3: Regional & Compliance Preferences</h3>
+            
+            <div class="form-group">
+                <label>Preferred Region</label>
+                <select @bind="onboardingModel.PreferredRegion" class="form-control">
+                    <option value="">Select preferred region...</option>
+                    <option value="eastus">East US (Primary)</option>
+                    <option value="westus">West US</option>
+                    <option value="westeurope">West Europe</option>
+                    <option value="eastasia">East Asia</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Compliance Requirements</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" @bind="onboardingModel.RequiresHIPAA" /> HIPAA (Healthcare)</label>
+                    <label><input type="checkbox" @bind="onboardingModel.RequiresSOC2" /> SOC 2 (Security)</label>
+                    <label><input type="checkbox" @bind="onboardingModel.RequiresGDPR" /> GDPR (EU Privacy)</label>
+                    <label><input type="checkbox" @bind="onboardingModel.RequiresPCI" /> PCI DSS (Payment)</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Expected Number of End Users</label>
+                <select @bind="onboardingModel.ExpectedUsers" class="form-control">
+                    <option value="">Select expected users...</option>
+                    <option value="1-100">1-100 users</option>
+                    <option value="100-1000">100-1,000 users</option>
+                    <option value="1000-10000">1,000-10,000 users</option>
+                    <option value="10000+">10,000+ users</option>
+                </select>
+            </div>
+            
+            <div class="step-actions">
+                <button class="btn btn-secondary" @onclick="PreviousStep">← Back</button>
+                <button class="btn btn-primary" @onclick="NextStep">Next: Review & Deploy →</button>
+            </div>
+        </div>
+    }
+    else if (currentStep == 4)
+    {
+        <div class="step-card">
+            <h3>Step 4: Review & Deploy</h3>
+            
+            <div class="summary-section">
+                <h4>Organization Summary</h4>
+                <table class="table table-borderless">
+                    <tr><td><strong>Organization:</strong></td><td>@onboardingModel.OrganizationName</td></tr>
+                    <tr><td><strong>Domain:</strong></td><td>@onboardingModel.Domain</td></tr>
+                    <tr><td><strong>Tier:</strong></td><td>@onboardingModel.SelectedTier.ToUpper()</td></tr>
+                    <tr><td><strong>Region:</strong></td><td>@onboardingModel.PreferredRegion</td></tr>
+                    <tr><td><strong>Expected Users:</strong></td><td>@onboardingModel.ExpectedUsers</td></tr>
+                </table>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(recommendedCell))
+            {
+                <div class="alert alert-success">
+                    <h5>🎯 Intelligent Cell Assignment</h5>
+                    <p>Based on your requirements, we recommend deploying to: <strong>@recommendedCell</strong></p>
+                    <ul>
+                        <li>Optimized for @onboardingModel.SelectedTier tier performance</li>
+                        <li>Located in @onboardingModel.PreferredRegion for minimal latency</li>
+                        <li>@(onboardingModel.SelectedTier == "enterprise" ? "Dedicated resources" : "Shared resources with guaranteed capacity")</li>
+                    </ul>
+                </div>
+            }
+            
+            <div class="deployment-progress" style="display: @(isDeploying ? "block" : "none")">
+                <h5>🚀 Deploying Your Environment...</h5>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         style="width: @(deploymentProgress)%"></div>
+                </div>
+                <p>@deploymentStatus</p>
+            </div>
+            
+            <div class="step-actions">
+                <button class="btn btn-secondary" @onclick="PreviousStep" disabled="@isDeploying">← Back</button>
+                <button class="btn btn-success btn-lg" @onclick="DeployTenant" disabled="@isDeploying">
+                    @if (isDeploying)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <text> Deploying...</text>
+                    }
+                    else
+                    {
+                        <text>🚀 Deploy My SaaS Environment</text>
+                    }
+                </button>
+            </div>
+        </div>
+    }
+    else if (currentStep == 5)
+    {
+        <div class="step-card success-card">
+            <h3>🎉 Welcome to Your SaaS Platform!</h3>
+            <div class="alert alert-success">
+                <h4>Deployment Complete!</h4>
+                <p>Your organization <strong>@onboardingModel.OrganizationName</strong> has been successfully onboarded.</p>
+            </div>
+            
+            <div class="quick-start">
+                <h4>Quick Start Guide</h4>
+                <ol>
+                    <li><strong>Access Your Environment:</strong> https://@onboardingModel.Domain.stamps-platform.com</li>
+                    <li><strong>Admin Portal:</strong> <a href="/tenants">Manage your tenant settings</a></li>
+                    <li><strong>API Endpoints:</strong> View your GraphQL schema and REST APIs</li>
+                    <li><strong>Monitoring:</strong> <a href="/operations">Track usage and performance</a></li>
+                </ol>
+            </div>
+            
+            <div class="next-steps">
+                <h4>Next Steps</h4>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary" @onclick="ViewTenantDashboard">View Dashboard</button>
+                    <button class="btn btn-outline-primary" @onclick="ViewDocumentation">Documentation</button>
+                    <button class="btn btn-outline-primary" @onclick="ContactSupport">Contact Support</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .onboarding-wizard { max-width: 800px; margin: 0 auto; }
+    .step-card { 
+        background: #fff; 
+        padding: 2rem; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    .tier-selection { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+        gap: 1rem; 
+        margin: 1rem 0; 
+    }
+    .tier-card { 
+        border: 2px solid #e9ecef; 
+        border-radius: 8px; 
+        padding: 1.5rem; 
+        cursor: pointer; 
+        transition: all 0.2s;
+    }
+    .tier-card:hover { border-color: #007bff; }
+    .tier-card.selected { border-color: #007bff; background-color: #f8f9ff; }
+    .tier-card h4 { margin: 0 0 0.5rem 0; }
+    .tier-card .price { font-size: 1.2em; font-weight: bold; color: #007bff; margin-bottom: 1rem; }
+    .tier-card ul { margin: 0; padding-left: 1.2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .checkbox-group label { display: block; margin-bottom: 0.5rem; }
+    .step-actions { 
+        margin-top: 2rem; 
+        padding-top: 1rem; 
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+    }
+    .success-card { border-left: 5px solid #28a745; }
+    .deployment-progress { margin: 1rem 0; }
+    .quick-start ol { padding-left: 1.2rem; }
+    .next-steps { margin-top: 2rem; }
+</style>
+
+@code {
+    private int currentStep = 1;
+    private bool isDeploying = false;
+    private int deploymentProgress = 0;
+    private string deploymentStatus = "";
+    private string recommendedCell = "";
+    
+    private OnboardingModel onboardingModel = new();
+    
+    public class OnboardingModel
+    {
+        [Required]
+        public string OrganizationName { get; set; } = "";
+        
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}$", 
+            ErrorMessage = "Please enter a valid domain (e.g., contoso.com)")]
+        public string Domain { get; set; } = "";
+        
+        [Required]
+        [EmailAddress]
+        public string ContactEmail { get; set; } = "";
+        
+        public string SelectedTier { get; set; } = "";
+        public string PreferredRegion { get; set; } = "";
+        public string ExpectedUsers { get; set; } = "";
+        
+        public bool RequiresHIPAA { get; set; }
+        public bool RequiresSOC2 { get; set; }
+        public bool RequiresGDPR { get; set; }
+        public bool RequiresPCI { get; set; }
+    }
+    
+    private void SelectTier(string tier)
+    {
+        onboardingModel.SelectedTier = tier;
+    }
+    
+    private void NextStep()
+    {
+        if (currentStep == 3)
+        {
+            // Intelligent cell assignment
+            recommendedCell = DetermineOptimalCell();
+        }
+        currentStep++;
+    }
+    
+    private void PreviousStep()
+    {
+        currentStep--;
+    }
+    
+    private string DetermineOptimalCell()
+    {
+        // Intelligent cell assignment logic based on tier, region, and requirements
+        var cellPrefix = onboardingModel.SelectedTier switch
+        {
+            "enterprise" => "dedicated",
+            "smb" => "premium-shared",
+            _ => "shared"
+        };
+        
+        var region = onboardingModel.PreferredRegion switch
+        {
+            "eastus" => "eastus",
+            "westus" => "westus",
+            _ => "eastus" // Default to eastus
+        };
+        
+        return $"{cellPrefix}-{region}-001";
+    }
+    
+    private async Task DeployTenant()
+    {
+        isDeploying = true;
+        
+        // Simulate deployment progress
+        var steps = new[]
+        {
+            "Validating domain availability...",
+            "Reserving compute resources...",
+            "Configuring network security...",
+            "Setting up database containers...",
+            "Deploying application services...",
+            "Configuring monitoring...",
+            "Running health checks...",
+            "Finalizing setup..."
+        };
+        
+        for (int i = 0; i < steps.Length; i++)
+        {
+            deploymentStatus = steps[i];
+            deploymentProgress = ((i + 1) * 100) / steps.Length;
+            StateHasChanged();
+            await Task.Delay(1500); // Simulate work
+        }
+        
+        // Actually create the tenant
+        var tenantId = onboardingModel.Domain.Split('.')[0]; // Use first part of domain
+        var tenant = new Stamps.ManagementPortal.Models.Tenant(
+            tenantId, 
+            onboardingModel.OrganizationName, 
+            onboardingModel.Domain,
+            onboardingModel.SelectedTier, 
+            "provisioning", 
+            recommendedCell
+        );
+        
+        try
+        {
+            // Reserve domain first
+            await Data.ReserveDomainAsync(onboardingModel.Domain, tenantId);
+            await Data.CreateTenantAsync(tenant);
+            
+            // Update tenant status to active
+            var activeTenant = tenant with { Status = "active" };
+            await Data.UpdateTenantAsync(activeTenant);
+            
+            isDeploying = false;
+            currentStep = 5;
+        }
+        catch (Exception ex)
+        {
+            deploymentStatus = $"Deployment failed: {ex.Message}";
+            isDeploying = false;
+        }
+    }
+    
+    private void ViewTenantDashboard()
+    {
+        // Navigate to tenant dashboard
+    }
+    
+    private void ViewDocumentation()
+    {
+        // Open documentation
+    }
+    
+    private void ContactSupport()
+    {
+        // Open support contact
+    }
+}

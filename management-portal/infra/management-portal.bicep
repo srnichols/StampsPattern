@@ -23,14 +23,14 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
       {
         locationName: location
         failoverPriority: 0
-        isZoneRedundant: true
+        isZoneRedundant: false
       }
     ]
     publicNetworkAccess: 'Enabled'
     enableFreeTier: false
     capabilities: [
       {
-        name: 'EnableNoSql'
+        name: 'EnableServerless'
       }
     ]
   }

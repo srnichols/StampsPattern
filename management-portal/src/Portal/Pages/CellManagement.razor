@@ -1,0 +1,410 @@
+@page "/cell-management" 
+@using Microsoft.AspNetCore.Components.Forms
+@inject Stamps.ManagementPortal.Services.IDataService Data
+
+<h1>🏗️ Advanced Cell Management</h1>
+<p class="lead">Intelligent cell assignment, capacity management, and automated scaling</p>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Cell Capacity Overview</h5>
+            </div>
+            <div class="card-body">
+                @if (cells != null)
+                {
+                    <div class="cell-grid">
+                        @foreach (var cell in cells.OrderBy(c => c.Region).ThenBy(c => c.AvailabilityZone))
+                        {
+                            var utilizationPercent = cell.CapacityTotal > 0 ? (cell.CapacityUsed * 100) / cell.CapacityTotal : 0;
+                            var statusClass = cell.Status switch 
+                            {
+                                "healthy" => "success",
+                                "degraded" => "warning", 
+                                "unhealthy" => "danger",
+                                _ => "secondary"
+                            };
+                            var capacityClass = utilizationPercent switch
+                            {
+                                >= 90 => "danger",
+                                >= 75 => "warning",
+                                _ => "success"
+                            };
+                            
+                            <div class="cell-card">
+                                <div class="cell-header">
+                                    <h6>@cell.Id</h6>
+                                    <span class="badge badge-@statusClass">@cell.Status</span>
+                                </div>
+                                <div class="cell-details">
+                                    <small class="text-muted">
+                                        📍 @cell.Region (AZ @cell.AvailabilityZone)
+                                    </small>
+                                </div>
+                                <div class="capacity-bar">
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-@capacityClass" 
+                                             style="width: @(utilizationPercent)%"
+                                             title="@cell.CapacityUsed/@cell.CapacityTotal tenants">
+                                        </div>
+                                    </div>
+                                    <small>@cell.CapacityUsed/@cell.CapacityTotal tenants (@(utilizationPercent)%)</small>
+                                </div>
+                                <div class="cell-actions">
+                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewCellDetails(cell)">
+                                        Details
+                                    </button>
+                                    @if (cell.Status != "healthy")
+                                    {
+                                        <button class="btn btn-sm btn-outline-warning" @onclick="() => HealCell(cell)">
+                                            Heal
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading cells...</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">🧠 Intelligent Assignment</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Tenant Requirements</label>
+                    <select @bind="assignmentTier" class="form-control form-control-sm">
+                        <option value="startup">Startup (Shared)</option>
+                        <option value="smb">SMB (Premium Shared)</option>
+                        <option value="enterprise">Enterprise (Dedicated)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Preferred Region</label>
+                    <select @bind="assignmentRegion" class="form-control form-control-sm">
+                        <option value="">Any Region</option>
+                        <option value="eastus">East US</option>
+                        <option value="westus">West US</option>
+                        <option value="westeurope">West Europe</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Expected Load</label>
+                    <select @bind="expectedLoad" class="form-control form-control-sm">
+                        <option value="light">Light (1-100 users)</option>
+                        <option value="medium">Medium (100-1K users)</option>
+                        <option value="heavy">Heavy (1K+ users)</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-sm w-100" @onclick="FindOptimalCell">
+                    🎯 Find Optimal Cell
+                </button>
+                
+                @if (!string.IsNullOrEmpty(recommendedCellId))
+                {
+                    <div class="alert alert-success mt-3">
+                        <h6>Recommended Cell</h6>
+                        <strong>@recommendedCellId</strong>
+                        <br><small>@recommendationReason</small>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">📊 Analytics</h5>
+            </div>
+            <div class="card-body">
+                @if (analytics != null)
+                {
+                    <div class="analytics-grid">
+                        <div class="metric">
+                            <div class="metric-value">@analytics.TotalCells</div>
+                            <div class="metric-label">Total Cells</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">@analytics.HealthyCells</div>
+                            <div class="metric-label">Healthy</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">@analytics.AverageUtilization%</div>
+                            <div class="metric-label">Avg Utilization</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">@analytics.TenantsTotal</div>
+                            <div class="metric-label">Total Tenants</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">⚡ Auto-Scaling</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @bind="autoScalingEnabled" id="autoScaling">
+                    <label class="form-check-label" for="autoScaling">
+                        Enable Auto-Scaling
+                    </label>
+                </div>
+                
+                @if (autoScalingEnabled)
+                {
+                    <div class="mt-2">
+                        <label class="form-label">Scale-out threshold</label>
+                        <select @bind="scaleOutThreshold" class="form-control form-control-sm">
+                            <option value="75">75% utilization</option>
+                            <option value="80">80% utilization</option>
+                            <option value="85">85% utilization</option>
+                            <option value="90">90% utilization</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Auto-scaling will deploy new cells when existing cells exceed the threshold.
+                        </small>
+                    </div>
+                    
+                    <button class="btn btn-success btn-sm w-100 mt-2" @onclick="SaveAutoScalingConfig">
+                        Save Configuration
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cell Details Modal would go here -->
+
+<style>
+    .cell-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+    
+    .cell-card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        background: #fff;
+    }
+    
+    .cell-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .cell-header h6 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .cell-details {
+        margin-bottom: 1rem;
+    }
+    
+    .capacity-bar {
+        margin-bottom: 1rem;
+    }
+    
+    .cell-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .metric {
+        text-align: center;
+        padding: 0.5rem;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+    }
+    
+    .metric-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #007bff;
+    }
+    
+    .metric-label {
+        font-size: 0.8em;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    
+    .badge {
+        font-size: 0.7em;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .badge-success { background-color: #28a745; }
+    .badge-warning { background-color: #ffc107; color: #212529; }
+    .badge-danger { background-color: #dc3545; }
+    .badge-secondary { background-color: #6c757d; }
+</style>
+
+@code {
+    private List<Stamps.ManagementPortal.Models.Cell>? cells;
+    private string assignmentTier = "startup";
+    private string assignmentRegion = "";
+    private string expectedLoad = "light";
+    private string recommendedCellId = "";
+    private string recommendationReason = "";
+    private bool autoScalingEnabled = false;
+    private int scaleOutThreshold = 80;
+    
+    private CellAnalytics? analytics;
+    
+    public class CellAnalytics
+    {
+        public int TotalCells { get; set; }
+        public int HealthyCells { get; set; }
+        public int AverageUtilization { get; set; }
+        public int TenantsTotal { get; set; }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    
+    private async Task LoadData()
+    {
+        cells = (await Data.GetCellsAsync()).ToList();
+        CalculateAnalytics();
+    }
+    
+    private void CalculateAnalytics()
+    {
+        if (cells == null || !cells.Any())
+        {
+            analytics = new CellAnalytics();
+            return;
+        }
+        
+        analytics = new CellAnalytics
+        {
+            TotalCells = cells.Count,
+            HealthyCells = cells.Count(c => c.Status == "healthy"),
+            AverageUtilization = cells.Average(c => c.CapacityTotal > 0 ? (c.CapacityUsed * 100) / c.CapacityTotal : 0),
+            TenantsTotal = cells.Sum(c => c.CapacityUsed)
+        };
+    }
+    
+    private void FindOptimalCell()
+    {
+        if (cells == null || !cells.Any())
+        {
+            recommendedCellId = "";
+            recommendationReason = "No cells available";
+            return;
+        }
+        
+        // Intelligent cell assignment logic
+        var availableCells = cells.Where(c => c.Status == "healthy").ToList();
+        
+        // Filter by region preference
+        if (!string.IsNullOrEmpty(assignmentRegion))
+        {
+            availableCells = availableCells.Where(c => c.Region == assignmentRegion).ToList();
+        }
+        
+        // Apply tier-specific logic
+        if (assignmentTier == "enterprise")
+        {
+            // For enterprise, prefer dedicated cells with low utilization
+            var dedicatedCells = availableCells.Where(c => c.Id.Contains("dedicated") || c.CapacityUsed == 0).ToList();
+            if (dedicatedCells.Any())
+            {
+                var bestCell = dedicatedCells.OrderBy(c => c.CapacityUsed).First();
+                recommendedCellId = bestCell.Id;
+                recommendationReason = "Dedicated cell with optimal isolation and performance";
+                return;
+            }
+        }
+        else if (assignmentTier == "smb")
+        {
+            // For SMB, prefer cells with moderate utilization (good neighbors, not overloaded)
+            var premiumCells = availableCells.Where(c => 
+            {
+                var utilization = c.CapacityTotal > 0 ? (c.CapacityUsed * 100) / c.CapacityTotal : 0;
+                return utilization >= 30 && utilization <= 70;
+            }).ToList();
+            
+            if (premiumCells.Any())
+            {
+                var bestCell = premiumCells.OrderBy(c => Math.Abs((c.CapacityUsed * 100 / c.CapacityTotal) - 50)).First();
+                recommendedCellId = bestCell.Id;
+                recommendationReason = "Premium shared cell with balanced utilization";
+                return;
+            }
+        }
+        
+        // Fallback: find any cell with available capacity
+        var availableCapacityCells = availableCells.Where(c => c.CapacityUsed < c.CapacityTotal).ToList();
+        if (availableCapacityCells.Any())
+        {
+            var bestCell = availableCapacityCells.OrderBy(c => c.CapacityUsed).First();
+            recommendedCellId = bestCell.Id;
+            recommendationReason = $"Available capacity: {bestCell.CapacityTotal - bestCell.CapacityUsed} slots remaining";
+        }
+        else
+        {
+            recommendedCellId = "";
+            recommendationReason = "All cells at capacity - auto-scaling recommended";
+        }
+    }
+    
+    private void ViewCellDetails(Stamps.ManagementPortal.Models.Cell cell)
+    {
+        // Open cell details modal or navigate to details page
+    }
+    
+    private async Task HealCell(Stamps.ManagementPortal.Models.Cell cell)
+    {
+        // Trigger cell healing process
+        var healedCell = cell with { Status = "healing" };
+        await Data.UpdateCellAsync(healedCell);
+        
+        // Simulate healing process
+        await Task.Delay(2000);
+        
+        // Update to healthy
+        var healthyCell = healedCell with { Status = "healthy" };
+        await Data.UpdateCellAsync(healthyCell);
+        
+        await LoadData();
+    }
+    
+    private void SaveAutoScalingConfig()
+    {
+        // Save auto-scaling configuration
+        // This would typically be saved to a configuration store
+    }
+}

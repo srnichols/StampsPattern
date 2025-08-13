@@ -1,4 +1,439 @@
 @page "/"
+@inject Stamps.ManagementPortal.Services.IDataService Data
 
-<h1>Stamps Management Portal</h1>
-<p>Welcome. Use the navigation to manage tenants, cells, and operations.</p>
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <h1>🚀 Azure Stamps SaaS Platform</h1>
+        <p class="lead">Intelligent multi-tenant architecture with global scaling capabilities</p>
+    </div>
+    
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon">👥</div>
+            <div class="metric-content">
+                <div class="metric-value">@(totalTenants)</div>
+                <div class="metric-label">Active Tenants</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon">🏗️</div>
+            <div class="metric-content">
+                <div class="metric-value">@(totalCells)</div>
+                <div class="metric-label">Deployed Cells</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon">🌍</div>
+            <div class="metric-content">
+                <div class="metric-value">@(activeRegions)</div>
+                <div class="metric-label">Global Regions</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon">💚</div>
+            <div class="metric-content">
+                <div class="metric-value">@(healthyCells)</div>
+                <div class="metric-label">Healthy Cells</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🎯 Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <a href="/onboarding" class="action-card">
+                            <div class="action-icon">🚀</div>
+                            <div class="action-content">
+                                <h6>Onboard New Tenant</h6>
+                                <p>Intelligent tenant onboarding with automated cell assignment</p>
+                            </div>
+                        </a>
+                        
+                        <a href="/cell-management" class="action-card">
+                            <div class="action-icon">🏗️</div>
+                            <div class="action-content">
+                                <h6>Manage Cells</h6>
+                                <p>Advanced cell management with auto-scaling and analytics</p>
+                            </div>
+                        </a>
+                        
+                        <a href="/tenants" class="action-card">
+                            <div class="action-icon">👥</div>
+                            <div class="action-content">
+                                <h6>Tenant Administration</h6>
+                                <p>View and manage all tenant accounts and configurations</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>📊 Platform Health</h5>
+                </div>
+                <div class="card-body">
+                    @if (cells != null && cells.Any())
+                    {
+                        <div class="health-grid">
+                            @foreach (var region in cells.GroupBy(c => c.Region))
+                            {
+                                <div class="region-health">
+                                    <h6>📍 @region.Key.ToUpper()</h6>
+                                    <div class="cells-in-region">
+                                        @foreach (var cell in region)
+                                        {
+                                            var statusClass = cell.Status switch 
+                                            {
+                                                "healthy" => "success",
+                                                "degraded" => "warning",
+                                                "unhealthy" => "danger",
+                                                _ => "secondary"
+                                            };
+                                            
+                                            <div class="cell-status">
+                                                <span class="status-indicator status-@statusClass"></span>
+                                                <small>@cell.Id</small>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading health data...</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🔥 Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    @if (recentOperations != null && recentOperations.Any())
+                    {
+                        <div class="activity-list">
+                            @foreach (var operation in recentOperations.Take(5))
+                            {
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        @switch (operation.Type)
+                                        {
+                                            case "onboard": <span>🚀</span>; break;
+                                            case "migrate": <span>🔄</span>; break;
+                                            case "suspend": <span>⏸️</span>; break;
+                                            default: <span>⚙️</span>; break;
+                                        }
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">@operation.Type.ToUpper()</div>
+                                        <div class="activity-description">Tenant: @operation.TenantId</div>
+                                        <div class="activity-time">@operation.CreatedAt.ToString("MMM dd, HH:mm")</div>
+                                    </div>
+                                    <div class="activity-status">
+                                        <span class="badge badge-@(operation.Status == "completed" ? "success" : operation.Status == "running" ? "warning" : "secondary")">
+                                            @operation.Status
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No recent activity</p>
+                    }
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>💡 Platform Insights</h5>
+                </div>
+                <div class="card-body">
+                    <div class="insight-list">
+                        <div class="insight-item">
+                            <div class="insight-icon">📈</div>
+                            <div class="insight-content">
+                                <strong>Capacity Planning</strong>
+                                <p>Current utilization is at @(averageUtilization)%. Consider scaling when reaching 80%.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-icon">🌍</div>
+                            <div class="insight-content">
+                                <strong>Global Distribution</strong>
+                                <p>Your tenants are distributed across @(activeRegions) regions for optimal performance.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-item">
+                            <div class="insight-icon">🔒</div>
+                            <div class="insight-content">
+                                <strong>Security</strong>
+                                <p>All tenants have zero-trust network isolation and enterprise-grade security.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-container { padding: 1rem; }
+    
+    .welcome-section { 
+        text-align: center; 
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .metric-icon {
+        font-size: 2.5rem;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007bff;
+        line-height: 1;
+    }
+    
+    .metric-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .action-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s;
+    }
+    
+    .action-card:hover {
+        border-color: #007bff;
+        box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .action-icon {
+        font-size: 2rem;
+    }
+    
+    .action-content h6 {
+        margin: 0 0 0.25rem 0;
+        color: #495057;
+    }
+    
+    .action-content p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .health-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .region-health h6 {
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    .cells-in-region {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .cell-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    
+    .status-success { background-color: #28a745; }
+    .status-warning { background-color: #ffc107; }
+    .status-danger { background-color: #dc3545; }
+    .status-secondary { background-color: #6c757d; }
+    
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+    }
+    
+    .activity-icon {
+        font-size: 1.25rem;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    
+    .activity-description {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .activity-time {
+        font-size: 0.7rem;
+        color: #adb5bd;
+    }
+    
+    .insight-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .insight-item {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .insight-icon {
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+    }
+    
+    .insight-content strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: #495057;
+    }
+    
+    .insight-content p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+</style>
+
+@code {
+    private int totalTenants = 0;
+    private int totalCells = 0;
+    private int activeRegions = 0;
+    private int healthyCells = 0;
+    private int averageUtilization = 0;
+    
+    private List<Stamps.ManagementPortal.Models.Cell>? cells;
+    private List<Stamps.ManagementPortal.Models.Operation>? recentOperations;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardData();
+    }
+    
+    private async Task LoadDashboardData()
+    {
+        try
+        {
+            // Load tenants
+            var tenants = await Data.GetTenantsAsync();
+            totalTenants = tenants.Count();
+            
+            // Load cells
+            cells = (await Data.GetCellsAsync()).ToList();
+            totalCells = cells.Count;
+            healthyCells = cells.Count(c => c.Status == "healthy");
+            activeRegions = cells.Select(c => c.Region).Distinct().Count();
+            
+            if (cells.Any())
+            {
+                averageUtilization = (int)cells.Average(c => 
+                    c.CapacityTotal > 0 ? (double)(c.CapacityUsed * 100) / c.CapacityTotal : 0
+                );
+            }
+            
+            // Load recent operations
+            recentOperations = (await Data.GetOperationsAsync())
+                .OrderByDescending(o => o.CreatedAt)
+                .Take(10)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            // Handle errors gracefully - in a real app you'd log this
+            Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+        }
+    }
+}

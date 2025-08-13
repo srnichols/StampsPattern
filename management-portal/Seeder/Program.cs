@@ -1,4 +1,4 @@
-using Azure.Cosmos;
+using Microsoft.Azure.Cosmos;
 using System.Net;
 
 var conn = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
@@ -12,10 +12,10 @@ if (string.IsNullOrWhiteSpace(conn))
 ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
 var client = new CosmosClient(conn);
 var db = (await client.CreateDatabaseIfNotExistsAsync("stamps-control-plane")).Database;
-var tenants = (await db.CreateContainerIfNotExistsAsync(new CosmosContainerProperties("tenants", "/tenantId"))).Container;
-var cells = (await db.CreateContainerIfNotExistsAsync(new CosmosContainerProperties("cells", "/cellId"))).Container;
-var ops = (await db.CreateContainerIfNotExistsAsync(new CosmosContainerProperties("operations", "/tenantId"))).Container;
-var catalogs = (await db.CreateContainerIfNotExistsAsync(new CosmosContainerProperties("catalogs", "/type"))).Container;
+var tenants = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("tenants", "/tenantId"))).Container;
+var cells = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("cells", "/cellId"))).Container;
+var ops = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("operations", "/tenantId"))).Container;
+var catalogs = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("catalogs", "/type"))).Container;
 
 await Upsert(tenants, new { id = "contoso", tenantId = "contoso", displayName = "Contoso", domain = "contoso.com", tier = "enterprise", status = "active", cellId = "cell-eastus-1" });
 await Upsert(tenants, new { id = "fabrikam", tenantId = "fabrikam", displayName = "Fabrikam", domain = "fabrikam.io", tier = "smb", status = "active", cellId = "cell-westus-1" });
@@ -32,7 +32,7 @@ await Upsert(catalogs, new { id = "tiers-v1", type = "tiers", values = new[] { "
 Console.WriteLine("Seed complete.");
 return 0;
 
-static async Task Upsert(CosmosContainer container, dynamic item)
+static async Task Upsert(Container container, dynamic item)
 {
     // Determine PK based on known containers
     string pk = item?.tenantId ?? item?.cellId ?? item?.type ?? item?.id;
