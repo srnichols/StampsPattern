@@ -27,6 +27,9 @@ param cellCount int
 @description('The FQDNs for each CELL backend in this region')
 param cellBackendFqdns array
 
+@description('Optional: Override backend FQDN for all cells (demo). When set, all pools/probes use this FQDN.')
+param demoBackendFqdn string = ''
+
 @description('Tags to apply to all resources')
 param tags object = {}
 
@@ -42,12 +45,19 @@ param enableHttps bool = true
 @description('Enable creation of a regional Automation Account (disabled in smoke)')
 param enableAutomation bool = false
 
+
+@description('Resource ID of the User Assigned Managed Identity to attach to Application Gateway for Key Vault access')
+param userAssignedIdentityId string = ''
+
 // Derived settings for HTTP/HTTPS toggling
 var frontendPortName = enableHttps ? 'httpsPort' : 'httpPort'
 var backendPort = enableHttps ? 443 : 80
 var backendProtocol = enableHttps ? 'Https' : 'Http'
 var probeProtocol = enableHttps ? 'Https' : 'Http'
 var listenerName = enableHttps ? 'httpsListener' : 'httpListener'
+
+// Helper to pick either the per-cell backend FQDN or the demo override
+var resolvedBackendFqdns = [for i in range(0, cellCount): empty(demoBackendFqdn) ? cellBackendFqdns[i] : demoBackendFqdn]
 
 // Generate backend pools, http settings, and probes for each CELL
 var backendPools = [
@@ -56,7 +66,7 @@ var backendPools = [
     properties: {
       backendAddresses: [
         {
-          fqdn: cellBackendFqdns[i]
+          fqdn: resolvedBackendFqdns[i]
         }
       ]
     }
@@ -83,7 +93,7 @@ var probes = [
     name: 'cell${i + 1}-probe'
     properties: {
   protocol: probeProtocol
-      host: cellBackendFqdns[i]
+  host: resolvedBackendFqdns[i]
       path: healthProbePath
       interval: 30
       timeout: 30
@@ -100,6 +110,12 @@ var probes = [
 resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
   name: appGatewayName
   location: location
+  identity: enableHttps && !empty(userAssignedIdentityId) ? {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityId}': {}
+    }
+  } : null
   zones: ['1', '2'] // Deploy Application Gateway across at least two zones
   properties: {
     sku: {
@@ -127,14 +143,25 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
         }
       }
     ]
-    frontendPorts: [
-      {
-        name: frontendPortName
-        properties: {
-          port: backendPort
+    frontendPorts: concat(
+      [
+        {
+          name: frontendPortName
+          properties: {
+            port: backendPort
+          }
         }
-      }
-    ]
+      ],
+      enableHttps ? [
+        {
+          // When HTTPS is enabled, also expose an HTTP port to support HTTP->HTTPS redirect
+          name: 'httpPort'
+          properties: {
+            port: 80
+          }
+        }
+      ] : []
+    )
     sslCertificates: enableHttps ? [
       {
         name: 'gatewayCert'
@@ -161,6 +188,20 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
           }
         }
       ] : [],
+      enableHttps ? [
+        {
+          name: 'httpListener'
+          properties: {
+            frontendIPConfiguration: {
+              id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGatewayFrontendIp')
+            }
+            frontendPort: {
+              id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, 'httpPort')
+            }
+            protocol: 'Http'
+          }
+        }
+      ] : [],
       !enableHttps ? [
         {
           name: 'httpListener'
@@ -176,6 +217,20 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
         }
       ] : []
     )
+    // Redirect configuration to force HTTP -> HTTPS when HTTPS is enabled
+    redirectConfigurations: enableHttps ? [
+      {
+        name: 'redirectToHttps'
+        properties: {
+          redirectType: 'Permanent'
+          targetListener: {
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, 'httpsListener')
+          }
+          includePath: true
+          includeQueryString: true
+        }
+      }
+    ] : []
     backendAddressPools: backendPools
     backendHttpSettingsCollection: backendHttpSettings
     probes: probes
@@ -206,22 +261,39 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
         }
       }
     ]
-    requestRoutingRules: [
-      {
-        name: 'cellRoutingRule'
-        properties: {
-          ruleType: 'PathBasedRouting'
-          // Priority is required starting from api-version 2021-08-01
-          priority: 100
-          httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, listenerName)
-          }
-          urlPathMap: {
-            id: resourceId('Microsoft.Network/applicationGateways/urlPathMaps', appGatewayName, 'cellPathMap')
+    requestRoutingRules: concat(
+      [
+        {
+          name: 'cellRoutingRule'
+          properties: {
+            ruleType: 'PathBasedRouting'
+            // Priority is required starting from api-version 2021-08-01
+            priority: 100
+            httpListener: {
+              id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, listenerName)
+            }
+            urlPathMap: {
+              id: resourceId('Microsoft.Network/applicationGateways/urlPathMaps', appGatewayName, 'cellPathMap')
+            }
           }
         }
-      }
-    ]
+      ],
+      enableHttps ? [
+        {
+          name: 'httpToHttpsRedirectRule'
+          properties: {
+            ruleType: 'Basic'
+            priority: 10
+            httpListener: {
+              id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, 'httpListener')
+            }
+            redirectConfiguration: {
+              id: resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', appGatewayName, 'redirectToHttps')
+            }
+          }
+        }
+      ] : []
+    )
     webApplicationFirewallConfiguration: {
       enabled: true
       firewallMode: 'Prevention'

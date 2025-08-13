@@ -163,7 +163,7 @@ flowchart TD
 _Figure: End-to-end deployment decision tree from prerequisites through tenancy choice to validation._
 
 ### **What Gets Deployed**
-- **Global Layer**: DNS routing, CDN, global tenant directory
+- **Global Layer**: DNS routing, Azure Front Door Standard, Traffic Manager, global tenant directory
 - **Regional Layer**: Security gateways, monitoring, regional services  
 - **CELL Layer**: Your actual applications and databases (shared or dedicated)
 

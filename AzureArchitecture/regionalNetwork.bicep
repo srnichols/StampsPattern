@@ -26,6 +26,9 @@ param publicIpName string = 'pip-agw-${geoName}-${regionName}'
 @description('Tags to apply to network resources')
 param tags object = {}
 
+@description('Optional DNS label for the public IP (must be unique within region). Leave empty to skip.')
+param publicIpDnsLabel string = ''
+
 // Public IP for Application Gateway
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   name: publicIpName
@@ -42,6 +45,9 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   properties: {
     publicIPAllocationMethod: 'Static'
     idleTimeoutInMinutes: 4
+    dnsSettings: empty(publicIpDnsLabel) ? null : {
+      domainNameLabel: publicIpDnsLabel
+    }
   }
   tags: tags
 }

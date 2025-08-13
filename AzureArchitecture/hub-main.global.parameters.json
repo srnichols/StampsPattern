@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "globalControlCosmosDbName": {
+      "value": "cosmos-stamps-control"
+    },
+    "functionAppNamePrefix": {
+      "value": "fa-stamps"
+    },
+    "tags": {
+      "value": {
+        "solution": "stamps-pattern",
+        "purpose": "global-layer",
+        "environment": "test"
+      }
+    },
+    "regionalEndpoints": {
+      "value": []
+    },
+    "enableGlobalFunctions": {
+      "value": true
+    },
+    "functionStorageNamePrefix": {
+      "value": "stfastamps"
+    },
+    "functionAppRegions": {
+      "value": [
+        "westus2",
+        "westus3"
+      ]
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "law-stamps-hub"
+    },
+    "enableGlobalCosmos": {
+      "value": true
+    },
+    "dnsZoneName": {
+      "value": "stamps.azurestamparch.onmicrosoft.com"
+    },
+    "trafficManagerName": {
+      "value": "tm-stamps-global"
+    },
+    "frontDoorName": {
+      "value": "fd-stamps-global"
+    },
+    "logAnalyticsWorkspaceLocation": {
+      "value": "westus2"
+    },
+    "primaryLocation": {
+      "value": "westus2"
+    },
+    "additionalLocations": {
+      "value": [
+        "westus3"
+      ]
+    }
+  }
+}

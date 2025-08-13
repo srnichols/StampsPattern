@@ -50,6 +50,13 @@ param enableGlobalFunctions bool = true
 @description('Enable deployment of the global control plane Cosmos DB (disable in smoke/lab to avoid regional capacity issues)')
 param enableGlobalCosmos bool = true
 
+@description('Array of regional endpoint FQDNs for Traffic Manager (e.g., Application Gateway FQDNs)')
+param regionalEndpoints array = []
+
+@description('Azure Front Door SKU - Standard_AzureFrontDoor (minimum) or Premium_AzureFrontDoor (for Private Link)')
+@allowed(['Standard_AzureFrontDoor', 'Premium_AzureFrontDoor'])
+param frontDoorSku string = 'Standard_AzureFrontDoor'
+
 // DNS Zone
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
@@ -76,17 +83,98 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
       port: 443
       path: '/health'
     }
+    endpoints: [for (endpoint, i) in regionalEndpoints: {
+      name: 'regional-endpoint-${i + 1}'
+      type: 'Microsoft.Network/trafficManagerProfiles/externalEndpoints'
+      properties: {
+        target: endpoint.fqdn
+        endpointStatus: 'Enabled'
+        endpointLocation: endpoint.location
+        weight: 1
+        priority: i + 1
+      }
+    }]
   }
 }
 
-// Front Door Profile
-resource frontDoor 'Microsoft.Cdn/profiles@2021-06-01' = {
+// Modern Azure Front Door Profile (Standard/Premium)
+resource frontDoor 'Microsoft.Cdn/profiles@2023-05-01' = {
   name: frontDoorName
   location: 'global'
   sku: {
-    name: 'Standard_Microsoft'
+    name: frontDoorSku
   }
   tags: tags
+  properties: {
+    originResponseTimeoutSeconds: 60
+  }
+}
+
+// Front Door Endpoint
+resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2023-05-01' = {
+  name: 'stamps-global-endpoint'
+  parent: frontDoor
+  location: 'global'
+  properties: {
+    enabledState: 'Enabled'
+  }
+}
+
+// Origin Group for regional Application Gateways
+resource originGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (length(regionalEndpoints) > 0) {
+  name: 'regional-agw-origins'
+  parent: frontDoor
+  properties: {
+    loadBalancingSettings: {
+      sampleSize: 4
+      successfulSamplesRequired: 3
+      additionalLatencyInMilliseconds: 50
+    }
+    healthProbeSettings: {
+      probePath: '/'
+      probeRequestType: 'GET'
+      probeProtocol: 'Https'
+      probeIntervalInSeconds: 100
+    }
+  }
+}
+
+// Origins for each regional Application Gateway
+resource origins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (endpoint, i) in regionalEndpoints: if (length(regionalEndpoints) > 0) {
+  name: 'agw-${endpoint.location}-origin'
+  parent: originGroup
+  properties: {
+    hostName: endpoint.fqdn
+    httpPort: 80
+    httpsPort: 443
+    originHostHeader: endpoint.fqdn
+    priority: (i % 5) + 1  // Ensure priority is between 1-5
+    weight: 1000
+    enabledState: 'Enabled'
+    enforceCertificateNameCheck: true
+  }
+}]
+
+// Route to forward traffic to regional Application Gateways
+resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (length(regionalEndpoints) > 0) {
+  name: 'regional-route'
+  parent: frontDoorEndpoint
+  properties: {
+    customDomains: []
+    originGroup: {
+      id: originGroup.id
+    }
+    originPath: null
+    ruleSets: []
+    supportedProtocols: ['Http', 'Https']
+    patternsToMatch: ['/*']
+    forwardingProtocol: 'HttpsOnly'
+    linkToDefaultDomain: 'Enabled'
+    httpsRedirect: 'Enabled'
+  }
+  dependsOn: [
+    origins
+  ]
 }
 
 @description('Enable diagnostic settings for Front Door (some categories may be restricted by SKU/region).')
@@ -311,3 +399,7 @@ resource trafficManagerDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-0
 // Outputs
 output functionAppNames array = [for app in functionApps: app.name]
 output message string = 'Global layer deployed successfully'
+output trafficManagerFqdn string = trafficManager.properties.dnsConfig.fqdn
+output frontDoorProfileName string = frontDoor.name
+output frontDoorEndpointHostname string = frontDoorEndpoint.properties.hostName
+output dnsZoneName string = dnsZone.name

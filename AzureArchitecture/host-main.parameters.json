@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+  "tags": { "value": { "environment": "tst", "project": "StampsPattern" } },
+    "sqlAdminUsername": { "value": "sqladmin" },
+    "sqlAdminPassword": { "value": "REPLACE_WITH_SECURE_PASSWORD" },
+    "globalLogAnalyticsWorkspaceId": { "value": "REPLACE_WITH_HUB_LAW_ID" },
+  "smoke": { "value": false },
+    "regions": {
+      "value": [
+        {
+          "geoName": "northamerica",
+          "regionName": "westus2",
+          "cells": ["cell-001", "cell-002", "cell-003"],
+          "baseDomain": "westus2.stamps.contoso.com",
+          "keyVaultName": "kv-stamps-na-wus2",
+          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
+        },
+        {
+          "geoName": "northamerica",
+          "regionName": "westus3",
+          "cells": ["cell-001", "cell-002", "cell-003"],
+          "baseDomain": "westus3.stamps.contoso.com",
+          "keyVaultName": "kv-stamps-na-wus3",
+          "logAnalyticsWorkspaceName": "law-stamps-na-wus3"
+        }
+      ]
+    },
+    "cells": {
+      "value": [
+        { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-001", "cellType": "Shared",    "availabilityZones": [],              "maxTenantCount": 100, "baseDomain": "westus2.stamps.contoso.com" },
+        { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-002", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus2.stamps.contoso.com" },
+        { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-003", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus2.stamps.contoso.com" },
+
+        { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-001", "cellType": "Dedicated", "availabilityZones": [],              "maxTenantCount": 1,   "baseDomain": "westus3.stamps.contoso.com" },
+        { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-002", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus3.stamps.contoso.com" },
+        { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-003", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.contoso.com" }
+      ]
+    }
+  }
+}

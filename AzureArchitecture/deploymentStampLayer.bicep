@@ -284,6 +284,8 @@ resource storageObjectReplication 'Microsoft.Storage/storageAccounts/objectRepli
       }
     ]
   }
+  // Ensure the storage account exists before configuring replication
+  dependsOn: [ storageAccountCreate ]
 }
 
 // Storage lifecycle management policy for cost optimization
@@ -307,9 +309,6 @@ resource storageLifecyclePolicy 'Microsoft.Storage/storageAccounts/managementPol
                 tierToCool: {
                   daysAfterModificationGreaterThan: 30
                 }
-                tierToArchive: {
-                  daysAfterModificationGreaterThan: 90
-                }
                 delete: {
                   daysAfterModificationGreaterThan: 365
                 }
@@ -330,6 +329,8 @@ resource storageLifecyclePolicy 'Microsoft.Storage/storageAccounts/managementPol
       ]
     }
   }
+  // Ensure the storage account exists before applying lifecycle policy
+  dependsOn: [ storageAccountCreate ]
 }
 
 // Key Vault for CELL with security hardening
@@ -728,6 +729,8 @@ resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
       }
     ]
   }
+  // Ensure the storage account exists before configuring diagnostics
+  dependsOn: [ storageAccountCreate ]
 }
 
 // SQL Server for CELL with security hardening

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "globalControlCosmosDbName": {
+      "value": "cosmos-stamps-control"
+    },
+    "functionAppNamePrefix": {
+      "value": "fa-stamps"
+    },
+    "tags": {
+      "value": {
+        "solution": "stamps-pattern",
+        "frontDoorSku": "Standard_AzureFrontDoor",
+        "purpose": "global-layer",
+        "environment": "test"
+      }
+    },
+    "regionalEndpoints": {
+      "value": [
+        {
+          "fqdn": "agw-wus2-tst-rfu3.westus2.cloudapp.azure.com",
+          "location": "westus2"
+        },
+        {
+          "fqdn": "agw-wus3-tst-vrlu.westus3.cloudapp.azure.com",
+          "location": "westus3"
+        }
+      ]
+    },
+    "enableGlobalFunctions": {
+      "value": true
+    },
+    "functionStorageNamePrefix": {
+      "value": "stfastamps"
+    },
+    "functionAppRegions": {
+      "value": [
+        "westus2",
+        "westus3"
+      ]
+    },
+    "frontDoorSku": {
+      "value": "Standard_AzureFrontDoor"
+    },
+    "enableGlobalCosmos": {
+      "value": true
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "law-stamps-hub"
+    },
+    "dnsZoneName": {
+      "value": "stamps.azurestamparch.onmicrosoft.com"
+    },
+    "trafficManagerName": {
+      "value": "tm-stamps-global"
+    },
+    "frontDoorName": {
+      "value": "fd-stamps-global"
+    },
+    "logAnalyticsWorkspaceLocation": {
+      "value": "westus2"
+    },
+    "primaryLocation": {
+      "value": "westus2"
+    },
+    "additionalLocations": {
+      "value": [
+        "westus3"
+      ]
+    }
+  }
+}
