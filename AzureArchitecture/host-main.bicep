@@ -161,13 +161,13 @@ module regionalLayers './regionalLayer.bicep' = [for (region, idx) in regions: {
   // Use versioned SecretId override if provided; otherwise build from vaultUri
   sslCertSecretId: (length(sslCertSecretIdOverrides) > idx && !empty(string(sslCertSecretIdOverrides[idx]))) ? sslCertSecretIdOverrides[idx] : uri(regionalKeyVaults[idx].properties.vaultUri, 'secrets/ssl-cert')
   cellCount: length(region.cells)
-  // Default backend FQDNs per cell
-  cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
+  // Default backend FQDNs per cell - point to function apps
+  cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
   enableHttps: !isSmoke
   userAssignedIdentityId: uamis[idx].id
     tags: union(tags, { geo: region.geoName, region: region.regionName })
-  // Use root path for probe to increase chance of success in demos
-  healthProbePath: '/'
+  // Use function app health endpoint for better monitoring
+  healthProbePath: '/api/health'
   demoBackendFqdn: demoBackendFqdn
   automationAccountName: 'auto-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${(regionShortNames[?region.regionName] ?? substring(region.regionName, 0, 3))}-${envShort}'
   }

@@ -256,13 +256,14 @@ module regionalLayers './regionalLayer.bicep' = [
       publicIpId: regionalNetworks[index].outputs.publicIpId
       sslCertSecretId: 'https://${region.keyVaultName}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
       cellCount: length(region.cells)
-  cellBackendFqdns: [for cell in region.cells: '${cell}.backend.${region.baseDomain}']
-  enableHttps: !isSmoke
+      cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
+      demoBackendFqdn: 'fa-stamps-${region.regionName}.azurewebsites.net'
+      enableHttps: !isSmoke
       tags: union(baseTags, {
         geo: region.geoName
         region: region.regionName
       })
-      healthProbePath: '/health'
+      healthProbePath: '/api/health'
       automationAccountName: 'auto-${region.geoName}-${region.regionName}'
     }
     dependsOn: [
