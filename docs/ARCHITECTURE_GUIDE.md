@@ -783,7 +783,6 @@ az deployment group create \
 ## 🔗 Related Guides
 
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
-- [Deployment Status Report](../DEPLOYMENT_STATUS_REPORT.md)
 - [Operations Runbook](./OPERATIONS_GUIDE.md)
 - [Regional Layer Fixes](../REGIONAL_LAYER_FIXES.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
