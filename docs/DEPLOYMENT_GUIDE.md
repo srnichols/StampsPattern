@@ -1122,7 +1122,20 @@ az resource list --query "[?contains(name, 'stamps')]" --output table
 "resourcePrefix": { "value": "mycompany-stamps" }
 ```
 
-### ❌ **Issue 2: API Management Deployment Timeout**
+### ❌ **Issue 2: Application Gateway Backend Configuration**
+```bash
+# If Azure Front Door returns 502 errors, check Application Gateway backend pools
+# Backend pools should point to function app FQDNs, not placeholder domains
+# Verify backend health:
+az network application-gateway show-backend-health \
+    --resource-group $RESOURCE_GROUP \
+    --name $APP_GATEWAY_NAME
+
+# Solution: Ensure backend FQDNs are correctly configured
+# Example: 'fa-stamps-${region}.azurewebsites.net' instead of 'bing.com'
+```
+
+### ❌ **Issue 3: API Management Deployment Timeout**
 ```bash
 # APIM takes 45-60 minutes to deploy
 # Check deployment status
@@ -1132,7 +1145,7 @@ az deployment group show \
     --query properties.provisioningState
 ```
 
-### ❌ **Issue 3: Cosmos DB Region Unavailability**
+### ❌ **Issue 4: Cosmos DB Region Unavailability**
 ```bash
 # Check Cosmos DB service availability
 az cosmosdb locations list --query "[?contains(name, 'eastus')]" --output table
@@ -1141,7 +1154,7 @@ az cosmosdb locations list --query "[?contains(name, 'eastus')]" --output table
 "location": { "value": "westus2" }
 ```
 
-### ❌ **Issue 4: SQL Password Complexity Requirements**
+### ❌ **Issue 5: SQL Password Complexity Requirements**
 ```bash
 # Ensure password meets requirements:
 # - At least 8 characters
@@ -1203,7 +1216,9 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 ## 📚 Related Guides
 
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md)
+- [Deployment Status Report](../DEPLOYMENT_STATUS_REPORT.md)
 - [Operations Runbook](./OPERATIONS_GUIDE.md)
+- [Regional Layer Fixes](../REGIONAL_LAYER_FIXES.md)
 - [Security Baseline](./SECURITY_GUIDE.md)
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
 - [Naming Conventions](./NAMING_CONVENTIONS_GUIDE.md)

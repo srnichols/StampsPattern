@@ -230,6 +230,7 @@ This solution is designed for:
 | 🏗️ Architecture Guide | Technical deep-dive: layers, traffic flow, zero-trust security | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./docs/ARCHITECTURE_GUIDE.md) |
 | 📋 Parameterization Guide | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |
 | 🚀 Deployment Guide | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |
+| 📊 Deployment Status Report | Current operational status and deployment metrics | All Teams | [DEPLOYMENT_STATUS_REPORT.md](./DEPLOYMENT_STATUS_REPORT.md) |
 | ⚙️ Operations Guide | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
 | 🛡️ Security Guide | Security baseline, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./docs/SECURITY_GUIDE.md) |
 | 🏆 CAF/WAF Compliance | Enterprise compliance scorecard and framework alignment | C-Level, Enterprise Architects | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) |

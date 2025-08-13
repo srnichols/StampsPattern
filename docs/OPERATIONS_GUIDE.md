@@ -328,6 +328,34 @@ az monitor metrics alert create \
     --severity 2 \
     --action $ACTION_GROUP \
     --description "APIM request rate exceeds 10K per minute"
+
+# Application Gateway Backend Health
+az monitor metrics alert create \
+    --name "Application-Gateway-Backend-Unhealthy" \
+    --resource-group $RESOURCE_GROUP \
+    --scopes $(az network application-gateway list --resource-group $RESOURCE_GROUP --query "[].id" -o tsv) \
+    --condition "avg staticThreshold lessThan HealthyHostCount" \
+    --threshold 1 \
+    --aggregation Average \
+    --period "PT5M" \
+    --frequency "PT1M" \
+    --severity 0 \
+    --action $ACTION_GROUP \
+    --description "Application Gateway has no healthy backend targets"
+
+# Application Gateway Failed Requests
+az monitor metrics alert create \
+    --name "Application-Gateway-High-Failed-Requests" \
+    --resource-group $RESOURCE_GROUP \
+    --scopes $(az network application-gateway list --resource-group $RESOURCE_GROUP --query "[].id" -o tsv) \
+    --condition "total staticThreshold greaterThan FailedRequests" \
+    --threshold 100 \
+    --aggregation Total \
+    --period "PT15M" \
+    --frequency "PT5M" \
+    --severity 1 \
+    --action $ACTION_GROUP \
+    --description "Application Gateway failed requests exceed 100 in 15 minutes"
 ```
 
 ---
