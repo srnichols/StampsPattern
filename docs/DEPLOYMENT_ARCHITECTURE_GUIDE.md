@@ -183,5 +183,7 @@ Both patterns support the same features:
 
 ---
 
-**Last Updated:** August 13, 2025  
-**Pattern Version:** v2.0 (Azure Front Door Standard)
+**Last Updated:** August 2025
+**Pattern Version:** v1.2.1
+
+

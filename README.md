@@ -1,6 +1,10 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
-**Version:** 1.2.0 | **Latest Release:** [v1.2.0 - Mana![License: MIT](https## 🚀 Quick Links
+**Version:** 1.2.1 | **Latest Release:** [v1.2.1 - Documentation & Version Management](./CHANGELOG.md#121---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+## 🚀 Quick Links
 
 - [📚 Documentation Hub](./docs/DOCS.md)
 - [� Executive Brief (CIO)](./docs/one-pagers/executive-brief-cio.md)
@@ -14,15 +18,16 @@
 - [🏆 CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
 - [🆕 What's New](./docs/releases/v0.9.0-local-run.md)
-- [Known Issues](./docs/KNOWN_ISSUES.md).io/badge/License-MIT-yellow.svg)
+- [❓ Known Issues](./docs/KNOWN_ISSUES.md)
+
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
 ![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
 ![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
-![Version](https://img.shields.io/badge/Version-1.2.0-blue)
+![Version](https://img.shields.io/badge/Version-1.2.1-blue)
 ![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
 ![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
 ![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
-![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)ortal Authentication](./CHANGELOG.md#120---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
+![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)
 
 **Azure Stamps Pattern** addresses the critical challenge facing enterprise SaaS providers: how to deliver secure, compliant, and cost-effective multi-tenant solutions at global scale without compromising on performance or regulatory requirements. This comprehensive, production-grade reference architecture eliminates months of architectural planning and provides a proven foundation for building enterprise SaaS platforms on Azure.
 
@@ -379,3 +384,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **🌟 Made with ❤️ by the Azure community** | **⭐ Star this repo if it helped you!**
+
+

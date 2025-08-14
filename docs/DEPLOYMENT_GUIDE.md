@@ -1248,6 +1248,10 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 
 *Last updated: August 2025*
 
+**Pattern Version:** v1.2.1*
+
+**Pattern Version:** v1.2.0*
+
 ## ✅ CI Checks: Bicep Lint and What-If
 
 This repo includes two lightweight GitHub Actions to keep deployments safe:
@@ -1274,3 +1278,5 @@ How to run What-If:
 3) Ensure required secrets exist as noted above
 
 Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and validates with az deployment group what-if.
+
+

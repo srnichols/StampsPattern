@@ -57,8 +57,42 @@ function Set-Version {
     # Update README.md
     $readme = Get-Content $readmeFile -Raw
     $readme = $readme -replace "(\*\*Version:\*\*\s+)[0-9]+\.[0-9]+\.[0-9]+", "`$1$NewVersion"
-    $readme = $readme -replace "(!\[Version\]\(https://img\.shields\.io/badge/Version-)[0-9]+\.[0-9]+\.[0-9]+(-blue\.svg\))", "`$1$NewVersion`$2"
+    $readme = $readme -replace "(!\[Version\]\(https://img\.shields\.io/badge/Version-)[0-9]+\.[0-9]+\.[0-9]+(-blue)", "`$1$NewVersion`$2"
     $readme | Set-Content $readmeFile
+    
+    # Update major documentation files with version footers
+    $docFiles = @(
+        "docs/ARCHITECTURE_GUIDE.md",
+        "docs/DEPLOYMENT_GUIDE.md", 
+        "docs/DEPLOYMENT_ARCHITECTURE_GUIDE.md",
+        "docs/SECURITY_GUIDE.md",
+        "docs/OPERATIONS_GUIDE.md"
+    )
+    
+    foreach ($docFile in $docFiles) {
+        if (Test-Path $docFile) {
+            $content = Get-Content $docFile -Raw
+            
+            # Add or update version footer
+            if ($content -match "\*\*Last Updated:\*\*.*\r?\n\*\*Pattern Version:\*\*.*") {
+                # Update existing footer
+                $content = $content -replace "(\*\*Last Updated:\*\*\s+)[^\r\n]*", "`$1$(Get-Date -Format 'MMMM yyyy')"
+                $content = $content -replace "(\*\*Pattern Version:\*\*\s+)[^\r\n]*", "`$1v$NewVersion"
+            }
+            elseif ($content -match "\*Last updated:.*") {
+                # Update existing simple footer and add version
+                $content = $content -replace "(\*Last updated:\s+)[^\*\r\n]*", "`$1$(Get-Date -Format 'MMMM yyyy')*`r`n`r`n**Pattern Version:** v$NewVersion"
+            }
+            else {
+                # Add new footer
+                $footer = "`r`n`r`n---`r`n`r`n**Last Updated:** $(Get-Date -Format 'MMMM yyyy')  `r`n**Pattern Version:** v$NewVersion`r`n"
+                $content = $content.TrimEnd() + $footer
+            }
+            
+            $content | Set-Content $docFile
+            Write-Host "Updated version in $docFile" -ForegroundColor Cyan
+        }
+    }
     
     Write-Host "Version files updated to $NewVersion" -ForegroundColor Green
 }
