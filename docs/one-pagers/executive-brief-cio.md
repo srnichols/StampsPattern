@@ -53,7 +53,7 @@ The objective is executive clarity: understand what you get, what it costs, and 
 - A security/compliance baseline and exception policy
 
 ## Where to go next
-- Overview & Business Value: [README](../README.md)
+- Overview & Business Value: [README](../../README.md)
 - Architecture & Resilience: [Architecture Guide](../ARCHITECTURE_GUIDE.md)
 - Compliance Posture: [CAF/WAF Analysis](../CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - Operations Excellence: [Operations Guide](../OPERATIONS_GUIDE.md)
