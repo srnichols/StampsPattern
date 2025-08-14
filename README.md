@@ -1,18 +1,6 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
-**Version:** 1.2.1 | **Latest Release:** [v1.2.1 - Documentation & Version Management](./CHANGELOG.md#121---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
-
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
-![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
-![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
-![Version](https://img.shields.io/badge/Version-1.2.1-blue)
-![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
-![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
-![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
-![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)
-
-## 🚀 Quick Links
+**Version:** 1.2.1 | **Latest Release:** [v1.2.1 - Documentation & Version Man## 🚀 Quick Links
 
 - [📚 Documentation Hub](./docs/DOCS.md)
 - [📄 Executive Brief (CIO)](./docs/one-pagers/executive-brief-cio.md)
@@ -27,6 +15,18 @@
 - [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
 - [🆕 What's New](./docs/releases/v0.9.0-local-run.md)
 - [❓ Known Issues](./docs/KNOWN_ISSUES.md)
+- [🤝 Contributing](#contributing)
+- [📞 Support](#support--community)ELOG.md#121---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
+![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
+![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.2.1-blue)
+![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
+![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
+![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
+![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)
 
 **Azure Stamps Pattern** addresses the critical challenge facing enterprise SaaS providers: how to deliver secure, compliant, and cost-effective multi-tenant solutions at global scale without compromising on performance or regulatory requirements. This comprehensive, production-grade reference architecture eliminates months of architectural planning and provides a proven foundation for building enterprise SaaS platforms on Azure.
 
