@@ -466,15 +466,33 @@ pwsh --version
   - (Legacy B2C_* keys are still read for backward compatibility)
   - Note: The `AzureArchitecture/b2c-setup.bicep` file is now an informational no‑op. External ID/B2C tenants cannot be created or linked via Bicep/ARM. Create and configure your tenant and user flows in the Azure portal.
 
-#### Portal setup prerequisites (summary)
-Before running Bicep, prepare these in the Microsoft Entra admin center (External ID → Customers):
-- Create/select your External ID tenant (confirm tenant short name, e.g., contoso)
-- App registrations: one for the client app (SPA/web) and one for the protected API (if validating aud)
-- Expose an API: set Application ID URI to match your audience (e.g., api://stamps-pattern)
-- Create a user flow for sign-up/sign-in (e.g., B2C_1_signupsignin)
-- Collect and map values to app settings: EXTERNAL_ID_TENANT, EXTERNAL_ID_CLIENT_ID, EXTERNAL_ID_USER_FLOW
+#### Management Portal Authentication Setup
 
-For detailed, step-by-step instructions, see Security Guide → Microsoft Entra External ID (customers) → [Portal setup prerequisites](./SECURITY_GUIDE.md#portal-setup-prerequisites-do-this-before-running-bicep).
+The management portal supports Azure Entra ID authentication for administrative access. Configuration includes:
+
+**Bicep Parameters Required:**
+- `azureClientId`: Application (Client) ID from your Azure Entra ID app registration
+- `azureTenantId`: Directory (Tenant) ID for your organization
+- `azureClientSecret`: Client secret generated in your app registration
+
+**Azure AD App Registration Requirements:**
+1. **Authentication Settings:**
+   - Platform: Web
+   - Redirect URI: `https://{your-container-app-url}/signin-oidc`
+   - Logout URL: `https://{your-container-app-url}/signout-callback-oidc`
+   - Enable "ID tokens" in implicit grant settings
+
+2. **App Roles (Optional):**
+   - `platform.admin`: Full administrative access
+   - `operator`: Read/write access to tenant operations  
+   - `reader`: Read-only access
+
+**Post-Deployment Steps:**
+1. Update the app registration redirect URIs with the actual Container App URL
+2. Configure client secret in Container App secrets
+3. Test authentication flow with your organization's users
+
+For External ID (B2C) customer authentication setup, see Security Guide → [Microsoft Entra External ID Integration](./SECURITY_GUIDE.md#microsoft-entra-external-id-customers-integration).
 
 - **Azure subscription** with Contributor access
 - **Resource Provider registrations**:

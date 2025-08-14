@@ -33,14 +33,24 @@ Last updated: August 2025
 
 ## 🚦 Getting Started (Operators)
 
-1. Sign in with your Entra ID account. If you see read‑only views, ask for operator or admin access.
-2. Verify your role under your profile. Operators can edit routing and run safe operations; only admins can create/delete tenants.
-3. Onboard a test tenant: Tenants → New Tenant. Use a unique tenant ID and select an existing cell for placement.
-4. Update routing: Set strategy (geo/performance/compliance) and, if multi‑homed, weight targets.
-5. Monitor operations: Open Operations to track long‑running tasks and review errors.
-6. Need production? Review Domain Naming policy below to decide on domain reservation.
+1. **Access the Portal**: Navigate to your deployed management portal URL (typically `https://ca-stamps-portal.{region}.azurecontainerapps.io`)
+2. **Authenticate**: Sign in with your Azure Entra ID account from your organization's tenant
+3. **Verify Permissions**: Check your role under your profile. Operators can edit routing and run safe operations; only admins can create/delete tenants
+4. **Onboard a Test Tenant**: Navigate to Tenants → New Tenant. Use a unique tenant ID and select an existing cell for placement
+5. **Configure Routing**: Set routing strategy (geo/performance/compliance) and configure traffic weights for multi-homed tenants
+6. **Monitor Operations**: Use the Operations view to track long-running tasks and review any errors or warnings
+7. **Production Considerations**: Review the Domain Naming policy section below for production deployment planning
 
-The Management Portal is a thin control‑plane app for administering tenants and cells. It exposes safe, role‑scoped CRUD over a Cosmos DB data model via Data API Builder (DAB), and optionally kicks off operational workflows via Azure Functions.
+**Authentication & Access:**
+- The portal uses Azure Entra ID for administrative authentication
+- Role-based access control via Azure AD groups mapped to application roles
+- Supports SSO with your organization's existing identity infrastructure
+
+**Portal Architecture:**
+The Management Portal is a control-plane application for administering tenants and cells. It provides:
+- Role-scoped CRUD operations over Cosmos DB via Data API Builder (DAB)
+- Integration with Azure Functions for complex operational workflows
+- Real-time monitoring and alerting through Application Insights integration
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%

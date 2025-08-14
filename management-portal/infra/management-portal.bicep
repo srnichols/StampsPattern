@@ -4,11 +4,32 @@ param location string = resourceGroup().location
 @description('Cosmos DB account name (must be globally unique)')
 param cosmosAccountName string
 
-// Reserved for future use: Container Apps resources
+@description('Container Apps Environment name')
+param containerAppsEnvironmentName string = 'cae-stamps-mgmt'
 
-var tags = {
-  'azd-env-name': deployment().name
-}
+@description('Container Registry name (must be globally unique)')
+param containerRegistryName string
+
+@description('Log Analytics Workspace name')
+param logAnalyticsWorkspaceName string = 'law-stamps-mgmt'
+
+@description('Application Insights name')
+param appInsightsName string = 'ai-stamps-mgmt'
+
+@description('Common tags for resources')
+param tags object = {}
+
+@description('Azure Entra ID Client ID for authentication')
+param azureClientId string = ''
+
+@description('Azure Entra ID Tenant ID for authentication')
+param azureTenantId string = ''
+
+@description('Azure Entra ID Client Secret for authentication')
+@secure()
+param azureClientSecret string = ''
+
+// Note: portalImage and dabImage parameters are kept for future use but currently use base images
 
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   name: cosmosAccountName
@@ -150,3 +171,314 @@ resource catalogsContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/c
 }
 
 // Note: Container Apps environment and apps to be added later
+
+// Log Analytics Workspace for monitoring
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: logAnalyticsWorkspaceName
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+  tags: tags
+}
+
+// Application Insights for application monitoring
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightsName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+  }
+  tags: tags
+}
+
+// Container Registry for storing container images
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+  name: containerRegistryName
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    adminUserEnabled: true
+  }
+  tags: tags
+}
+
+// Container Apps Environment
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+  name: containerAppsEnvironmentName
+  location: location
+  properties: {
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logAnalyticsWorkspace.properties.customerId
+        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
+      }
+    }
+  }
+  tags: tags
+}
+
+// User-assigned managed identity for container apps
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'mi-stamps-mgmt'
+  location: location
+  tags: tags
+}
+
+// Role assignment for managed identity to access Container Registry
+resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containerRegistry.id, managedIdentity.id, 'AcrPull')
+  scope: containerRegistry
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Role assignment for managed identity to access Cosmos DB
+resource cosmosContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(cosmos.id, managedIdentity.id, 'CosmosDBDataContributor')
+  scope: cosmos
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Cosmos DB Contributor
+    principalId: managedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Data API Builder Container App
+resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
+  name: 'ca-stamps-dab'
+  location: location
+  dependsOn: [
+    acrPullRoleAssignment
+    cosmosContributorRoleAssignment
+  ]
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      ingress: {
+        external: false
+        targetPort: 5000
+        allowInsecure: false
+        corsPolicy: {
+          allowedOrigins: ['*']
+          allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+          allowedHeaders: ['*']
+          allowCredentials: false
+        }
+        traffic: [
+          {
+            weight: 100
+            latestRevision: true
+          }
+        ]
+      }
+      registries: [
+        {
+          server: containerRegistry.properties.loginServer
+          identity: managedIdentity.id
+        }
+      ]
+      secrets: [
+        {
+          name: 'cosmos-connection-string'
+          value: cosmos.listConnectionStrings().connectionStrings[0].connectionString
+        }
+        {
+          name: 'appinsights-connection-string'
+          value: appInsights.properties.ConnectionString
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          name: 'dab'
+          env: [
+            {
+              name: 'COSMOS_CONNECTION_STRING'
+              secretRef: 'cosmos-connection-string'
+            }
+            {
+              name: 'ASPNETCORE_ENVIRONMENT'
+              value: 'Production'
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              secretRef: 'appinsights-connection-string'
+            }
+          ]
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 3
+        rules: [
+          {
+            name: 'http-scaling'
+            http: {
+              metadata: {
+                concurrentRequests: '30'
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+  tags: tags
+}
+
+// Management Portal Container App
+resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
+  name: 'ca-stamps-portal'
+  location: location
+  dependsOn: [
+    acrPullRoleAssignment
+  ]
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      ingress: {
+        external: true
+        targetPort: 8080
+        allowInsecure: false
+        corsPolicy: {
+          allowedOrigins: ['*']
+          allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+          allowedHeaders: ['*']
+          allowCredentials: false
+        }
+        traffic: [
+          {
+            weight: 100
+            latestRevision: true
+          }
+        ]
+      }
+      registries: [
+        {
+          server: containerRegistry.properties.loginServer
+          identity: managedIdentity.id
+        }
+      ]
+      secrets: [
+        {
+          name: 'dab-graphql-url'
+          value: 'https://${dabContainerApp.properties.configuration.ingress.fqdn}/graphql'
+        }
+        {
+          name: 'appinsights-connection-string'
+          value: appInsights.properties.ConnectionString
+        }
+        {
+          name: 'azure-client-secret'
+          value: azureClientSecret
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          name: 'portal'
+          env: [
+            {
+              name: 'DAB_GRAPHQL_URL'
+              secretRef: 'dab-graphql-url'
+            }
+            {
+              name: 'ASPNETCORE_ENVIRONMENT'
+              value: 'Production'
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              secretRef: 'appinsights-connection-string'
+            }
+            {
+              name: 'ASPNETCORE_URLS'
+              value: 'http://+:8080'
+            }
+            {
+              name: 'AzureAd__ClientId'
+              value: !empty(azureClientId) ? azureClientId : ''
+            }
+            {
+              name: 'AzureAd__TenantId'
+              value: !empty(azureTenantId) ? azureTenantId : ''
+            }
+            {
+              name: 'AzureAd__ClientSecret'
+              secretRef: 'azure-client-secret'
+            }
+            {
+              name: 'AzureAd__Instance'
+              value: environment().authentication.loginEndpoint
+            }
+            {
+              name: 'AzureAd__CallbackPath'
+              value: '/signin-oidc'
+            }
+            {
+              name: 'AzureAd__SignedOutCallbackPath'
+              value: '/signout-callback-oidc'
+            }
+          ]
+          resources: {
+            cpu: json('0.5')
+            memory: '1Gi'
+          }
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 5
+        rules: [
+          {
+            name: 'http-scaling'
+            http: {
+              metadata: {
+                concurrentRequests: '50'
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+  tags: tags
+}
+
+// Outputs
+output cosmosEndpoint string = cosmos.properties.documentEndpoint
+output portalUrl string = 'https://${portalContainerApp.properties.configuration.ingress.fqdn}'
+output dabUrl string = 'https://${dabContainerApp.properties.configuration.ingress.fqdn}'
+output containerRegistryName string = containerRegistry.name
+output containerRegistryLoginServer string = containerRegistry.properties.loginServer

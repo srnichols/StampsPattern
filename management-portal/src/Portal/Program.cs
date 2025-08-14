@@ -1,12 +1,86 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using ServiceDefaults;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddServiceDefaults("Stamps.ManagementPortal");
 
-builder.Services.AddRazorPages();
+// Configure forwarded headers for container apps
+if (builder.Environment.IsProduction())
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
+                                 Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+        options.ForwardedProtoHeaderName = "X-Forwarded-Proto";
+    });
+}
+
+// Add authentication for production
+if (builder.Environment.IsProduction())
+{
+    // Configure authentication to use HTTPS URLs
+    builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+    {
+        options.Events = new OpenIdConnectEvents
+        {
+            OnRedirectToIdentityProvider = context =>
+            {
+                // Force HTTPS in redirect URIs
+                context.Request.Scheme = "https";
+                context.Request.Host = new HostString(context.Request.Host.Host, 443);
+                return Task.CompletedTask;
+            }
+        };
+    });
+    
+    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+    
+    builder.Services.AddAuthorization(options =>
+    {
+        // Require authentication by default
+        options.FallbackPolicy = options.DefaultPolicy;
+        
+        // Add role-based authorization
+        options.AddPolicy("PlatformAdmin", policy =>
+            policy.RequireRole("platform.admin"));
+        
+        options.AddPolicy("Authenticated", policy =>
+            policy.RequireAuthenticatedUser());
+    });
+    
+    builder.Services.AddControllersWithViews(options =>
+    {
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    });
+    
+    builder.Services.AddRazorPages()
+        .AddMicrosoftIdentityUI();
+}
+else
+{
+    builder.Services.AddRazorPages();
+}
+
 builder.Services.AddServerSideBlazor();
+
+// Configure Application Insights
+if (!string.IsNullOrWhiteSpace(builder.Configuration["ApplicationInsights:ConnectionString"]))
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
+
+// Configure GraphQL client
 builder.Services.AddHttpClient("GraphQL", (sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -17,6 +91,7 @@ builder.Services.AddHttpClient("GraphQL", (sp, client) =>
     }
 });
 
+// Configure data service
 var useGraphQL = !string.IsNullOrWhiteSpace(builder.Configuration["DAB_GRAPHQL_URL"]);
 if (useGraphQL)
 {
@@ -27,20 +102,46 @@ else
     builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.InMemoryDataService>();
 }
 
+// Add health checks
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
+// Use forwarded headers for production
+if (app.Environment.IsProduction())
+{
+    app.UseForwardedHeaders();
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
+// Add authentication middleware for production
+if (app.Environment.IsProduction())
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+// Add authentication-related routes for production
+if (app.Environment.IsProduction())
+{
+    app.MapControllers();
+    app.MapRazorPages();
+}
+
 app.MapHealthChecks("/health");
 
 app.Run();

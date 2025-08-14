@@ -1,0 +1,207 @@
+name: Deploy Management Portal to Container Apps
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'management-portal/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'management-portal/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - development
+        - staging
+        - production
+
+env:
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME || 'rg-stamps-mgmt-prod' }}
+  LOCATION: ${{ vars.LOCATION || 'westus2' }}
+  ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME || 'stamps-mgmt' }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore management-portal/src/Portal/Portal.csproj
+
+    - name: Build application
+      run: dotnet build management-portal/src/Portal/Portal.csproj --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test management-portal/Tests/ --configuration Release --no-build --verbosity normal
+
+  deploy-infrastructure:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    outputs:
+      containerRegistryName: ${{ steps.deploy.outputs.containerRegistryName }}
+      containerRegistryLoginServer: ${{ steps.deploy.outputs.containerRegistryLoginServer }}
+      portalUrl: ${{ steps.deploy.outputs.portalUrl }}
+      dabUrl: ${{ steps.deploy.outputs.dabUrl }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up dynamic variables
+      id: vars
+      run: |
+        SUFFIX=$(date +%Y%m%d%H%M | cut -c7-12)
+        echo "CONTAINER_REGISTRY_NAME=cr${{ env.ENVIRONMENT_NAME }}${SUFFIX}" | sed 's/-//g' >> $GITHUB_OUTPUT
+        echo "COSMOS_ACCOUNT_NAME=cosmos-${{ env.ENVIRONMENT_NAME }}-${SUFFIX}" >> $GITHUB_OUTPUT
+        echo "CONTAINER_APPS_ENV_NAME=cae-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+        echo "LOG_ANALYTICS_NAME=law-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+        echo "APP_INSIGHTS_NAME=ai-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+
+    - name: Deploy Azure Infrastructure
+      id: deploy
+      uses: azure/arm-deploy@v2
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
+        template: management-portal/infra/management-portal.bicep
+        parameters: >
+          location=${{ env.LOCATION }}
+          cosmosAccountName=${{ steps.vars.outputs.COSMOS_ACCOUNT_NAME }}
+          containerAppsEnvironmentName=${{ steps.vars.outputs.CONTAINER_APPS_ENV_NAME }}
+          containerRegistryName=${{ steps.vars.outputs.CONTAINER_REGISTRY_NAME }}
+          logAnalyticsWorkspaceName=${{ steps.vars.outputs.LOG_ANALYTICS_NAME }}
+          appInsightsName=${{ steps.vars.outputs.APP_INSIGHTS_NAME }}
+          portalImage=temp-image:latest
+          dabImage=temp-image:latest
+
+    - name: Create resource group if needed
+      run: |
+        az group create \
+          --name ${{ env.RESOURCE_GROUP_NAME }} \
+          --location ${{ env.LOCATION }} \
+          --output none
+
+  build-and-push-images:
+    needs: deploy-infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to Container Registry
+      run: az acr login --name ${{ needs.deploy-infrastructure.outputs.containerRegistryName }}
+
+    - name: Build and push Portal image
+      run: |
+        cd management-portal/src/Portal
+        docker build -t ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-portal:${{ github.sha }} .
+        docker build -t ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-portal:latest .
+        docker push ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-portal:${{ github.sha }}
+        docker push ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-portal:latest
+
+    - name: Build and push DAB image
+      run: |
+        cd management-portal/dab
+        docker build -t ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-dab:${{ github.sha }} .
+        docker build -t ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-dab:latest .
+        docker push ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-dab:${{ github.sha }}
+        docker push ${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-dab:latest
+
+  update-container-apps:
+    needs: [deploy-infrastructure, build-and-push-images]
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up dynamic variables
+      id: vars
+      run: |
+        SUFFIX=$(date +%Y%m%d%H%M | cut -c7-12)
+        echo "COSMOS_ACCOUNT_NAME=cosmos-${{ env.ENVIRONMENT_NAME }}-${SUFFIX}" >> $GITHUB_OUTPUT
+        echo "CONTAINER_APPS_ENV_NAME=cae-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+        echo "LOG_ANALYTICS_NAME=law-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+        echo "APP_INSIGHTS_NAME=ai-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+
+    - name: Update Container Apps with new images
+      uses: azure/arm-deploy@v2
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
+        template: management-portal/infra/management-portal.bicep
+        parameters: >
+          location=${{ env.LOCATION }}
+          cosmosAccountName=${{ steps.vars.outputs.COSMOS_ACCOUNT_NAME }}
+          containerAppsEnvironmentName=${{ steps.vars.outputs.CONTAINER_APPS_ENV_NAME }}
+          containerRegistryName=${{ needs.deploy-infrastructure.outputs.containerRegistryName }}
+          logAnalyticsWorkspaceName=${{ steps.vars.outputs.LOG_ANALYTICS_NAME }}
+          appInsightsName=${{ steps.vars.outputs.APP_INSIGHTS_NAME }}
+          portalImage=${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-portal:${{ github.sha }}
+          dabImage=${{ needs.deploy-infrastructure.outputs.containerRegistryLoginServer }}/stamps-dab:${{ github.sha }}
+
+    - name: Verify deployment
+      run: |
+        echo "🎉 Deployment completed successfully!"
+        echo "Portal URL: ${{ needs.deploy-infrastructure.outputs.portalUrl }}"
+        echo "DAB URL: ${{ needs.deploy-infrastructure.outputs.dabUrl }}"
+        
+        # Health check
+        sleep 30
+        curl -f "${{ needs.deploy-infrastructure.outputs.portalUrl }}/health" || echo "Health check failed"
+
+  post-deployment:
+    needs: [deploy-infrastructure, update-container-apps]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Post deployment summary
+      run: |
+        echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
+        echo "| Component | URL |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----------|-----|" >> $GITHUB_STEP_SUMMARY
+        echo "| Management Portal | ${{ needs.deploy-infrastructure.outputs.portalUrl }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Data API Builder | ${{ needs.deploy-infrastructure.outputs.dabUrl }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Container Registry | ${{ needs.deploy-infrastructure.outputs.containerRegistryName }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Configure Azure Entra ID authentication" >> $GITHUB_STEP_SUMMARY
+        echo "2. Set up custom domain and SSL certificates" >> $GITHUB_STEP_SUMMARY
+        echo "3. Configure monitoring alerts" >> $GITHUB_STEP_SUMMARY

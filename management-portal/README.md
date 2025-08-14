@@ -4,10 +4,20 @@ Run locally with one command or via the AppHost. Defaults to in-memory data; set
 
 ## Auth and roles (production)
 
-- Hosting: Azure Container Apps (ACA) for the portal and DAB API; Azure Functions for command handlers.
-- DAB auth provider: AppService (uses Easy Auth-compatible headers). In ACA and Functions, enable the built-in authentication and require login.
-- Roles in DAB: `authenticated` (read) and `platform.admin` (CRUD).
-- Map Entra ID security groups to roles via `X-MS-CLIENT-PRINCIPAL` claims emitted by ACA/Functions auth. Ensure your admin group objectId resolves to `platform.admin`.
+- **Hosting**: Azure Container Apps (ACA) for the portal and DAB API; Azure Functions for command handlers
+- **Authentication**: Azure Entra ID with OpenID Connect for administrative access
+- **Authorization**: DAB auth provider uses AppService-compatible headers from Container Apps authentication
+- **Portal Roles**: 
+  - `authenticated` (read access to tenant data)
+  - `platform.admin` (full CRUD access)
+  - `operator` (read/write for tenant operations)
+- **Setup Requirements**:
+  - Azure AD app registration with redirect URIs configured
+  - Client secret stored in Container App secrets
+  - ID tokens enabled in app registration
+  - Role mapping through Azure AD groups
+
+For detailed authentication setup, see the main documentation: [DEPLOYMENT_GUIDE.md](../docs/DEPLOYMENT_GUIDE.md#management-portal-authentication-setup)
 
 ## Local Run (one command)
 - Start: pwsh -File .\scripts\run-local.ps1

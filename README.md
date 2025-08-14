@@ -1,5 +1,15 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
+**Version:** 1.2.0 | **Latest Release:** [v1.2.0 - Mana![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
+![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
+![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.2.0-blue)
+![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
+![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
+![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
+![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)ortal Authentication](./CHANGELOG.md#120---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
+
 **Azure Stamps Pattern** addresses the critical challenge facing enterprise SaaS providers: how to deliver secure, compliant, and cost-effective multi-tenant solutions at global scale without compromising on performance or regulatory requirements. This comprehensive, production-grade reference architecture eliminates months of architectural planning and provides a proven foundation for building enterprise SaaS platforms on Azure.
 
 Achieving an industry-leading **94/100 overall [CAF/WAF compliance score](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md#framework-scorecard)** (with **96/100 WAF Security**), this framework implements a modular, zero-trust, and policy-driven approach that has been battle-tested in regulated industries including healthcare, financial services, and government sectors. Organizations can deploy production-ready infrastructure in under 45 minutes while meeting the most stringent security and compliance requirements.

@@ -1,0 +1,174 @@
+#!/usr/bin/env pwsh
+<#
+.SYNOPSIS
+    Version management script for Azure Stamps Pattern
+.DESCRIPTION
+    Updates version numbers across the project and manages changelog entries
+.PARAMETER Action
+    Action to perform: 'bump' (increment version), 'set' (set specific version), or 'get' (show current version)
+.PARAMETER Type
+    Version increment type: 'major', 'minor', or 'patch' (default: patch)
+.PARAMETER Version
+    Specific version to set when using 'set' action (e.g., "1.3.0")
+.PARAMETER Message
+    Release message for the changelog entry
+.EXAMPLE
+    .\scripts\version.ps1 -Action bump -Type minor -Message "Added new feature"
+    .\scripts\version.ps1 -Action set -Version "2.0.0" -Message "Major release"
+    .\scripts\version.ps1 -Action get
+#>
+
+param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('bump', 'set', 'get')]
+    [string]$Action,
+    
+    [Parameter(Mandatory=$false)]
+    [ValidateSet('major', 'minor', 'patch')]
+    [string]$Type = 'patch',
+    
+    [Parameter(Mandatory=$false)]
+    [string]$Version,
+    
+    [Parameter(Mandatory=$false)]
+    [string]$Message
+)
+
+$versionFile = "VERSION"
+$readmeFile = "README.md"
+$changelogFile = "CHANGELOG.md"
+
+function Get-CurrentVersion {
+    if (Test-Path $versionFile) {
+        return (Get-Content $versionFile).Trim()
+    } else {
+        return "1.0.0"
+    }
+}
+
+function Set-Version {
+    param([string]$NewVersion)
+    
+    Write-Host "Setting version to $NewVersion..." -ForegroundColor Green
+    
+    # Update VERSION file
+    $NewVersion | Set-Content $versionFile
+    
+    # Update README.md
+    $readme = Get-Content $readmeFile -Raw
+    $readme = $readme -replace "(\*\*Version:\*\*\s+)[0-9]+\.[0-9]+\.[0-9]+", "`$1$NewVersion"
+    $readme = $readme -replace "(!\[Version\]\(https://img\.shields\.io/badge/Version-)[0-9]+\.[0-9]+\.[0-9]+(-blue\.svg\))", "`$1$NewVersion`$2"
+    $readme | Set-Content $readmeFile
+    
+    Write-Host "Version files updated to $NewVersion" -ForegroundColor Green
+}
+
+function Step-Version {
+    param([string]$BumpType)
+    
+    $currentVersion = Get-CurrentVersion
+    $versionParts = $currentVersion.Split('.')
+    
+    $major = [int]$versionParts[0]
+    $minor = [int]$versionParts[1]
+    $patch = [int]$versionParts[2]
+    
+    switch ($BumpType) {
+        'major' {
+            $major++
+            $minor = 0
+            $patch = 0
+        }
+        'minor' {
+            $minor++
+            $patch = 0
+        }
+        'patch' {
+            $patch++
+        }
+    }
+    
+    $newVersion = "$major.$minor.$patch"
+    return $newVersion
+}
+
+function Update-Changelog {
+    param([string]$NewVersion, [string]$ReleaseMessage)
+    
+    if (-not (Test-Path $changelogFile)) {
+        Write-Warning "Changelog file not found. Skipping changelog update."
+        return
+    }
+    
+    $currentDate = Get-Date -Format "yyyy-MM-dd"
+    $changelog = Get-Content $changelogFile -Raw
+    
+    # Find the position after the first ## [Unreleased] or ## [version] section
+    $insertPosition = $changelog.IndexOf("## [")
+    if ($insertPosition -eq -1) {
+        Write-Warning "Could not find changelog insertion point. Please update manually."
+        return
+    }
+    
+    $newEntry = @"
+
+## [$NewVersion] - $currentDate
+
+### Added
+- $ReleaseMessage
+
+"@
+    
+    $changelog = $changelog.Insert($insertPosition, $newEntry)
+    $changelog | Set-Content $changelogFile
+    
+    Write-Host "Changelog updated with version $NewVersion" -ForegroundColor Green
+}
+
+# Main execution
+switch ($Action) {
+    'get' {
+        $currentVersion = Get-CurrentVersion
+        Write-Host "Current version: $currentVersion" -ForegroundColor Cyan
+    }
+    
+    'bump' {
+        if (-not $Message) {
+            $Message = "Version increment ($Type)"
+        }
+        
+        $oldVersion = Get-CurrentVersion
+        $newVersion = Step-Version -BumpType $Type
+        Set-Version -NewVersion $newVersion
+        Update-Changelog -NewVersion $newVersion -ReleaseMessage $Message
+        
+        Write-Host "Version incremented from $oldVersion to $newVersion" -ForegroundColor Green
+        Write-Host "Don't forget to:" -ForegroundColor Yellow
+        Write-Host "  1. Review and edit CHANGELOG.md with specific changes" -ForegroundColor Yellow
+        Write-Host "  2. Commit changes: git add . && git commit -m 'Bump version to $newVersion'" -ForegroundColor Yellow
+        Write-Host "  3. Create git tag: git tag v$newVersion" -ForegroundColor Yellow
+        Write-Host "  4. Push changes: git push && git push --tags" -ForegroundColor Yellow
+    }
+    
+    'set' {
+        if (-not $Version) {
+            Write-Error "Version parameter is required when using 'set' action"
+            exit 1
+        }
+        
+        if (-not ($Version -match '^\d+\.\d+\.\d+$')) {
+            Write-Error "Version must be in format X.Y.Z (e.g., 1.2.3)"
+            exit 1
+        }
+        
+        if (-not $Message) {
+            $Message = "Version set to $Version"
+        }
+        
+        Set-Version -NewVersion $Version
+        Update-Changelog -NewVersion $Version -ReleaseMessage $Message
+        
+        Write-Host "Version set to $Version" -ForegroundColor Green
+        Write-Host "Don't forget to commit and tag the changes!" -ForegroundColor Yellow
+    }
+}

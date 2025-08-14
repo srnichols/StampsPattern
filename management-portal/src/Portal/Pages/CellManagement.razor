@@ -312,7 +312,7 @@
         {
             TotalCells = cells.Count,
             HealthyCells = cells.Count(c => c.Status == "healthy"),
-            AverageUtilization = cells.Average(c => c.CapacityTotal > 0 ? (c.CapacityUsed * 100) / c.CapacityTotal : 0),
+            AverageUtilization = (int)cells.Average(c => c.CapacityTotal > 0 ? (c.CapacityUsed * 100) / c.CapacityTotal : 0),
             TenantsTotal = cells.Sum(c => c.CapacityUsed)
         };
     }

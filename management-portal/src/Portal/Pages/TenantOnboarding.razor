@@ -45,7 +45,7 @@
             <h3>Step 2: Select Your SaaS Tier</h3>
             <div class="tier-selection">
                 <div class="tier-card @(onboardingModel.SelectedTier == "startup" ? "selected" : "")" 
-                     @onclick="() => SelectTier("startup")">
+                     @onclick="@(() => SelectTier("startup"))">
                     <h4>🚀 Startup</h4>
                     <div class="price">$8-16/month per tenant</div>
                     <ul>
@@ -57,7 +57,7 @@
                 </div>
                 
                 <div class="tier-card @(onboardingModel.SelectedTier == "smb" ? "selected" : "")" 
-                     @onclick="() => SelectTier("smb")">
+                     @onclick="@(() => SelectTier("smb"))">
                     <h4>🏢 SMB</h4>
                     <div class="price">$50-100/month per tenant</div>
                     <ul>
@@ -69,7 +69,7 @@
                 </div>
                 
                 <div class="tier-card @(onboardingModel.SelectedTier == "enterprise" ? "selected" : "")" 
-                     @onclick="() => SelectTier("enterprise")">
+                     @onclick="@(() => SelectTier("enterprise"))">
                     <h4>🏆 Enterprise</h4>
                     <div class="price">$3,200+/month per tenant</div>
                     <ul>
@@ -199,7 +199,7 @@
             <div class="quick-start">
                 <h4>Quick Start Guide</h4>
                 <ol>
-                    <li><strong>Access Your Environment:</strong> https://@onboardingModel.Domain.stamps-platform.com</li>
+                    <li><strong>Access Your Environment:</strong> https://@(onboardingModel.Domain).stamps-platform.com</li>
                     <li><strong>Admin Portal:</strong> <a href="/tenants">Manage your tenant settings</a></li>
                     <li><strong>API Endpoints:</strong> View your GraphQL schema and REST APIs</li>
                     <li><strong>Monitoring:</strong> <a href="/operations">Track usage and performance</a></li>
