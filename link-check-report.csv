@@ -1,2 +1,5 @@
 "Type","File","Link","Status"
-"Relative",".\\\CONTRIBUTING.md","./LICENSE","NotFound"
+"Relative",".\\\docs\archive\DEPLOYMENT_ARCHITECTURE_GUIDE.md","./DEPLOYMENT_GUIDE.md","NotFound"
+"Relative",".\\\docs\archive\DEPLOYMENT_ARCHITECTURE_GUIDE.md","./ARCHITECTURE_GUIDE.md","NotFound"
+"Relative",".\\\docs\archive\DEPLOYMENT_ARCHITECTURE_GUIDE.md","./SECURITY_GUIDE.md","NotFound"
+"Relative",".\\\docs\archive\DEPLOYMENT_ARCHITECTURE_GUIDE.md","./OPERATIONS_GUIDE.md","NotFound"
