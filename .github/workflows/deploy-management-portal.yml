@@ -1,5 +1,10 @@
 name: Deploy Management Portal to Container Apps
 
+# Add OIDC permissions
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     branches: [ main, master ]
