@@ -181,11 +181,6 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 🧰 Known Issues: [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
 - 📰 Release Notes: [releases/](./releases)
 
-### Archive
-- 🗄️ Recommendations Report: [archive/RECOMMENDATIONS_REPORT.md](./archive/RECOMMENDATIONS_REPORT.md)
-- 🗄️ Implementation Status: [archive/IMPLEMENTATION_STATUS.md](./archive/IMPLEMENTATION_STATUS.md)
-- 🗄️ Implementation Report: [archive/IMPLEMENTATION_REPORT.md](./archive/IMPLEMENTATION_REPORT.md)
-
 ---
 
 
