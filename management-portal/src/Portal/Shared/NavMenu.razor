@@ -1,12 +1,81 @@
-<nav class="navbar">
-    <div class="navbar-brand">🏗️ Stamps SaaS Platform</div>
-    <ul class="nav-list">
-        <li><NavLink href="/" Match="NavLinkMatch.All">🏠 Dashboard</NavLink></li>
-        <li><NavLink href="/onboarding">🚀 New Tenant</NavLink></li>
-        <li><NavLink href="/tenants">👥 Tenants</NavLink></li>
-        <li><NavLink href="/cell-management">🏗️ Cell Management</NavLink></li>
-        <li><NavLink href="/cells">📊 Cells</NavLink></li>
-        <li><NavLink href="/operations">⚙️ Operations</NavLink></li>
-        <li><a href="/docs/MANAGEMENT_PORTAL_USER_GUIDE.md" target="_blank">📚 User Guide</a></li>
-    </ul>
-</nav>
+<!-- Brand -->
+<div class="sidebar-brand mb-4">
+    <h4 class="text-white mb-0">🏗️ Stamps Portal</h4>
+    <small class="text-white-50">Multi-Tenant SaaS Platform</small>
+</div>
+
+<!-- Navigation Links -->
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/" Match="NavLinkMatch.All">
+            <i class="bi bi-house-door"></i>
+            <span>Dashboard</span>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/onboarding">
+            <i class="bi bi-rocket-takeoff"></i>
+            <span>New Tenant</span>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/tenants">
+            <i class="bi bi-people"></i>
+            <span>Tenants</span>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/cell-management">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <span>Cell Management</span>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/cells">
+            <i class="bi bi-bar-chart"></i>
+            <span>Cells</span>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/operations">
+            <i class="bi bi-gear"></i>
+            <span>Operations</span>
+        </NavLink>
+    </li>
+    <li class="nav-item mt-3 pt-3 border-top border-secondary">
+        <a class="nav-link text-white d-flex align-items-center gap-2" href="/docs/MANAGEMENT_PORTAL_USER_GUIDE.md" target="_blank">
+            <i class="bi bi-book"></i>
+            <span>User Guide</span>
+        </a>
+    </li>
+</ul>
+
+<style>
+    .nav-link {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white !important;
+        transform: translateX(4px);
+    }
+    
+    .nav-link.active {
+        background-color: #0d6efd;
+        color: white !important;
+    }
+    
+    .sidebar-brand {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .bi {
+        font-size: 1.1rem;
+        width: 20px;
+    }
+</style>
