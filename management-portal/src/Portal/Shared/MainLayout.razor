@@ -1,17 +1,85 @@
 @inherits LayoutComponentBase
+@inject IConfiguration Configuration
 
-<div class="page">
-    <div class="sidebar">
+<div class="d-flex">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar bg-dark text-white p-3">
         <NavMenu />
-    </div>
+    </nav>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://github.com/srnichols/StampsPattern" target="_blank">GitHub</a>
+    <!-- Main Content Area -->
+    <main class="flex-fill">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar bg-light border-bottom px-4 py-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">🏗️ Azure Stamps SaaS Platform</h5>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-secondary">v@GetVersion()</span>
+                <span class="badge @GetDataSourceBadgeClass()">@GetDataSource()</span>
+                <a href="https://github.com/srnichols/StampsPattern" target="_blank" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-github"></i> GitHub
+                </a>
+            </div>
         </div>
 
-        <article class="content px-4">
+        <!-- Page Content -->
+        <div class="main-content p-4">
             @Body
-        </article>
+        </div>
     </main>
 </div>
+
+<style>
+    .sidebar {
+        width: 280px;
+        min-height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+    
+    main {
+        margin-left: 280px;
+        min-height: 100vh;
+    }
+    
+    .top-navbar {
+        background-color: #f8f9fa !important;
+    }
+    
+    .main-content {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 60px);
+    }
+    
+    @@media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+        
+        main {
+            margin-left: 0;
+        }
+    }
+</style>
+
+@code {
+    private string GetVersion()
+    {
+        return "1.2.3"; // Will be updated when we rebuild
+    }
+    
+    private string GetDataSource()
+    {
+        var dabUrl = Configuration["DAB_GRAPHQL_URL"];
+        return string.IsNullOrWhiteSpace(dabUrl) ? "In-Memory Data" : "Live Data";
+    }
+    
+    private string GetDataSourceBadgeClass()
+    {
+        var dabUrl = Configuration["DAB_GRAPHQL_URL"];
+        return string.IsNullOrWhiteSpace(dabUrl) ? "bg-warning" : "bg-success";
+    }
+}
