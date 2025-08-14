@@ -1,6 +1,20 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
-**Version:** 1.2.0 | **Latest Release:** [v1.2.0 - Mana![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+**Version:** 1.2.0 | **Latest Release:** [v1.2.0 - Mana![License: MIT](https## 🚀 Quick Links
+
+- [📚 Documentation Hub](./docs/DOCS.md)
+- [� Executive Brief (CIO)](./docs/one-pagers/executive-brief-cio.md)
+- [�👩‍💻 Developer Quickstart](./docs/DEVELOPER_QUICKSTART.md)
+- [🧪 Run Locally (Functions + Emulator)](./docs/DEPLOYMENT_GUIDE.md#-run-locally-functions--emulator)
+- [🏗️ Architecture Guide](./docs/ARCHITECTURE_GUIDE.md)
+- [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
+- [🧭 Management Portal User Guide](./docs/MANAGEMENT_PORTAL_USER_GUIDE.md)
+- [⚙️ Operations Guide](./docs/OPERATIONS_GUIDE.md)
+- [🛡️ Security Guide](./docs/SECURITY_GUIDE.md)
+- [🏆 CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md)
+- [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
+- [🆕 What's New](./docs/releases/v0.9.0-local-run.md)
+- [Known Issues](./docs/KNOWN_ISSUES.md).io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
 ![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
 ![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
@@ -240,6 +254,7 @@ This solution is designed for:
 | 🏗️ Architecture Guide | Technical deep-dive: layers, traffic flow, zero-trust security | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./docs/ARCHITECTURE_GUIDE.md) |
 | 📋 Parameterization Guide | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |
 | 🚀 Deployment Guide | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |
+| 🧭 Management Portal Guide | Using the management portal for tenant and cell administration | Operators, Platform Administrators | [MANAGEMENT_PORTAL_USER_GUIDE.md](./docs/MANAGEMENT_PORTAL_USER_GUIDE.md) |
 | ⚙️ Operations Guide | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
 | 🛡️ Security Guide | Security baseline, compliance, enterprise controls | Security Engineers, Compliance Teams | [SECURITY_GUIDE.md](./docs/SECURITY_GUIDE.md) |
 | 🏆 CAF/WAF Compliance | Enterprise compliance scorecard and framework alignment | C-Level, Enterprise Architects | [CAF_WAF_COMPLIANCE_ANALYSIS.md](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) |

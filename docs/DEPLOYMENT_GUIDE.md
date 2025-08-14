@@ -238,7 +238,7 @@ For deployments using custom domains, organization names, or multi-geography req
 ### 🌐 Domain naming (test vs. production)
 
 - Test framework: No global domain reservation is required. Use Azure base domains/hostnames for Container Apps/Functions during development and testing.
-- Production: Implement a global domain reservation to guarantee uniqueness across tenants. See “Domain naming and global uniqueness” in the [Management Portal Plan](./MANAGEMENT_PORTAL_PLAN.md#domain-naming-and-global-uniqueness) for patterns and caveats.
+- Production: Implement a global domain reservation to guarantee uniqueness across tenants. See “Domain naming and global uniqueness” in the [Management Portal User Guide](./MANAGEMENT_PORTAL_USER_GUIDE.md) for patterns and caveats.
 
 
 
@@ -1125,7 +1125,7 @@ Use this quick checklist before promoting a test deployment to production. Cross
   - Azure Policy (policy as code) assigned; Defender for Cloud recommendations addressed; audit logs retained.
 
 References:
-- Management Portal Plan: Domain reservation and control‑plane data model (./MANAGEMENT_PORTAL_PLAN.md)
+- Management Portal User Guide: Operational patterns and data model (./MANAGEMENT_PORTAL_USER_GUIDE.md)
 - Security Baseline: Zero‑trust, identity, and network controls (./SECURITY_GUIDE.md)
 - Parameterization: Organization/geography/DNS inputs (./PARAMETERIZATION_GUIDE.md)
 

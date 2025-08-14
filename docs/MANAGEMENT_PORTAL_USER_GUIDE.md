@@ -122,7 +122,7 @@ Current implementation (MVP):
 - Partition key path: `/pk` in each container (value mapped per-item)
 - Access: GraphQL and REST via Data API Builder (DAB) configuration in `management-portal/dab/dab-config.json`
 
-Proposed target schema (aligns with MANAGEMENT_PORTAL_PLAN.md):
+Proposed target schema (based on implemented portal design):
 - Tenants (pk: `/tenantId`), Cells (pk: `/cellId`), Operations (pk: `/tenantId`), Catalogs (pk: `/type`)
 - Unique keys: Tenants enforce unique `domain`; Cells enforce unique `(region, availabilityZone, name)` if applicable
 - TTL: Optional TTL on `operations` (e.g., 30–90 days) with PITR enabled at the account level
@@ -263,7 +263,7 @@ erDiagram
 
 > Note: For this test framework, a global domain reservation isn’t required, use Azure base domains/hostnames. For production SaaS, adopt a reservation strategy to avoid tenant domain collisions. See “Domain naming and global uniqueness” in the Management Portal Plan.
 
-See also: `management-portal/infra/management-portal.bicep` and `docs/MANAGEMENT_PORTAL_PLAN.md`.
+See also: `management-portal/infra/management-portal.bicep` for infrastructure details.
 
 ---
 
@@ -412,5 +412,4 @@ Known limitations:
 - [Operations Guide](./OPERATIONS_GUIDE.md)
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Security Guide](./SECURITY_GUIDE.md)
-- [Management Portal Plan](./MANAGEMENT_PORTAL_PLAN.md)
 - [Production SaaS Checklist, One‑Pager](./one-pagers/production-saas-checklist.md)

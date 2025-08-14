@@ -158,7 +158,6 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 ### Management Portal
 - 📘 User Guide: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
-- 📐 Plan: [MANAGEMENT_PORTAL_PLAN.md](./MANAGEMENT_PORTAL_PLAN.md)
 
 ### Enterprise Alignment
 - 🧭 CAF/WAF Compliance Analysis: [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
