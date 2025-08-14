@@ -1,22 +1,6 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
-**Version:** 1.2.1 | **Latest Release:** [v1.2.1 - Documentation & Version Man## 🚀 Quick Links
-
-- [📚 Documentation Hub](./docs/DOCS.md)
-- [📄 Executive Brief (CIO)](./docs/one-pagers/executive-brief-cio.md)
-- [👩‍💻 Developer Quickstart](./docs/DEVELOPER_QUICKSTART.md)
-- [🧪 Run Locally (Functions + Emulator)](./docs/DEPLOYMENT_GUIDE.md#-run-locally-functions--emulator)
-- [🏗️ Architecture Guide](./docs/ARCHITECTURE_GUIDE.md)
-- [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
-- [🧭 Management Portal User Guide](./docs/MANAGEMENT_PORTAL_USER_GUIDE.md)
-- [⚙️ Operations Guide](./docs/OPERATIONS_GUIDE.md)
-- [🛡️ Security Guide](./docs/SECURITY_GUIDE.md)
-- [🏆 CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md)
-- [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
-- [🆕 What's New](./docs/releases/v0.9.0-local-run.md)
-- [❓ Known Issues](./docs/KNOWN_ISSUES.md)
-- [🤝 Contributing](#contributing)
-- [📞 Support](#support--community)ELOG.md#121---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
+**Version:** 1.2.1 | **Latest Release:** [v1.2.1 - Documentation & Version Management](./CHANGELOG.md#121---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
