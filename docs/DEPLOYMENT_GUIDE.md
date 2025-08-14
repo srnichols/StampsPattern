@@ -1248,6 +1248,8 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 
 *Last updated: August 2025*
 
+**Pattern Version:** v1.2.2*
+
 **Pattern Version:** v1.2.1*
 
 **Pattern Version:** v1.2.0*
@@ -1278,5 +1280,6 @@ How to run What-If:
 3) Ensure required secrets exist as noted above
 
 Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and validates with az deployment group what-if.
+
 
 

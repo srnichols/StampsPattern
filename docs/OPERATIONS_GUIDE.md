@@ -1241,8 +1241,11 @@ fi
 
 *Last updated: August 2025*
 
+**Pattern Version:** v1.2.2*
+
 **Pattern Version:** v1.2.1*
 
 **Pattern Version:** v1.2.0*
+
 
 
