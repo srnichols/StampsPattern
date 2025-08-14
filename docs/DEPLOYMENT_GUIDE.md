@@ -36,7 +36,7 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
 | [🎯 Deployment Overview](#-deployment-overview-for-new-users) | What you're building | 5 min | All readers |
-| [🏗️ Architecture Patterns](./ARCHITECTURE_GUIDE.md) | Single vs Multi-subscription | 10 min | Architects, DevOps |
+| [🏗️ Architecture Patterns](./DEPLOYMENT_ARCHITECTURE_GUIDE.md) | Single vs Multi-subscription | 10 min | Architects, DevOps |
 | [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | 10 min | Architects, DevOps |
 | [⚡ Deployment Options](#-enhanced-deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
 | [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | 10 min | All readers |

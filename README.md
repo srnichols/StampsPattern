@@ -252,7 +252,8 @@ This solution is designed for:
 | Guide | Purpose | Audience | Link |
 |-------|---------|----------|------|
 | 🏗️ Architecture Guide | Technical deep-dive: layers, traffic flow, zero-trust security | Solution Architects, DevOps Engineers | [ARCHITECTURE_GUIDE.md](./docs/ARCHITECTURE_GUIDE.md) |
-| 📋 Parameterization Guide | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |
+| � Deployment Architecture Patterns | Single vs multi-subscription patterns, hub/host architecture | Solution Architects, DevOps Engineers | [DEPLOYMENT_ARCHITECTURE_GUIDE.md](./docs/DEPLOYMENT_ARCHITECTURE_GUIDE.md) |
+| �📋 Parameterization Guide | Template customization for multi-org deployment | DevOps Engineers, Platform Teams | [PARAMETERIZATION_GUIDE.md](./docs/PARAMETERIZATION_GUIDE.md) |
 | 🚀 Deployment Guide | Step-by-step deployment procedures and automation | DevOps Engineers, Platform Engineers | [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) |
 | 🧭 Management Portal Guide | Using the management portal for tenant and cell administration | Operators, Platform Administrators | [MANAGEMENT_PORTAL_USER_GUIDE.md](./docs/MANAGEMENT_PORTAL_USER_GUIDE.md) |
 | ⚙️ Operations Guide | Monitoring, maintenance, incident response procedures | SRE Teams, Operations Teams | [OPERATIONS_GUIDE.md](./docs/OPERATIONS_GUIDE.md) |
