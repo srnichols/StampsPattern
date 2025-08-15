@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @inject IConfiguration Configuration
+@using System.Reflection
 
 <div class="d-flex">
     <!-- Sidebar Navigation -->
@@ -13,7 +14,7 @@
         <div class="top-navbar bg-light border-bottom px-4 py-2 d-flex justify-content-between align-items-center">
             <h5 class="mb-0">🏗️ Azure Stamps SaaS Platform</h5>
             <div class="d-flex align-items-center gap-3">
-                <span class="badge bg-primary fs-6">v@GetVersion()</span>
+                    <span class="badge bg-primary fs-6">@GetVersion()</span>
                 <span class="badge @GetDataSourceBadgeClass()">@GetDataSource()</span>
                 <a href="https://github.com/srnichols/StampsPattern" target="_blank" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-github"></i> GitHub
@@ -68,7 +69,24 @@
 @code {
     private string GetVersion()
     {
-        return "1.2.4"; // Service principal role assigned - testing deployment
+        // Prefer an explicit build version, then informational version (may include git sha), then assembly version.
+        var explicitVer = Environment.GetEnvironmentVariable("BUILD_VERSION");
+        if (!string.IsNullOrWhiteSpace(explicitVer)) return explicitVer;
+
+        var gitSha = Environment.GetEnvironmentVariable("GIT_SHA");
+        var infoVer = Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        if (!string.IsNullOrWhiteSpace(infoVer))
+        {
+            // If a short sha is available, append it.
+            var sha = string.IsNullOrWhiteSpace(gitSha) ? "" : $" ({gitSha[..Math.Min(7, gitSha.Length)]})";
+            return $"v{infoVer}{sha}";
+        }
+
+        var asmVer = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+        if (!string.IsNullOrWhiteSpace(asmVer)) return $"v{asmVer}";
+
+        return "vdev";
     }
     
     private string GetDataSource()
