@@ -1,16 +1,21 @@
 type Tenant {
   id: ID!
-  name: String!
+  # Original
+  name: String
   domain: String!
   tier: String!
   status: String!
-  createdAt: String!
+  # Fields expected by portal
+  displayName: String
+  cellId: String
+  createdAt: String
 }
 
 type Cell {
   id: ID!
-  name: String!
+  name: String
   region: String!
+  availabilityZone: String
   status: String!
   capacityTotal: Int!
   capacityUsed: Int!
@@ -18,8 +23,11 @@ type Cell {
 
 type Operation {
   id: ID!
+  tenantId: String
   type: String!
   status: String!
-  timestamp: String!
+  createdAt: String
+  # Keep original alternative fields for compatibility
+  timestamp: String
   details: String
 }
