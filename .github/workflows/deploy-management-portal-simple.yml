@@ -1,9 +1,5 @@
 name: Deploy Management Portal (Simple)
 
-permissions:
-  id-token: write
-  contents: read
-
 on:
   push:
     branches: [ main, master ]
@@ -28,9 +24,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: 480cb033-9a92-4912-9d30-c6b7bf795a87
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Build .NET Application
       run: |
