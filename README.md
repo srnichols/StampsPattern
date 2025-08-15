@@ -204,30 +204,10 @@ This solution is designed for:
 
 1. **Review the [Documentation Hub](./docs/DOCS.md)** for a guided overview.
 2. **Clone the repository:**
-   ```sh
-   git clone <repository-url>
-# Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100)
-
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
-![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
-![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
-![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
-![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
-![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
-![Contributors](https://img.shields.io/github/contributors/srnichols/StampsPattern)
-
-Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
-
-**Azure Stamps Pattern** addresses the critical challenge facing enterprise SaaS providers: how to deliver secure, compliant, and cost-effective multi-tenant solutions at global scale without compromising on performance or regulatory requirements. This comprehensive, production-grade reference architecture eliminates months of architectural planning and provides a proven foundation for building enterprise SaaS platforms on Azure.
-
-Achieving an industry-leading **94/100 overall [CAF/WAF compliance score](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md#framework-scorecard)** (with **96/100 WAF Security**), this framework implements a modular, zero-trust, and policy-driven approach that has been battle-tested in regulated industries including healthcare, financial services, and government sectors. Organizations can deploy production-ready infrastructure in under 45 minutes while meeting the most stringent security and compliance requirements.
-
-It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platform and workload landing zones, management group hierarchy, and policy-as-code guardrails. For practical implementation guidance, see the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
-
-**The unique [zone-aware architecture](./docs/ARCHITECTURE_GUIDE.md) (GEO → Region → Availability Zone → CELL)** supports both shared and dedicated tenancy models, enabling organizations to optimize costs with shared CELLs for SMB clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance isolation ($3,200+/tenant/month).
-
----
+    ```sh
+    git clone <repository-url>
+    cd StampsPattern
+    ```
 - ✅ <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli" target="_blank" rel="noopener" title="Opens in a new tab">Azure CLI</a>&nbsp;<sup>↗</sup> (v2.50.0+)  
 - ✅ <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install" target="_blank" rel="noopener" title="Opens in a new tab">Bicep CLI</a>&nbsp;<sup>↗</sup> (v0.20.0+)
 - ✅ PowerShell 7+ (for enhanced deployment script)
