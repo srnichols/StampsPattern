@@ -20,14 +20,17 @@ param appInsightsName string = 'ai-stamps-mgmt'
 param tags object = {}
 
 @description('Azure Entra ID Client ID for authentication')
-param azureClientId string = ''
+param azureClientId string = 'e691193e-4e25-4a72-9185-1ce411aa2fd8'
 
 @description('Azure Entra ID Tenant ID for authentication')
-param azureTenantId string = ''
+param azureTenantId string = '16b3c013-d300-468d-ac64-7eda0820b6d3'
 
-@description('Azure Entra ID Client Secret for authentication')
-@secure()
-param azureClientSecret string = ''
+@description('Enable using Key Vault for secrets instead of inline/container-app secrets')
+param useKeyVault bool = false
+
+@description('Key Vault name to read secrets from when useKeyVault = true')
+param keyVaultName string = ''
+
 
 // Note: portalImage and dabImage parameters are kept for future use but currently use base images
 
@@ -347,7 +350,9 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       }
     }
   }
-  tags: tags
+  tags: union(tags, {
+    'azd-service-name': 'dab'
+  })
 }
 
 // Management Portal Container App
@@ -389,6 +394,13 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
           identity: managedIdentity.id
         }
       ]
+      // Secrets currently set as container app secrets. If you prefer Key Vault
+      // integration, set `useKeyVault` to true and provide `keyVaultName`.
+      // Then create the Key Vault secrets (AzureAd-ClientId, AzureAd-TenantId,
+      // appinsights-connection-string, dab-graphql-url) in the Key Vault and
+      // grant the portal managed identity access to read secrets. Example manual
+      // steps are in the repository docs. For now we keep container app secrets
+      // for quick deployments.
       secrets: [
         {
           name: 'dab-graphql-url'
@@ -399,8 +411,12 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
           value: appInsights.properties.ConnectionString
         }
         {
-          name: 'azure-client-secret'
-          value: azureClientSecret
+          name: 'azure-ad-client-id'
+          value: azureClientId
+        }
+        {
+          name: 'azure-ad-tenant-id'
+          value: azureTenantId
         }
       ]
     }
@@ -428,15 +444,11 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             }
             {
               name: 'AzureAd__ClientId'
-              value: !empty(azureClientId) ? azureClientId : ''
+              secretRef: 'azure-ad-client-id'
             }
             {
               name: 'AzureAd__TenantId'
-              value: !empty(azureTenantId) ? azureTenantId : ''
-            }
-            {
-              name: 'AzureAd__ClientSecret'
-              secretRef: 'azure-client-secret'
+              secretRef: 'azure-ad-tenant-id'
             }
             {
               name: 'AzureAd__Instance'
@@ -473,7 +485,9 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       }
     }
   }
-  tags: tags
+  tags: union(tags, {
+    'azd-service-name': 'portal'
+  })
 }
 
 // Outputs

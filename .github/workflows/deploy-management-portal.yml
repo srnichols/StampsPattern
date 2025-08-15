@@ -21,6 +21,10 @@ on:
         - staging
         - production
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   AZURE_SUBSCRIPTION_ID: 480cb033-9a92-4912-9d30-c6b7bf795a87
   RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME || 'rg-stamps-mgmt-prod' }}
@@ -66,10 +70,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Azure Login
+    - name: Azure Login (OIDC)
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set up dynamic variables
       id: vars
@@ -114,10 +120,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Azure Login
+    - name: Azure Login (OIDC)
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Login to Container Registry
       run: az acr login --name ${{ needs.deploy-infrastructure.outputs.containerRegistryName }}
@@ -147,10 +155,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Azure Login
+    - name: Azure Login (OIDC)
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Set up dynamic variables
       id: vars
