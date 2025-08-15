@@ -27,7 +27,7 @@ on:
         - production
 
 env:
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  AZURE_SUBSCRIPTION_ID: 480cb033-9a92-4912-9d30-c6b7bf795a87
   RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME || 'rg-stamps-mgmt-prod' }}
   LOCATION: ${{ vars.LOCATION || 'westus2' }}
   ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME || 'stamps-mgmt' }}
