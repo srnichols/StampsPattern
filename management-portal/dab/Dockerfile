@@ -1,17 +1,19 @@
-# Use the pre-built Data API Builder image from Microsoft
-FROM mcr.microsoft.com/azure-databases/data-api-builder:latest
+# Use a specific stable version that's known to work
+FROM mcr.microsoft.com/azure-databases/data-api-builder:1.2.10
+
+# Set working directory to the app directory
+WORKDIR /App
 
 # Copy configuration files
-COPY dab-config.json /app/
-COPY schema.graphql /app/
+COPY dab-config.json .
+COPY schema.graphql .
 
-# Set working directory
-WORKDIR /app
-
-# Configure environment
+# Set environment variables
 ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Expose the port
 EXPOSE 5000
 
-# Start Data API Builder
-CMD ["dab", "start", "--config", "dab-config.json"]
+# Let the base image handle the startup
+ENTRYPOINT ["dotnet", "/App/Azure.DataApiBuilder.Service.dll", "--config", "dab-config.json"]

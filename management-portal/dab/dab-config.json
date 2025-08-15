@@ -4,58 +4,45 @@
     "database-type": "cosmosdb_nosql",
     "options": {
       "database": "stamps-control-plane",
-  "schema": ""
+      "schema": "schema.graphql"
     },
     "connection-string": "@env('COSMOS_CONNECTION_STRING')"
   },
   "runtime": {
-  "rest": { "enabled": true, "path": "/api" },
-  "graphql": { "enabled": true, "path": "/graphql" },
-  "cors": { "origins": ["*"], "allow-credentials": false },
-  "authentication": { "provider": "AppService" }
+    "rest": { 
+      "enabled": true, 
+      "path": "/api" 
+    },
+    "graphql": { 
+      "enabled": true, 
+      "path": "/graphql"
+    },
+    "cors": { 
+      "origins": ["*"], 
+      "allow-credentials": false 
+    },
+    "authentication": { 
+      "provider": "StaticWebApps" 
+    }
   },
   "entities": {
     "Tenant": {
       "source": "tenants",
-      "graphql": {
-        "type": { "singular": "Tenant", "plural": "Tenants" }
-      },
+      "graphql": { "type": { "singular": "Tenant", "plural": "Tenants" } },
       "primary-key": "id",
-      "relationships": {
-        "cell": { "target.entity": "Cell", "cardinality": "one", "linking.object": { "source.field": "cellId", "target.field": "id" } },
-        "operations": { "target.entity": "Operation", "cardinality": "many", "linking.object": { "source.field": "id", "target.field": "tenantId" } }
-      },
-      "permissions": [
-        { "role": "authenticated", "actions": [ "read" ] },
-        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
-      ]
+      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
     },
     "Cell": {
       "source": "cells",
       "graphql": { "type": { "singular": "Cell", "plural": "Cells" } },
       "primary-key": "id",
-      "permissions": [
-        { "role": "authenticated", "actions": [ "read" ] },
-        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
-      ]
+      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
     },
     "Operation": {
       "source": "operations",
       "graphql": { "type": { "singular": "Operation", "plural": "Operations" } },
       "primary-key": "id",
-      "permissions": [
-        { "role": "authenticated", "actions": [ "read" ] },
-        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
-      ]
-    },
-    "Catalog": {
-      "source": "catalogs",
-      "graphql": { "type": { "singular": "Catalog", "plural": "Catalogs" } },
-      "primary-key": "id",
-      "permissions": [
-        { "role": "authenticated", "actions": [ "read" ] },
-        { "role": "platform.admin", "actions": [ "read", "create", "update", "delete" ] }
-      ]
+      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
     }
   }
 }
