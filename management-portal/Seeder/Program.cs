@@ -17,16 +17,66 @@ var cells = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("c
 var ops = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("operations", "/tenantId"))).Container;
 var catalogs = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("catalogs", "/type"))).Container;
 
-await Upsert(tenants, new { id = "contoso", tenantId = "contoso", displayName = "Contoso", domain = "contoso.com", tier = "enterprise", status = "active", cellId = "cell-eastus-1" });
-await Upsert(tenants, new { id = "fabrikam", tenantId = "fabrikam", displayName = "Fabrikam", domain = "fabrikam.io", tier = "smb", status = "active", cellId = "cell-westus-1" });
+// Regions and 6 cells (3 per region)
+var regions = new[] { "eastus", "westus" };
+foreach (var region in regions)
+{
+    for (var i = 1; i <= 3; i++)
+    {
+        var cellId = $"cell-{region}-{i}";
+        await Upsert(cells, new
+        {
+            id = cellId,
+            cellId,
+            region,
+            availabilityZone = i.ToString(),
+            status = "healthy",
+            capacityUsed = 20 * i,
+            capacityTotal = 100
+        });
+    }
+}
 
-await Upsert(cells, new { id = "cell-eastus-1", cellId = "cell-eastus-1", region = "eastus", availabilityZone = "1", status = "healthy", capacityUsed = 60, capacityTotal = 100 });
-await Upsert(cells, new { id = "cell-westus-1", cellId = "cell-westus-1", region = "westus", availabilityZone = "2", status = "healthy", capacityUsed = 40, capacityTotal = 100 });
+// Tenants mapped to the cells
+var seedTenants = new[]
+{
+    new { id = "contoso", displayName = "Contoso", domain = "contoso.com", tier = "enterprise", status = "active", cellId = "cell-eastus-1" },
+    new { id = "fabrikam", displayName = "Fabrikam", domain = "fabrikam.io", tier = "smb", status = "active", cellId = "cell-westus-1" },
+    new { id = "adatum", displayName = "Adatum", domain = "adatum.com", tier = "startup", status = "active", cellId = "cell-eastus-2" },
+    new { id = "northwind", displayName = "Northwind", domain = "northwind.com", tier = "smb", status = "active", cellId = "cell-westus-2" },
+    new { id = "tailspin", displayName = "Tailspin", domain = "tailspin.io", tier = "enterprise", status = "active", cellId = "cell-eastus-3" },
+    new { id = "wingtip", displayName = "Wingtip", domain = "wingtip.com", tier = "startup", status = "active", cellId = "cell-westus-3" }
+};
 
-await Upsert(ops, new { id = "op-001", tenantId = "contoso", type = "migrate", status = "running", createdAt = DateTime.UtcNow });
-await Upsert(ops, new { id = "op-002", tenantId = "fabrikam", type = "suspend", status = "completed", createdAt = DateTime.UtcNow.AddDays(-1) });
+foreach (var t in seedTenants)
+{
+    await Upsert(tenants, new
+    {
+        id = t.id,
+        tenantId = t.id,
+        t.displayName,
+        t.domain,
+        t.tier,
+        t.status,
+        t.cellId
+    });
+}
 
-// Seed catalogs
+// Recent operations for a few tenants
+var now = DateTime.UtcNow;
+var seedOps = new[]
+{
+    new { id = "op-001", tenantId = "contoso", type = "migrate", status = "running", createdAt = now.AddMinutes(-30) },
+    new { id = "op-002", tenantId = "fabrikam", type = "suspend", status = "completed", createdAt = now.AddDays(-1) },
+    new { id = "op-003", tenantId = "adatum", type = "scaleout", status = "completed", createdAt = now.AddHours(-2) },
+    new { id = "op-004", tenantId = "northwind", type = "rebalance", status = "queued", createdAt = now }
+};
+foreach (var o in seedOps)
+{
+    await Upsert(ops, o);
+}
+
+// Catalogs
 await Upsert(catalogs, new { id = "tiers-v1", type = "tiers", values = new[] { "startup", "smb", "enterprise" } });
 
 Console.WriteLine("Seed complete.");
