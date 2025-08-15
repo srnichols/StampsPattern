@@ -1,15 +1,10 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
-$11.2.2 | **Latest Release:** [v1.2.1 - Documentation & Version MNote: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
-
-## 🧭 Quick Navigation
-
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
 ![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
 ![WAF Security](https://img.shields.io/badge/WAF%20Security-96%2F100-brightgreen)
-$11.2.2-blue)
 ![GitHub release](https://img.shields.io/github/v/release/srnichols/StampsPattern)
 ![GitHub issues](https://img.shields.io/github/issues/srnichols/StampsPattern)
 ![GitHub stars](https://img.shields.io/github/stars/srnichols/StampsPattern)
