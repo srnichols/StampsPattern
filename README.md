@@ -4,9 +4,6 @@ $11.2.2 | **Latest Release:** [v1.2.1 - Documentation & Version MNote: See [CAF/
 
 ## 🧭 Quick Navigation
 
-- [📚 Documentation Hub](./docs/DOCS.md)
-- [📄 Executive Brief (CIO)](./docs/one-pagers/executive-brief-cio.md)
-- [👩‍💻 Developer Quickstart](./docs/DEVELOPER_QUICKSTART.md)nt](./CHANGELOG.md#121---2025-08-14) | **[View Changelog](./CHANGELOG.md)**
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
