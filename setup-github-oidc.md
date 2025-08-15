@@ -6,7 +6,7 @@ The modern way to authenticate GitHub Actions with Azure uses OpenID Connect (OI
 
 Since Azure CLI isn't working on your machine, you can do this in the Azure Portal:
 
-1. Go to **Azure Portal** → **Azure Active Directory** → **App registrations**
+1. Go to **Azure Portal** → **Microsoft Entra ID** → **App registrations**
 2. Click **"New registration"**
 3. Name: `github-actions-stamps-pattern`
 4. Click **"Register"**
