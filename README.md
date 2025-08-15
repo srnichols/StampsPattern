@@ -305,7 +305,7 @@ We welcome contributions! Please see our contribution guidelines:
 
 Thanks to all the amazing people who have contributed to this project. Want to help? See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-, View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab">https://github.com/srnichols/StampsPattern/graphs/contributors</a>&nbsp;<sup>↗</sup>
+View the full list: <a href="https://github.com/srnichols/StampsPattern/graphs/contributors" target="_blank" rel="noopener" title="Opens in a new tab">https://github.com/srnichols/StampsPattern/graphs/contributors</a>&nbsp;<sup>↗</sup>
 
 ---
 
