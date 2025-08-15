@@ -13,13 +13,13 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
     private HttpClient Client => _httpClientFactory.CreateClient("GraphQL");
 
     public async Task<IReadOnlyList<Tenant>> GetTenantsAsync(CancellationToken ct = default)
-        => await QueryAsync<Tenant>("query { Tenants { id displayName domain tier status cellId } }", "Tenants", ct);
+        => await QueryAsync<Tenant>("query { tenants { id displayName domain tier status cellId } }", "tenants", ct);
 
     public async Task<IReadOnlyList<Cell>> GetCellsAsync(CancellationToken ct = default)
-        => await QueryAsync<Cell>("query { Cells { id region availabilityZone status capacityUsed capacityTotal } }", "Cells", ct);
+        => await QueryAsync<Cell>("query { cells { id region availabilityZone status capacityUsed capacityTotal } }", "cells", ct);
 
     public async Task<IReadOnlyList<Operation>> GetOperationsAsync(CancellationToken ct = default)
-        => await QueryAsync<Operation>("query { Operations { id tenantId type status createdAt } }", "Operations", ct);
+        => await QueryAsync<Operation>("query { operations { id tenantId type status createdAt } }", "operations", ct);
 
     public async Task<Tenant> CreateTenantAsync(Tenant tenant, CancellationToken ct = default)
     {
@@ -119,6 +119,11 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
         res.EnsureSuccessStatusCode();
         using var stream = await res.Content.ReadAsStreamAsync(ct);
         using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+        // If GraphQL returned errors, surface them clearly
+        if (doc.RootElement.TryGetProperty("errors", out var errs) && errs.ValueKind == JsonValueKind.Array && errs.GetArrayLength() > 0)
+        {
+            throw new HttpRequestException($"GraphQL errors: {errs}");
+        }
         var data = doc.RootElement.GetProperty("data").GetProperty(rootField);
         var list = new List<T>();
         foreach (var el in data.EnumerateArray())
