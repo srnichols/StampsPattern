@@ -277,7 +277,7 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       ingress: {
         external: false
-        targetPort: 80
+  targetPort: 5000
         allowInsecure: false
         corsPolicy: {
           allowedOrigins: ['*']
