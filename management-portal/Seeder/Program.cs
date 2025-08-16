@@ -1,16 +1,53 @@
 using Microsoft.Azure.Cosmos;
+using Azure.Identity;
 using System.Net;
 
-var conn = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
-if (string.IsNullOrWhiteSpace(conn))
+// Prefer AAD auth: provide COSMOS_ACCOUNT_ENDPOINT (https://<account>.documents.azure.com/) and use DefaultAzureCredential.
+// Fallback to COSMOS_CONNECTION_STRING for local emulator/dev scenarios.
+var endpoint = Environment.GetEnvironmentVariable("COSMOS_ACCOUNT_ENDPOINT");
+var connectionString = Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
+
+CosmosClient client;
+try
 {
-    Console.Error.WriteLine("COSMOS_CONNECTION_STRING not set");
+    if (!string.IsNullOrWhiteSpace(endpoint))
+    {
+        var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
+        Console.WriteLine($"Using AAD auth for Cosmos account: {endpoint}");
+        if (!string.IsNullOrWhiteSpace(tenantId))
+        {
+            Console.WriteLine($"Requested tenant: {tenantId}");
+        }
+        // Use Azure CLI credential (tenant-scoped) first; fallback to DefaultAzureCredential without interactive
+        var credChain = new Azure.Core.TokenCredential[]
+        {
+            new Azure.Identity.AzureCliCredential(new Azure.Identity.AzureCliCredentialOptions { TenantId = tenantId }),
+            new DefaultAzureCredential(new DefaultAzureCredentialOptions{ TenantId = tenantId, ExcludeInteractiveBrowserCredential = true })
+        };
+        var credential = new Azure.Identity.ChainedTokenCredential(credChain);
+        client = new CosmosClient(endpoint, credential, new CosmosClientOptions
+        {
+            ConnectionMode = ConnectionMode.Direct
+        });
+    }
+    else if (!string.IsNullOrWhiteSpace(connectionString))
+    {
+        Console.WriteLine("Using connection string auth for Cosmos (dev/emulator)");
+        // Accept Cosmos Emulator self-signed cert in local dev.
+        ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
+        client = new CosmosClient(connectionString);
+    }
+    else
+    {
+        Console.Error.WriteLine("Neither COSMOS_ACCOUNT_ENDPOINT nor COSMOS_CONNECTION_STRING is set. Set COSMOS_ACCOUNT_ENDPOINT for AAD auth.");
+        return 1;
+    }
+}
+catch (Exception ex)
+{
+    Console.Error.WriteLine($"Failed to create CosmosClient: {ex.Message}");
     return 1;
 }
-
-// Accept Cosmos Emulator self-signed cert in local dev.
-ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
-var client = new CosmosClient(conn);
 var db = (await client.CreateDatabaseIfNotExistsAsync("stamps-control-plane")).Database;
 var tenants = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("tenants", "/tenantId"))).Container;
 var cells = (await db.CreateContainerIfNotExistsAsync(new ContainerProperties("cells", "/cellId"))).Container;
@@ -84,7 +121,25 @@ return 0;
 
 static async Task Upsert(Container container, dynamic item)
 {
-    // Determine PK based on known containers
-    string pk = item?.tenantId ?? item?.cellId ?? item?.type ?? item?.id;
-    await container.UpsertItemAsync(item, partitionKey: new PartitionKey(pk));
+    // Determine PK based on container name to avoid dynamic binder errors
+    string pk;
+    switch (container.Id)
+    {
+        case "tenants":
+            pk = (string)item.tenantId;
+            break;
+        case "cells":
+            pk = (string)item.cellId;
+            break;
+        case "operations":
+            pk = (string)item.tenantId;
+            break;
+        case "catalogs":
+            pk = (string)item.type;
+            break;
+        default:
+            pk = (string)item.id;
+            break;
+    }
+    await container.UpsertItemAsync(item, new PartitionKey(pk));
 }

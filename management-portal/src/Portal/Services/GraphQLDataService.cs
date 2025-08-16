@@ -173,7 +173,7 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
 
     public async Task ReleaseDomainAsync(string domain, CancellationToken ct = default)
     {
-    var mutation = @"mutation DeleteDomain($id: ID!) { deleteCatalog(id: $id, partitionKeyValue: ""domains"") }";
+    var mutation = "mutation DeleteDomain($id: ID!) { deleteCatalog(id: $id, partitionKeyValue: \"domains\") }";
         var variables = new { id = domain };
         await MutationAsync<object>(mutation, variables, "deleteCatalog", ct);
     }
