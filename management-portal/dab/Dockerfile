@@ -15,5 +15,5 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 # Expose the port
 EXPOSE 5000
 
-# Let the base image handle the startup
-ENTRYPOINT ["dotnet", "/App/Azure.DataApiBuilder.Service.dll", "--config", "dab-config.json"]
+# Start Data API Builder using the built-in entrypoint
+ENTRYPOINT ["dab", "start", "--host", "0.0.0.0", "--config", "/App/dab-config.json"]
