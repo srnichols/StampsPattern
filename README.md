@@ -34,8 +34,8 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 
 If you want the short, executive view or the deep technical analysis up front, these two documents are excellent starting points:
 
-- 💼 Executive Brief for CIOs & Business Leaders: [docs/one-pagers/executive-brief-cio.md](./docs/one-pagers/executive-brief-cio.md) — 10-minute brief that explains the business case, KPIs, phased adoption plan, and unit economics for the Stamps approach.
-- 🧠 Concept Whitepaper: [docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md](./docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md) — an in-depth analysis covering design principles, data strategy, HA/DR modes, and trade-offs for teams planning architecture or large-scale adoption.
+- 💼 Executive Brief for CIOs & Business Leaders: <a href="./docs/one-pagers/executive-brief-cio.md" target="_blank" rel="noopener" title="Opens in a new tab">Executive Brief (CIO)</a>&nbsp;<sup>↗</sup> — 10-minute brief that explains the business case, KPIs, phased adoption plan, and unit economics for the Stamps approach.
+- 🧠 Concept Whitepaper: <a href="./docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md" target="_blank" rel="noopener" title="Opens in a new tab">Concept Whitepaper</a>&nbsp;<sup>↗</sup> — an in-depth analysis covering design principles, data strategy, HA/DR modes, and trade-offs for teams planning architecture or large-scale adoption.
 
 Tip: Skim the Executive Brief for stakeholder alignment, then read the Concept Whitepaper to inform design choices and SLO/cost tradeoffs.
 
