@@ -82,7 +82,7 @@ flowchart LR
     ### **Phase 2: Technical Deep Dive (60-90 minutes)**
     5. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - System design with visual diagrams *(30 minutes)*
     6. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step implementation *(45 minutes)*
-    7. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Template customization *(15 minutes)*
+  7. **📋 <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">PARAMETERIZATION_GUIDE.md</a>** - Template customization *(15 minutes)*
     8. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
     9. **🏢 [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)** - Map Stamps to Azure Landing Zones *(20 minutes)*
 

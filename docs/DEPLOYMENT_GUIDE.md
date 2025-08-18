@@ -295,7 +295,7 @@ pwsh --version
 
 ### 🔧 **Template Customization**
 
-For deployments using custom domains, organization names, or multi-geography requirements, first review the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
+For deployments using custom domains, organization names, or multi-geography requirements, first review the <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">📋 Parameterization Guide</a>&nbsp;<sup>↗</sup> for template customization options.
 
 ### 🌐 Domain naming (test vs. production)
 
@@ -1220,7 +1220,7 @@ References:
 
 - Management Portal User Guide: Operational patterns and data model (./MANAGEMENT_PORTAL_USER_GUIDE.md)
 - Security Baseline: Zero‑trust, identity, and network controls (./SECURITY_GUIDE.md)
-- Parameterization: Organization/geography/DNS inputs (./PARAMETERIZATION_GUIDE.md)
+- Parameterization: Organization/geography/DNS inputs (<a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">PARAMETERIZATION_GUIDE.md</a>)
 
 ## 🛠️ Troubleshooting Common Issues
 
