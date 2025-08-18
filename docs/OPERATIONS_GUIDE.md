@@ -27,20 +27,6 @@ Operational runbook for the Azure Stamps Pattern - Architecture (ASPA), AI-drive
 | [📊 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
 | [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
 
-### 🔗 **Key Subsections You Can Jump To:**
-
-- 🎛️ AI-Driven Operational Maturity
-- 📊 Key Performance Indicators (KPIs)
-- 🚨 Alert Configuration  
-- 📈 Flexible Tenant Management Operations
-- 🔧 Tenant Onboarding Automation
-- 📊 Custom Dashboards
-- 🔄 Routine Maintenance Tasks
-- 📋 Incident Classification
-- 🔧 Incident Response Playbooks
-- 📊 Growth Projections
-- 🎯 Scaling Triggers
-
 ---
 
 ## 📚 For Newcomers to Azure Stamps Pattern Operations
