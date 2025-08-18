@@ -116,7 +116,7 @@ https://login.microsoftonline.com/30dd575a-bca7-491b-adf6-41d5f39275d4/v2.0/.wel
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

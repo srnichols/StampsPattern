@@ -19,9 +19,9 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
 | [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | All readers |
-| [�️ Flexible Tenancy Models](#-flexible-tenancy-models) | Shared vs dedicated CELLs | Architects, IT Leaders |
+| [🏠️ Flexible Tenancy Models](#-flexible-tenancy-models) | Shared vs dedicated CELLs | Architects, IT Leaders |
 | [🔄 Availability Zone Architecture](#-availability-zone-architecture) | Zone resilience and HA/DR | Architects, DevOps |
-| [�🏛 Architecture Layers](#-architecture-layers) | Component breakdown | Architects, Devs |
+| [🏛🏛 Architecture Layers](#-architecture-layers) | Component breakdown | Architects, Devs |
 | [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | DevOps, Network |
 | [🏗️ Deployment Architecture](#-deployment-architecture) | Template orchestration | DevOps |
 | [🔒 Security Architecture](#-security-architecture) | Multi-layer security | Security Teams |
@@ -853,7 +853,7 @@ az deployment group create \
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

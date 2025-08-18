@@ -27,7 +27,7 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 | [🏠 Tenancy Models](#-tenancy-models) | Multi-tenancy, assignment | Architects, DevOps |
 | [🔒 Security Terms](#-security-terms) | Security, identity, endpoints | Security, DevOps |
 | [⚡ Performance & Scaling](#-performance--scaling-terms) | Caching, scaling, load balancing | DevOps |
-| [� Data & Storage](#-data--storage-terms) | Cosmos DB, partitioning, TTL | Architects, Devs |
+| [📚 Data & Storage](#-data--storage-terms) | Cosmos DB, partitioning, TTL | Architects, Devs |
 | [🌐 Networking & Routing](#-networking--routing-terms) | Global vs regional routing, private connectivity | Architects, DevOps |
 | [🔗 Integration & Messaging](#-integration--messaging-terms) | Queues and messaging patterns | Devs, DevOps |
 | [🛠️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
@@ -511,30 +511,10 @@ README → ARCHITECTURE → DEPLOYMENT → SECURITY → OPERATIONS → KNOWN_ISS
 - **Technical Issues**: Check [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) troubleshooting guide
 - **Architecture Understanding**: Review [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
 
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 01:02:00 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-> Authoring tip: When code examples contain comments, use `jsonc` code fences. For diagrams, prefer the standard Mermaid template in `docs/mermaid-template.md`.
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 01:03:41 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

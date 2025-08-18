@@ -1104,7 +1104,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload, supporting both enterprise and cost-sensitive scenarios.
 
 
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:25:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11
@@ -1114,7 +1114,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

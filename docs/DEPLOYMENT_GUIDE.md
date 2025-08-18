@@ -1380,7 +1380,7 @@ Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and val
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

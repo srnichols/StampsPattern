@@ -24,7 +24,7 @@ Operational runbook for the Azure Stamps Pattern - Architecture (ASPA), AI-drive
 | [📈 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | Ops, DevOps |
 | [🚨 Incident Response](#-incident-response) | Emergency procedures | Ops, SRE |
 | [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | Ops, DevOps |
-| [� For Newcomers](#-for-newcomers-to-azure-stamps-pattern-operations) | Getting started | New ops teams |
+| [📘 For Newcomers](#-for-newcomers-to-azure-stamps-pattern-operations) | Getting started | New ops teams |
 | [📚 Related Guides](#-related-guides) | More docs | All readers |
 
 ### 🔗 **Key Subsections (Detailed Navigation):**
@@ -1240,7 +1240,7 @@ If you'd like, I can also:
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

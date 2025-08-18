@@ -421,34 +421,10 @@ Known limitations:
 - [Security Guide](./SECURITY_GUIDE.md)
 - [Production SaaS Checklist, One‑Pager](./one-pagers/production-saas-checklist.md)
 
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 00:55:39 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-- **Version**: 
-- **Last Updated**: 2025-08-18 00:58:22 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 00:58:44 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

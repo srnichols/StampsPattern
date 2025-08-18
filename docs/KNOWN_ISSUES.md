@@ -898,34 +898,10 @@ If you encounter issues not covered here:
 
 **🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to report issues, suggest improvements, or contribute fixes.
 
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 00:55:39 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-- **Version**: 
-- **Last Updated**: 2025-08-18 00:58:22 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 00:58:44 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

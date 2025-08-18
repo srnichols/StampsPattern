@@ -464,18 +464,15 @@ _logger.LogInformation("Cache {CacheResult} for tenant {TenantId}",
 - [Operations Guide](./OPERATIONS_GUIDE.md) - Production operations
 
 
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:08:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11
 
 ---
 
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
-
 **📝 Document Version Information**
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11
