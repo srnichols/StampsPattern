@@ -66,6 +66,7 @@ The objective is executive clarity: understand what you get, what it costs, and 
 - Compliance Posture: [CAF/WAF Analysis](../CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - Operations Excellence: [Operations Guide](../OPERATIONS_GUIDE.md)
 - Cost Models: [Cost Optimization](../COST_OPTIMIZATION_GUIDE.md)
+- Parameterization: <a href="../PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">Parameterization Guide</a>&nbsp;<sup>↗</sup>
 
 ---
-Prepared for executive stakeholders evaluating strategic platform investments.  
+Prepared for executive stakeholders evaluating strategic platform investments.

@@ -236,4 +236,6 @@ The Azure Stamps Pattern offers a robust, cell-inspired framework for scaling Sa
 
 For more details, refer to the original GitHub repository: [Azure Stamps Pattern](https://github.com/srnichols/StampsPattern).
 
+Related docs: <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">Parameterization Guide</a>&nbsp;<sup>↗</sup>
+
 *Author: Scott Nichols | Date: August 09, 2025*

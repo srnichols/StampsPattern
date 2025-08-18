@@ -26,7 +26,7 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 - **Economic Flexibility**: Mixed tenancy models support growth from startup to enterprise scale with seamless migration paths and tier-based pricing ([Architecture Guide](./docs/ARCHITECTURE_GUIDE.md))
 - **Global Resilience**: Multi-region, multi-zone deployment with automated failover and disaster recovery ensures 99.99%+ availability ([AZ Architecture](./docs/ARCHITECTURE_GUIDE.md#availability-zone-architecture))
 - **Cloud Capacity Management**: Modular design enables rapid deployment in alternative locations when regions reach capacity, ensuring business continuity despite cloud supply constraints
-- **Developer Velocity**: Parameterized templates, comprehensive documentation, and CI/CD integration accelerate time-to-market by 60-80% ([Parameterization Guide](./docs/PARAMETERIZATION_GUIDE.md))
+- **Developer Velocity**: Parameterized templates, comprehensive documentation, and CI/CD integration accelerate time-to-market by 60-80% <a href="./docs/PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">Parameterization Guide</a>&nbsp;<sup>↗</sup>
 
 **Perfect for organizations building mission-critical SaaS platforms** in healthcare (patient data isolation), financial services (regulatory compliance), government (data sovereignty), or any industry where security, compliance, and scalability are non-negotiable. The pattern provides a proven foundation to accelerate your SaaS journey, reduce architectural risk, and deliver measurable business value from day one.
 
@@ -212,7 +212,7 @@ This solution is designed for:
 - ✅ PowerShell 7+ (for enhanced deployment script)
 - ✅ Azure subscription with **Contributor** access
 
-**🔧 Multi-Organization Support**: For custom domains and organization-specific deployments, see the [📋 Parameterization Guide](./docs/PARAMETERIZATION_GUIDE.md) for template customization options.
+**🔧 Multi-Organization Support**: For custom domains and organization-specific deployments, see the <a href="./docs/PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">📋 Parameterization Guide</a>&nbsp;<sup>↗</sup> for template customization options.
 
 ### 🎯 Choose Your Tenancy Model
 
