@@ -27,20 +27,20 @@ Practical blueprint for designing the CELL data plane, HA/DR tiers, replication 
 
 ## 🧭 Quick Navigation
 
-| Section | Focus Area | Time to Read | Best for |
-|---------|------------|--------------|----------|
-| [🎯 Data Strategy Overview](#-data-strategy-overview) | What we solve and key decisions | 5 min | All readers |
-| [🧪 Technology Scope & Defaults](#-technology-scope--defaults) | Supported data services and defaults | 6 min | Architects |
-| [🏷️ Tiers & SLO Targets](#️-tiers--slo-targets) | Bronze/Silver/Gold/Platinum | 10 min | Architects |
-| [🏛 Topology Patterns](#-topology-patterns) | Zones, paired cells, A/A vs A/W | 10 min | Architects, DevOps |
-| [🧩 Service Recipes](#-service-recipes) | Cosmos, SQL, Postgres, Storage | 15 min | Engineers |
-| [🧭 Tenant Routing](#-tenant-routing) | Home region and write leadership | 10 min | Architects |
-| [🧱 Data Sharding & Shaping](#-data-sharding--shaping) | Shard keys, partitioning, isolation | 10 min | Architects |
-| [🧱 IaC Toggles](#-iac-toggles) | Bicep parameters and wiring | 10 min | Engineers |
-| [🛠️ Runbooks](#️-runbooks) | Planned/unplanned failover/failback | 10 min | Operations |
-| [🧪 Testing & Drills](#-testing--drills) | RPO/RTO validation and PITR | 10 min | SRE |
-| [📈 Observability](#-observability) | Metrics, logs, and alerts | 10 min | SRE |
-| [🛡️ Compliance & Governance](#️-compliance--governance) | Residency, encryption, access | 10 min | Compliance |
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🎯 Data Strategy Overview](#-data-strategy-overview) | What we solve and key decisions | All readers |
+| [🧪 Technology Scope & Defaults](#-technology-scope--defaults) | Supported data services and defaults | Architects |
+| [🏷️ Tiers & SLO Targets](#️-tiers--slo-targets) | Bronze/Silver/Gold/Platinum | Architects |
+| [🏛 Topology Patterns](#-topology-patterns) | Zones, paired cells, A/A vs A/W | Architects, DevOps |
+| [🧩 Service Recipes](#-service-recipes) | Cosmos, SQL, Postgres, Storage | Engineers |
+| [🧭 Tenant Routing](#-tenant-routing) | Home region and write leadership | Architects |
+| [🧱 Data Sharding & Shaping](#-data-sharding--shaping) | Shard keys, partitioning, isolation | Architects |
+| [🧱 IaC Toggles](#-iac-toggles) | Bicep parameters and wiring | Engineers |
+| [🛠️ Runbooks](#️-runbooks) | Planned/unplanned failover/failback | Operations |
+| [🧪 Testing & Drills](#-testing--drills) | RPO/RTO validation and PITR | SRE |
+| [📈 Observability](#-observability) | Metrics, logs, and alerts | SRE |
+| [🛡️ Compliance & Governance](#️-compliance--governance) | Residency, encryption, access | Compliance |
 | [💰 Cost Considerations](#-cost-considerations) | Cost drivers and trade-offs | 5 min | IT Leaders |
 
 ---

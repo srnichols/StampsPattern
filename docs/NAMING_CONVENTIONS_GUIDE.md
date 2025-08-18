@@ -20,18 +20,18 @@ Standard naming for the Azure Stamps Pattern, patterns per resource type, region
 
 ## 🧭 Quick Navigation
 
-| Section | Focus Area | Time to Read | Best for |
-|---------|------------|--------------|----------|
-| 🎯 Overview | Why naming conventions matter | 3 min | All readers |
-| 🌍 Resource Group Naming | Patterns and examples | 5 min | DevOps, Architects |
-| 🗺️ Region Abbreviations | Standard short names | 3 min | DevOps |
-| 🏗️ Resource Naming Patterns | Compute, data, network, security | 10 min | DevOps, Architects |
-| 🌀 Zone-Aware Naming | When/why to include zones | 5 min | DevOps |
-| 🏷️ Tagging Strategy | Required/optional tags | 5 min | IT Leaders |
-| 📝 Implementation Guidelines | Template/script helpers | 10 min | DevOps |
-| ✅ Validation Rules | Naming checks | 5 min | DevOps |
-| 🔧 Migration Guidelines | Adopting new names | 5 min | Operations |
-| 📚 References | More docs | 2 min | All readers |
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🎯 Overview](#-overview) | Why naming conventions matter | All readers |
+| [🌍 Resource Group Naming](#-resource-group-naming) | Patterns and examples | DevOps, Architects |
+| [🗺️ Region Abbreviations](#-region-abbreviations) | Standard short names | DevOps |
+| [🏗️ Resource Naming Patterns](#-resource-naming-patterns) | Compute, data, network, security | DevOps, Architects |
+| [🌀 Zone-Aware Naming](#-zone-aware-naming) | When/why to include zones | DevOps |
+| [🏷️ Tagging Strategy](#-tagging-strategy) | Required/optional tags | IT Leaders |
+| [📝 Implementation Guidelines](#-implementation-guidelines) | Template/script helpers | DevOps |
+| [✅ Validation Rules](#-validation-rules) | Naming checks | DevOps |
+| [🔧 Migration Guidelines](#-migration-guidelines) | Adopting new names | Operations |
+| [📚 References](#-references) | More docs | All readers |
 
 ---
 

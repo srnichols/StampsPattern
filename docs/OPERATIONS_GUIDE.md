@@ -18,14 +18,14 @@ Operational runbook for the Azure Stamps Pattern - Architecture (ASPA), AI-drive
 
 ## 🧭 Quick Navigation
 
-| Section | Focus Area | Time to Read | Best for |
-|---------|------------|--------------|----------|
-| [🎯 Environment profiles and diagnostics](#-environment-profiles-and-diagnostics-ops-quick-start) | What operations covers | 5 min | All readers |
-| [📈 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | 15 min | Ops, DevOps |
-| [🚨 Incident Response](#-incident-response) | Emergency procedures | 10 min | Ops, SRE |
-| [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | 10 min | Ops, DevOps |
-| [📊 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | 10 min | Ops, IT Leaders |
-| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🎯 Environment profiles and diagnostics](#-environment-profiles-and-diagnostics-ops-quick-start) | What operations covers | All readers |
+| [📈 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | Ops, DevOps |
+| [🚨 Incident Response](#-incident-response) | Emergency procedures | Ops, SRE |
+| [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | Ops, DevOps |
+| [📊 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | Ops, IT Leaders |
+| [📚 Related Guides](#-related-guides) | More docs | All readers |
 
 ### 🔗 **Key Subsections (Detailed Navigation):**
 

@@ -82,20 +82,20 @@ Notes:
 
 ## 🧭 Quick Navigation
 
-| Section | Focus Area | Time to Read | Best for |
-|---------|------------|--------------|----------|
-| [🎯 Deployment Overview](#-deployment-overview-for-new-users) | What you're building | 5 min | All readers |
-| [🏗️ Architecture Patterns](./DEPLOYMENT_ARCHITECTURE_GUIDE.md) | Single vs Multi-subscription | 10 min | Architects, DevOps |
-| [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | 10 min | Architects, DevOps |
-| [⚡ Deployment Options](#-enhanced-deployment-options) | Paths and automation | 10 min | DevOps, IT Leaders |
-| [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | 10 min | All readers |
-| [🧪 Run locally (Functions + Emulator)](#-run-locally-functions--emulator) | Local dev/test | 5 min | Devs |
-| [🔧 Manual/Legacy Deployment](#-manuallegacy-deployment-options) | Manual/legacy steps | 10 min | DevOps |
-| [🚪 Enterprise API Management](#-enterprise-api-management-deployment) | APIM deployment | 10 min | Security, DevOps |
-| [🧪 Post-Deployment Validation](#-post-deployment-validation) | Testing, health checks | 10 min | DevOps |
-| [🛠️ Troubleshooting](#-troubleshooting-common-issues) | Common issues | 5 min | All readers |
-| [🔄 Updating Deployments](#-updating-existing-deployments) | Add/expand/cleanup | 5 min | DevOps |
-| [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🎯 Deployment Overview](#-deployment-overview-for-new-users) | What you're building | All readers |
+| [🏗️ Architecture Patterns](./DEPLOYMENT_ARCHITECTURE_GUIDE.md) | Single vs Multi-subscription | Architects, DevOps |
+| [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | Architects, DevOps |
+| [⚡ Deployment Options](#-enhanced-deployment-options) | Paths and automation | DevOps, IT Leaders |
+| [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | All readers |
+| [🧪 Run locally (Functions + Emulator)](#-run-locally-functions--emulator) | Local dev/test | Devs |
+| [🔧 Manual/Legacy Deployment](#-manuallegacy-deployment-options) | Manual/legacy steps | DevOps |
+| [🚪 Enterprise API Management](#-enterprise-api-management-deployment) | APIM deployment | Security, DevOps |
+| [🧪 Post-Deployment Validation](#-post-deployment-validation) | Testing, health checks | DevOps |
+| [🛠️ Troubleshooting](#-troubleshooting-common-issues) | Common issues | All readers |
+| [🔄 Updating Deployments](#-updating-existing-deployments) | Add/expand/cleanup | DevOps |
+| [📚 Related Guides](#-related-guides) | More docs | All readers |
 
 ---
 

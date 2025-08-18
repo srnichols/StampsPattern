@@ -16,14 +16,14 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 
 ## 🧭 Quick Navigation
 
-| Section | Focus Area | Time to Read | Best for |
-|---------|------------|--------------|----------|
-| [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
-| [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | 15 min | Architects, Devs |
-| [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | 10 min | DevOps, Network |
-| [🔒 Security Architecture](#-security-architecture) | Multi-layer security | 15 min | Security Teams |
-| [📊 Monitoring & Observability](#-monitoring--observability) | Observability strategy | 10 min | Operations |
-| [🌱 Scaling Strategies](#-scaling-strategies) | Growth/expansion | 5 min | IT Leaders |
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | All readers |
+| [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | Architects, Devs |
+| [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | DevOps, Network |
+| [🔒 Security Architecture](#-security-architecture) | Multi-layer security | Security Teams |
+| [📊 Monitoring & Observability](#-monitoring--observability) | Observability strategy | Operations |
+| [🌱 Scaling Strategies](#-scaling-strategies) | Growth/expansion | IT Leaders |
 
 ---
 

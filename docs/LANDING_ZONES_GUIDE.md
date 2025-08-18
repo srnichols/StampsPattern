@@ -18,17 +18,17 @@ Practical guide to placing Azure Stamps Pattern components within Azure Landing 
 
 ## 🧭 Quick Navigation
 
-| Section | Focus Area | Time to Read | Best for |
-|---------|------------|--------------|----------|
-| [🗂️ MGs & Subscriptions](#-management-groups-and-subscriptions) | CAF hierarchy and scope | 7 min | Platform, Architects |
-| [🧩 Component Mapping](#-component-to-landing-zone-mapping) | Where each piece belongs | 10 min | Architects, DevOps |
-| [🛡️ Governance & Policy](#-governance--policy) | Initiatives, diagnostics, guardrails | 8 min | Platform, Security |
-| [🌐 Networking & Connectivity](#-networking--connectivity) | Hub/spoke, private DNS, vWAN | 7 min | Network, DevOps |
-| [🔐 Identity & Access](#-identity--access) | RBAC, PIM, managed identities | 5 min | Security, Platform |
-| [📈 Monitoring & Security](#-monitoring--security) | LAW, Defender, Sentinel | 6 min | Ops, Security |
-| [🚀 CI/CD & Environments](#-cicd--environments) | Pipelines and scopes | 5 min | DevOps |
-| [🏗️ IaC Structure & Parameters](#-iac-structure--parameters) | Scoping modules and params | 6 min | DevOps |
-| [🏷️ Tags, Cost, and Quotas](#-tags-cost-and-quotas) | Standards and limits | 5 min | IT Leaders |
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [🗂️ MGs & Subscriptions](#-management-groups-and-subscriptions) | CAF hierarchy and scope | Platform, Architects |
+| [🧩 Component Mapping](#-component-to-landing-zone-mapping) | Where each piece belongs | Architects, DevOps |
+| [🛡️ Governance & Policy](#-governance--policy) | Initiatives, diagnostics, guardrails | Platform, Security |
+| [🌐 Networking & Connectivity](#-networking--connectivity) | Hub/spoke, private DNS, vWAN | Network, DevOps |
+| [🔐 Identity & Access](#-identity--access) | RBAC, PIM, managed identities | Security, Platform |
+| [📈 Monitoring & Security](#-monitoring--security) | LAW, Defender, Sentinel | Ops, Security |
+| [🚀 CI/CD & Environments](#-cicd--environments) | Pipelines and scopes | DevOps |
+| [🏗️ IaC Structure & Parameters](#-iac-structure--parameters) | Scoping modules and params | DevOps |
+| [🏷️ Tags, Cost, and Quotas](#-tags-cost-and-quotas) | Standards and limits | IT Leaders |
 
 Last updated: August 2025
 
