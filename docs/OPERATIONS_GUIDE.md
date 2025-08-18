@@ -986,241 +986,225 @@ echo "✅ CELL $CELL_NAME successfully isolated"
 
 ---
 
-### 🏗️ **DR Architecture**
+## 🚑 Incident Playbooks (step-by-step)
 
-```
-Primary Region (East US)
-├─ 🏠 CELL-Banking-Primary
-├─ 🏠 CELL-Retail-Primary  
-└─ 🏠 CELL-Healthcare-Primary
+This section consolidates concise, runnable playbooks for common incidents (Portal→DAB connectivity, DAB startup, and AAD/auth). They are direct conversions of the troubleshooting playbooks so operators can run them from a PowerShell console with Azure CLI available.
 
-DR Region (West US)
-├─ 🏠 CELL-Banking-DR (Standby)
-├─ 🏠 CELL-Retail-DR (Standby)
-└─ 🏠 CELL-Healthcare-DR (Standby)
-```
+### 1) Portal → DAB connectivity (playbook)
 
-### 📋 **DR Procedures**
+Goal: confirm the portal can reach DAB GraphQL and diagnose where the failure sits (config, DNS, network, auth, or DAB itself).
 
-#### Automated Failover:
-```bash
-#!/bin/bash
-# Automated disaster recovery failover
+Checklist:
+- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct
+- [ ] Confirm DAB Container App revision is healthy
+- [ ] Tail DAB logs for GraphQL errors
+- [ ] Run an introspection query against DAB
 
-PRIMARY_REGION="eastus"
-DR_REGION="westus"
-RESOURCE_GROUP="rg-stamps-production"
+Step-by-step
 
-echo "🚨 Initiating disaster recovery failover"
+1) Inspect portal configuration (secret env var)
 
-# 1. Health check on primary region
-echo "🔍 Checking primary region health..."
-PRIMARY_HEALTH=$(az network traffic-manager endpoint show \
-    --name primary-endpoint \
-    --profile-name tm-stamps \
-    --resource-group $RESOURCE_GROUP \
-    --query endpointMonitorStatus -o tsv)
+```powershell
+# Show env used by the portal container (replace RG and name)
+az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --query "properties.template.containers[0].env" -o table
 
-if [ "$PRIMARY_HEALTH" == "Online" ]; then
-    echo "⚠️ Primary region appears healthy - confirm manual failover"
-    read -p "Force failover? (y/N): " confirm
-    if [ "$confirm" != "y" ]; then
-        exit 0
-    fi
-fi
-
-# 2. Activate DR region
-echo "⚡ Activating DR region..."
-
-# Update Traffic Manager to prioritize DR region
-az network traffic-manager endpoint update \
-    --name dr-endpoint \
-    --profile-name tm-stamps \
-    --resource-group $RESOURCE_GROUP \
-    --endpoint-status Enabled \
-    --priority 1
-
-az network traffic-manager endpoint update \
-    --name primary-endpoint \
-    --profile-name tm-stamps \
-    --resource-group $RESOURCE_GROUP \
-    --priority 2
-
-# 3. Scale up DR region resources
-echo "📈 Scaling up DR region..."
-az containerapp update \
-    --name app-stamps-dr \
-    --resource-group $RESOURCE_GROUP \
-    --min-replicas 3 \
-    --max-replicas 10
-
-# 4. Update DNS TTL for faster propagation
-echo "🌐 Updating DNS settings..."
-az network traffic-manager profile update \
-    --name tm-stamps \
-    --resource-group $RESOURCE_GROUP \
-    --ttl 60
-
-# 5. Notification
-echo "📢 Sending failover notification..."
-curl -X POST "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK" \
-    -H "Content-Type: application/json" \
-    -d '{
-        "text": "🚨 DISASTER RECOVERY: Failover to West US region completed",
-        "username": "Azure Stamps Bot",
-        "channel": "#operations"
-    }'
-
-echo "✅ Disaster recovery failover completed"
+# If using secrets, list them (names only)
+az containerapp secret list --name ca-stamps-portal --resource-group rg-stamps-mgmt -o table
 ```
 
-#### Data Recovery:
-```bash
-#!/bin/bash
-# Data recovery procedures
+2) Check the `DAB_GRAPHQL_URL` value and try a raw HTTP POST from your workstation
 
-BACKUP_DATE=$1
-TARGET_CELL=$2
+```powershell
+$dab = 'https://<dab-ingress-fqdn>/graphql'
+$body = '{"query":"{ __schema { types { name } } }"}'
 
-if [ -z "$BACKUP_DATE" ] || [ -z "$TARGET_CELL" ]; then
-    echo "Usage: $0 <backup-date> <target-cell>"
-    echo "Example: $0 2024-01-15 cell-banking"
-    exit 1
-fi
+# Simple POST (PowerShell Invoke-RestMethod):
+Invoke-RestMethod -Method POST -Uri $dab -Body $body -ContentType 'application/json' -ErrorAction Stop
 
-echo "💾 Starting data recovery for $TARGET_CELL from $BACKUP_DATE"
-
-# 1. SQL Database point-in-time restore
-echo "🗄️ Restoring SQL Database..."
-az sql db restore \
-    --dest-name sql-$TARGET_CELL-restored \
-    --dest-server sql-stamps-dr \
-    --resource-group rg-stamps-dr \
-    --name sql-$TARGET_CELL \
-    --time $BACKUP_DATE
-
-# 2. Storage account blob restore
-echo "💾 Restoring blob storage..."
-az storage blob restore \
-    --account-name st${TARGET_CELL}dr \
-    --resource-group rg-stamps-dr \
-    --time-to-restore $BACKUP_DATE \
-    --blob-range container1/backup-*
-
-# 3. Cosmos DB point-in-time restore
-echo "🌌 Restoring Cosmos DB..."
-az cosmosdb sql database restore \
-    --account-name cosmos-$TARGET_CELL-dr \
-    --database-name $TARGET_CELL-db \
-    --resource-group rg-stamps-dr \
-    --restore-timestamp $BACKUP_DATE
-
-echo "✅ Data recovery completed for $TARGET_CELL"
+# If Portal uses Key Vault/managed identity to fetch the URL, ensure Portal can read the secret (see AAD section below)
 ```
 
+3) Inspect Container App and revision status for DAB
+
+```powershell
+az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
+az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress -o json
+
+# Tail logs (container name in the DAB image is usually 'dab')
+az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 300
+```
+
+4) If you get 401/403 from the portal when it calls DAB
+
+```powershell
+# Check Portal principal/secret access: ensure portal has KeyVault Get or the secret is present as a Container App secret
+az keyvault secret show --vault-name <kv-name> --name DAB_GRAPHQL_URL
+
+# If Portal relies on managed identity to fetch an endpoint, ensure the identity is assigned and has appropriate Key Vault or role assignments
+az containerapp show --name ca-stamps-portal -g rg-stamps-mgmt --query properties.identity
+```
+
+5) If DAB responds but GraphQL errors appear, run an introspection or specific query to see schema/status
+
+```powershell
+Invoke-RestMethod -Method POST -Uri $dab -Body '{"query":"{ __schema { queryType { name } } }"}' -ContentType 'application/json'
+```
+
+If the above shows schema, the portal should be able to fetch data; if not, continue with the DAB startup playbook below.
 
 ---
 
----
+### 2) DAB container startup (playbook)
 
-## 📊 Performance & Scaling (Capacity Planning)
+Goal: diagnose container start failures, image pull problems, missing config files, or permission errors.
 
-### 📊 **Growth Projections**
+Checklist:
+- [ ] Confirm image exists in ACR
+- [ ] Confirm managed identity has AcrPull on ACR
+- [ ] Tail container logs for startup exceptions
+- [ ] Confirm /App/dab-config.json is present or mapped
 
-#### CELL Scaling Matrix:
-```json
-{
-  "capacityPlanning": {
-    "currentBaseline": {
-      "cellCount": 6,
-      "regionsActive": 2,
-      "avgRequestsPerSecond": 1000,
-      "avgDataVolumeGB": 500
-    },
-    "projections": {
-      "6months": {
-        "cellCount": 10,
-        "regionsActive": 3,
-        "avgRequestsPerSecond": 2500,
-        "avgDataVolumeGB": 1250,
-        "resourceAdjustments": [
-          "Upgrade SQL databases to Premium tier",
-          "Add Front Door Premium features",
-          "Implement Azure Cache for Redis"
-        ]
-      },
-      "12months": {
-        "cellCount": 20,
-        "regionsActive": 4,
-        "avgRequestsPerSecond": 5000,
-        "avgDataVolumeGB": 2500,
-        "resourceAdjustments": [
-          "Deploy dedicated ExpressRoute",
-          "Implement Cosmos DB multi-master",
-          "Add Azure Application Gateway V2"
-        ]
-      }
-    }
-  }
-}
+Step-by-step
+
+1) Check container app revision state and recent events
+
+```powershell
+az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mgmt --output table
+az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers -o json
 ```
 
-### 🎯 **Scaling Triggers**
+2) If the revision failed to pull the image, validate ACR and managed identity
 
-```bash
-#!/bin/bash
-# Automated scaling trigger script
+```powershell
+# Check image exists
+az acr repository show --name <acrName> --repository <repo> --output table
 
-RESOURCE_GROUP="rg-stamps-production"
-SCALE_THRESHOLD_CPU=80
-SCALE_THRESHOLD_MEMORY=85
-SCALE_THRESHOLD_REQUESTS=5000
+# Get ACR resource id
+$acrId = az acr show --name <acrName> --resource-group <acrRg> --query id -o tsv
 
-# Monitor key metrics
-CPU_USAGE=$(az monitor metrics list \
-    --resource $(az containerapp show --name app-stamps-cell1 --resource-group $RESOURCE_GROUP --query id -o tsv) \
-    --metric "CpuPercentage" \
-    --aggregation Average \
-    --interval PT5M \
-    --query "value[0].timeseries[0].data[-1].average" -o tsv)
+# Assign AcrPull to managed identity (use principalId from container app identity)
+az role assignment create --assignee <principalId-or-objectId> --role AcrPull --scope $acrId
 
-if (( $(echo "$CPU_USAGE > $SCALE_THRESHOLD_CPU" | bc -l) )); then
-    echo "🚀 Scaling up due to high CPU usage: $CPU_USAGE%"
-    
-    # Scale out Container Apps
-    az containerapp update \
-        --name app-stamps-cell1 \
-        --resource-group $RESOURCE_GROUP \
-        --min-replicas 5 \
-        --max-replicas 20
-        
-    # Upgrade SQL Database tier if needed
-    az sql db update \
-        --name sql-stamps-cell1 \
-        --server sql-stamps \
-        --resource-group $RESOURCE_GROUP \
-        --service-objective S2
-fi
+# After assigning role, restart the containerapp revision or create a new revision
+az containerapp revision restart --name ca-stamps-dab --resource-group rg-stamps-mgmt
+```
+
+3) Tail logs and inspect startup stacktraces
+
+```powershell
+az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 500
+
+# If logs show missing file errors, confirm the image contains /App/dab-config.json or that the containerapp mounts it via secret
+az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+```
+
+4) If config is missing, either rebuild the image to include the file or inject config via secret/file mount
+
+```powershell
+# Example: store dab-config.json as a secret (if small) and set env to secretref
+az containerapp secret set --name ca-stamps-dab --resource-group rg-stamps-mgmt --secrets dab-config='{"key":"value"}'
+
+# Update container app environment variables to reference secretref if code supports it
+az containerapp update --name ca-stamps-dab --resource-group rg-stamps-mgmt --set properties.template.containers[0].env[?name=='DAB_CONFIG'].value='secretref:dab-config'
+```
+
+5) If the container starts but GraphQL endpoints return 500s, inspect logs for unhandled exceptions and missing connection strings (Cosmos/KeyVault)
+
+```powershell
+# Check environment variables for missing values
+az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+
+# Verify Cosmos DB connection string or use managed identity; if using system/user assigned MI, check role assignment
+az role assignment list --assignee <principalId> --scope $(az cosmosdb show --name <cosmosName> --resource-group <rg> --query id -o tsv)
+```
+
+If you must rebuild the image, follow normal build/push flow and update the containerapp image to the new tag, then monitor logs.
+
+---
+
+### 3) AAD / Authentication (playbook)
+
+Goal: fix 401/403 issues coming from local dev or deployed services using DefaultAzureCredential or managed identities.
+
+Checklist:
+- [ ] Determine if call is from local dev or deployed resource
+- [ ] For local dev: verify `az login` or VS Code account
+- [ ] For deployed: confirm managed identity presence and role assignments
+
+Step-by-step
+
+1) Local dev troubleshooting
+
+```powershell
+# Verify CLI login
+az account show
+
+# Test token for resource (KeyVault/ACR/Cosmos)
+az account get-access-token --resource https://vault.azure.net
+
+# If using Visual Studio/VS Code credentials, ensure extension is signed in
+```
+
+2) Deployed resource troubleshooting (managed identity)
+
+```powershell
+# Show container app identity
+az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.identity -o json
+
+# If user-assigned, get principalId and verify role assignments
+az role assignment list --assignee <principalId> --scope $(az cosmosdb show --name <cosmosName> --resource-group <rg> --query id -o tsv)
+
+# Grant Cosmos DB Data Contributor role if missing (data plane role)
+az role assignment create --assignee <principalId> --role "Cosmos DB Built-in Data Contributor" --scope $(az cosmosdb show --name <cosmosName> --resource-group <rg> --query id -o tsv)
+
+# Grant AcrPull role for ACR pulls
+az role assignment create --assignee <principalId> --role AcrPull --scope $(az acr show --name <acrName> --resource-group <acrRg> --query id -o tsv)
+
+# Grant Key Vault access policy (if using access policies rather than role-based access)
+az keyvault set-policy --name <kvName> --object-id <principalId> --secret-permissions get list
+```
+
+3) If token audience/scopes appear incorrect
+
+```powershell
+# Capture a token and inspect it on jwt.ms or decode locally
+$tok = az account get-access-token --resource https://management.azure.com
+Write-Output $tok.accessToken.Substring(0,200) # do not paste full tokens in public logs
+
+# Use jwt.ms to inspect aud/roles/scopes
+```
+
+4) Wait for role propagation and retry (role assignments can take 1-5 minutes)
+
+---
+
+Appendix: useful quick commands
+
+```powershell
+# Container app logs (generic)
+az containerapp logs show --name <name> --resource-group <rg> --tail 300
+
+# Container app show
+az containerapp show --name <name> --resource-group <rg>
+
+# Restart container app revision
+az containerapp revision restart --name <name> --resource-group <rg>
+
+# List role assignments for a principal
+az role assignment list --assignee <principalId>
+
+# Inspect ACR repository
+az acr repository show --name <acrName> --repository <repo>
+
+# Assign role
+az role assignment create --assignee <principalId> --role AcrPull --scope <scope>
 ```
 
 ---
 
-
----
-
-### 🛠️ **Automation Tools**
-- **Azure Automation**: Runbook execution and scheduling
-- **Logic Apps**: Event-driven workflow automation  
-- **Azure Functions**: Serverless operations tasks
-- **Azure DevOps**: CI/CD pipeline management
-
-### 📖 **Documentation References**
-- <a href="https://learn.microsoft.com/azure/azure-monitor/best-practices" target="_blank" rel="noopener">Azure Monitor Best Practices</a>
-- <a href="https://learn.microsoft.com/azure/architecture/framework/devops/" target="_blank" rel="noopener">Azure Well-Architected Operations</a>
-- <a href="https://learn.microsoft.com/azure/site-recovery/" target="_blank" rel="noopener">Disaster Recovery Planning</a>
-
----
-
+If you'd like, I can also:
+- convert these playbooks into step-by-step runbooks in `docs/OPERATIONS_GUIDE.md` under a dedicated "Incident Playbooks" section, or
+- add a small `bin/diagnostics.ps1` script that runs a subset of these checks and prints a short report for the current environment.
 
 ---
 
