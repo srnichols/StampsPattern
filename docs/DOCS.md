@@ -19,6 +19,47 @@ Your single source of truth for the Azure Stamps Pattern - Architecture (ASPA), 
 
 A complete index of the documentation set. Use this as a quick catalog and to verify coverage.
 
+### 📑 Complete Documentation Index
+
+#### Main Documentation (docs/)
+- [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) - Core architecture and design patterns
+- [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md) - Authentication and CI/CD strategy
+- [Azure_Stamp_Pattern_Sample_App_Plan.md](./Azure_Stamp_Pattern_Sample_App_Plan.md) - Sample application development plan
+- [Azure_Stamps_Pattern_Analysis_WhitePaper.md](./Azure_Stamps_Pattern_Analysis_WhitePaper.md) - Technical analysis whitepaper
+- [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) - Compliance framework analysis
+- [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md) - Feature capabilities matrix
+- [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md) - Cost management strategies
+- [DATA_STRATEGY_GUIDE.md](./DATA_STRATEGY_GUIDE.md) - Data architecture and strategy
+- [DEPLOYMENT_ARCHITECTURE_GUIDE.md](./DEPLOYMENT_ARCHITECTURE_GUIDE.md) - Deployment patterns
+- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Step-by-step deployment instructions
+- [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md) - Quick start for developers
+- [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md) - Security implementation guide
+- [DOCS.md](./DOCS.md) - This documentation hub
+- [DOCUMENTATION_IMPROVEMENTS.md](./DOCUMENTATION_IMPROVEMENTS.md) - Documentation enhancement guide
+- [GLOSSARY.md](./GLOSSARY.md) - Terminology and definitions
+- [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) - Common issues and solutions
+- [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md) - Azure Landing Zones integration
+- [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md) - Live data flow validation
+- [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md) - Portal user documentation
+- [mermaid-template.md](./mermaid-template.md) - Diagram template guide
+- [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md) - Naming standards
+- [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md) - Operations and maintenance
+- [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md) - Configuration parameters
+- [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md) - Role-based access control reference
+- [REPOSITORY_MAP.md](./REPOSITORY_MAP.md) - Repository structure guide
+- [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md) - Configuration management
+- [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) - Security implementation
+- [TROUBLESHOOTING_PLAYBOOKS.md](./TROUBLESHOOTING_PLAYBOOKS.md) - Operational playbooks
+
+#### Subdirectories
+- [one-pagers/](./one-pagers/) - Executive summaries and quick references
+  - [executive-brief-cio.md](./one-pagers/executive-brief-cio.md) - CIO executive brief
+  - [production-saas-checklist.md](./one-pagers/production-saas-checklist.md) - Production readiness checklist
+- [releases/](./releases/) - Release notes and version history
+  - [v0.2.1-smoke-fix.md](./releases/v0.2.1-smoke-fix.md) - Version 0.2.1 release notes
+  - [v0.9.0-local-run.md](./releases/v0.9.0-local-run.md) - Version 0.9.0 release notes
+- [archive/](./archive/) - Historical documentation and troubleshooting archives
+
 ### Core Guides
 
 - 🏗️ Architecture: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
@@ -29,6 +70,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 💰 Cost Optimization: [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)
 - 🧩 Parameterization: [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)
 - 🏷️ Naming Conventions: [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)
+- 📊 Data Strategy: [DATA_STRATEGY_GUIDE.md](./DATA_STRATEGY_GUIDE.md)
 
 ### Management Portal
 
@@ -48,6 +90,11 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 🔐 Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
 - 🔒 Secrets & Config: [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md)
 - 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
+- 🗂️ Repository Map: [REPOSITORY_MAP.md](./REPOSITORY_MAP.md)
+- 🔧 Troubleshooting Playbooks: [TROUBLESHOOTING_PLAYBOOKS.md](./TROUBLESHOOTING_PLAYBOOKS.md)
+- 📚 Documentation Improvements: [DOCUMENTATION_IMPROVEMENTS.md](./DOCUMENTATION_IMPROVEMENTS.md)
+- 🏗️ Sample App Plan: [Azure_Stamp_Pattern_Sample_App_Plan.md](./Azure_Stamp_Pattern_Sample_App_Plan.md)
+- 📋 Capabilities Matrix: [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md)
 
 ### One-Pagers & Checklists
 
@@ -63,6 +110,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 📖 Glossary: [GLOSSARY.md](./GLOSSARY.md)
 - 🧰 Known Issues: [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
 - 📰 Release Notes: [releases/](./releases)
+- 📁 Archive: [archive/](./archive) - Historical documentation and troubleshooting
 
 ## 📚 Quick Start Paths by Experience Level
 
@@ -192,30 +240,6 @@ If you find gaps or areas for improvement in this documentation:
 
 **🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to contribute, report issues, or suggest improvements.
 
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 00:55:39 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-- **Version**: 
-- **Last Updated**: 2025-08-18 00:58:22 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
-*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
-
-- **Version**: 1.3.0
-- **Last Updated**: 2025-08-18 00:58:44 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
 ---
 
 **📝 Document Version Information**
@@ -223,3 +247,7 @@ If you find gaps or areas for improvement in this documentation:
 - **Last Updated**: 2025-08-18 01:28:00 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
