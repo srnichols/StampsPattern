@@ -34,21 +34,56 @@ flowchart LR
 3. **�️ [Repository Map](./REPOSITORY_MAP.md)** - Where code, infra, and docs live *(5 minutes)*
 3. **�📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
 
+# 📚 Azure Stamps Pattern - Documentation Sitemap
+
+Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
+
+## 🎯 Start Here — 60 second checklist
+- Read `README.md` (project overview & prerequisites).
+- Run the Live Data Path: `docs/LIVE_DATA_PATH.md` to seed Cosmos and validate Management Portal ↔ DAB ↔ Cosmos.
+- For local development: follow `docs/DEVELOPER_QUICKSTART.md` (run Functions + Portal locally).
+- For deployments: open `docs/DEPLOYMENT_GUIDE.md` and use `scripts/deploy.ps1` or Bicep templates as documented.
+
+## 👤 Who Should Use This Guide?
+
+- **Newcomers:** Start here to understand the big picture and find your learning path
+- **Developers/DevOps:** Quickly locate deployment, troubleshooting, and implementation guides
+- **Solution Architects:** Access deep-dive technical and compliance documentation
+- Use the [Quick Start Paths](#-quick-start-paths-by-experience-level) to jump in based on your experience
+- Reference the [Documentation Overview](#-documentation-overview) for a summary of all guides
+
+---
+
+- External links to Microsoft Learn and other sites use HTML anchors with target="_blank" and rel="noopener", plus a small visual cue ↗. Some viewers (GitHub, VS Code preview) may ignore target. Tip: use Ctrl+Click (Windows/Linux) or Cmd+Click (macOS) to open in a new tab.
+---
+
+Follow this sequence to build understanding logically from concepts to implementation:
+
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","themeVariables":"","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart LR
+    D --> E[🛡️ 5. Security]
+
+### **Phase 1: Understanding the Basics (30-45 minutes)**
+1. **📄 [README.md](../README.md)** - Project overview and business value *(15 minutes)*
+2. **📖 [GLOSSARY.md](./GLOSSARY.md)** - **NEW** - Key terms explained with analogies *(15 minutes)*
+3. **📁 [REPOSITORY_MAP.md](./REPOSITORY_MAP.md)** - Where code, infra, and docs live *(5 minutes)*
+4. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
+
 ### **Phase 2: Technical Deep Dive (60-90 minutes)**
-4. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - System design with visual diagrams *(30 minutes)*
-5. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step implementation *(45 minutes)*
-6. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Template customization *(15 minutes)*
-7. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
-8. **🏢 [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)** - Map Stamps to Azure Landing Zones *(20 minutes)*
+5. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - System design with visual diagrams *(30 minutes)*
+6. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step implementation *(45 minutes)*
+7. **📋 [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)** - Template customization *(15 minutes)*
+8. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
+9. **🏢 [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)** - Map Stamps to Azure Landing Zones *(20 minutes)*
 
 ### **Phase 3: Operations, Security & Cost (75-105 minutes)**
-7. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
-8. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(30 minutes)*
-9. **💰 [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)** - Cost models and savings strategies *(15-30 minutes)*
-10. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Resource naming standards *(15 minutes)*
+10. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
+11. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(30 minutes)*
+12. **💰 [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)** - Cost models and savings strategies *(15-30 minutes)*
+13. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Resource naming standards *(15 minutes)*
 
 ### **Phase 4: Status & Troubleshooting (As Needed)**
-10. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
+14. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
 
 ## 📈 Capabilities
 
@@ -60,7 +95,6 @@ flowchart LR
 
 | **Framework** | **Score** | **Achievement** |
 |---------------|-----------|-----------------|
- 4.1 **🔁 [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)** - Management Portal ↔ DAB ↔ Cosmos quick checks
 | **CAF: Governance** | 95/100 | **Industry Leading** |
 | **WAF: Security** | 96/100 | **World Class** |
 | **WAF: Operational Excellence** | 95/100 | **AI-Powered** |
@@ -128,7 +162,6 @@ flowchart TD
 
 ---
 
-
 ## 📚 Documentation Overview
 
 A complete index of the documentation set. Use this as a quick catalog and to verify coverage.
@@ -145,7 +178,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 ### Management Portal
 - 📘 User Guide: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
- - 🔁 Live Data Path: [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)
+- 🔁 Live Data Path: [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)
 
 ### Enterprise Alignment
 - 🧭 CAF/WAF Compliance Analysis: [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
@@ -153,12 +186,12 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 ### Developer & Authoring
 - 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
-- �‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
-- �🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
- - 🔐 Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
- - 🔒 Secrets & Config: [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md)
- - 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
- 
+- 👨‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
+- 🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
+- 🔐 Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
+- 🔒 Secrets & Config: [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md)
+- 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
+
 
 ### One-Pagers & Checklists
 - 🧾 Production SaaS Checklist (Printable): [one-pagers/production-saas-checklist.md](./one-pagers/production-saas-checklist.md)
@@ -173,7 +206,6 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 📰 Release Notes: [releases/](./releases)
 
 ---
-
 
 ### 🎭 **Role-Based Documentation Paths**
 
@@ -197,10 +229,10 @@ journey
 **📋 Recommended Path:**
 1. **📄 [README.md](../README.md)** - Business value and project overview *(10 minutes)*
 2. **💼 [Executive Brief (CIO)](./one-pagers/executive-brief-cio.md)** - ROI, KPIs, phased adoption *(10 minutes)*
-2. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
-3. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#️-architecture-overview)** - High-level architecture *(15 minutes)*
-4. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md#-security-overview)** - Security and compliance posture *(15 minutes)*
-5. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md#-operations-overview)** - Operational model *(10 minutes)*
+3. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
+4. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md#️-architecture-overview)** - High-level architecture *(15 minutes)*
+5. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md#-security-overview)** - Security and compliance posture *(15 minutes)*
+6. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md#-operations-overview)** - Operational model *(10 minutes)*
 
 > Tip for IT Leadership: Skim the Executive Brief, then use the concept whitepaper’s “Why Stamps?”, HA/DR modes, and compute choices to align architecture with your SLOs and budget. See: [Azure_Stamps_Pattern_Analysis_WhitePaper.md](./Azure_Stamps_Pattern_Analysis_WhitePaper.md)
 
