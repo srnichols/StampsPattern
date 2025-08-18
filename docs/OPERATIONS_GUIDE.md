@@ -1,6 +1,6 @@
-# ⚙️ Azure Stamps Pattern - AI-Driven Operations Guide
+# ⚙️ Azure Stamps Pattern - Architecture (ASPA) - AI-Driven Operations Guide
 
-Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
+Operational runbook for the Azure Stamps Pattern - Architecture (ASPA), AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
 - What's inside: Monitoring, incident response, maintenance, scaling, and automation playbooks
 - Best for: Operations/SRE, DevOps engineers, IT leaders, and security/compliance teams

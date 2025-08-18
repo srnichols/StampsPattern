@@ -1,6 +1,6 @@
-# 🚀 Azure Stamps Pattern - Deployment Guide
+# 🚀 Azure Stamps Pattern - Architecture (ASPA) - Deployment Guide
 
-Fast, reliable paths to deploy the Azure Stamps Pattern, from simple two-region setups to enterprise multi‑GEO, covering prerequisites, options, automation, validation, and troubleshooting.
+Fast, reliable paths to deploy the Azure Stamps Pattern - Architecture (ASPA), from simple two-region setups to enterprise multi‑GEO, covering prerequisites, options, automation, validation, and troubleshooting.
 
 - What’s inside: Prereqs, deployment paths (PS/Bicep/GitHub Actions), validation, and troubleshooting
 - Best for: DevOps, architects, and security/operations stakeholders

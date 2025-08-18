@@ -1,6 +1,6 @@
 # Documentation Hub
 
-Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
+Your single source of truth for the Azure Stamps Pattern - Architecture (ASPA), organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
 
 ## 🎯 Start Here — 60 second checklist
 

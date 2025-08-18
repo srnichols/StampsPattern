@@ -1,8 +1,8 @@
-# 🛡️ Azure Stamps Pattern - Zero-Trust Security Guide
+# 🛡️ Azure Stamps Pattern - Architecture (ASPA) - Zero-Trust Security Guide
 
 ---
 
-Practical blueprint to implement zero‑trust in the Azure Stamps Pattern, network micro‑segmentation, managed identity, private endpoints, threat protection, and automated governance.
+Practical blueprint to implement zero‑trust in the Azure Stamps Pattern - Architecture (ASPA), network micro‑segmentation, managed identity, private endpoints, threat protection, and automated governance.
 
 - What’s inside: Baselines, architecture, identity, network, data, policy, monitoring, operations
 - Best for: Security architects, DevOps/cloud engineers, IT leaders, and compliance teams
