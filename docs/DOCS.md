@@ -29,7 +29,8 @@ flowchart LR
 ### **Phase 1: Understanding the Basics (30-45 minutes)**
 1. **📄 [README.md](../README.md)** - Project overview and business value *(15 minutes)*
 2. **📖 [GLOSSARY.md](./GLOSSARY.md)** - **NEW** - Key terms explained with analogies *(15 minutes)*
-3. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
+3. **�️ [Repository Map](./REPOSITORY_MAP.md)** - Where code, infra, and docs live *(5 minutes)*
+3. **�📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
 
 ### **Phase 2: Technical Deep Dive (60-90 minutes)**
 4. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - System design with visual diagrams *(30 minutes)*
@@ -46,6 +47,10 @@ flowchart LR
 
 ### **Phase 4: Status & Troubleshooting (As Needed)**
 10. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
+
+## 📈 Capabilities
+
+- **Capabilities Matrix**: [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md)
 
 ## 🏆 **Enterprise Compliance Showcase**
 
@@ -149,6 +154,8 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - �‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
 - �🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
  - 🔐 Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
+ - 🔒 Secrets & Config: [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md)
+ - 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
  
 
 ### One-Pagers & Checklists

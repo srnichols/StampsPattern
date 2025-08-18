@@ -158,7 +158,7 @@ Error: The provided value can have a length as small as 2 and may be too short
 ```
 
 **Solution**:
-```bash
+```powershell
 # 1. Always validate templates before deployment
 az bicep build --file main.bicep
 
@@ -189,7 +189,7 @@ Error: The resource name 'sa123abc' is already taken
 ```
 
 **Workaround**:
-```bash
+```powershell
 # Use the resource token parameter to ensure uniqueness
 # In main.parameters.json, ensure resourceToken is unique:
 {
@@ -214,7 +214,7 @@ Error: Resource type 'Microsoft.AzureActiveDirectory/b2cDirectories' not support
 ```
 
 **Workaround**:
-```bash
+```powershell
 # 1. Manually create the External ID tenant in the Azure portal first
 # 2. Configure app registrations and user flows there
 # 3. Set EXTERNAL_ID_* app settings in your function app
@@ -254,7 +254,7 @@ SSL connection error
 ```
 
 **Solution**:
-```bash
+```powershell
 # 1. Install and start Cosmos DB Emulator
 # Download from: https://aka.ms/cosmosdb-emulator
 
@@ -462,7 +462,7 @@ await Task.WhenAll(tasks);
 **Problem**: Azure Defender policies not being applied despite deployment.
 
 **Diagnosis**:
-```bash
+```powershell
 # Check current pricing tier
 az security pricing show --name VirtualMachines
 az security pricing show --name AppServices
@@ -473,7 +473,7 @@ az account show --query id
 ```
 
 **Solution**:
-```bash
+```powershell
 # Deploy security template at subscription scope
 az deployment sub create \
   --location eastus \

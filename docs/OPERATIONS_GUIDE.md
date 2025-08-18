@@ -238,7 +238,7 @@ _Block: CELL-level KPIs to guide scaling, capacity, and tenant experience SLIs._
 ### 🚨 **Alert Configuration**
 
 #### Critical Alerts:
-```bash
+```powershell
 #!/bin/bash
 # Create comprehensive alert rules
 
@@ -366,7 +366,7 @@ az monitor metrics alert create \
 ### 📈 **Flexible Tenant Management Operations**
 
 #### **🏠 Shared CELL Tenant Onboarding**
-```bash
+```powershell
 # 1. Check shared CELL capacity before adding tenants
 SHARED_CELL="shared-smb-eastus"
 az monitor metrics list \
@@ -393,7 +393,7 @@ az cosmosdb sql container create \
 ```
 
 #### **🏢 Dedicated CELL Tenant Deployment**
-```bash
+```powershell
 # 1. Deploy dedicated infrastructure for enterprise tenant
 ENTERPRISE_TENANT="banking-corp"
 az deployment group create \
@@ -422,7 +422,7 @@ az apim policy create \
 ```
 
 #### **🔄 Tenant Migration: Shared → Dedicated**
-```bash
+```powershell
 # 1. Deploy new dedicated CELL for growing tenant
 GROWING_TENANT="fintech-scale"
 az deployment group create \
@@ -459,7 +459,7 @@ curl -H "X-Tenant-ID: $GROWING_TENANT" \
 ```
 
 #### **Monitoring Tenant API Usage**
-```bash
+```powershell
 # Get tenant API usage analytics
 az monitor metrics list \
     --resource $(az apim show --name apim-stamps --resource-group $RESOURCE_GROUP --query id -o tsv) \
@@ -478,7 +478,7 @@ az monitor metrics list \
 ```
 
 #### **APIM Health Checks**
-```bash
+```powershell
 # Verify APIM gateway status across regions
 az apim show \
     --name apim-stamps \
@@ -498,7 +498,7 @@ az apim policy show \
 ```
 
 ### 🔧 **Tenant Onboarding Automation**
-```bash
+```powershell
 #!/bin/bash
 # Automated tenant onboarding script
 

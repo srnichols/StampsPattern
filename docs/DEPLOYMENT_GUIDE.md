@@ -208,7 +208,7 @@ The following sections map these concepts to concrete commands, parameters, and 
   - Permission to assign roles to managed identities
 
 #### **Local Development Tools**
-```bash
+```powershell
 # Azure CLI (latest version) - Your main tool for talking to Azure
 az --version
 # Should be >= 2.50.0
@@ -430,7 +430,7 @@ The deployment script supports **organization-specific parameters** for true mul
 ```
 
 ### Option B: Legacy Shell Deployment
-```bash
+```powershell
 # Traditional deployment (single tenancy model)
 chmod +x ../scripts/deploy-stamps.sh
 ../scripts/deploy-stamps.sh
@@ -441,7 +441,7 @@ chmod +x ../scripts/deploy-stamps.sh
 ## 📋 Prerequisites
 
 ### ✅ Required Tools
-```bash
+```powershell
 # Azure CLI (latest version)
 az --version
 # Should be >= 2.50.0
@@ -617,7 +617,7 @@ az deployment group create --resource-group $rg --template-file $tmpl --paramete
 ```
 
 #### Deployment:
-```bash
+```powershell
 # Option A: PowerShell Script (Recommended)
 ./deploy-stamps.ps1 -TenancyModel mixed -Environment prod -AvailabilityZones 3
 
@@ -690,7 +690,7 @@ This results in:
 ```
 
 #### Deployment:
-```bash
+```powershell
 cd AzureArchitecture
 az deployment group create \
   --resource-group rg-stamps-global-prod \
@@ -722,7 +722,7 @@ The template provisions per-region networking (VNet, `subnet-agw`, and Standard 
 
 ### 📋 **APIM-Specific Prerequisites**
 
-```bash
+```powershell
 # Register required resource providers
 az provider register --namespace Microsoft.ApiManagement --wait
 
@@ -743,7 +743,7 @@ az network dns zone create \
 
 ### 🚀 **Enterprise APIM Deployment**
 
-```bash
+```powershell
 # Deploy with Premium APIM enabled
 az deployment group create \
   --resource-group rg-stamps-global-prod \

@@ -118,7 +118,7 @@ Purpose: a compact, end-to-end reference for the Management Portal live-data flo
   ```
 
   # curl (Linux/macOS or WSL)
-  ```bash
+  ```powershell
   curl -s -X POST https://<dab-fqdn>/graphql \
     -H "Content-Type: application/json" \
     -d '{"query":"query { tenants { tenantId displayName } }"}'
