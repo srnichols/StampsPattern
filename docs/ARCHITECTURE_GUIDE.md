@@ -846,5 +846,35 @@ az deployment group create \
 
 **Pattern Version:** v1.2.0*
 
+## E2E Runtime Diagram (Portal → DAB → Cosmos)
+
+A compact runtime view showing request flow, identity, and observability paths used in smoke and production runs.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","lineColor":"#94A3B8"}} }%%
+flowchart LR
+  Browser[User Browser]
+  Portal[Management Portal]
+  DAB[Data API Builder (GraphQL)]
+  Cosmos[Cosmos DB (control-plane)]
+  Functions[Functions / Seeder]
+  AppInsights[Application Insights]
+
+  Browser -->|HTTPS (id_token)| Portal
+  Portal -->|GraphQL POST (DAB_GRAPHQL_URL)| DAB
+  DAB -->|Cosmos DB SDK| Cosmos
+  Functions -->|Management calls / seeding| Cosmos
+
+  Portal -.->|Logs/Telemetry| AppInsights
+  DAB -.->|Logs/Telemetry| AppInsights
+  Functions -.->|Logs/Telemetry| AppInsights
+
+  classDef infra fill:#F3F4F6,stroke:#CBD5E1;
+  class Portal,DAB,Functions infra;
+  class Cosmos infra;
+```
+
+Short caption: requests flow from the browser to the Management Portal which calls DAB (GraphQL); DAB uses the Cosmos SDK for reads/writes. Functions (seeder) write to Cosmos using DefaultAzureCredential; Application Insights collects telemetry from each component.
+
 
 
