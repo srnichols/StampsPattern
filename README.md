@@ -176,6 +176,8 @@ Follow these exact steps to deploy a minimal environment, seed representative da
 9. For auth issues or CI/OIDC guidance, see `docs/AUTH_CI_STRATEGY.md`.
 10. When happy, continue with the full [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) for production hardening.
 
+Quick live-data reference: if you want to verify the Management Portal shows live data after deployment, follow the single-page guide: `docs/LIVE_DATA_PATH.md`.
+
 ## 🧭 Quick Navigation
 
  - [📈 Documentation Improvements Plan](./docs/DOCUMENTATION_IMPROVEMENTS.md)
