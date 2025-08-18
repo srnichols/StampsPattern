@@ -152,31 +152,6 @@ flowchart TB
 
 Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
 
-## 🚦 Start Here — Minimal Happy Path (see live data)
-
-Follow these exact steps to deploy a minimal environment, seed representative data, and confirm the Management Portal shows live data via DAB/GraphQL.
-
-1. Verify prerequisites: Azure CLI (latest), PowerShell 7+, Bicep CLI, .NET 6+.
-2. Clone the repo and cd to the workspace root.
-3. Deploy a smoke/lab environment (example):
-     - PowerShell (recommended):
-         ```powershell
-         pwsh -File ./scripts/deploy-stamps.ps1 -ResourceGroupName rg-stamps-smoke -Location eastus -TenancyModel shared
-         ```
-     - Or manual Bicep:
-         ```powershell
-         az group create -n rg-stamps-smoke -l eastus
-         az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --parameters @AzureArchitecture/examples/main.sample.smoke.json
-         ```
-4. Wait for deployment outputs and note the Management Portal URL and the DAB Container App info.
-5. Seed baseline data using the provided seeder or script (see `AzureArchitecture/Seeder` or repo scripts).
-6. Validate DAB GraphQL is healthy: POST a simple query to the DAB endpoint (see `docs/LIVE_DATA_PATH.md`).
-7. Open the Management Portal URL, sign in, and verify Tenants/Cells appear.
-8. If the portal shows no data: check logs for `ca-stamps-dab` (DAB) and `ca-stamps-portal` (Portal); confirm DAB GraphQL responds.
-9. For auth issues or CI/OIDC guidance, see `docs/AUTH_CI_STRATEGY.md`.
-10. When happy, continue with the full [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) for production hardening.
-
-Quick live-data reference: if you want to verify the Management Portal shows live data after deployment, follow the single-page guide: `docs/LIVE_DATA_PATH.md`.
 
 ## 🧭 Quick Navigation
 
