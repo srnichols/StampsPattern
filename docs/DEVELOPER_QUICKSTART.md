@@ -85,7 +85,6 @@ cd ./AzureArchitecture
  dotnet build
  func start
 ```
-```
 
 If the default port is busy, try `func start --port 7072`.
 
@@ -136,15 +135,15 @@ az group create -n rg-stamps-smoke -l eastus
 az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --parameters @AzureArchitecture/examples/main.sample.smoke.json
 ```
 
-2. Wait for deployment to finish; note the Management Portal URL and the DAB Container App outputs from the deployment.
+1. Wait for deployment to finish; note the Management Portal URL and the DAB Container App outputs from the deployment.
 
-3. Seed baseline data: run the seeder in `AzureArchitecture/Seeder`. The seeder uses `DefaultAzureCredential` so your signing principal must have the Cosmos DB Data Contributor role on the target account. See `AzureArchitecture/README.md` or `docs/LIVE_DATA_PATH.md` for seeder options.
+1. Seed baseline data: run the seeder in `AzureArchitecture/Seeder`. The seeder uses `DefaultAzureCredential` so your signing principal must have the Cosmos DB Data Contributor role on the target account. See `AzureArchitecture/README.md` or `docs/LIVE_DATA_PATH.md` for seeder options.
 
-4. Verify DAB GraphQL is healthy: POST a simple GraphQL query to the DAB endpoint; see `docs/LIVE_DATA_PATH.md` for the exact query and examples.
+1. Verify DAB GraphQL is healthy: POST a simple GraphQL query to the DAB endpoint; see `docs/LIVE_DATA_PATH.md` for the exact query and examples.
 
-5. Open the Management Portal URL and sign in; confirm Tenants and Cells are visible and resolve through the portal UI.
+1. Open the Management Portal URL and sign in; confirm Tenants and Cells are visible and resolve through the portal UI.
 
-6. If you see no data, check the following:
+1. If you see no data, check the following:
 
 - Container App logs for the DAB (`ca-stamps-dab`) and Portal (`ca-stamps-portal`).
 - Confirm DAB GraphQL responds directly with a simple query.
