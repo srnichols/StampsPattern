@@ -1348,11 +1348,6 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 
 ---
 
-_Last updated: August 2025_
-
-
-
-
 ## ✅ CI Checks: Bicep Lint and What-If
 
 This repo includes two lightweight GitHub Actions to keep deployments safe:

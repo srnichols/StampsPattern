@@ -6,7 +6,6 @@ Practical guide to operating the Azure Stamps Management Portal, sign‑in and r
 - Best for: Platform administrators, operators/SREs, support engineers, and developers integrating with the control plane
 - Outcomes: Faster tenant onboarding, consistent guardrails for operations, improved visibility and audit readiness
 
-Last updated: August 2025
 
 ---
 

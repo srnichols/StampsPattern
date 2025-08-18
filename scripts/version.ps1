@@ -67,37 +67,74 @@ function Set-Version {
     $readme = $readme -replace "(!\[Version\]\(https://img\.shields\.io/badge/Version-)[0-9]+\.[0-9]+\.[0-9]+(-blue)", "`$1$NewVersion`$2"
     $readme | Set-Content $readmeFile
     
-    # Update major documentation files with version footers
+    # Update all documentation files with version footers
     $docFiles = @(
         "docs/ARCHITECTURE_GUIDE.md",
-        "docs/DEPLOYMENT_GUIDE.md", 
+        "docs/AUTH_CI_STRATEGY.md", 
+        "docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md",
+        "docs/Azure_Stamp_Pattern_Sample_App_Plan.md",
+        "docs/CAF_WAF_COMPLIANCE_ANALYSIS.md",
+        "docs/CAPABILITIES_MATRIX.md",
+        "docs/COST_OPTIMIZATION_GUIDE.md",
+        "docs/DATA_STRATEGY_GUIDE.md",
         "docs/DEPLOYMENT_ARCHITECTURE_GUIDE.md",
+        "docs/DEPLOYMENT_GUIDE.md",
+        "docs/DEVELOPER_QUICKSTART.md",
+        "docs/DEVELOPER_SECURITY_GUIDE.md",
+        "docs/DOCS.md",
+        "docs/DOCUMENTATION_IMPROVEMENTS.md",
+        "docs/GLOSSARY.md",
+        "docs/KNOWN_ISSUES.md",
+        "docs/LANDING_ZONES_GUIDE.md",
+        "docs/LIVE_DATA_PATH.md",
+        "docs/MANAGEMENT_PORTAL_USER_GUIDE.md",
+        "docs/mermaid-template.md",
+        "docs/NAMING_CONVENTIONS_GUIDE.md",
+        "docs/OPERATIONS_GUIDE.md",
+        "docs/PARAMETERIZATION_GUIDE.md",
+        "docs/RBAC_CHEATSHEET.md",
+        "docs/REPOSITORY_MAP.md",
+        "docs/SECRETS_AND_CONFIG.md",
         "docs/SECURITY_GUIDE.md",
-        "docs/OPERATIONS_GUIDE.md"
+        "docs/TROUBLESHOOTING_PLAYBOOKS.md"
     )
     
     foreach ($docFile in $docFiles) {
         if (Test-Path $docFile) {
             $content = Get-Content $docFile -Raw
+            $updated = $false
             
-            # Add or update version footer
-            if ($content -match "\*\*Last Updated:\*\*.*\r?\n\*\*Pattern Version:\*\*.*") {
-                # Update existing footer
-                $content = $content -replace "(\*\*Last Updated:\*\*\s+)[^\r\n]*", "`$1$(Get-Date -Format 'MMMM yyyy')"
-                $content = $content -replace "(\*\*Pattern Version:\*\*\s+)[^\r\n]*", "`$1v$NewVersion"
-            }
-            elseif ($content -match "\*Last updated:.*") {
-                # Update existing simple footer and add version
-                $content = $content -replace "(\*Last updated:\s+)[^\*\r\n]*", "`$1$(Get-Date -Format 'MMMM yyyy')*`r`n`r`n**Pattern Version:** v$NewVersion"
+            # Remove duplicate "Last updated:" entries that conflict with formal footer
+            $content = $content -replace "_Last updated:.*?_\s*\r?\n", ""
+            $content = $content -replace "Last updated:.*?\r?\n", ""
+            
+            # Standard footer format to match README.md
+            $currentDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            $standardFooter = @"
+**📝 Document Version Information**
+- **Version**: $NewVersion
+- **Last Updated**: $currentDate UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+"@
+
+            # Check if document already has the version footer
+            if ($content -match "(\*\*📝 Document Version Information\*\*.*?)(\r?\n\r?\n|$)" -or 
+                $content -match "(\*\*📝 Document Version Information\*\*.*)" ) {
+                # Replace existing footer with standardized version
+                $content = $content -replace "(\*\*📝 Document Version Information\*\*.*?)(?=\r?\n\r?\n|$)", $standardFooter
+                $updated = $true
             }
             else {
-                # Add new footer
-                $footer = "`r`n`r`n---`r`n`r`n**Last Updated:** $(Get-Date -Format 'MMMM yyyy')  `r`n**Pattern Version:** v$NewVersion`r`n"
-                $content = $content.TrimEnd() + $footer
+                # Add new footer at the end
+                $content = $content.TrimEnd() + "`r`n`r`n---`r`n`r`n" + $standardFooter + "`r`n"
+                $updated = $true
             }
             
-            $content | Set-Content $docFile
-            Write-Host "Updated version in $docFile" -ForegroundColor Cyan
+            if ($updated) {
+                $content | Set-Content $docFile -NoNewline
+                Write-Host "Updated version footer in $docFile" -ForegroundColor Cyan
+            }
         }
     }
     

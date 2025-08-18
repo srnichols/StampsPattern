@@ -30,7 +30,6 @@ Practical guide to placing Azure Stamps Pattern components within Azure Landing 
 | [🏗️ IaC Structure & Parameters](#iac-structure-&-parameters) | Scoping modules and params | DevOps |
 | [🏷️ Tags, Cost, and Quotas](#tags-cost-and-quotas) | Standards and limits | IT Leaders |
 
-Last updated: August 2025
 
 ## 🧭 Where Things Go
 

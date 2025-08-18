@@ -30,7 +30,6 @@ Practical ways to reduce spend across compute, storage, networking, data, and op
 
 ---
 
-Last updated: August 2025
 
 ## 📚 For Newcomers
 

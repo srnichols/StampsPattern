@@ -761,8 +761,6 @@ actions:
 
 ---
 
-_Last updated: August 2025_
-
 ---
 
 **📝 Document Version Information**
