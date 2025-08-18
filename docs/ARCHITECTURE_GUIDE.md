@@ -885,3 +885,9 @@ flowchart LR
 ```
 
 Short caption: requests flow from the browser to the Management Portal which calls DAB (GraphQL); DAB uses the Cosmos SDK for reads/writes. Functions (seeder) write to Cosmos using DefaultAzureCredential; Application Insights collects telemetry from each component.
+
+---
+
+**Last Updated:** August 2025  
+**Pattern Version:** v1.3.0
+

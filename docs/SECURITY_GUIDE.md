@@ -767,3 +767,9 @@ _Last updated: August 2025_
 **Pattern Version:** v1.2.1*
 
 **Pattern Version:** v1.2.0*
+
+---
+
+**Last Updated:** August 2025  
+**Pattern Version:** v1.3.0
+

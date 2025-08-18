@@ -1382,3 +1382,9 @@ How to run What-If:
 3) Ensure required secrets exist as noted above
 
 Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and validates with az deployment group what-if.
+
+---
+
+**Last Updated:** August 2025  
+**Pattern Version:** v1.3.0
+

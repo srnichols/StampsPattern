@@ -4,6 +4,21 @@ All notable changes to the Azure Stamps Pattern project will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.3.0] - 2025-08-18
+
+### Added
+- Major repository cleanup and documentation improvements
+
+- Repository organization: moved troubleshooting files to docs/archive/troubleshooting/
+- Repository organization: moved temporary files to temp/ directory
+- Repository organization: moved tools to docs/tools/  
+- Repository organization: moved azuredeploy.json to AzureArchitecture/
+- Repository cleanup: removed duplicate bin/ directory and VERSION file
+- Documentation: significant markdown lint improvements (code fence languages, ordered lists, link fragments)
+- Fixed version.ps1 script to work with CHANGELOG.md-based versioning
+- HTML anchor link formatting across top documentation files
+- Root directory now clean and professionally organized
 ## [1.2.6] - 2025-08-18
 
 ### Changed
@@ -118,3 +133,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Multi-tenant architecture patterns
 - Security and compliance frameworks
 - Documentation and deployment guides
+
