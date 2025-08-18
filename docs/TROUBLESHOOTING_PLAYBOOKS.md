@@ -221,3 +221,4 @@ az role assignment create --assignee <principalId> --role AcrPull --scope <scope
 If you'd like, I can also:
 - convert these playbooks into step-by-step runbooks in `docs/OPERATIONS_GUIDE.md` under a dedicated "Incident Playbooks" section, or
 - add a small `bin/diagnostics.ps1` script that runs a subset of these checks and prints a short report for the current environment.
+

@@ -65,3 +65,4 @@ Your application registration must have ID tokens enabled:
 5. **Click Save**
 
 **Without this setting, you'll get authentication error AADSTS700054**
+

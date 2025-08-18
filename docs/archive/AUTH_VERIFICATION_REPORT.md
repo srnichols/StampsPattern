@@ -100,3 +100,4 @@ https://login.microsoftonline.com/30dd575a-bca7-491b-adf6-41d5f39275d4/v2.0/.wel
 ---
 
 **Once the client secret is updated, your Stamps Management Portal will have full Azure Entra ID authentication integration!** 🎉
+

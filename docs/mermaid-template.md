@@ -16,3 +16,4 @@ Notes:
 - Prefer concise labels; use \n for line breaks and <br/> in HTML when needed.
 - Use spacer nodes (e.g., X[ ] or X[" "]) to preserve layout when necessary.
 - Icon helpers: you can prefix node labels with small emoji/icons (e.g., 🌍 Front Door, 🔌 APIM, 🚪 App Gateway, 🐳 Container Apps, 🗄️ SQL, 🌐 Cosmos DB, 🔐 Key Vault, 📊 Log Analytics). Keep them short for readability.
+
