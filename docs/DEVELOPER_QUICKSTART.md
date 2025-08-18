@@ -113,7 +113,7 @@ func start --port 7072
 
 See also: Known Issues → Functions host exits on startup or endpoints not reachable locally.
 
-## 9) Minimal Happy Path (Live Data)
+## 🎯 Minimal Happy Path (Live Data)
 
 This section shows the recommended end-to-end steps to deploy a minimal cloud lab, seed representative data using the seeder, and verify the Management Portal shows live data through the DAB GraphQL endpoint. We place this after local setup and verification because it assumes your development environment and credentials are configured.
 
