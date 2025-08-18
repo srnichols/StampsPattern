@@ -152,7 +152,6 @@ az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --paramet
 
 When complete, continue to the full [Deployment Guide](./DEPLOYMENT_GUIDE.md) for production hardening and parameterization.
 
-
 ## 7) Quick code tour
 
 Where to look when extending features:

@@ -1,6 +1,5 @@
 # Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
-
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
 ![CAF/WAF](https://img.shields.io/badge/CAF%2FWAF-94%2F100-brightgreen)
@@ -19,6 +18,7 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 **The unique [zone-aware architecture](./docs/ARCHITECTURE_GUIDE.md) (GEO → Region → Availability Zone → CELL)** supports both shared and dedicated tenancy models, enabling organizations to optimize costs with shared CELLs for SMB clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance isolation ($3,200+/tenant/month). This flexibility delivers up to 10-50x cost reduction for smaller tenants while ensuring enterprise-grade isolation for regulated workloads.
 
 **Key business benefits include:**
+
 - **Enterprise-Ready Security**: End-to-end zero-trust network design with 85-90% JWT validation performance improvement, private endpoints, and automated policy enforcement ([Security Guide](./docs/SECURITY_GUIDE.md))
 - **Modern Identity**: Microsoft Entra External ID (customers) integration with legacy B2C fallback for gradual migration ([Developer Security Guide](./docs/DEVELOPER_SECURITY_GUIDE.md))
 - **Proven Compliance**: Pre-built compliance frameworks for HIPAA, SOC 2, PCI-DSS, and GDPR with automated audit trails and policy enforcement ([CAF/WAF Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md))
@@ -34,8 +34,8 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 
 If you want the short, executive view or the deep technical analysis up front, these two documents are excellent starting points:
 
-- 💼 Executive Brief for CIOs & Business Leaders: `docs/one-pagers/executive-brief-cio.md` — 10-minute brief that explains the business case, KPIs, phased adoption plan, and unit economics for the Stamps approach.
-- 🧠 Concept Whitepaper: `docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md` — an in-depth analysis covering design principles, data strategy, HA/DR modes, and trade-offs for teams planning architecture or large-scale adoption.
+- 💼 Executive Brief for CIOs & Business Leaders: [docs/one-pagers/executive-brief-cio.md](./docs/one-pagers/executive-brief-cio.md) — 10-minute brief that explains the business case, KPIs, phased adoption plan, and unit economics for the Stamps approach.
+- 🧠 Concept Whitepaper: [docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md](./docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md) — an in-depth analysis covering design principles, data strategy, HA/DR modes, and trade-offs for teams planning architecture or large-scale adoption.
 
 Tip: Skim the Executive Brief for stakeholder alignment, then read the Concept Whitepaper to inform design choices and SLO/cost tradeoffs.
 
@@ -151,6 +151,7 @@ flowchart TB
 | 🔐 **Key Vault** | Secrets and certificate management | Per region with private endpoints | Hardware security modules, audit logging |
 
 **💡 Architecture Highlights:**
+
 - **🏠 Mixed Tenancy**: Shared CELLs for cost optimization ($8-16/tenant) + Dedicated CELLs for enterprise compliance ($3,200+/tenant)
 - **🌍 Global Resilience**: Multi-region deployment with automatic failover and disaster recovery
 - **🛡️ Zone Distribution**: 0-3 availability zones per CELL for different SLA requirements  
@@ -161,17 +162,14 @@ flowchart TB
 
 Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
 
-
 ## 🧭 Quick Navigation
 
- - [📈 Documentation Improvements Plan](./docs/DOCS.md)
-
-
-
+- [📈 Documentation Improvements Plan](./docs/DOCS.md)
 
 ## 💡 Why This Project?
 
 **What makes this implementation unique?**
+
 - 🛡️ Enhanced Zero-Trust Security: Network micro-segmentation with private endpoints and managed identities
 - 📜 Automated Governance: Azure Policy as Code ensuring 100% compliance enforcement
 - 🤖 AI-Driven Operations: Intelligent monitoring, predictive scaling, and cost optimization
@@ -202,11 +200,13 @@ This solution is designed for:
 
 1. **Review the [Documentation Hub](./docs/DOCS.md)** for a guided overview.
 2. **Clone the repository:**
+
     ```powershell
     # Clone the repository (PowerShell)
     git clone <repository-url>
     cd StampsPattern
     ```
+
 - ✅ <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli" target="_blank" rel="noopener" title="Opens in a new tab">Azure CLI</a>&nbsp;<sup>↗</sup> (v2.50.0+)  
 - ✅ <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install" target="_blank" rel="noopener" title="Opens in a new tab">Bicep CLI</a>&nbsp;<sup>↗</sup> (v0.20.0+)
 - ✅ PowerShell 7+ (for enhanced deployment script)
@@ -217,6 +217,7 @@ This solution is designed for:
 ### 🎯 Choose Your Tenancy Model
 
 #### 🏠 Mixed Model (Recommended - Supports All Tenant Types)
+
 Deploy both shared and dedicated CELLs for maximum flexibility.
 
 ```powershell
@@ -238,6 +239,7 @@ cd StampsPattern
 **🎯 Use case**: Full SaaS platform, all business sizes
 
 #### 💰 Shared-Only Model (Cost-Optimized)
+
 Optimize for cost with shared CELLs for small-medium tenants.
 
 ```powershell
@@ -254,6 +256,7 @@ Optimize for cost with shared CELLs for small-medium tenants.
 **🎯 Use case**: SMB focus, startups, cost-sensitive market
 
 #### 🏢 Dedicated-Only Model (Enterprise-Grade)
+
 Maximum isolation for enterprise and compliance-focused clients.
 
 ```powershell
@@ -276,6 +279,7 @@ Maximum isolation for enterprise and compliance-focused clients.
 We welcome contributions! Please see our contribution guidelines:
 
 ### 📝 Development Workflow
+
 1. 🍴 Fork the repository
 2. 🌿 Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. 💾 Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -283,6 +287,7 @@ We welcome contributions! Please see our contribution guidelines:
 5. 🔀 Open a Pull Request
 
 ### 🧪 Testing Requirements
+
 - ✅ Bicep templates must compile without errors
 - ✅ Include parameter validation
 - ✅ Test in development environment before production
@@ -291,9 +296,10 @@ We welcome contributions! Please see our contribution guidelines:
 ## 📞 Support & Community
 
 ### 💬 Getting Help
+
 - 📚 **Documentation**: Start with our comprehensive guides
 - 🐛 **Issues**: <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener" title="Opens in a new tab">GitHub Issues</a>&nbsp;<sup>↗</sup> for bugs and feature requests
- - 💡 **Q&A**: Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener" title="Opens in a new tab">GitHub Issues</a>&nbsp;<sup>↗</sup> with the `question` label
+- 💡 **Q&A**: Use <a href="https://github.com/srnichols/StampsPattern/issues" target="_blank" rel="noopener" title="Opens in a new tab">GitHub Issues</a>&nbsp;<sup>↗</sup> with the `question` label
 - 📧 **Enterprise Support**: Contact your Microsoft representative
 
 ---
@@ -315,6 +321,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **🌟 Made with ❤️ by the Azure community** | **⭐ Star this repo if it helped you!**
-
-
-

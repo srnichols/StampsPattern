@@ -75,6 +75,7 @@ pwsh -Command "curl -s -X POST 'https://<DAB_GRAPHQL_URL>/graphql' -H 'Content-T
 ```
 
 Notes:
+
 - The Seeder uses AAD/DefaultAzureCredential and requires a principal with Cosmos DB data permissions to write. If you prefer connection-string based seeding, set the expected environment variables for the Seeder per its README.
 - This path intentionally uses the smoke parameters (HTTP lab toggle) to avoid certificate/key vault friction; switch to production parameters for HTTPS and certs.
 

@@ -1,3 +1,18 @@
+# Documentation Hub
+
+Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
+
+## 🎯 Start Here — 60 second checklist
+
+- Read `README.md` (project overview & prerequisites).
+- Run the Live Data Path: `docs/LIVE_DATA_PATH.md` to seed Cosmos and validate Management Portal ↔ DAB ↔ Cosmos.
+- For local development: follow `docs/DEVELOPER_QUICKSTART.md` (run Functions + Portal locally).
+- For deployments: open `docs/DEPLOYMENT_GUIDE.md` and use `scripts/deploy.ps1` or Bicep templates as documented.
+
+## 👤 Who Should Use This Guide?
+
+...
+
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 
 Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
