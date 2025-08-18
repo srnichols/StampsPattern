@@ -149,7 +149,7 @@ az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --paramet
 - Confirm DAB GraphQL responds directly with a simple query.
 - Ensure the seeder principal has the correct RBAC role on Cosmos (Cosmos DB Data Contributor).
 
-7. For auth or CI/OIDC troubleshooting, see `docs/AUTH_CI_STRATEGY.md`.
+1. For auth or CI/OIDC troubleshooting, see `docs/AUTH_CI_STRATEGY.md`.
 
 When complete, continue to the full <a href="./DEPLOYMENT_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">Deployment Guide</a> for production hardening and <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">parameterization</a>.
 

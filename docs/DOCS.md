@@ -30,8 +30,8 @@ Your single source of truth for the Azure Stamps Pattern, organized by role and 
 - **Developers/DevOps:** Quickly locate deployment, troubleshooting, and implementation guides
 - **Solution Architects:** Access deep-dive technical and compliance documentation
 
-3. **Use the [Quick Start Paths](#-quick-start-paths-by-experience-level)** to jump in based on your experience
-4. **Reference the [Documentation Portfolio](#-documentation-overview)** for a summary of all guides
+3. **Use the [Quick Start Paths](#quick-start-paths-by-experience-level)** to jump in based on your experience
+4. **Reference the [Documentation Portfolio](#documentation-overview)** for a summary of all guides
 
 ---
 
@@ -122,6 +122,7 @@ flowchart LR
       B -->|Developer/DevOps| E[🚀 DEPLOYMENT - Implementation]
       B -->|Operations| F[⚙️ OPERATIONS - Monitoring & Runbooks]
       B -->|Security| G[🛡️ SECURITY - Zero-Trust & Compliance]
+
     ```mermaid
 
     ---
@@ -232,7 +233,7 @@ journey
       Operational Model: 4: Executive
     section Decision
       Approve Project: 5: Executive
-```
+```mermaid
 
 **📋 Recommended Path:**
 
@@ -261,7 +262,7 @@ journey
       Risk Assessment: 5: Compliance
     section Certification
       Compliance Validation: 5: Compliance
-```
+```mermaid
 
 **📋 Recommended Path:**
 

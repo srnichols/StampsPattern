@@ -50,7 +50,7 @@ az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.confi
 az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
 ```
 
-3) Quick GraphQL introspection / simple query
+1) Quick GraphQL introspection / simple query
 
 Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the DAB GraphQL URL (from secret/outputs):
 
@@ -67,7 +67,6 @@ Or curl (if available):
 ```powershell
 ```bash
 curl -s -X POST $DAB -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
-```
 ```
 
 Expected results
@@ -101,7 +100,7 @@ Related docs
 - `docs/AUTH_CI_STRATEGY.md` — authentication and CI notes
 - `management-portal/infra/management-portal.bicep` — IaC for DAB and Portal
 
-3) Quick smoke checks
+1) Quick smoke checks
 
 - Test DAB health (replace host):
 
@@ -139,13 +138,13 @@ az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mg
 az containerapp logs show --name ca-stamps-dab --resource-group rg-stamps-mgmt --revision <revision-name>
 ```
 
-4) Common failures & where to look
+1) Common failures & where to look
 
 - DAB returns 502/502: check DAB container health (port mismatch, missing config file `dab-config.json`, or schema errors).
 - GraphQL errors about types/fields: confirm `schema.graphql` aligns with portal queries and that DAB config maps containers correctly.
 - Cosmos permission errors: verify the identity (managed identity or service principal) has the Cosmos DB Data Contributor role on the database.
 
-5) GraphQL mutations the portal may call (examples)
+1) GraphQL mutations the portal may call (examples)
 
 ## Reserve domain / create tenant (example mutation)
 
@@ -166,10 +165,10 @@ mutation CreateTenant($input: CreateTenantInput!) {
 - DAB auth mode (static vs managed identity)
 - The Portal's `DAB_GRAPHQL_URL` is the correct internal FQDN (and secret matches)
 
-5) Seeder quick run
+1) Seeder quick run
 
 - Run the seeder with a principal that has data contributor rights; locally DefaultAzureCredential will use your Azure CLI identity.
 
-6) Notes
+1) Notes
 
 - Internal DAB FQDN may be private to the Container Apps environment; use `az containerapp show` to fetch the ingress if exposed or consult deployment outputs.
