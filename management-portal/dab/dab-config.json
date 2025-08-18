@@ -17,10 +17,6 @@
       "enabled": true, 
       "path": "/graphql"
     },
-    "cors": { 
-      "origins": ["*"], 
-      "allow-credentials": false 
-    },
     "authentication": { 
       "provider": "StaticWebApps" 
     }

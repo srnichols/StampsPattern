@@ -277,7 +277,7 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       ingress: {
         external: false
-        targetPort: 5000
+  targetPort: 5000
         allowInsecure: false
         corsPolicy: {
           allowedOrigins: ['*']
@@ -292,7 +292,7 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
       }
-      registries: [
+  registries: [
         {
           server: containerRegistry.properties.loginServer
           identity: managedIdentity.id
@@ -312,8 +312,11 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          // Use the built image for DAB which expects to be exposed on port 80
+          image: 'crxgjwtecm3g5pi.azurecr.io/stamps-dab:fix-schema-1'
           name: 'dab'
+          // Start DAB explicitly to surface startup logs; keep env minimal and correct
+          command: [ 'dab', 'start', '--host', '0.0.0.0', '--config', '/App/dab-config.json' ]
           env: [
             {
               name: 'COSMOS_CONNECTION_STRING'

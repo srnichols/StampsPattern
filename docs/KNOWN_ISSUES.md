@@ -17,6 +17,34 @@ Practical fixes and workarounds for common issues across development, deployment
 
 ## 🧭 Quick Navigation
 
+> **Top 10 Fixes — TL;DR (fast triage)**
+>
+> 1. Bicep/template errors — run `bicep build <file>.bicep` and `az deployment group what-if` → see [Deployment Issues](#-deployment-issues).
+> 2. Name conflicts — change `resourceToken` or use uniqueString(resourceGroup().id) → [Deployment Issues](#-deployment-issues).
+> 3. DAB crashing / port mismatch — confirm `ASPNETCORE_URLS` vs Container App `targetPort` → [Deployment Issues](#-deployment-issues).
+> 4. Portal timeouts to DAB — check `DAB_GRAPHQL_URL` secret and Container App logs → [Troubleshooting Playbooks](#portal-→-dab-connectivity-decision-tree).
+> 5. Seeder 401/403 — grant Cosmos DB Data Contributor to the identity and use DefaultAzureCredential locally → [Development Issues](#-development-issues).
+> 6. Key Vault access denied — grant `get`/`list` or Key Vault Secrets User RBAC to the principal → [Security Issues](#-security-issues).
+> 7. Cosmos 429 throttling — implement retries/backoff and scale RU/s or enable autoscale → [Performance Issues](#-performance-issues).
+> 8. Functions host exits locally — build from `AzureArchitecture` and run `func start --verbose` → [Development Issues](#-development-issues).
+> 9. Docs link checker failures — run `pwsh ./scripts/verify-doc-links.ps1` and fix relative links → [Troubleshooting Tools](#-troubleshooting-tools).
+> 10. APIM/provisioning timeouts — check deployment state and increase provisioning timeout if needed → [Deployment Issues](#-deployment-issues).
+>
+
+## ⚡ Top 10 Quick Fixes (fast triage)
+
+1. [Bicep/template validation failures](#-deployment-issues): run `bicep build <file>.bicep` and `az deployment group what-if --resource-group rg -f <file>.bicep --parameters @params.json`.
+2. [Resource name conflicts](#-deployment-issues): change `resourceToken` in parameters or use uniqueString(resourceGroup().id) to generate prefixes.
+3. [DAB Container crashing or port mismatch](#-deployment-issues): ensure DAB container listens on the same port as container-app `targetPort` (Dockerfile sets ASPNETCORE_URLS).
+4. [Portal timeouts talking to DAB](#-deployment-issues): check DAB ingress FQDN/secret and Container App logs; validate `DAB_GRAPHQL_URL` secret.
+5. [Seeder unauthorized (401/403)](#-development-issues): verify managed identity/service principal has Cosmos DB Data Contributor role and use DefaultAzureCredential locally.
+6. [Key Vault/Secret access denied](#-security-issues): grant the principal `get`/`list` permissions or add the managed identity to Key Vault access policies.
+7. [Cosmos 429 throttling](#-performance-issues): add retry/backoff, scale RU/s or enable autoscale, optimize queries and add composite indexes.
+8. [Functions host exits locally](#-development-issues): build from `AzureArchitecture` and run `func start --verbose`; check `local.settings.json` for emulator endpoints.
+9. [Link checker failures in docs](#-troubleshooting-tools): run `pwsh ./scripts/verify-doc-links.ps1` and fix relative links.
+10. [APIM or premium resource timeouts](#-deployment-issues): allow extended timeouts and monitor provisioning state via `az deployment group show`.
+
+
 | Section | Focus Area | Best for |
 |---------|------------|----------|
 | [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, External ID | DevOps |
@@ -117,6 +145,99 @@ flowchart LR
 
 ---
 
+## 🔁 Troubleshooting Playbooks (decision trees)
+
+Below are three focused decision trees that operators reach for frequently: Portal → DAB connectivity, DAB container startup, and AAD/authentication issues. Use these as quick visual playbooks during incidents.
+
+### 1) Portal → DAB connectivity decision tree
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart TD
+    P0[User reports Portal data missing / GraphQL timeouts]
+    P0 --> P1{Is Portal returning 5xx or client-side timeout?}
+
+    P1 -->|5xx| P2[Check Portal logs & App Insights for GraphQL errors]
+    P1 -->|Timeout| P3[Check network / DNS & Portal HTTP client settings]
+
+    P2 --> P4{Is DAB endpoint configured (DAB_GRAPHQL_URL)?}
+    P3 --> P4
+
+    P4 -->|No| P5[Set secret `DAB_GRAPHQL_URL` to Container App ingress FQDN + /graphql]
+    P4 -->|Yes| P6[Ping DAB endpoint from Portal (curl/postman) using managed identity header if required]
+
+    P6 -->|Connection refused / DNS| P7[Check Container App ingress FQDN, DNS CNAME, and firewall / private endpoint settings]
+    P6 -->|401/403| P8[Verify identity/secret used by Portal; check Key Vault secret and managed identity assignments]
+    P6 -->|200 but errors| P9[Inspect DAB logs and GraphQL error payloads]
+
+    P7 --> P10[Check Container App revision status and DAB container logs (az containerapp revision list & logs tail)]
+    P8 --> P11[Ensure Portal principal has Key Vault GET & that DAB secret is readable]
+    P9 --> P12[Verify DAB schema mapping vs Cosmos containers; run introspection query]
+
+    P10 --> P12
+    P11 --> P12
+
+    P12 --> P13[If still failing: redeploy DAB with corrected targetPort and validate ACR pull permissions]
+    P13 --> P14[If redeploy fails: capture logs, open issue, escalate to infra on-call]
+```
+
+### 2) DAB container startup decision tree
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart TD
+    D0[Container App shows unhealthy / crash-loop]
+    D0 --> D1{Does container start then exit, or fail to pull image?}
+
+    D1 -->|Exits| D2[Inspect container stdout/stderr logs]
+    D1 -->|Image pull| D3[Check ACR image existence and managed identity AcrPull role]
+
+    D2 --> D4{Startup error: missing file/config?}
+    D4 -->|Yes| D5[Verify /App/dab-config.json is present in image or passed as secret]
+    D4 -->|No| D6[Check for unhandled exception stacktrace — missing env var, invalid connection string]
+
+    D3 --> D7[Confirm MI has AcrPull on ACR & image tag exists in registry]
+
+    D5 --> D8[Rebuild image to include config or mount config as secret; push and update revision]
+    D6 --> D9[Fix env vars in Container App or Key Vault references; restart revision]
+    D7 --> D10[If MI missing, assign AcrPull and restart; if image missing, push image]
+
+    D8 --> D11[Monitor new revision; if healthy, proceed to functional test (graphql introspection)]
+    D9 --> D11
+    D10 --> D11
+
+    D11 --> D12[If still unhealthy: capture full logs and escalate to engineering]
+```
+
+### 3) AAD / Authentication decision tree
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart TD
+    A0[401/403 when calling service that uses AAD]
+    A0 --> A1{Is the call from local dev or deployed service?}
+
+    A1 -->|Local| A2[Check DefaultAzureCredential sequence: Azure CLI / VS Code / VisualStudio logged in?]
+    A1 -->|Deployed| A3[Check managed identity assignment on resource]
+
+    A2 --> A4[Run `az account get-access-token --resource <resource>` to validate token]
+    A3 --> A5{Has resource principal assigned correct RBAC/Key Vault policy?}
+
+    A5 -->|No| A6[Assign appropriate role: Cosmos DB Data Contributor / ACR Pull / Key Vault Get]
+    A5 -->|Yes| A7[Check Key Vault references & secret URIs in app settings]
+
+    A6 --> A8[Retry request after role propagation (~1-5 min)]
+    A7 --> A9[If still failing, capture access token and validate scopes/audience using jwt.ms]
+
+    A9 --> A10[If token incorrect audience/role: fix app registration or token exchange; if scopes missing: update role assignment]
+    A10 --> A11[Successful authentication -> continue normal operations]
+
+```
+
+---
+
+---
+
 # 🛠️ Known Issues & Workarounds - Azure Stamps Pattern
 
 This document provides solutions to common issues encountered during development, deployment, and operation of the Azure Stamps Pattern.
@@ -144,7 +265,7 @@ Error: The provided value can have a length as small as 2 and may be too short
 ```
 
 **Solution**:
-```bash
+```powershell
 # 1. Always validate templates before deployment
 az bicep build --file main.bicep
 
@@ -175,7 +296,7 @@ Error: The resource name 'sa123abc' is already taken
 ```
 
 **Workaround**:
-```bash
+```powershell
 # Use the resource token parameter to ensure uniqueness
 # In main.parameters.json, ensure resourceToken is unique:
 {
@@ -200,7 +321,7 @@ Error: Resource type 'Microsoft.AzureActiveDirectory/b2cDirectories' not support
 ```
 
 **Workaround**:
-```bash
+```powershell
 # 1. Manually create the External ID tenant in the Azure portal first
 # 2. Configure app registrations and user flows there
 # 3. Set EXTERNAL_ID_* app settings in your function app
@@ -240,7 +361,7 @@ SSL connection error
 ```
 
 **Solution**:
-```bash
+```powershell
 # 1. Install and start Cosmos DB Emulator
 # Download from: https://aka.ms/cosmosdb-emulator
 
@@ -448,7 +569,7 @@ await Task.WhenAll(tasks);
 **Problem**: Azure Defender policies not being applied despite deployment.
 
 **Diagnosis**:
-```bash
+```powershell
 # Check current pricing tier
 az security pricing show --name VirtualMachines
 az security pricing show --name AppServices
@@ -459,7 +580,7 @@ az account show --query id
 ```
 
 **Solution**:
-```bash
+```powershell
 # Deploy security template at subscription scope
 az deployment sub create \
   --location eastus \

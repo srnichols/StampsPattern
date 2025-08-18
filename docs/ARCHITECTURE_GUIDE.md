@@ -523,6 +523,48 @@ flowchart TD
     FD --> User
 ```
 
+    ### 🔁 End-to-end runtime diagram (operator view)
+
+    The diagram below is a compact operator-focused runtime view you can use during incidents to quickly identify which component to check next (network, auth, app, or data).
+
+    ```mermaid
+    %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+    sequenceDiagram
+      autonumber
+      participant User as User
+      participant FD as FrontDoor
+      participant TM as TrafficManager
+      participant APIM as APIM
+      participant GFunc as GetTenantFunc
+      participant GDB as GlobalCosmosDB
+      participant AG as AppGateway
+      participant CA as ContainerApp(CELL)
+      participant DAB as DAB(ContainerApp)
+      participant COS as CosmosDB
+
+      User->>FD: HTTPS request (edge)
+      FD->>TM: Route to nearest region
+      TM->>APIM: Forward request
+      APIM->>GFunc: Tenant lookup call
+      GFunc->>GDB: Query tenant routing
+      GDB-->>GFunc: Tenant cell info
+      GFunc-->>APIM: Return cell info
+      APIM->>AG: Route to regional backend
+      AG->>CA: Forward to CELL app instance
+      CA->>COS: App queries tenant data
+      CA-->>AG: Response
+      AG-->>APIM: Response
+      APIM-->>TM: Response path back
+      TM-->>FD: Response
+      FD-->>User: Final response
+
+      Note over DAB,COS: DAB serves GraphQL for management portal and reads/writes to Cosmos
+      DAB->>COS: GraphQL queries/mutations
+      DAB-->>APIM: DAB may be behind APIM in some deployments
+
+    ```
+
+
 _Figure: End-to-end request path with tenant resolution. Note how APIM consults the global directory to select a CELL before regional routing occurs._
 
 ### 🔍 **Detailed: Tenant Resolution Process**
@@ -716,7 +758,7 @@ CELL Level: Tenant-specific metrics, application performance
 ### 🔄 **Tenancy Model Migration**
 
 #### **Shared → Dedicated Migration**
-```bash
+```powershell
 # 1. Deploy new dedicated CELL
 az deployment group create \
   --resource-group rg-stamps-production \
@@ -803,6 +845,36 @@ az deployment group create \
 **Pattern Version:** v1.2.1*
 
 **Pattern Version:** v1.2.0*
+
+## E2E Runtime Diagram (Portal → DAB → Cosmos)
+
+A compact runtime view showing request flow, identity, and observability paths used in smoke and production runs.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","lineColor":"#94A3B8"}} }%%
+flowchart LR
+  Browser[User Browser]
+  Portal[Management Portal]
+  DAB[Data API Builder (GraphQL)]
+  Cosmos[Cosmos DB (control-plane)]
+  Functions[Functions / Seeder]
+  AppInsights[Application Insights]
+
+  Browser -->|HTTPS (id_token)| Portal
+  Portal -->|GraphQL POST (DAB_GRAPHQL_URL)| DAB
+  DAB -->|Cosmos DB SDK| Cosmos
+  Functions -->|Management calls / seeding| Cosmos
+
+  Portal -.->|Logs/Telemetry| AppInsights
+  DAB -.->|Logs/Telemetry| AppInsights
+  Functions -.->|Logs/Telemetry| AppInsights
+
+  classDef infra fill:#F3F4F6,stroke:#CBD5E1;
+  class Portal,DAB,Functions infra;
+  class Cosmos infra;
+```
+
+Short caption: requests flow from the browser to the Management Portal which calls DAB (GraphQL); DAB uses the Cosmos SDK for reads/writes. Functions (seeder) write to Cosmos using DefaultAzureCredential; Application Insights collects telemetry from each component.
 
 
 
