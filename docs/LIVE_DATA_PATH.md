@@ -24,7 +24,7 @@ flowchart LR
 
   Portal -->|HTTP GraphQL POST| DAB
   DAB -->|Cosmos SDK / REST| Cosmos
-```
+```mermaid
 
 Essential variables
 
@@ -42,7 +42,7 @@ az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
 
 # Show ingress configuration (confirm targetPort matches container)
 az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
-```
+```bash
 
 2) Tail DAB logs (look for startup errors and GraphQL listening)
 
@@ -65,7 +65,9 @@ Invoke-RestMethod -Uri $DAB -Method Post -ContentType 'application/json' -Body $
 Or curl (if available):
 
 ```powershell
+```bash
 curl -s -X POST $DAB -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
+```
 ```
 
 Expected results

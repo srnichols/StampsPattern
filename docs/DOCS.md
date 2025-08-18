@@ -122,7 +122,7 @@ flowchart LR
       B -->|Developer/DevOps| E[🚀 DEPLOYMENT - Implementation]
       B -->|Operations| F[⚙️ OPERATIONS - Monitoring & Runbooks]
       B -->|Security| G[🛡️ SECURITY - Zero-Trust & Compliance]
-    ```
+    ```mermaid
 
     ---
 
@@ -159,7 +159,7 @@ flowchart LR
     K --> M
     L --> M
     O --> M
-```
+```mermaid
 
 ---
 

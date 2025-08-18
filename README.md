@@ -134,7 +134,7 @@ flowchart TB
     class AG1,AG2 az;
     class CA1,SQL1,REDIS1,CA2,SQL2,REDIS2,CA3,SQL3,CELL4 cell;
     class COSMOS1,KV1,LA1,COSMOS2 region;
-```
+```mermaid
 
 ### 🎯 **Key Enterprise Services & Their Roles**
 

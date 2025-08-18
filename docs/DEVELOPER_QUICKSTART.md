@@ -64,7 +64,7 @@ At minimum set Cosmos and identity settings:
     // "B2C_POLICY": "your-policy"
   }
 }
-```
+```jsonc
 
 Tip: The emulator account key shown above is the standard sample key; adjust if your emulator differs.
 
@@ -80,9 +80,11 @@ If `func` isn’t found, ensure your npm global bin is on PATH.
 ## 5) Build and run the Functions app
 
 ```powershell
+```powershell
 cd ./AzureArchitecture
  dotnet build
  func start
+```
 ```
 
 If the default port is busy, try `func start --port 7072`.
@@ -109,7 +111,7 @@ func start --verbose
 
 # Check port conflicts, try another port
 func start --port 7072
-```
+```bash
 
 See also: Known Issues → Functions host exits on startup or endpoints not reachable locally.
 
