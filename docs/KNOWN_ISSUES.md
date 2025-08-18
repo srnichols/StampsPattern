@@ -17,6 +17,20 @@ Practical fixes and workarounds for common issues across development, deployment
 
 ## 🧭 Quick Navigation
 
+> **Top 10 Fixes — TL;DR (fast triage)**
+>
+> 1. Bicep/template errors — run `bicep build <file>.bicep` and `az deployment group what-if` → see [Deployment Issues](#-deployment-issues).
+> 2. Name conflicts — change `resourceToken` or use uniqueString(resourceGroup().id) → [Deployment Issues](#-deployment-issues).
+> 3. DAB crashing / port mismatch — confirm `ASPNETCORE_URLS` vs Container App `targetPort` → [Deployment Issues](#-deployment-issues).
+> 4. Portal timeouts to DAB — check `DAB_GRAPHQL_URL` secret and Container App logs → [Troubleshooting Playbooks](#portal-→-dab-connectivity-decision-tree).
+> 5. Seeder 401/403 — grant Cosmos DB Data Contributor to the identity and use DefaultAzureCredential locally → [Development Issues](#-development-issues).
+> 6. Key Vault access denied — grant `get`/`list` or Key Vault Secrets User RBAC to the principal → [Security Issues](#-security-issues).
+> 7. Cosmos 429 throttling — implement retries/backoff and scale RU/s or enable autoscale → [Performance Issues](#-performance-issues).
+> 8. Functions host exits locally — build from `AzureArchitecture` and run `func start --verbose` → [Development Issues](#-development-issues).
+> 9. Docs link checker failures — run `pwsh ./scripts/verify-doc-links.ps1` and fix relative links → [Troubleshooting Tools](#-troubleshooting-tools).
+> 10. APIM/provisioning timeouts — check deployment state and increase provisioning timeout if needed → [Deployment Issues](#-deployment-issues).
+>
+
 ## ⚡ Top 10 Quick Fixes (fast triage)
 
 1. [Bicep/template validation failures](#-deployment-issues): run `bicep build <file>.bicep` and `az deployment group what-if --resource-group rg -f <file>.bicep --parameters @params.json`.
