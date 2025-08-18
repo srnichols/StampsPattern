@@ -159,10 +159,12 @@ P0 (next 1–2 days)
 
 P1 (this week)
 
-- [ ] DOCS.md: Move progressive path to top; link to new guides; unify nav tables.
-- [ ] NEW: docs/AUTH_CI_STRATEGY.md; consolidate scattered auth notes and scripts.
-- [ ] NEW: docs/SECRETS_AND_CONFIG.md with clear decision tree.
-- [ ] Add “Repository Map” and “Capabilities Matrix”.
+ - [ ] DOCS.md: Move progressive path to top; link to new guides; unify nav tables.
+ - [x] NEW: docs/AUTH_CI_STRATEGY.md; consolidate scattered auth notes and scripts.
+ - [x] NEW: docs/SECRETS_AND_CONFIG.md with clear decision tree.
+ - [x] Add “Repository Map” and “Capabilities Matrix”.
+ - [x] NEW: docs/RBAC_CHEATSHEET.md (exists)
+
 
 P2 (next)
 
