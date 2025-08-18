@@ -145,11 +145,11 @@ Follow-ups and lower-priority improvements
 ## 8) Suggested task backlog (checklist)
 
 P0 (next 1–2 days)
-- [ ] README: Add “Start Here: Minimal Happy Path” (10 steps).
-- [ ] NEW: docs/LIVE_DATA_PATH.md (diagram + checks + seeding).
-- [ ] Known Issues: Add “Top 10 Fixes” section.
-- [ ] TROUBLESHOOT_AUTH.md: replace with Auth & CI Strategy (or remove and redirect).
-- [ ] Ensure all command blocks specify `powershell` and are copy-paste safe on Windows.
+- [x] README: Add “Start Here: Minimal Happy Path” (10 steps).
+- [x] NEW: docs/LIVE_DATA_PATH.md (diagram + checks + seeding).
+- [x] Known Issues: Add “Top 10 Fixes” section.
+- [x] TROUBLESHOOT_AUTH.md: replaced — consolidated into `docs/AUTH_CI_STRATEGY.md` (see P1) and removed dead-end links.
+- [x] Ensure all command blocks specify `powershell` and are copy-paste safe on Windows.
 
 P1 (this week)
 - [ ] DOCS.md: Move progressive path to top; link to new guides; unify nav tables.

@@ -758,7 +758,7 @@ CELL Level: Tenant-specific metrics, application performance
 ### 🔄 **Tenancy Model Migration**
 
 #### **Shared → Dedicated Migration**
-```bash
+```powershell
 # 1. Deploy new dedicated CELL
 az deployment group create \
   --resource-group rg-stamps-production \

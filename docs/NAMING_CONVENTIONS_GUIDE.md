@@ -384,7 +384,7 @@ $ContainerAppName = Get-ZoneAwareName -ResourceType 'ContainerApp' -CellName $Ce
 ```
 
 ### **Bash Helper Function**
-```bash
+```powershell
 get_region_short() {
 	case $1 in
 		eastus) echo "eus" ;;

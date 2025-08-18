@@ -6,7 +6,7 @@ The GitHub Actions workflow needs Azure authentication to deploy. Follow these s
 
 Run this command in your terminal (you'll need Azure CLI working):
 
-```bash
+```powershell
 # Create a service principal with Contributor role
 az ad sp create-for-rbac --name "github-actions-stamps" --role contributor --scopes /subscriptions/YOUR_SUBSCRIPTION_ID --sdk-auth
 

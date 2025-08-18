@@ -1,4 +1,3 @@
-
 # 🚀 Azure Stamps Pattern - Deployment Guide
 
 Fast, reliable paths to deploy the Azure Stamps Pattern, from simple two-region setups to enterprise multi‑GEO, covering prerequisites, options, automation, validation, and troubleshooting.
