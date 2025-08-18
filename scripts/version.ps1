@@ -119,10 +119,25 @@ function Set-Version {
 "@
 
             # Check if document already has the version footer
-            if ($content -match "(\*\*📝 Document Version Information\*\*.*?)(\r?\n\r?\n|$)" -or 
-                $content -match "(\*\*📝 Document Version Information\*\*.*)" ) {
-                # Replace existing footer with standardized version
-                $content = $content -replace "(\*\*📝 Document Version Information\*\*.*?)(?=\r?\n\r?\n|$)", $standardFooter
+            # Use a more reliable approach - look for the footer start marker
+            $footerMarker = "**📝 Document Version Information**"
+            $footerIndex = $content.IndexOf($footerMarker)
+            
+            if ($footerIndex -ge 0) {
+                # Find the end of the footer section (either double newline or end of file)
+                $remainingContent = $content.Substring($footerIndex)
+                $footerEndIndex = $remainingContent.IndexOf("`r`n`r`n")
+                
+                if ($footerEndIndex -eq -1) {
+                    # Footer goes to end of file
+                    $beforeFooter = $content.Substring(0, $footerIndex).TrimEnd()
+                    $content = $beforeFooter + "`r`n`r`n" + $standardFooter + "`r`n"
+                } else {
+                    # Footer has content after it
+                    $beforeFooter = $content.Substring(0, $footerIndex).TrimEnd()
+                    $afterFooter = $content.Substring($footerIndex + $footerEndIndex)
+                    $content = $beforeFooter + "`r`n`r`n" + $standardFooter + $afterFooter
+                }
                 $updated = $true
             }
             else {
