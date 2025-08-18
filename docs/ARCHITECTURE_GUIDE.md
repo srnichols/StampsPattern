@@ -1,16 +1,17 @@
 # 🏗️ Azure Stamps Pattern - Enterprise Architecture Guide (CAF/WAF Compliant)
 
-> 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**, framework mapping and scoring details.
->
-> Alignment note: This guide references CAF/WAF throughout. To see how these translate into enterprise landing zones, use the companion [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
+## 🏗 Architecture Overview
 
-A concise tour of the Azure Stamps Pattern architecture, layers, flows, and core decisions, so you can design, build, and scale compliant multi-tenant systems with confidence.
+See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**, framework mapping and scoring details. Alignment note: this guide references CAF/WAF throughout; to see how these translate into enterprise landing zones, see the companion [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md).
 
-- What’s inside: Architecture layers, traffic flow, security, monitoring, scaling principles
-- Best for: Architects, developers, IT leaders, and security teams
-- Outcomes: Clear mental model, reference diagrams, and practical design guidance
+This Architecture Overview provides a concise tour of the Azure Stamps Pattern architecture, layers, flows, and core decisions so you can design, build, and scale compliant multi-tenant systems with confidence.
 
-> Symbols & Conventions: External links open in a new tab/window using HTML anchors with target="_blank" and carry a small ↗ cue; some viewers may ignore target. Use jsonc for commented JSON, and the standard Mermaid template for diagrams.
+## 👤 Who Should Read This Guide?
+
+- **Solution Architects:** Deep-dive into system design, scalability, and compliance
+- **Developers:** Understand deployment, tenancy, and integration patterns
+- **IT Leaders:** Evaluate architecture for onboarding, scaling, and governance
+- **Security/Compliance Teams:** Review security, monitoring, and compliance controls
 
 ---
 ## 🧭 Quick Navigation
@@ -27,26 +28,12 @@ A concise tour of the Azure Stamps Pattern architecture, layers, flows, and core
 ---
 
 ## 📚 For Newcomers to Azure Stamps Pattern
-
-**What is the Azure Stamps Pattern?**
-> Think of it like a franchise restaurant chain:
-> - Each restaurant (CELL) has identical setup but serves different customers (tenants)
-> - Regional managers (Regional Layer) coordinate multiple restaurants
-> - Corporate headquarters (Global Layer) manages the entire network
-> - Some locations serve many customers at once (Shared CELLs), others cater to VIP clients exclusively (Dedicated CELLs)
-
-**Why use this pattern?**
-> - **Predictable scaling:** Add more "restaurants" when you need capacity
-> - **Isolation:** Problems in one location don't affect others
-> - **Global reach:** Serve customers from local "restaurants" for better performance
-> - **Flexibility:** Different service models for different customer segments
-
----
-
 ## 🏗 Architecture Overview
-
-
 This solution implements a sophisticated **GEO → Region → Availability Zone → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution. Availability Zones (AZs) are a critical layer for high availability (HA) and disaster recovery (DR), allowing each CELL to be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.
+
+> **Global Capacity Management & Cloud Supply Constraints**
+>
+> All major cloud providers occasionally face regional or zone capacity limits for compute and storage resources, due to demand surges, supply chain disruptions, or quota exhaustion. The Azure Stamps Pattern architecture is designed to address this reality: its modular, zone-aware, and multi-region CELL approach enables organizations to deploy new workloads or scale existing ones in any available region or zone, minimizing business disruption. If a preferred region or AZ is at capacity, new CELLs can be provisioned elsewhere with minimal reconfiguration, ensuring business continuity and operational agility even in constrained environments.
 
 ## 👤 Who Should Read This Guide?
 
@@ -54,10 +41,6 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 - **Developers:** Understand deployment, tenancy, and integration patterns
 - **IT Leaders:** Evaluate architecture for onboarding, scaling, and governance
 - **Security/Compliance Teams:** Review security, monitoring, and compliance controls
-
-> **Global Capacity Management & Cloud Supply Constraints**
->
-> All major cloud providers occasionally face regional or zone capacity limits for compute and storage resources, due to demand surges, supply chain disruptions, or quota exhaustion. The Azure Stamps Pattern architecture is designed to address this reality: its modular, zone-aware, and multi-region CELL approach enables organizations to deploy new workloads or scale existing ones in any available region or zone, minimizing business disruption. If a preferred region or AZ is at capacity, new CELLs can be provisioned elsewhere with minimal reconfiguration, ensuring business continuity and operational agility even in constrained environments.
 
 ### 🌍 **Visual: Global Architecture Hierarchy with Availability Zones**
 
