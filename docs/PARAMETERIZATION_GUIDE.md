@@ -21,15 +21,15 @@ Make deployments flexible and reusable with parameters, enable multi-tenant, mul
 
 | Section | Focus Area |
 |---------|------------|
-| [🎯 Overview](#overview) | What parameterization enables |
+| [🎯 Overview](#-overview) | What parameterization enables |
 | [🔧 New Parameters](#-new-parameters-added) | Parameter reference |
-| [🏗️ Template Changes](#template-changes) | Bicep/PowerShell updates |
+| [🏗️ Template Changes](#-template-changes-made) | Bicep/PowerShell updates |
 | [🚀 Script Updates](#-powershell-script-updates) | PowerShell parameterization |
-| [📝 Usage Examples](#usage-examples) | Real-world scenarios |
+| [📝 Usage Examples](#-usage-examples) | Real-world scenarios |
 | [✅ Benefits](#-benefits-achieved) | Flexibility, tagging, cost |
-| [🔍 Validation](#validation) | Testing and validation |
+| [🔍 Validation](#-validation) | Testing and validation |
 | [🎭 Migration Notes](#-migration-notes) | Adopting new parameters |
-| [📚 Related Documentation](#related-documentation) | More docs |
+| [📚 Related Documentation](#-related-documentation) | More docs |
 
 ---
 

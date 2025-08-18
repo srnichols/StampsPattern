@@ -18,12 +18,12 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🏗 Architecture Overview](#architecture-overview) | High-level design and hierarchy | All readers |
-| [🏛 Architecture Layers](#architecture-layers) | Component breakdown | Architects, Devs |
-| [🚀 Traffic Flow](#traffic-flow) | Request/data flow | DevOps, Network |
-| [🔒 Security Architecture](#security-architecture) | Multi-layer security | Security Teams |
-| [📊 Monitoring & Observability](#monitoring-&-observability) | Observability strategy | Operations |
-| [🌱 Scaling Strategies](#scaling-strategies) | Growth/expansion | IT Leaders |
+| [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | All readers |
+| [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | Architects, Devs |
+| [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | DevOps, Network |
+| [🔒 Security Architecture](#-security-architecture) | Multi-layer security | Security Teams |
+| [📊 Monitoring & Observability](#-monitoring--observability) | Observability strategy | Operations |
+| [🌱 Scaling Strategies](#-scaling-strategies) | Growth/expansion | IT Leaders |
 
 ---
 

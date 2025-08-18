@@ -84,18 +84,18 @@ Notes:
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🎯 Deployment Overview](#deployment-overview) | What you're building | All readers |
+| [🎯 Deployment Overview](#-deployment-overview) | What you're building | All readers |
 | [🏗️ Architecture Patterns](./DEPLOYMENT_ARCHITECTURE_GUIDE.md) | Single vs Multi-subscription | Architects, DevOps |
-| [📖 Key Concepts](#key-concepts) | Tenancy, hierarchy, layers | Architects, DevOps |
-| [⚡ Deployment Options](#deployment-options) | Paths and automation | DevOps, IT Leaders |
-| [📋 Prerequisites](#prerequisites) | Tools, access, quotas | All readers |
-| [🧪 Run locally (Functions + Emulator)](#run-locally-functions-emulator) | Local dev/test | Devs |
-| [🔧 Manual/Legacy Deployment](#manuallegacy-deployment) | Manual/legacy steps | DevOps |
-| [🚪 Enterprise API Management](#enterprise-api-management) | APIM deployment | Security, DevOps |
-| [🧪 Post-Deployment Validation](#post-deployment-validation) | Testing, health checks | DevOps |
-| [🛠️ Troubleshooting](#troubleshooting) | Common issues | All readers |
-| [🔄 Updating Deployments](#updating-deployments) | Add/expand/cleanup | DevOps |
-| [📚 Related Guides](#related-guides) | More docs | All readers |
+| [📖 Key Concepts](#-key-concepts-before-you-start) | Tenancy, hierarchy, layers | Architects, DevOps |
+| [🚀 Enhanced Deployment Options](#-enhanced-deployment-options) | Paths and automation | DevOps, IT Leaders |
+| [📋 Prerequisites](#-prerequisites) | Tools, access, quotas | All readers |
+| [🧪 Run locally (Functions + Emulator)](#-run-locally-functions--emulator) | Local dev/test | Devs |
+| [🔧 Manual/Legacy Deployment](#-manuallegacy-deployment-options) | Manual/legacy steps | DevOps |
+| [🚪 Enterprise API Management](#-enterprise-api-management-deployment) | APIM deployment | Security, DevOps |
+| [🧪 Post-Deployment Validation](#-post-deployment-testing--validation) | Testing, health checks | DevOps |
+| [🛠️ Troubleshooting](#-troubleshooting-common-issues) | Common issues | All readers |
+| [🔄 Updating Deployments](#-updating-existing-deployments) | Add/expand/cleanup | DevOps |
+| [📚 Related Guides](#-related-guides) | More docs | All readers |
 
 ---
 
