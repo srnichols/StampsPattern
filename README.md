@@ -18,6 +18,8 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 
 **The unique [zone-aware architecture](./docs/ARCHITECTURE_GUIDE.md) (GEO → Region → Availability Zone → CELL)** supports both shared and dedicated tenancy models, enabling organizations to optimize costs with shared CELLs for SMB clients ($8-16/tenant/month) while providing dedicated CELLs for enterprise customers requiring compliance isolation ($3,200+/tenant/month). This flexibility delivers up to 10-50x cost reduction for smaller tenants while ensuring enterprise-grade isolation for regulated workloads.
 
+**Perfect for organizations building mission-critical SaaS platforms** in healthcare (patient data isolation), financial services (regulatory compliance), government (data sovereignty), or any industry where security, compliance, and scalability are non-negotiable. The pattern provides a proven foundation to accelerate your SaaS journey, reduce architectural risk, and deliver measurable business value from day one.
+
 **Key business benefits include:**
 
 - **Enterprise-Ready Security**: End-to-end zero-trust network design with 85-90% JWT validation performance improvement, private endpoints, and automated policy enforcement ([Security Guide](./docs/SECURITY_GUIDE.md))
@@ -28,8 +30,6 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 - **Global Resilience**: Multi-region, multi-zone deployment with automated failover and disaster recovery ensures 99.99%+ availability ([AZ Architecture](./docs/ARCHITECTURE_GUIDE.md#availability-zone-architecture))
 - **Cloud Capacity Management**: Modular design enables rapid deployment in alternative locations when regions reach capacity, ensuring business continuity despite cloud supply constraints
 - **Developer Velocity**: Parameterized templates, comprehensive documentation, and CI/CD integration accelerate time-to-market by 60-80% <a href="./docs/PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">Parameterization Guide</a>&nbsp;<sup>↗</sup>
-
-**Perfect for organizations building mission-critical SaaS platforms** in healthcare (patient data isolation), financial services (regulatory compliance), government (data sovereignty), or any industry where security, compliance, and scalability are non-negotiable. The pattern provides a proven foundation to accelerate your SaaS journey, reduce architectural risk, and deliver measurable business value from day one.
 
 ## Quick reads (leadership & architecture)
 
