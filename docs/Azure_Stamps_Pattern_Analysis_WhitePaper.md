@@ -238,9 +238,7 @@ For more details, refer to the original GitHub repository: [Azure Stamps Pattern
 
 Related docs: <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">Parameterization Guide</a>&nbsp;<sup>↗</sup>
 
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 01:08:00 UTC  
 - **Status**: Current
@@ -251,3 +249,10 @@ Related docs: <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopene
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
 
 *Author: Scott Nichols | Date: August 09, 2025*
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

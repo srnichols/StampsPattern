@@ -1383,9 +1383,7 @@ How to run What-If:
 
 Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and validates with az deployment group what-if.
 
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 00:55:39 UTC  
 - **Status**: Current
@@ -1394,9 +1392,7 @@ Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and val
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
 
-**📝 Document Information**
 - **Version**: 
 - **Last Updated**: 2025-08-18 00:58:22 UTC  
 - **Status**: Current
@@ -1405,9 +1401,7 @@ Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and val
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 00:58:44 UTC  
 - **Status**: Current
@@ -1416,9 +1410,7 @@ Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and val
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 01:03:41 UTC  
 - **Status**: Current
@@ -1427,3 +1419,10 @@ Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and val
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

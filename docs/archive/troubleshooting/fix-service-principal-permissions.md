@@ -49,3 +49,10 @@ If the above doesn't work, the service principal might not have been created pro
 7. **Assign Contributor role** to the new service principal
 
 The key issue is that the service principal exists but doesn't have access to the subscription where your container apps live.
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

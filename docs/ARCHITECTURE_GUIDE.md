@@ -884,11 +884,17 @@ flowchart LR
   class Cosmos infra;
 ```
 
+```
+
 Short caption: requests flow from the browser to the Management Portal which calls DAB (GraphQL); DAB uses the Cosmos SDK for reads/writes. Functions (seeder) write to Cosmos using DefaultAzureCredential; Application Insights collects telemetry from each component.
 
----
 
-**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:25:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 00:55:39 UTC  
 - **Status**: Current
@@ -897,9 +903,7 @@ Short caption: requests flow from the browser to the Management Portal which cal
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
 
-**📝 Document Information**
 - **Version**: 
 - **Last Updated**: 2025-08-18 00:58:22 UTC  
 - **Status**: Current
@@ -908,9 +912,7 @@ Short caption: requests flow from the browser to the Management Portal which cal
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 00:58:44 UTC  
 - **Status**: Current
@@ -919,9 +921,7 @@ Short caption: requests flow from the browser to the Management Portal which cal
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 01:03:41 UTC  
 - **Status**: Current
@@ -930,3 +930,10 @@ Short caption: requests flow from the browser to the Management Portal which cal
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

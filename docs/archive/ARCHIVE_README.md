@@ -17,3 +17,10 @@ These files were moved to keep the repository root clean while preserving histor
 ## Usage
 
 Reference these files if you encounter authentication, deployment, or configuration issues that match the scenarios documented here.
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

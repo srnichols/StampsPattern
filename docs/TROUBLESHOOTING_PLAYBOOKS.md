@@ -226,9 +226,7 @@ If you'd like, I can also:
 - convert these playbooks into step-by-step runbooks in `docs/OPERATIONS_GUIDE.md` under a dedicated "Incident Playbooks" section, or
 - add a small `bin/diagnostics.ps1` script that runs a subset of these checks and prints a short report for the current environment.
 
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 01:08:00 UTC  
 - **Status**: Current
@@ -237,3 +235,10 @@ If you'd like, I can also:
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

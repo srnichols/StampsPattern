@@ -66,3 +66,10 @@ If you prefer the newer OIDC method, we can update the workflow to use:
 - `subscription-id`
 
 Let me know which approach you prefer!
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

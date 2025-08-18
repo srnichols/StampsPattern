@@ -99,3 +99,10 @@ If you encounter issues:
 2. Check that branch name exactly matches: `master`
 3. Ensure organization/repository names are correct: `srnichols/StampsPattern`
 4. Confirm service principal still has Contributor role on subscription
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

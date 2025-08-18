@@ -226,9 +226,7 @@ Expose and thread these parameters through main → regional/stamp layers:
 - [Parameterization Guide](./PARAMETERIZATION_GUIDE.md)
 - [Cost Optimization Guide](./COST_OPTIMIZATION_GUIDE.md)
 
----
 
-**📝 Document Information**
 - **Version**: 1.3.0
 - **Last Updated**: 2025-08-18 01:08:00 UTC  
 - **Status**: Current
@@ -237,3 +235,10 @@ Expose and thread these parameters through main → regional/stamp layers:
 ---
 
 *Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

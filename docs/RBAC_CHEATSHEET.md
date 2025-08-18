@@ -38,3 +38,10 @@ Related docs
 
 - `docs/SECRETS_AND_CONFIG.md` — how secrets & Key Vault tie into RBAC
 - `docs/AUTH_CI_STRATEGY.md` — CI & identity patterns
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

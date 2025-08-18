@@ -201,3 +201,10 @@ You now have:
 **Portal URL**: <https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>
 
 **Ready for the next phase of your multi-tenant SaaS journey!** 🚀
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

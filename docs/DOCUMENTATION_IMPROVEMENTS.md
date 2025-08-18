@@ -190,3 +190,10 @@ Ownership
 - Cost/Naming/Param: `docs/COST_OPTIMIZATION_GUIDE.md`, `docs/NAMING_CONVENTIONS_GUIDE.md`, `docs/PARAMETERIZATION_GUIDE.md`
 - Known issues: `docs/KNOWN_ISSUES.md`
 - Glossary: `docs/GLOSSARY.md`
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11

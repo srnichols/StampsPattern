@@ -76,3 +76,10 @@ Set-AzContext -SubscriptionId "480cb033-9a92-4912-9d30-c6b7bf795a87"
 # Assign Contributor role
 New-AzRoleAssignment -ObjectId "d292a2f4-6d7e-41a7-8738-e9d752e81b03" -RoleDefinitionName "Contributor" -Scope "/subscriptions/480cb033-9a92-4912-9d30-c6b7bf795a87"
 ```
+---
+
+**📝 Document Version Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
