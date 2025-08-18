@@ -1,4 +1,5 @@
-# 🧭 Azure Stamps Pattern - Data Strategy Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🧭 Data Strategy Guide
 
 ---
 

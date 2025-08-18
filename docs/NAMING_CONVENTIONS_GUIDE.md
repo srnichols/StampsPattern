@@ -1,6 +1,7 @@
 <!-- Renamed from NAMING_CONVENTIONS.md to NAMING_CONVENTIONS_GUIDE.md for consistency -->
 
-# 📝 Azure Stamps Pattern - Naming Conventions Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 📝 Naming Conventions Guide
 
 Standard naming for the Azure Stamps Pattern, patterns per resource type, region abbreviations, tagging, and migration guidance to keep deployments consistent and compliant at scale.
 

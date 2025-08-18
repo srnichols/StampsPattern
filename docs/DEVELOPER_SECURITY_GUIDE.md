@@ -1,5 +1,6 @@
 
-# 🔐 Azure Stamps Pattern - Developer Security Implementation Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🔐 Developer Security Implementation Guide
 
 How to implement zero‑trust security in code and infra: JWT validation, private endpoints, managed identity, caching, indexing, and robust error handling, optimized for performance and compliance.
 
