@@ -14,12 +14,13 @@ $tenantId = "30dd575a-bca7-491b-adf6-41d5f39275d4"
 $clientId = "d8f3024a-0c6a-4cea-af8b-7a7cd985354f"
 
 # Update Container App Secret if provided
+
 if ($ClientSecret) {
     Write-Host "🔐 Updating Container App Secret..." -ForegroundColor Yellow
     try {
         az containerapp secret set --name ca-stamps-portal --resource-group rg-stamps-mgmt --secrets "azure-client-secret=$ClientSecret"
         Write-Host "✅ Container App secret updated successfully!" -ForegroundColor Green
-        
+
         # Wait for container restart
         Write-Host "⏳ Waiting for container to restart..." -ForegroundColor Yellow
         Start-Sleep -Seconds 30
@@ -31,10 +32,11 @@ if ($ClientSecret) {
     Write-Host ""
 
 # Test OIDC Configuration
+
 if ($TestEndpoints) {
     Write-Host "🌐 Testing OIDC Configuration..." -ForegroundColor Yellow
-    $oidcUrl = "https://login.microsoftonline.com/$tenantId/v2.0/.well-known/openid-configuration"
-    
+    $oidcUrl = "<https://login.microsoftonline.com/$tenantId/v2.0/.well-known/openid-configuration>"
+
     try {
         $oidcConfig = Invoke-RestMethod -Uri $oidcUrl -Method Get -TimeoutSec 10
         Write-Host "✅ OIDC configuration accessible" -ForegroundColor Green
@@ -54,11 +56,12 @@ if ($TestEndpoints) {
 }
 
 # Check Container App Status
+
 Write-Host "🐳 Checking Container App Status..." -ForegroundColor Yellow
 try {
     $appStatus = az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --query "properties.runningStatus" -o tsv
     Write-Host "✅ Container App Status: $appStatus" -ForegroundColor Green
-    
+
     # Check if authentication environment variables are set
     $envVars = az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --query "properties.template.containers[0].env[?contains(name, 'AzureAd')].{name:name,value:value}" -o json | ConvertFrom-Json
     
@@ -76,10 +79,11 @@ try {
 Write-Host ""
 
 # Test Portal Accessibility
+
 Write-Host "🌍 Testing Portal Accessibility..." -ForegroundColor Yellow
 try {
     $response = Invoke-WebRequest -Uri $portalUrl -Method Head -TimeoutSec 10 -MaximumRedirection 0 -ErrorAction SilentlyContinue
-    
+
     if ($response.StatusCode -eq 200) {
         Write-Host "✅ Portal accessible directly (no authentication)" -ForegroundColor Green
     } elseif ($response.StatusCode -eq 302 -or $response.StatusCode -eq 301) {
@@ -98,6 +102,7 @@ try {
 Write-Host ""
 
 # Final Instructions
+
 Write-Host "🎯 Manual Verification Steps:" -ForegroundColor Green
 Write-Host "=============================" -ForegroundColor Green
 Write-Host "1. Open incognito/private browser window" -ForegroundColor White

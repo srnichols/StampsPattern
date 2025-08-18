@@ -1,10 +1,11 @@
 # Configure Azure Entra ID Authentication
+
 # Run this script after completing the app registration in Azure Portal
 
 param(
     [Parameter(Mandatory=$true)]
     [string]$ClientId,
-    
+
     [Parameter(Mandatory=$true)]
     [string]$TenantId,
     
@@ -17,12 +18,13 @@ param(
 Write-Host "🔐 Configuring Azure Entra ID Authentication..." -ForegroundColor Cyan
 
 # Update the Container App with authentication configuration
+
 Write-Host "Updating Container App secrets..." -ForegroundColor Yellow
 
 try {
     # Update the azure-client-secret
     az containerapp secret set `
-        --name ca-stamps-portal `
+--name ca-stamps-portal `
         --resource-group $ResourceGroup `
         --secrets azure-client-secret=$ClientSecret
 

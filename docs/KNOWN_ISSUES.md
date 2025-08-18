@@ -44,7 +44,6 @@ Practical fixes and workarounds for common issues across development, deployment
 9. [Link checker failures in docs](#-troubleshooting-tools): run `pwsh ./scripts/verify-doc-links.ps1` and fix relative links.
 10. [APIM or premium resource timeouts](#-deployment-issues): allow extended timeouts and monitor provisioning state via `az deployment group show`.
 
-
 | Section | Focus Area | Best for |
 |---------|------------|----------|
 | [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, External ID | DevOps |
@@ -64,6 +63,7 @@ Practical fixes and workarounds for common issues across development, deployment
 > This guide is your first stop when something goes wrong with the Stamps Pattern. It covers the most frequent issues, their symptoms, and proven solutions, so you can get back to building, deploying, and operating with confidence.
 
 **Why is this important?**
+>
 > - **Faster troubleshooting:** Find answers without searching endlessly
 > - **Knowledge sharing:** Learn from real-world problems and solutions
 > - **Onboarding:** New team members ramp up quickly by seeing common pitfalls
@@ -243,6 +243,7 @@ flowchart TD
 This document provides solutions to common issues encountered during development, deployment, and operation of the Azure Stamps Pattern.
 
 ## 📋 Table of Contents
+
 - [🚀 Deployment Issues](#-deployment-issues)
 - [🔧 Development Issues](#-development-issues)
 - [⚡ Performance Issues](#-performance-issues)
@@ -259,12 +260,14 @@ This document provides solutions to common issues encountered during development
 **Problem**: Getting validation errors when deploying Bicep templates.
 
 **Common Symptoms**:
+
 ```
 Error: Scope "resourceGroup" is not valid for this resource type
 Error: The provided value can have a length as small as 2 and may be too short
 ```
 
 **Solution**:
+
 ```powershell
 # 1. Always validate templates before deployment
 az bicep build --file main.bicep
@@ -291,11 +294,13 @@ az deployment sub create \
 **Problem**: Resources with duplicate names causing deployment failures.
 
 **Symptoms**:
+
 ```
 Error: The resource name 'sa123abc' is already taken
 ```
 
 **Workaround**:
+
 ```powershell
 # Use the resource token parameter to ensure uniqueness
 # In main.parameters.json, ensure resourceToken is unique:
@@ -316,11 +321,13 @@ param resourceToken string = take(uniqueString(resourceGroup().id), 6)
 **Problem**: Microsoft Entra External ID (customers, formerly Azure AD B2C) tenants cannot be created via Bicep/ARM templates.
 
 **Symptoms**:
+
 ```
 Error: Resource type 'Microsoft.AzureActiveDirectory/b2cDirectories' not supported
 ```
 
 **Workaround**:
+
 ```powershell
 # 1. Manually create the External ID tenant in the Azure portal first
 # 2. Configure app registrations and user flows there
@@ -334,7 +341,7 @@ az deployment group create \
 
 ### Issue: Storage diagnostics categories unsupported in smoke
 
-**Problem**: Storage diagnostic log categories vary by storage kind/SKU. In some subscriptions/regions, neither Blob* nor Storage* categories were accepted for the existing account used in smoke deployments, causing deployment failures like:
+**Problem**: Storage diagnostic log categories vary by storage kind/SKU. In some subscriptions/regions, neither Blob*nor Storage* categories were accepted for the existing account used in smoke deployments, causing deployment failures like:
 
 ```
 BadRequest: Category 'StorageRead' is not supported
@@ -343,7 +350,8 @@ BadRequest: Category 'StorageRead' is not supported
 **Resolution (Smoke)**: For smoke deployments, enable metrics-only for Storage diagnostics to avoid category mismatches. This preserves observability while keeping deployments reliable and fast.
 
 **Notes**:
-- This applies only to smoke. For full environments, switch to explicit categories appropriate for the storage kind (Blob* for BlockBlobStorage; Storage* for GPv2) once confirmed in your subscription/region.
+
+- This applies only to smoke. For full environments, switch to explicit categories appropriate for the storage kind (Blob*for BlockBlobStorage; Storage* for GPv2) once confirmed in your subscription/region.
 - The Bicep now emits only `AllMetrics` for Storage in smoke mode; revisit if you need detailed logs.
 
 ---
@@ -355,12 +363,14 @@ BadRequest: Category 'StorageRead' is not supported
 **Problem**: Integration tests fail with emulator connection errors.
 
 **Symptoms**:
+
 ```
 CosmosException: Service is unavailable
 SSL connection error
 ```
 
 **Solution**:
+
 ```powershell
 # 1. Install and start Cosmos DB Emulator
 # Download from: https://aka.ms/cosmosdb-emulator
@@ -389,11 +399,13 @@ var cosmosClientOptions = new CosmosClientOptions
 **Problem**: Functions fail to connect to Redis cache locally.
 
 **Symptoms**:
+
 ```
 StackExchange.Redis.RedisConnectionException: No connection is available
 ```
 
 **Workaround**:
+
 ```csharp
 // Use fallback to in-memory cache for local development
 public void ConfigureServices(IServiceCollection services)
@@ -433,6 +445,7 @@ public void ConfigureServices(IServiceCollection services)
 **Problem**: `func start` builds the Functions app but the host exits quickly, or HTTP probes like `/api/health` or `/api/swagger/ui` return connection errors.
 
 **Checklist & Fixes**:
+
 ```powershell
 # 1) Verify Azure Functions Core Tools v4 is installed and on PATH
 func --version  # Expect major version 4
@@ -463,6 +476,7 @@ func start --verbose
 ```
 
 **Notes**:
+
 - Start from the `AzureArchitecture` directory so the host picks up `host.json` and function assemblies.
 - If the process exits immediately, inspect the last log lines for unhandled exceptions (e.g., missing env var).
 - Ensure only one host instance is running to prevent port conflicts.
@@ -478,6 +492,7 @@ For a step-by-step setup, see [Developer Quickstart](./DEVELOPER_QUICKSTART.md).
 **Problem**: JWT validation taking longer than expected (>100ms).
 
 **Investigation**:
+
 ```csharp
 // Add performance logging to identify bottlenecks
 public async Task<bool> ValidateJwtAsync(string token)
@@ -514,6 +529,7 @@ public async Task<bool> ValidateJwtAsync(string token)
 ```
 
 **Solutions**:
+
 1. Ensure Redis cache is properly configured
 2. Increase JWKS cache TTL if appropriate
 3. Consider pre-warming cache for frequently used tokens
@@ -526,12 +542,14 @@ public async Task<bool> ValidateJwtAsync(string token)
 **Problem**: Receiving 429 throttling errors from Cosmos DB.
 
 **Symptoms**:
+
 ```
 Microsoft.Azure.Cosmos.CosmosException: Request rate is large
 Status: 429 TooManyRequests
 ```
 
 **Immediate Solutions**:
+
 ```csharp
 // 1. Implement exponential backoff retry policy
 var cosmosClientOptions = new CosmosClientOptions
@@ -555,6 +573,7 @@ await Task.WhenAll(tasks);
 ```
 
 **Long-term Solutions**:
+
 - Scale up RU/s during peak hours
 - Implement autoscale for Cosmos DB
 - Review and optimize query patterns
@@ -569,6 +588,7 @@ await Task.WhenAll(tasks);
 **Problem**: Azure Defender policies not being applied despite deployment.
 
 **Diagnosis**:
+
 ```powershell
 # Check current pricing tier
 az security pricing show --name VirtualMachines
@@ -580,6 +600,7 @@ az account show --query id
 ```
 
 **Solution**:
+
 ```powershell
 # Deploy security template at subscription scope
 az deployment sub create \
@@ -596,11 +617,13 @@ az deployment sub create \
 **Problem**: Functions unable to access Key Vault secrets.
 
 **Symptoms**:
+
 ```
 Azure.Security.KeyVault.Secrets.SecretClientException: Forbidden
 ```
 
 **Solution**:
+
 ```bash
 # 1. Verify managed identity is enabled
 az functionapp identity show --name fa-stamps-eastus --resource-group rg-stamps-dev
@@ -627,6 +650,7 @@ var keyVaultClient = new SecretClient(new Uri("https://kv-stamps123abc.vault.azu
 **Problem**: SQL Database connections timing out intermittently.
 
 **Investigation**:
+
 ```sql
 -- Check current connections
 SELECT 
@@ -650,6 +674,7 @@ INNER JOIN sys.dm_exec_requests blocking ON blocked.blocking_session_id = blocki
 ```
 
 **Solutions**:
+
 ```csharp
 // 1. Implement connection pooling
 services.AddDbContext<StampsContext>(options =>
@@ -683,6 +708,7 @@ public async Task<TenantInfo> GetTenantAsync(string tenantId)
 **Problem**: Health checks failing causing traffic routing issues.
 
 **Diagnosis**:
+
 ```bash
 # Check health endpoint
 curl -f https://fa-stamps-eastus.azurewebsites.net/api/health
@@ -694,6 +720,7 @@ az monitor app-insights query \
 ```
 
 **Solution**:
+
 ```csharp
 // Implement comprehensive health check
 [Function("HealthCheck")]
@@ -744,6 +771,7 @@ public async Task<HttpResponseData> HealthCheck([HttpTrigger(AuthorizationLevel.
 **Problem**: Function Apps experiencing memory pressure and restarts.
 
 **Diagnosis**:
+
 ```bash
 # Check memory metrics
 az monitor metrics list \
@@ -754,6 +782,7 @@ az monitor metrics list \
 ```
 
 **Solutions**:
+
 ```csharp
 // 1. Implement proper disposal patterns
 public class TenantFunction : IDisposable
@@ -867,6 +896,3 @@ If you encounter issues not covered here:
 **🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to report issues, suggest improvements, or contribute fixes.
 
 *This document is updated regularly. Last updated: August 9, 2025*
-
-
-

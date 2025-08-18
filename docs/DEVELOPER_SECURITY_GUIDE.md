@@ -35,6 +35,7 @@ How to implement zero‑trust security in code and infra: JWT validation, privat
 > This guide is your onboarding reference for implementing secure, compliant, and high-performance solutions in the Azure Stamps Pattern. It explains what changed, why it matters, and how to apply best practices in your code and infrastructure.
 
 **Why is this important?**
+>
 > - **Security:** Prevent breaches and ensure compliance from day one
 > - **Performance:** Leverage caching and indexing for fast, reliable apps
 > - **Onboarding:** Learn by example with before/after code and configuration
@@ -42,19 +43,19 @@ How to implement zero‑trust security in code and infra: JWT validation, privat
 
 ---
 
-
-
 ## 🚨 Critical Security Changes (August 2025)
 
 Read this section first when upgrading existing services; it highlights breaking changes and performance wins that affect code, infra, and configuration.
 
 ### ⚠️ **Breaking Changes**
+
 - **Cosmos DB**: Public access now **PERMANENTLY DISABLED** by default
 - **SQL Server**: Firewall rules are **conditional** based on private endpoint configuration
 - **JWT Validation**: Enhanced validation requires proper External ID configuration
 - **Connection Strings**: Must use managed identities or Key Vault references
 
 ### ✅ **Performance Improvements**
+
 - **JWT Validation**: 85-90% latency reduction (100-200ms → 10-20ms)
 - **Database Queries**: Composite indexes reduce query time by 60-80%
 - **Caching**: Redis implementation reduces database hits by 80-90%
@@ -66,6 +67,7 @@ This section provides before/after examples for JWT validation, data access, DI,
 ### 1. **Enhanced JWT Validation Implementation**
 
 #### **Before (Legacy)**
+
 ```csharp
 // ❌ Old approach - no caching, basic validation
 public static async Task<ClaimsPrincipal?> ValidateTokenAsync(HttpRequestData req)
@@ -81,6 +83,7 @@ public static async Task<ClaimsPrincipal?> ValidateTokenAsync(HttpRequestData re
 ```
 
 #### **After (Enhanced)**
+
 ```csharp
 // ✅ New approach - cached, comprehensive validation
 public static class JwtValidator
@@ -133,6 +136,7 @@ public static class JwtValidator
 ### 2. **Zero-Trust Database Configuration**
 
 #### **Cosmos DB Configuration**
+
 ```bicep
 // ✅ Zero-trust configuration
 resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
@@ -153,6 +157,7 @@ resource cellCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
 ```
 
 #### **SQL Server Configuration**
+
 ```bicep
 // ✅ Conditional firewall rules
 resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
@@ -176,6 +181,7 @@ resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-11-01-preview
 ### 3. **Dependency Injection Pattern**
 
 #### **Function Implementation**
+
 ```csharp
 // ✅ Dependency injection for testability and reliability
 public class CreateTenantFunction
@@ -201,6 +207,7 @@ public class CreateTenantFunction
 ```
 
 #### **Service Registration**
+
 ```csharp
 // Program.cs - Service registration
 public static void Main()
@@ -246,6 +253,7 @@ private static void ConfigureServices(IServiceCollection services)
 ### 4. **Caching Implementation**
 
 #### **Tenant Routing Cache**
+
 ```csharp
 public class RedisTenantCacheService : ITenantCacheService
 {
@@ -281,6 +289,7 @@ public class RedisTenantCacheService : ITenantCacheService
 ### 5. **Enhanced Error Handling**
 
 #### **Structured Error Handling**
+
 ```csharp
 [Function("CreateTenant")]
 public async Task<HttpResponseData> Run([HttpTrigger] HttpRequestData req)
@@ -317,6 +326,7 @@ public async Task<HttpResponseData> Run([HttpTrigger] HttpRequestData req)
 ## 🧪 Testing Guidelines
 
 ### **Unit Testing with Mocking**
+
 ```csharp
 public class CreateTenantFunctionTests
 {
@@ -342,6 +352,7 @@ public class CreateTenantFunctionTests
 ```
 
 ### **Integration Testing**
+
 ```csharp
 [Collection("CosmosDB")]
 public class CreateTenantFunctionIntegrationTests
@@ -358,6 +369,7 @@ public class CreateTenantFunctionIntegrationTests
 ## 📋 Configuration Checklist
 
 ### **Environment Variables**
+
 ```json
 {
   "AzureWebJobsStorage": "UseDevelopmentStorage=true",
@@ -382,6 +394,7 @@ Note: For Microsoft Entra External ID (customers), the user flow name continues 
 For end-to-end local setup steps, see [Developer Quickstart](./DEVELOPER_QUICKSTART.md).
 
 ### **Required NuGet Packages**
+
 ```xml
 <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.19.0" />
 <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.35.4" />
@@ -391,6 +404,7 @@ For end-to-end local setup steps, see [Developer Quickstart](./DEVELOPER_QUICKST
 ```
 
 ### **Cosmos DB Indexing Policy**
+
 ```json
 {
   "compositeIndexes": [
@@ -427,6 +441,7 @@ For end-to-end local setup steps, see [Developer Quickstart](./DEVELOPER_QUICKST
    - ✅ Verify cache expiration policies
 
 ### **Performance Monitoring**
+
 ```csharp
 // Add performance counters
 _logger.LogInformation("JWT validation completed in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
@@ -446,7 +461,3 @@ _logger.LogInformation("Cache {CacheResult} for tenant {TenantId}",
 - [Security Guide](./SECURITY_GUIDE.md) - Comprehensive security documentation
 - [Architecture Guide](./ARCHITECTURE_GUIDE.md) - Technical architecture details
 - [Operations Guide](./OPERATIONS_GUIDE.md) - Production operations
-
-
-
-

@@ -5,6 +5,7 @@ This page lists the configuration and secret names used across the project, guid
 Keep secrets out of source control. Use Azure Key Vault (recommended) for production and `local.settings.json` for local developer runs.
 
 ## Quick reference — key secrets & env vars
+
 - COSMOS_CONN: Cosmos DB connection string (Key Vault secret: `secrets/cosmos-conn`)
 - DAB_GRAPHQL_URL: Data API Builder GraphQL endpoint (set as app config / container env)
 - DAB_CONFIG_BLOB or DAB_CONFIG_FILE: path to DAB configuration (if in-image)
@@ -15,6 +16,7 @@ Keep secrets out of source control. Use Azure Key Vault (recommended) for produc
 - SEEDER_CLIENT_ID / SEEDER_TENANT_ID: for seeder when using service principal (optional)
 
 ## Local development
+
 Use `local.settings.json` for Functions + DAB when running locally. Example minimal `local.settings.json`:
 
 ```json
@@ -32,6 +34,7 @@ Use `local.settings.json` for Functions + DAB when running locally. Example mini
 - Never commit `local.settings.json` with real secrets. Use environment variables in CI/build pipelines or Key Vault for production.
 
 ## Container / App configuration (production)
+
 - Use Azure Key Vault references (recommended) or environment variables set in the platform (Container Apps, App Service, etc.).
 - Recommended Key Vault secret naming convention:
   - `secrets/cosmos-conn` — Cosmos DB connection string
@@ -40,12 +43,14 @@ Use `local.settings.json` for Functions + DAB when running locally. Example mini
   - `secrets/jwt-signing-key` — if using app-specific signing keys
 
 ## DefaultAzureCredential and Managed Identity notes
+
 - The repository uses `DefaultAzureCredential` in several places (seeder, functions). In Azure this will pick Managed Identity when available. Locally it will fall back to Visual Studio / Azure CLI credentials.
 - Recommended workflow:
   1. For infrastructure and prod apps, enable a system- or user-assigned managed identity and grant it minimal permissions (ACR pull, Cosmos DB data contributor where needed).
   2. Grant the seeder or automation identity the appropriate Cosmos DB data-plane role (Cosmos DB Built-in Data Contributor) to allow writes.
 
 ## Sample Azure CLI snippets (replace placeholders)
+
 - Set a secret in Key Vault (PowerShell / bash):
 
 ```powershell
@@ -71,17 +76,20 @@ az role assignment create --assignee $principalId --role "Cosmos DB Built-in Dat
 ```
 
 ## CI / Pipeline recommendations
+
 - Use Key Vault-backed secrets in your pipeline for deployments. Example actions:
   - Fetch Key Vault secrets in pipeline and inject as environment variables to deployment step.
   - Use a service principal scoped to the resource group for CI only if necessary; prefer managed identities in production.
 
 ## Troubleshooting
+
 - If apps can't read secrets in Azure: verify Key Vault access policies or RBAC, and that the managed identity is enabled and has GET permission for secrets (or is granted Key Vault Secrets User role via RBAC).
 - If DAB/Portal can't pull image: confirm ACR role assignment and that the container host has network access to the registry.
 
 ---
 
 ## Per-service environment variable mappings
+
 A compact mapping of environment variables used by each service, their purpose, and where to set them.
 
 | Env var | Purpose | Service(s) | Where to set |
@@ -100,6 +108,7 @@ A compact mapping of environment variables used by each service, their purpose, 
 | JWT_SIGNING_KEY | App-specific JWT signing secret (if used) | Portal / API | Key Vault secret |
 
 Notes:
+
 - Prefer Managed Identity + DefaultAzureCredential: avoids storing tenant/client secrets. When MI is used, set `KEY_VAULT_NAME` and assign proper access to the identity.
 - Use Key Vault references in Container Apps (or App Service managed identity + Key Vault) rather than injecting raw secrets into env vars where the platform supports it.
 - For local development, use `local.settings.json` or environment variables on your workstation; never commit secret values.
@@ -107,6 +116,3 @@ Notes:
 ---
 
 If you want, I can now add a brief section listing the exact env var names per repository component (file paths) — say "add per-component file mappings" and I'll insert them next.
-
-
-

@@ -9,6 +9,7 @@ Practical blueprint for designing the CELL data plane, HA/DR tiers, replication 
 - Outcomes: Clear choices per workload, repeatable IaC, predictable RPO/RTO, and operator-ready runbooks
 
 ---
+
 ## 👤 Who Should Read This Guide?
 
 - Data & Solution Architects: Choose per-workload tiers and topologies
@@ -19,6 +20,7 @@ Practical blueprint for designing the CELL data plane, HA/DR tiers, replication 
 ---
 
 > Scope note
+>
 > - Global control plane data (tenant directory/routing) is centrally managed and not configurable per team; it follows platform defaults and global replication strategy.
 > - This guide focuses on the CELL data plane (regional/zone resources owned by app teams). All HA/DR knobs and recipes apply to CELL resources unless explicitly stated.
 
@@ -47,6 +49,7 @@ Practical blueprint for designing the CELL data plane, HA/DR tiers, replication 
 Design a consistent, repeatable approach to CELL data HA/DR that aligns with tenant needs and budget. Choose a tier per dataset, apply the matching topology, and enable it via IaC.
 
 Key decisions:
+
 - Which tier (Bronze/Silver/Gold/Platinum) per dataset?
 - Paired region for each CELL? Single-write vs multi-write?
 - Tenant home region and write leader assignment model?
@@ -56,6 +59,7 @@ Key decisions:
 ## 🧪 Technology Scope & Defaults
 
 Supported services (persisted app data):
+
 - RDBMS
   - Azure SQL Database (default relational choice)
   - Azure Database for PostgreSQL – Flexible Server
@@ -67,6 +71,7 @@ Supported services (persisted app data):
   - Azure Files (SMB/NFS semantics)
 
 Defaults
+
 - Prefer Azure SQL for most OLTP relational workloads; choose Postgres where feature parity or ecosystem matters.
 - Prefer Cosmos DB (SQL API) for planet-scale, multi-region, low-latency with conflict tolerance.
 - Prefer Blob for object data; Files only when file semantics are required.
@@ -97,6 +102,7 @@ Defaults
 - Paired Cells (multi-write): Cosmos multi-write + conflict policy; SQL/Postgres stay single-write with strict leader.
 
 When to choose which:
+
 - Low complexity, low cost → Bronze/Silver
 - Mission-critical, tight SLOs → Gold/Platinum
 
@@ -164,6 +170,7 @@ When to choose which:
 ## 🧱 IaC Toggles
 
 Expose and thread these parameters through main → regional/stamp layers:
+
 - Cosmos: cosmosAdditionalLocations (array), cosmosMultiWrite (bool)
 - SQL: enableSqlFailoverGroup (bool), sqlSecondaryServerId (string)
 - Storage: storageSkuName (Premium_ZRS | Standard_GZRS | Standard_RAGZRS), enableStorageObjectReplication (bool), storageReplicationDestinationId (string)
@@ -222,6 +229,3 @@ Expose and thread these parameters through main → regional/stamp layers:
 ---
 
 *Last updated: August 2025*
-
-
-

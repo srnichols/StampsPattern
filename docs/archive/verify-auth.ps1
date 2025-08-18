@@ -8,6 +8,7 @@ Write-Host "🔍 Verifying Azure Entra ID Authentication Configuration..." -Fore
 Write-Host ""
 
 # Configuration details
+
 $portalUrl = "https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io"
 $clientId = "d8f3024a-0c6a-4cea-af8b-7a7cd985354f"
 $tenantId = "30dd575a-bca7-491b-adf6-41d5f39275d4"
@@ -21,10 +22,11 @@ Write-Host "Tenant Domain: $tenant" -ForegroundColor White
 Write-Host ""
 
 # Check Container App environment variables
+
 Write-Host "🔧 Checking Container App Configuration..." -ForegroundColor Yellow
 try {
     $envVars = az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --query "properties.template.containers[0].env" -o json | ConvertFrom-Json
-    
+
     $azureAdVars = $envVars | Where-Object { $_.name -like "AzureAd__*" }
     
     if ($azureAdVars.Count -gt 0) {
@@ -46,6 +48,7 @@ try {
 Write-Host ""
 
 # Update client secret if provided
+
 if ($ClientSecret) {
     Write-Host "🔐 Updating client secret..." -ForegroundColor Yellow
     try {
@@ -58,6 +61,7 @@ if ($ClientSecret) {
 }
 
 # Required redirect URIs check
+
 Write-Host "🌐 Required Redirect URI Configuration:" -ForegroundColor Yellow
 Write-Host "Please ensure these URIs are configured in your Enterprise Application:" -ForegroundColor White
 Write-Host ""
@@ -69,6 +73,7 @@ Write-Host "   $portalUrl/signout-callback-oidc" -ForegroundColor White
 Write-Host ""
 
 # Test authentication endpoint
+
 Write-Host "🧪 Testing Authentication Endpoints..." -ForegroundColor Yellow
 Write-Host ""
 
@@ -82,6 +87,7 @@ Write-Host "   $oidcConfigUrl" -ForegroundColor White
 Write-Host ""
 
 # Test OIDC configuration
+
 Write-Host "Testing OIDC endpoint..." -ForegroundColor Yellow
 try {
     $response = Invoke-RestMethod -Uri $oidcConfigUrl -Method Get -TimeoutSec 10

@@ -3,6 +3,7 @@
 ## ✅ Your Current Configuration
 
 **Enterprise Application Details:**
+
 - **Name**: StampsManagementClient
 - **Application ID**: d8f3024a-0c6a-4cea-af8b-7a7cd985354f
 - **Object ID**: 4074e1f0-08f2-4b83-b399-0a150bd4c3d0
@@ -10,6 +11,7 @@
 - **Tenant ID**: 30dd575a-bca7-491b-adf6-41d5f39275d4
 
 **Portal Configuration**: ✅ **CONFIGURED**
+
 - **Client ID**: d8f3024a-0c6a-4cea-af8b-7a7cd985354f
 - **Tenant ID**: 30dd575a-bca7-491b-adf6-41d5f39275d4
 - **Environment Variables**: All Azure AD settings applied to Container App
@@ -19,7 +21,7 @@
 **Please verify these URIs are configured in your Enterprise Application:**
 
 1. **Navigate to Azure Portal** → Azure Entra ID → Enterprise Applications
-2. **Find**: "StampsManagementClient" 
+2. **Find**: "StampsManagementClient"
 3. **Go to**: Single sign-on → Edit Basic SAML Configuration
 4. **Ensure these Redirect URIs are configured:**
 
@@ -28,6 +30,7 @@
    ```
 
    **Sign-out URL:**
+
    ```
    https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signout-callback-oidc
    ```
@@ -43,6 +46,7 @@
    - Copy the secret value
 
 2. **Update Container App Secret**:
+
    ```powershell
    az containerapp secret set `
      --name ca-stamps-portal `
@@ -65,6 +69,3 @@ Your application registration must have ID tokens enabled:
 5. **Click Save**
 
 **Without this setting, you'll get authentication error AADSTS700054**
-
-
-

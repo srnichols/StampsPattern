@@ -42,12 +42,14 @@ Last updated: August 2025
 7. **Production Considerations**: Review the Domain Naming policy section below for production deployment planning
 
 **Authentication & Access:**
+
 - The portal uses Azure Entra ID for administrative authentication
 - Role-based access control via Azure AD groups mapped to application roles
 - Supports SSO with your organization's existing identity infrastructure
 
 **Portal Architecture:**
 The Management Portal is a control-plane application for administering tenants and cells. It provides:
+
 - Role-scoped CRUD operations over Cosmos DB via Data API Builder (DAB)
 - Integration with Azure Functions for complex operational workflows
 - Real-time monitoring and alerting through Application Insights integration
@@ -73,6 +75,7 @@ flowchart LR
 ```
 
 Key points:
+
 - Hosting: Azure Container Apps for Portal and DAB; Azure Functions for ops
 - Auth: Built‑in auth (Easy Auth model) emits headers that DAB consumes
 - Data: Cosmos (NoSQL) with explicit partition keys and TTL for operations
@@ -118,11 +121,13 @@ Tip (local testing): The `scripts/graphql-smoke-test.ps1` simulates roles by inj
 This portal uses a control-plane Cosmos DB database (`stamps-control-plane`) to store tenant metadata, cell registry, and long‑running operations.
 
 Current implementation (MVP):
+
 - Containers: `tenants`, `cells`, `operations`
 - Partition key path: `/pk` in each container (value mapped per-item)
 - Access: GraphQL and REST via Data API Builder (DAB) configuration in `management-portal/dab/dab-config.json`
 
 Proposed target schema (based on implemented portal design):
+
 - Tenants (pk: `/tenantId`), Cells (pk: `/cellId`), Operations (pk: `/tenantId`), Catalogs (pk: `/type`)
 - Unique keys: Tenants enforce unique `domain`; Cells enforce unique `(region, availabilityZone, name)` if applicable
 - TTL: Optional TTL on `operations` (e.g., 30–90 days) with PITR enabled at the account level
@@ -187,7 +192,7 @@ Proposed target schema (based on implemented portal design):
   }
   ```
 
- - Catalogs (container: `catalogs`, pk: `/type`), recommended addition
+- Catalogs (container: `catalogs`, pk: `/type`), recommended addition
 
   ```jsonc
   {
@@ -258,6 +263,7 @@ erDiagram
     "d": { "id": "contoso.com", "type": "domains" }
   }
   ```
+
 - TTL
   - Apply TTL on `operations` (e.g., 60–90 days) to control storage costs; exempt retained/compliance operations by setting `ttl = -1` per item
 
@@ -329,6 +335,7 @@ sequenceDiagram
 ## 🔌 API (GraphQL) Quick Reference
 
 Headers (Easy Auth compatible) used by DAB for auth:
+
 - `X-MS-CLIENT-PRINCIPAL` (base64 JSON with claims/roles)
 - `X-MS-CLIENT-PRINCIPAL-IDP`
 
@@ -401,6 +408,7 @@ Tip: Use `scripts/graphql-smoke-test.ps1 -AsAdmin` to simulate admin role locall
 - Nothing changes right away: Cosmos eventual consistency; refresh or re‑query
 
 Known limitations:
+
 - Cosmos unique keys are per partition; use catalogs‑based reservation for global uniqueness
 - GraphQL introspection may be disabled in strict environments
 
@@ -413,6 +421,3 @@ Known limitations:
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md)
 - [Security Guide](./SECURITY_GUIDE.md)
 - [Production SaaS Checklist, One‑Pager](./one-pagers/production-saas-checklist.md)
-
-
-

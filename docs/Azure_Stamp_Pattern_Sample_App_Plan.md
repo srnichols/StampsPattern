@@ -7,6 +7,7 @@ This document outlines a detailed plan for developing and integrating a sample a
 The application will be a simple user task tracking app, designed with minimal functionality to prove the concept without unnecessary complexity. To add a bit more flare while staying lightweight, the app will support task categories, sharing tasks with team members in the same tenant, priority ranking (high, mid, low) plus an archive state, optional due dates, and keyword tagging with search. No code will be built at this stage; this plan serves as a reference for future implementation.
 
 Key principles guiding this plan:
+
 - **Modularity**: Ensure the app is containerized for easy deployment and scalability.
 - **Multi-Tenancy**: Support isolation per tenant while demonstrating shared infrastructure benefits.
 - **Technology Stack Alignment**: Adhere to specified technologies for consistency with Azure ecosystem.
@@ -15,6 +16,7 @@ Key principles guiding this plan:
 ## 2. Objectives
 
 The primary goals of this sample application are:
+
 - Demonstrate a fully functional app deployed across all CELL types in the Stamp Pattern.
 - Validate tenant isolation, routing, and branding in a multi-tenant environment.
 - Provide a reference implementation for onboarding real customer apps.
@@ -22,6 +24,7 @@ The primary goals of this sample application are:
 - Ensure the app is simple, maintainable, and extensible for future enhancements.
 
 Success Metrics:
+
 - Successful deployment of tenant instances via the management portal.
 - Correct routing to tenant-specific URLs/subdomains.
 - Display of tenant branding (e.g., name/business identity in the app header).
@@ -38,6 +41,7 @@ Success Metrics:
 The sample app will follow a microservices-inspired architecture, containerized for deployment into CELLs. It will consist of a frontend, backend/data access layer, and supporting services. The app will be deployed as a single container app bundle, with dependencies on Azure-managed services.
 
 ### Architecture Diagram (Conceptual)
+
 (Note: In future documentation, include a visual diagram using tools like Draw.io or Azure Architecture Icons.)
 
 - **Frontend**: .NET 9 Blazor app with Bootstrap 5 for UI/UX.
@@ -52,12 +56,14 @@ The sample app will follow a microservices-inspired architecture, containerized 
 - **Routing/Branding**: Custom subdomains (e.g., tenant1.example.com) and header personalization based on captured tenant metadata.
 
 The app will support multi-tenancy by:
+
 - Using tenant IDs to partition data in Cosmos DB and SQL Server.
 - Dynamically loading branding assets (e.g., logos, names) from Blob Storage or metadata.
 
 ## 4. Components Breakdown
 
 ### 4.1 Frontend
+
 - **Technology**: .NET 9 Blazor (WebAssembly or Server mode) with Bootstrap 5 for responsive design.
 - **Features**:
   - Login page for basic authentication.
@@ -73,6 +79,7 @@ The app will support multi-tenancy by:
   - Task icon/emoji: Pick an icon/emoji from a curated set; show icon on list rows and detail.
 
 ### 4.2 Backend/API
+
 - **Technology**: Data API Builder (GraphQL) over Cosmos DB (SQL API) and SQL for simple analytics.
 - **Core entities** (GraphQL types):
   - Task: id, tenantId, title, description, categoryId?, priority, isArchived, dueDate?, icon?, attachments[], createdByUserId, assigneeUserIds[], createdAtUtc, updatedAtUtc
@@ -86,6 +93,7 @@ The app will support multi-tenancy by:
   - Attachments upload: client uploads via secure SAS to a tenant-scoped container or prefix; resulting blobUri is stored on the Task in Cosmos.
 
 ### 4.3 Data Model (minimal)
+
 - Task
   - id (GUID), tenantId (string/UUID), title (string), description (string, optional)
   - categoryId (GUID, optional)
@@ -102,14 +110,16 @@ The app will support multi-tenancy by:
   - id (GUID), tenantId, name (string)
 - TaskTag (many-to-many)
   - taskId (GUID), tagId (GUID)
- - Attachment (embedded)
-   - id (GUID), blobUri (string), fileName (string), contentType (string), sizeBytes (int), uploadedByUserId (string/UUID), uploadedAtUtc (datetime)
+- Attachment (embedded)
+  - id (GUID), blobUri (string), fileName (string), contentType (string), sizeBytes (int), uploadedByUserId (string/UUID), uploadedAtUtc (datetime)
 
 Notes:
+
 - Keep user profile minimal; reference users by their directory object identifier from Microsoft Entra ID.
 - Avoid storing PII; rely on claims for display names where necessary.
 
 ### 4.4 Search & Filtering
+
 - Client-side search backed by GraphQL query filters:
   - Filter by categoryId, priority, isArchived, dueDate ranges (e.g., overdue, today, next 7 days).
   - Tag search via tag names and the TaskTag join; basic contains match on title/description.
@@ -119,6 +129,7 @@ Notes:
 ## 5. Acceptance Criteria
 
 ### 5.1 Categories
+
 - Users can create, rename, and delete categories within their tenant.
 - Tasks can be assigned zero or one category; uncategorized tasks appear under “Uncategorized.”
 - Category filter shows only tasks within the selected category.
@@ -126,32 +137,38 @@ Notes:
 - Category operations and visibility are tenant-scoped.
 
 ### 5.2 Sharing (intra-tenant)
+
 - Task creator can assign or unassign one or more team members from the same tenant.
 - Only the creator or current assignees can edit a shared task.
 - Non-assignees in the same tenant cannot edit the task; visibility aligns with sharing intent (visible in shared views).
 - All read/write operations are tenant-scoped; cross-tenant access is not possible.
 
 ### 5.3 Priority and Archive
+
 - Users can set priority to High, Mid, or Low from the list or detail view.
 - Archived tasks are excluded from the default list and can be revealed via a “Show archived” toggle.
 - Unarchiving a task returns it to the active list with its prior priority and metadata intact.
 
 ### 5.4 Due Date
+
 - Tasks support an optional due date.
 - Tasks past their due date are visually highlighted as overdue.
 - Date quick-filters (Today, This Week, Overdue) return the correct task sets.
 
 ### 5.5 Tagging and Search
+
 - Users can add and remove tag chips on a task with typeahead suggestions for existing tags.
 - Searching by keyword matches tag names and performs a basic contains match on title and description.
 - Search and filters can be combined (e.g., tags + category + priority + due window + archived state).
 - Search results are tenant-scoped and return within a reasonable latency for a sample app.
 
 ### 5.6 Multi-Tenancy & Security
+
 - Every entity (Task, Category, Tag) is stamped with tenantId and enforced at the API layer.
 - Users only see and modify data from their tenant; cross-tenant access is blocked by policy.
 
 ### 5.7 Attachments
+
 - Users can upload and remove attachments from a task; supported common media/document types.
 - Uploaded files are stored in Azure Blob Storage under a tenant-scoped container or prefix.
 - The blobUri, filename, content type, size, and audit info are persisted with the task in Cosmos DB.
@@ -159,6 +176,7 @@ Notes:
 - Uploads use time-limited SAS; direct blob access without SAS is blocked.
 
 ### 5.8 Task Icon/Emoji
+
 - Users can select an icon/emoji from a curated set.
 - Selected icon displays on task rows and task detail.
 - Icon value persists with the task and is optional.
@@ -225,12 +243,14 @@ User/Browser         Frontend (Blazor)         Backend (Token API)         Azure
 ```
 
 Notes:
+
 - The SAS is time-limited and permission-scoped (create/write) to a tenant-scoped container or prefix.
 - The backend token API can be a small Azure Function or API endpoint; it validates tenant and task access before issuing SAS.
 - Client performs upload directly to Blob via SAS, then saves attachment metadata via GraphQL.
 - Consider optional checksum (Content-MD5), size limits, and future malware scanning as follow-ups.
 
 ### 7.2 SAS Policy
+
 - Expiration: 10 minutes (configurable)
 - Permissions: create, write; no read/list to avoid unintended exposure
 - Scope: tenant container or prefix (e.g., /tenants/{tenantId}/tasks/{taskId}/)
@@ -241,6 +261,7 @@ Notes:
 The UI exposes a small, accessible set of icons/emojis. Only a stable key is stored in the Task.icon field; the frontend maps it to a themed glyph.
 
 ### 8.1 Suggested Set (keys → glyph examples)
+
 - general.star → ⭐  (general important)
 - general.check → ✅  (done/complete)
 - planning.note → 📝  (notes/planning)
@@ -259,8 +280,6 @@ The UI exposes a small, accessible set of icons/emojis. Only a stable key is sto
 - idea.bulb → 💡  (idea)
 
 ### 8.2 Accessibility & Theming
+
 - Provide text alt and tooltip for each icon; ensure sufficient contrast in dark/light modes.
 - Allow users to switch to a font-icon pack if emoji rendering is inconsistent across platforms.
-
-
-

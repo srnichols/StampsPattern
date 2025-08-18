@@ -1,6 +1,7 @@
 # 🚀 Azure AD Authentication - Final Setup Steps
 
 ## ✅ What's Already Done
+
 - ✅ Azure infrastructure deployed successfully
 - ✅ Container Apps running with authentication configuration
 - ✅ Environment variables configured:
@@ -17,7 +18,7 @@
 
 ### Step 1: Configure Azure AD Application Registration
 
-1. **Open Azure Portal**: https://portal.azure.com
+1. **Open Azure Portal**: <https://portal.azure.com>
 2. **Navigate to Azure Entra ID** → **App registrations**
 3. **Find Application**: `StampsManagementClient`
    - Client ID: `d8f3024a-0c6a-4cea-af8b-7a7cd985354f`
@@ -34,9 +35,11 @@
 
 1. Still in the **Authentication** section
 2. Under **Redirect URIs**, add:
+
    ```
    https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signin-oidc
    ```
+
 3. Click **Save**
 
 ### Step 4: Generate Client Secret
@@ -61,21 +64,24 @@ Replace `YOUR_SECRET_VALUE_HERE` with the actual secret you copied.
 ## 🧪 Testing Authentication
 
 ### Quick Test Script
+
 ```powershell
 ./scripts/final-auth-test.ps1 -ClientSecret "YOUR_SECRET_VALUE"
 ```
 
 ### Manual Test Steps
+
 1. Wait 5-10 minutes for all changes to propagate
 2. Open **incognito/private browser window**
-3. Navigate to: https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io
+3. Navigate to: <https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>
 4. Should redirect to Microsoft sign-in page
 5. Use credentials from **Azurestamparch.onmicrosoft.com** tenant
 6. Should authenticate and return to the portal
 
 ## 🎉 Expected Result
 
-### ✅ AUTHENTICATION NOW WORKING:
+### ✅ AUTHENTICATION NOW WORKING
+
 - ✅ Smooth redirect to Microsoft login
 - ✅ Authentication with your Azurestamparch.onmicrosoft.com account
 - ✅ Return to portal dashboard
@@ -83,10 +89,12 @@ Replace `YOUR_SECRET_VALUE_HERE` with the actual secret you copied.
 - ✅ HTTPS redirect URIs functioning correctly
 - ✅ Client secret configured and active
 
-### 🧪 Test Your Portal:
-**Portal URL**: https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io
+### 🧪 Test Your Portal
+
+**Portal URL**: <https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>
 
 **Test Steps**:
+
 1. Open incognito/private browser window
 2. Navigate to the portal URL above
 3. You'll be redirected to Microsoft sign-in
@@ -97,8 +105,8 @@ Replace `YOUR_SECRET_VALUE_HERE` with the actual secret you copied.
 
 - **Tenant**: Azurestamparch.onmicrosoft.com
 - **Application Name**: StampsManagementClient
-- **Portal URL**: https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io
-- **Documentation**: 
+- **Portal URL**: <https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>
+- **Documentation**:
   - `docs/FIX_AADSTS700054.md` - Detailed error troubleshooting
   - `docs/AZURE_ENTRA_SETUP.md` - Complete setup guide
 
@@ -115,6 +123,3 @@ Once authentication is working:
 ---
 
 **⚠️ Important**: Keep the client secret secure and don't commit it to source control!
-
-
-

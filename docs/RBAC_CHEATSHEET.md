@@ -1,6 +1,7 @@
 # RBAC Cheat Sheet
 
 Purpose
+
 - Quick role assignments and example commands for identities used in the Stamps Pattern.
 
 Common roles and why
@@ -28,13 +29,12 @@ az role assignment create --assignee $PRINCIPAL_ID --role "Cosmos DB Built-in Da
 ```
 
 Notes
+
 - Prefer granting data-plane roles scoped to the Cosmos account rather than subscription-wide.
 - For CI, prefer GitHub OIDC federation to avoid long-lived secrets. Assign minimal roles to the federated principal.
 - When debugging 401/403 from the seeder, confirm identity used by `DefaultAzureCredential` matches the principal you granted the role to (CLI user vs VS user vs SP).
 
 Related docs
+
 - `docs/SECRETS_AND_CONFIG.md` — how secrets & Key Vault tie into RBAC
 - `docs/AUTH_CI_STRATEGY.md` — CI & identity patterns
-
-
-

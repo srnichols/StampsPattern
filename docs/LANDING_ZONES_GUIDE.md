@@ -162,6 +162,7 @@ flowchart LR
 Caption: Policies/initiatives assigned at MG scope inherit to subscriptions and resources; diagnostic settings route logs to central Log Analytics; Defender plans are enabled across scopes.
 
 Learn more:
+
 - Azure Policy overview: <a href="https://learn.microsoft.com/azure/governance/policy/overview" target="_blank" rel="noopener" title="Opens in a new tab">Docs</a>&nbsp;<sup>↗</sup>
 - Management groups: <a href="https://learn.microsoft.com/azure/governance/management-groups/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
 - Policy initiatives (policy sets): <a href="https://learn.microsoft.com/azure/governance/policy/concepts/initiative-definition" target="_blank" rel="noopener" title="Opens in a new tab">Concepts</a>&nbsp;<sup>↗</sup>
@@ -223,6 +224,7 @@ flowchart TD
 Caption: Hub-and-spoke topology with central Private DNS and optional Firewall inspection. Spokes host CELL resources (App Gateway, VNet-injected Container Apps) with Private Endpoints for data services.
 
 Learn more:
+
 - Hub-spoke topology: <a href="https://learn.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/hub-spoke" target="_blank" rel="noopener" title="Opens in a new tab">Reference architecture</a>&nbsp;<sup>↗</sup>
 - Virtual WAN overview: <a href="https://learn.microsoft.com/azure/virtual-wan/virtual-wan-about" target="_blank" rel="noopener" title="Opens in a new tab">Azure Virtual WAN</a>&nbsp;<sup>↗</sup>
 - VNet peering: <a href="https://learn.microsoft.com/azure/virtual-network/virtual-network-peering-overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
@@ -233,6 +235,7 @@ Learn more:
 - APIM networking: <a href="https://learn.microsoft.com/azure/api-management/virtual-network-concepts" target="_blank" rel="noopener" title="Opens in a new tab">VNet concepts</a>&nbsp;<sup>↗</sup>
 
 Tip, other helpful visuals to consider in this guide:
+
 - Governance & Policy: a small “policy-as-code flow” diagram showing MG-scope assignment → subscription/resource inheritance → diagnostic settings to Log Analytics.
 - Identity & Access: a “ownership and RBAC” diagram mapping Platform vs Workload teams, with PIM and managed identities.
 - Monitoring & Security: a “signals flow” diagram from resources and Private Endpoints to LAW, Defender for Cloud, and Sentinel.
@@ -262,6 +265,7 @@ flowchart TB
 Caption: Platform and Workload teams assume time-bound access via PIM and apply RBAC at subscription/resource scopes. Workloads use managed identities to access per-CELL Key Vault and other services.
 
 Learn more:
+
 - Azure RBAC: <a href="https://learn.microsoft.com/azure/role-based-access-control/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
 - Privileged Identity Management (PIM): <a href="https://learn.microsoft.com/entra/privileged-identity-management/pim-configure" target="_blank" rel="noopener" title="Opens in a new tab">Configure PIM</a>&nbsp;<sup>↗</sup>
 - Managed identities: <a href="https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
@@ -298,6 +302,7 @@ flowchart LR
 Caption: Resources emit logs/metrics via diagnostic settings to a central Log Analytics workspace; Sentinel consumes from LAW; Defender for Cloud analyzes resource posture and alerts across scopes.
 
 Learn more:
+
 - Log Analytics: <a href="https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
 - Microsoft Sentinel: <a href="https://learn.microsoft.com/azure/sentinel/overview" target="_blank" rel="noopener" title="Opens in a new tab">Overview</a>&nbsp;<sup>↗</sup>
 - Defender for Cloud: <a href="https://learn.microsoft.com/azure/defender-for-cloud/defender-for-cloud-introduction" target="_blank" rel="noopener" title="Opens in a new tab">Introduction</a>&nbsp;<sup>↗</sup>
@@ -423,6 +428,3 @@ flowchart LR
 - Azure CAF – Landing Zones: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">docs</a>
   <sup>↗</sup>
 - Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener" title="Opens in a new tab">docs</a> <sup>↗</sup>
-
-
-

@@ -36,6 +36,7 @@ graph TB
 ```
 
 ### Key Files
+
 - **Main Template:** `AzureArchitecture/main.bicep`
 - **Parameters:** `AzureArchitecture/main.parameters.json`
 
@@ -56,6 +57,7 @@ az deployment group create \
 ```
 
 ### Benefits ✅
+
 - **Simpler Governance:** Single subscription to manage
 - **Unified Billing:** All costs in one subscription
 - **Faster Setup:** Deploy everything with one command
@@ -63,6 +65,7 @@ az deployment group create \
 - **Development-Friendly:** Perfect for dev/test environments
 
 ### Limitations ❌
+
 - **Shared Resource Limits:** All components share subscription quotas
 - **Less Isolation:** Global and regional resources in same subscription
 - **Limited Scale:** May hit subscription limits at enterprise scale
@@ -96,6 +99,7 @@ graph TB
 ```
 
 ### Key Files
+
 - **Hub Template:** `AzureArchitecture/hub-main.bicep`
 - **Hub Parameters:** `AzureArchitecture/hub-main.parameters.json`
 - **Host Template:** `AzureArchitecture/host-main.bicep`
@@ -124,6 +128,7 @@ az deployment group create \
 ```
 
 ### Benefits ✅
+
 - **Better Resource Isolation:** Global and regional resources separated
 - **Separate Billing:** Hub and Host costs tracked independently
 - **Azure Landing Zone Compliance:** Follows Microsoft best practices
@@ -132,6 +137,7 @@ az deployment group create \
 - **Security Boundaries:** Clear separation of concerns
 
 ### Considerations ❌
+
 - **Higher Complexity:** Requires managing multiple subscriptions
 - **Cross-Subscription Permissions:** Need proper RBAC setup
 - **More Setup Time:** Two-phase deployment process
@@ -141,14 +147,16 @@ az deployment group create \
 
 ## 🎯 **When to Choose Each Pattern**
 
-### Choose **Single Subscription** when:
+### Choose **Single Subscription** when
+
 - 🧪 **Development/Testing:** Building and testing the pattern
 - 🏢 **Small Organizations:** Less than 50 people managing the platform
 - 💰 **Cost Optimization:** Want unified billing and simpler cost tracking
 - ⚡ **Quick Setup:** Need to deploy quickly for demos or PoCs
 - 🔧 **Simple Governance:** Don't need complex subscription separation
 
-### Choose **Multi-Subscription** when:
+### Choose **Multi-Subscription** when
+
 - 🏭 **Enterprise Production:** Deploying for large-scale production use
 - 📊 **Complex Governance:** Need separate billing and governance boundaries
 - 🔒 **Compliance Requirements:** Regulatory need for resource isolation
@@ -166,6 +174,7 @@ You can start with **Single Subscription** and migrate to **Multi-Subscription**
 3. **Scale Up:** Migrate to `hub-main.bicep` + `host-main.bicep` for production
 
 Both patterns support the same features:
+
 - ✅ Azure Front Door Standard/Premium
 - ✅ Multi-regional deployment
 - ✅ HTTPS termination and redirects
@@ -185,9 +194,3 @@ Both patterns support the same features:
 
 **Last Updated:** August 2025
 **Pattern Version:** v1.2.2
-
-
-
-
-
-

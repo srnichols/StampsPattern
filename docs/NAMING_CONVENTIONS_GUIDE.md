@@ -40,6 +40,7 @@ Standard naming for the Azure Stamps Pattern, patterns per resource type, region
 > Naming conventions are the rules that make your Azure resources discoverable, manageable, and compliant. This guide shows you how to name every resource, across regions, zones, and environments, so your cloud is organized, scalable, and easy to operate.
 
 **Why is this important?**
+>
 > - **Clarity:** Instantly know what a resource is, where it lives, and who owns it
 > - **Automation:** Scripts and templates work everywhere, every time
 > - **Compliance:** Meet Azure and enterprise standards for naming and tagging
@@ -58,29 +59,29 @@ This guide defines the standardized naming conventions for the Azure Stamps Patt
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
-	subgraph "🌍 Global Layer"
-		A[cosmos-stamps-global<br/>🌐 Global Services]
-	end
+ subgraph "🌍 Global Layer"
+  A[cosmos-stamps-global<br/>🌐 Global Services]
+ end
     
-	subgraph "🗺️ Geography Layer"
-		B[rg-stamps-eus-prod<br/>📍 Regional Resources]
-		C[agw-us-eus-prod<br/>🚪 Application Gateway]
-	end
+ subgraph "🗺️ Geography Layer"
+  B[rg-stamps-eus-prod<br/>📍 Regional Resources]
+  C[agw-us-eus-prod<br/>🚪 Application Gateway]
+ end
     
-	subgraph "🏠 CELL Layer - Zone Aware"
-		D[ca-shared-smb-z3-eus-prod<br/>🐳 3-Zone Shared CELL]
-		E[ca-dedicated-bank-z2-eus-prod<br/>🏢 2-Zone Dedicated CELL]
-		F[sqldb-shared-smb-z3-eus-prod<br/>🗄️ Multi-Zone Database]
-		G[st-us-eus-start-z1-dev<br/>💾 Single-Zone Storage]
-	end
+ subgraph "🏠 CELL Layer - Zone Aware"
+  D[ca-shared-smb-z3-eus-prod<br/>🐳 3-Zone Shared CELL]
+  E[ca-dedicated-bank-z2-eus-prod<br/>🏢 2-Zone Dedicated CELL]
+  F[sqldb-shared-smb-z3-eus-prod<br/>🗄️ Multi-Zone Database]
+  G[st-us-eus-start-z1-dev<br/>💾 Single-Zone Storage]
+ end
     
-	A --> B
-	B --> C
-	C --> D
-	C --> E
-	D --> F
-	E --> F
-	D --> G
+ A --> B
+ B --> C
+ C --> D
+ C --> E
+ D --> F
+ E --> F
+ D --> G
 
 ```
 
@@ -89,17 +90,17 @@ flowchart TD
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-	subgraph "💰 Cost vs Resilience"
-		A[z0: No Zone<br/>💰 Lowest Cost<br/>🔴 Basic SLA]
-		B[z1: Single Zone<br/>💰 Low Cost<br/>🟡 Standard SLA]
-		C[z2: Two Zones<br/>💰 Medium Cost<br/>🟠 99.95% SLA]
-		D[z3: Three Zones<br/>💰 Highest Cost<br/>🟢 99.99% SLA]
-	end
+ subgraph "💰 Cost vs Resilience"
+  A[z0: No Zone<br/>💰 Lowest Cost<br/>🔴 Basic SLA]
+  B[z1: Single Zone<br/>💰 Low Cost<br/>🟡 Standard SLA]
+  C[z2: Two Zones<br/>💰 Medium Cost<br/>🟠 99.95% SLA]
+  D[z3: Three Zones<br/>💰 Highest Cost<br/>🟢 99.99% SLA]
+ end
     
-	A -->|Dev/Test| E[ca-test-app-z0-eus-dev]
-	B -->|Standard Prod| F[ca-shared-smb-z1-eus-prod]
-	C -->|Enterprise| G[ca-dedicated-bank-z2-eus-prod]
-	D -->|Mission Critical| H[ca-critical-health-z3-eus-prod]
+ A -->|Dev/Test| E[ca-test-app-z0-eus-dev]
+ B -->|Standard Prod| F[ca-shared-smb-z1-eus-prod]
+ C -->|Enterprise| G[ca-dedicated-bank-z2-eus-prod]
+ D -->|Mission Critical| H[ca-critical-health-z3-eus-prod]
 
 ```
 
@@ -114,7 +115,8 @@ flowchart LR
 | `{region-short}` | Azure region abbreviation | `eus`, `wus`, `neu`, `weu` |
 | `{environment}` | Environment identifier | `dev`, `test`, `prod` |
 
-### **Examples**:
+### **Examples**
+
 - `rg-stamps-eus-dev` (East US Development)
 - `rg-stamps-wus-prod` (West US Production)  
 - `rg-stamps-neu-test` (North Europe Test)
@@ -142,6 +144,7 @@ flowchart LR
 ## 🏗️ **Resource Naming Patterns**
 
 ### **Compute Resources**
+
 ```bicep
 // Application Gateway (Zone-Redundant)
 'agw-{geo}-{region-short}-{environment}'
@@ -165,12 +168,14 @@ flowchart LR
 ```
 
 **Zone Count Convention**:
+
 - `z0`: No zone (development/testing, lowest cost)
 - `z1`: Single zone deployment (standard)
 - `z2`: Two-zone deployment (99.95% SLA, HA)
 - `z3`: Three-zone deployment (99.99% SLA, maximum resilience)
 
 ### **Data Resources**
+
 ```bicep
 // SQL Server (Zone-Redundant)
 'sql-{geo}-{region-short}-{cell}-{environment}'
@@ -194,6 +199,7 @@ flowchart LR
 ```
 
 ### **Networking Resources**
+
 ```bicep
 // Virtual Network
 'vnet-{purpose}-{region-short}-{environment}'
@@ -217,6 +223,7 @@ flowchart LR
 ```
 
 ### **Security & Management**
+
 ```bicep
 // Key Vault
 'kv-{geo}-{region-short}-{environment}'
@@ -236,18 +243,19 @@ flowchart LR
 ```
 
 ### **Container Resources**
+
 ```bicep
 // Container Registry (Global/Regional)
 'acr{geo}{regionshort}{environment}'
 // Example: acruseusprod
 ```
 
-
 ## 🔄 **Zone-Aware Naming Considerations**
 
 ### **Hierarchy:** GEO → Region → Availability Zone → CELL
 
 ### **When to Include Zone Information**
+
 - ✅ **CELL Resources**: All CELL-level resources should include zone count (ca-, sqldb-, cosmos-)
 - ✅ **Application Services**: Container Apps, Function Apps that are CELL-specific
 - ✅ **Data Services**: Databases and storage that are CELL-specific
@@ -255,6 +263,7 @@ flowchart LR
 - ❌ **Zone-Redundant by Default**: Application Gateway, Key Vault (already zone-redundant)
 
 ### **Zone Count Mapping**
+
 | Zone Config | Naming | Use Case | SLA | Cost Impact |
 |-------------|--------|----------|-----|-------------|
 | **0 Zones** | `z0` | No zone (dev/test, lowest cost) | Standard | Baseline |
@@ -263,11 +272,13 @@ flowchart LR
 | **3 Zones** | `z3` | Maximum resilience | 99.99% | +40% |
 
 ### **Why Availability Zones Matter**
+
 - **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures.
 - **Disaster Recovery (DR):** AZs enable rapid failover and business continuity.
 - **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload.
 
 ### **Examples by Tenancy Model**
+
 ```bicep
 // Shared Tenancy Examples
 'ca-shared-smb-z3-eus-prod'           // Shared SMB CELL, 3 zones
@@ -287,6 +298,7 @@ flowchart LR
 ## 🏷️ **Tagging Strategy**
 
 ### **Mandatory Tags**
+
 ```jsonc
 {
   "environment": "dev|test|staging|prod",
@@ -303,6 +315,7 @@ flowchart LR
 ```
 
 ### **Optional Tags**
+
 ```jsonc
 {
   "backup": "daily|weekly|none",
@@ -315,6 +328,7 @@ flowchart LR
 ## 📝 **Implementation Guidelines**
 
 ### **Bicep Template Variables**
+
 ```bicep
 // Region mapping helper
 var regionShortNames = {
@@ -344,37 +358,38 @@ var sqlDatabaseName = 'sqldb-${cellName}-${zoneConfig.suffix}-${regionShort}-${e
 ```
 
 ### **PowerShell Helper Function**
+
 ```powershell
 function Get-RegionShortName {
-	param([string]$Location)
+ param([string]$Location)
     
-	$RegionMap = @{
-		'eastus' = 'eus'; 'westus' = 'wus'; 'northeurope' = 'neu'
-		'westeurope' = 'weu'; 'eastus2' = 'eus2'; 'westus2' = 'wus2'
-	}
+ $RegionMap = @{
+  'eastus' = 'eus'; 'westus' = 'wus'; 'northeurope' = 'neu'
+  'westeurope' = 'weu'; 'eastus2' = 'eus2'; 'westus2' = 'wus2'
+ }
     
-	return $RegionMap[$Location] ?? $Location.Substring(0, [Math]::Min(3, $Location.Length))
+ return $RegionMap[$Location] ?? $Location.Substring(0, [Math]::Min(3, $Location.Length))
 }
 
 function Get-ZoneAwareName {
-	param(
-		[string]$ResourceType,
-		[string]$CellName,
-		[int]$AvailabilityZones,
-		[string]$Location,
-		[string]$Environment
-	)
+ param(
+  [string]$ResourceType,
+  [string]$CellName,
+  [int]$AvailabilityZones,
+  [string]$Location,
+  [string]$Environment
+ )
     
-	$RegionShort = Get-RegionShortName -Location $Location
-	$ZoneConfig = "z$AvailabilityZones"
+ $RegionShort = Get-RegionShortName -Location $Location
+ $ZoneConfig = "z$AvailabilityZones"
     
-	switch ($ResourceType) {
-		'ContainerApp' { return "ca-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-		'SqlDatabase' { return "sqldb-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-		'FunctionApp' { return "func-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-		'CosmosDb' { return "cosmos-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-		default { return "$ResourceType-$CellName-$ZoneConfig-$RegionShort-$Environment" }
-	}
+ switch ($ResourceType) {
+  'ContainerApp' { return "ca-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+  'SqlDatabase' { return "sqldb-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+  'FunctionApp' { return "func-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+  'CosmosDb' { return "cosmos-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+  default { return "$ResourceType-$CellName-$ZoneConfig-$RegionShort-$Environment" }
+ }
 }
 
 # Usage examples
@@ -384,17 +399,18 @@ $ContainerAppName = Get-ZoneAwareName -ResourceType 'ContainerApp' -CellName $Ce
 ```
 
 ### **Bash Helper Function**
+
 ```powershell
 get_region_short() {
-	case $1 in
-		eastus) echo "eus" ;;
-		westus) echo "wus" ;;
-		northeurope) echo "neu" ;;
-		westeurope) echo "weu" ;;
-		eastus2) echo "eus2" ;;
-		westus2) echo "wus2" ;;
-		*) echo "${1:0:3}" ;;
-	esac
+ case $1 in
+  eastus) echo "eus" ;;
+  westus) echo "wus" ;;
+  northeurope) echo "neu" ;;
+  westeurope) echo "weu" ;;
+  eastus2) echo "eus2" ;;
+  westus2) echo "wus2" ;;
+  *) echo "${1:0:3}" ;;
+ esac
 }
 
 REGION_SHORT=$(get_region_short "$LOCATION")
@@ -404,18 +420,21 @@ RESOURCE_GROUP_NAME="rg-stamps-${REGION_SHORT}-${ENVIRONMENT}"
 ## ✅ **Validation Rules**
 
 ### **Resource Group Names**
+
 - ✅ Must include region abbreviation
 - ✅ Must include environment suffix
 - ✅ Maximum 90 characters
 - ✅ Pattern: `rg-{purpose}-{region-short}-{environment}`
 
 ### **Storage Account Names**
+
 - ✅ Must be globally unique
 - ✅ Maximum 24 characters
 - ✅ Lowercase letters and numbers only
 - ✅ Pattern: `st{geo}{regionshort}{cell}{env}`
 
 ### **Resource Names**
+
 - ✅ Must indicate purpose/function
 - ✅ Must include region and environment
 - ✅ Must follow Azure naming conventions
@@ -424,12 +443,14 @@ RESOURCE_GROUP_NAME="rg-stamps-${REGION_SHORT}-${ENVIRONMENT}"
 ## 🔧 **Migration Guidelines**
 
 ### **Existing Resources**
+
 1. **Assessment**: Identify non-compliant resource names
 2. **Planning**: Create migration plan with downtime windows
 3. **Execution**: Use Azure Resource Manager move operations where possible
 4. **Validation**: Verify all references are updated
 
 ### **New Deployments**
+
 1. **Templates**: Update all Bicep templates with new naming patterns
 2. **Parameters**: Update parameter files with correct names
 3. **Documentation**: Update all guides and examples
@@ -442,7 +463,3 @@ RESOURCE_GROUP_NAME="rg-stamps-${REGION_SHORT}-${ENVIRONMENT}"
 - <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener">Azure Naming Conventions</a>
 - <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations" target="_blank" rel="noopener">Azure Resource Abbreviations</a>
 - <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging" target="_blank" rel="noopener">Azure Tagging Strategy</a>
-
-
-
-

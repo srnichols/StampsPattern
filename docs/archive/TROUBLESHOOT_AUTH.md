@@ -1,12 +1,13 @@
 # Azure Stamps Portal Authentication Troubleshooting Guide
 
-## 🎉 **AUTHENTICATION ISSUE RESOLVED** 
+## 🎉 **AUTHENTICATION ISSUE RESOLVED**
 
 **Status**: ✅ **RESOLVED** - August 14, 2025  
-**Portal URL**: https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io  
+**Portal URL**: <https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>  
 **Solution Applied**: Enabled ID token issuance in app registration via Azure CLI  
 
 ### 🚀 **Final Working Configuration**
+
 - **Application (client) ID**: `6458a4c9-082a-4b38-a3d0-d7100accacd4`
 - **Directory (tenant) ID**: `30dd575a-bca7-491b-adf6-41d5f39275d4`  
 - **ID Token Enabled**: ✅ **True** (Fixed AADSTS700054)
@@ -14,6 +15,7 @@
 - **Login Status**: ✅ **Working Successfully**
 
 ### 🎯 **Root Cause & Solution**
+
 The infinite redirect loop was caused by **AADSTS700054** error where ID token issuance was disabled in the app registration. This was resolved by:
 
 ```bash
@@ -31,6 +33,7 @@ az ad app update --id "6458a4c9-082a-4b38-a3d0-d7100accacd4" --sign-in-audience 
 *Note: The issues below have been resolved. This section is kept for reference.*
 
 ## 🔍 Root Cause Analysis
+
 The Azure AD application registration for the Stamps Portal doesn't exist in your current tenant. We need to create a new app registration.
 
 ## 🛠️ IMMEDIATE SOLUTION - Create New App Registration
@@ -47,7 +50,7 @@ The Azure AD application registration for the Stamps Portal doesn't exist in you
    - Use these settings:
      - **Name**: `StampsPortal-$(Get-Date -Format 'yyyyMMdd')`
      - **Supported account types**: `Accounts in this organizational directory only (Single tenant)`
-     - **Redirect URI**: 
+     - **Redirect URI**:
        - Platform: `Web`
        - URI: `https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signin-oidc`
 
@@ -67,7 +70,7 @@ The Azure AD application registration for the Stamps Portal doesn't exist in you
 
 5. **Note Down These Values**:
    - **Application (client) ID** (from Overview page)
-   - **Directory (tenant) ID** (from Overview page) 
+   - **Directory (tenant) ID** (from Overview page)
    - **Client secret value** (from step 4)
 
 ### Step 2: Update Container App with New Values
@@ -90,8 +93,9 @@ az containerapp update --name ca-stamps-portal --resource-group rg-stamps-mgmt -
 ### Step 3: Test the Solution
 
 After updating the container app:
+
 1. Wait 2-3 minutes for the changes to propagate
-2. Navigate to: https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io
+2. Navigate to: <https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>
 3. Try to log in with your Microsoft account
 
 ## 🆘 ALTERNATIVE SOLUTION - Use Easy Auth
@@ -119,21 +123,26 @@ az containerapp auth update --name ca-stamps-portal --resource-group rg-stamps-m
    - Click on the app registration
 
 3. **Verify Essential Settings**:
-   
+
    #### A. Authentication Configuration
+
    - **Supported account types** should be one of:
      - `Accounts in any organizational directory (Any Azure AD directory - Multitenant)`
      - `Accounts in this organizational directory only (Single tenant)`
-   
+
    #### B. Redirect URIs
+
    - **Platform**: Web
    - **Redirect URIs** should include:
+
      ```
      https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signin-oidc
      ```
-   
+
    #### C. Logout URL
+
    - Should be set to:
+
      ```
      https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signout-callback-oidc
      ```
@@ -141,16 +150,20 @@ az containerapp auth update --name ca-stamps-portal --resource-group rg-stamps-m
 ### Step 2: Fix Common Configuration Issues
 
 #### Issue 1: Single Tenant vs Multi-Tenant
+
 - **If targeting specific tenant**: Set to "Single tenant" and ensure it's in the correct tenant
 - **If supporting multiple tenants**: Set to "Multitenant" and configure properly
 
 #### Issue 2: Missing or Incorrect Redirect URIs
+
 Add the correct redirect URI for your container app:
+
 ```
 https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signin-oidc
 ```
 
 #### Issue 3: Application ID URI
+
 - Go to **Expose an API**
 - Ensure the Application ID URI is set correctly
 - Default should be: `api://{app-id}`
@@ -164,6 +177,7 @@ az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --q
 ```
 
 Required environment variables:
+
 - `AZURE_AD_TENANT_ID`: Should be the tenant ID for Azurestamparch.onmicrosoft.com
 - `AZURE_AD_CLIENT_ID`: Application (client) ID from app registration
 - `AZURE_AD_CLIENT_SECRET`: Client secret from app registration
@@ -173,11 +187,13 @@ Required environment variables:
 ### Step 4: Verify Tenant Configuration
 
 1. **Get the correct Tenant ID for Azurestamparch.onmicrosoft.com**:
+
    ```bash
    az account list --query "[?contains(name, 'Azurestamparch')].{name:name, tenantId:tenantId}" -o table
    ```
 
 2. **Switch to the correct tenant if needed**:
+
    ```bash
    az account set --subscription "subscription-id-for-azurestamparch-tenant"
    ```
@@ -211,13 +227,17 @@ If the above doesn't work, consider:
 ## 🔧 Quick Fixes to Try
 
 ### Fix 1: Update App Registration Redirect URI
+
 In Azure Portal > App registrations > Your App > Authentication:
+
 - Add redirect URI: `https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io/signin-oidc`
 
 ### Fix 2: Check Tenant Configuration
+
 Ensure the app registration is in the same tenant as where you're trying to log in.
 
 ### Fix 3: Restart Container App
+
 ```bash
 az containerapp revision restart --name ca-stamps-portal --resource-group rg-stamps-mgmt
 ```
@@ -238,6 +258,3 @@ az containerapp revision restart --name ca-stamps-portal --resource-group rg-sta
 ---
 
 **Need immediate help?** Check the app registration settings first, as this is the most likely cause of the authentication error.
-
-
-

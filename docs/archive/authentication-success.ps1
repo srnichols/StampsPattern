@@ -4,7 +4,7 @@ Write-Host "    AZURE STAMPS MANAGEMENT PORTAL - AUTHENTICATION SUCCESS!" -Foreg
 Write-Host "==================================================================" -ForegroundColor Green
 Write-Host ""
 
-$portalUrl = "https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io"
+$portalUrl = "<https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>"
 
 Write-Host "AUTHENTICATION STATUS: FULLY OPERATIONAL" -ForegroundColor Green
 Write-Host ""

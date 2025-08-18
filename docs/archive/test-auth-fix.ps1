@@ -13,6 +13,7 @@ Write-Host "Fix: Enable 'ID tokens' in app registration authentication settings"
 Write-Host ""
 
 # Test OIDC configuration
+
 Write-Host "🌐 Testing OIDC Configuration..." -ForegroundColor Yellow
 $oidcUrl = "https://login.microsoftonline.com/$tenantId/v2.0/.well-known/openid-configuration"
 
@@ -29,6 +30,7 @@ try {
 Write-Host ""
 
 # Check container app status
+
 Write-Host "🐳 Checking Container App Status..." -ForegroundColor Yellow
 try {
     $appStatus = az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --query "properties.runningStatus" -o tsv

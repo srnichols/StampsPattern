@@ -58,6 +58,7 @@ Observability: Azure Application Insights
   - id, type (regions|geos|skuProfiles|policies), value
 
 Partitioning & Transactions
+
 - Tenant-scoped writes live under `/tenantId` partition for batch operations
 - Cross-entity changes are orchestrated via an `operation` + Functions saga
 
@@ -66,21 +67,26 @@ Partitioning & Transactions
 ## Core Workflows (MVP)
 
 1) Create Tenant
+
 - Create `tenants` doc, validate placement, default routing
 - Emit `TenantCreated` event
 
 2) Update Routing
+
 - Change routing.strategy/weights/baseDomain
 - Validate policy/compliance; emit `RouteUpdated`
 
 3) Migrate Tenant (shared → dedicated or cell → cell)
+
 - Create `operations` doc with steps: provisionTarget → syncData → drainAndCutover → validate
 - Functions orchestrates; UI shows step status; emit `Migration*` events
 
 4) Suspend/Resume/Maintenance
+
 - Flip status; adjust routing/traffic; emit `TenantStatusUpdated`
 
 5) Decommission Tenant
+
 - Archive/export per policy; emit `TenantDecommissioned`
 
 ---
@@ -161,20 +167,24 @@ management-portal/
 ## Milestones & Acceptance Criteria
 
 M1: Scaffolding & Infra (ACA + Cosmos + DAB)
+
 - [ ] Repo structure created
 - [ ] DAB configured for `tenants`, `cells`, `operations`
 - [ ] Bicep to deploy Cosmos + ACA + App Insights
 
 M2: UI MVP (Tenants & Cells)
+
 - [ ] Tenants list/detail (read from GraphQL)
 - [ ] Cells list/detail
 - [ ] Bootstrap 5 styling, auth wired
 
 M3: Operations (Migration Flow)
+
 - [ ] Create migration operation (UI → Functions)
 - [ ] Step status updates & audit trail
 
 M4: Hardening & Docs
+
 - [ ] RBAC tuned, diagnostics/dashboards
 - [ ] USER_GUIDE complete, operator runbooks
 
@@ -195,6 +205,3 @@ M4: Hardening & Docs
 - Create repo folders and placeholder files
 - Draft Bicep skeleton and dab-config.json outline
 - Start Blazor skeleton with auth and Bootstrap 5 imports
-
-
-

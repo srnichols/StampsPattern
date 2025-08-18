@@ -32,7 +32,7 @@ Write-Host "Object ID:  $objectId" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "STEPS TO COMPLETE IN AZURE PORTAL:" -ForegroundColor White
 Write-Host "-----------------------------------" -ForegroundColor White
-Write-Host "1. Open: https://portal.azure.com" -ForegroundColor White
+Write-Host "1. Open: <https://portal.azure.com>" -ForegroundColor White
 Write-Host "2. Navigate: Azure Entra ID -> App registrations" -ForegroundColor White
 Write-Host "3. Search: 'StampsManagementClient' or use Client ID: $clientId" -ForegroundColor White
 Write-Host "4. Click: Authentication (left menu)" -ForegroundColor White

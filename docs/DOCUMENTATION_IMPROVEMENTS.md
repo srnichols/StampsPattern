@@ -1,6 +1,7 @@
 # Documentation Improvement Recommendations (First-Time Reader Focus)
 
 Audience and intent
+
 - Persona: First-time reader exploring the Azure Stamps Pattern to understand what it is, how to deploy it, and how to operate it.
 - Goal: Make onboarding faster by reducing friction, duplication, and ambiguity, and by providing clear “happy paths”.
 
@@ -9,6 +10,7 @@ Audience and intent
 ## 1) Repository capabilities model (what the code can do)
 
 High-level components
+
 - Infra (Bicep)
   - Global/hub/regional/host layers, traffic routing, policy-as-code, advanced security, monitoring.
   - Container Apps environment; management portal (Container App); DAB (Data API Builder) service; ACR; App Insights; Log Analytics; Cosmos DB control-plane.
@@ -23,6 +25,7 @@ High-level components
   - Local dev tasks (Azurite, Functions runtime), link checking (lychee).
 
 Key integration paths
+
 - Portal → DAB → Cosmos DB (GraphQL)
 - Infra deploys Container Apps, ACR, Cosmos, monitoring
 - Auth via Azure AD (id_token for portal; RBAC for DAB/Cosmos)
@@ -60,6 +63,7 @@ Key integration paths
 These recommendations form the baseline 1.0 documentation set for the Azure Stamps Pattern. They are organized to make the project easy to understand and operate for first-time readers and operators.
 
 Core actions to include in this baseline:
+
 - Provide a single "Start Here: Minimal Happy Path" that walks a new user through deploy → seed → validate.
 - Add a `docs/LIVE_DATA_PATH.md` that shows the end-to-end Portal ↔ DAB ↔ Cosmos flow with env var names, secrets, and quick checks.
 - Consolidate authentication and CI guidance into an `AUTH_CI_STRATEGY.md` page (AAD app registration, OIDC/GitHub federation, common errors).
@@ -67,6 +71,7 @@ Core actions to include in this baseline:
 - Standardize code fences to `powershell` and ensure copy-paste safety for Windows users.
 
 Follow-ups and lower-priority improvements
+
 - Add a Repository Map and Capabilities Matrix for discoverability.
 - Expand Secrets & Configuration and RBAC cheat sheets with scope examples and CLI snippets.
 - Add troubleshooting decision trees and an E2E runtime diagram in the Architecture Guide.
@@ -145,6 +150,7 @@ Follow-ups and lower-priority improvements
 ## 8) Suggested task backlog (checklist)
 
 P0 (next 1–2 days)
+
 - [x] README: Add “Start Here: Minimal Happy Path” (10 steps).
 - [x] NEW: docs/LIVE_DATA_PATH.md (diagram + checks + seeding).
 - [x] Known Issues: Add “Top 10 Fixes” section.
@@ -152,18 +158,21 @@ P0 (next 1–2 days)
 - [x] Ensure all command blocks specify `powershell` and are copy-paste safe on Windows.
 
 P1 (this week)
+
 - [ ] DOCS.md: Move progressive path to top; link to new guides; unify nav tables.
 - [ ] NEW: docs/AUTH_CI_STRATEGY.md; consolidate scattered auth notes and scripts.
 - [ ] NEW: docs/SECRETS_AND_CONFIG.md with clear decision tree.
 - [ ] Add “Repository Map” and “Capabilities Matrix”.
 
 P2 (next)
+
 - [ ] KNOWN_ISSUES: Add troubleshooting decision trees.
 - [ ] ARCHITECTURE_GUIDE: Add E2E runtime diagram block.
 - [ ] OPERATIONS_GUIDE: Add “Logs & Quick Commands”.
 - [ ] Add markdownlint + codespell to CI for docs.
 
 Ownership
+
 - Doc owner: …
 - Tech reviewers: Infra, Portal/DAB, Security
 - ETA targets: P0 (2d), P1 (5d), P2 (1–2w)
@@ -180,6 +189,3 @@ Ownership
 - Cost/Naming/Param: `docs/COST_OPTIMIZATION_GUIDE.md`, `docs/NAMING_CONVENTIONS_GUIDE.md`, `docs/PARAMETERIZATION_GUIDE.md`
 - Known issues: `docs/KNOWN_ISSUES.md`
 - Glossary: `docs/GLOSSARY.md`
-
-
-

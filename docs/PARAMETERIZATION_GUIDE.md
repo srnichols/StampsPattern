@@ -1,5 +1,4 @@
 
-
 # 📋 Parameterization Guide for Azure Stamps Pattern
 
 Make deployments flexible and reusable with parameters, enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
@@ -7,7 +6,6 @@ Make deployments flexible and reusable with parameters, enable multi-tenant, mul
 - What's inside: Parameter types, template/script changes, usage examples, validation, and migration notes
 - Best for: DevOps, cloud engineers, solution architects, and operations teams
 - Outcomes: Reusable templates, clean tagging, faster onboarding, and safer migrations
-
 
 ## 👤 Who Should Read This Guide?
 
@@ -17,7 +15,6 @@ Make deployments flexible and reusable with parameters, enable multi-tenant, mul
 - **Operations Teams:** Validate, migrate, and support parameterized deployments
 
 ---
-
 
 ## 🧭 Quick Navigation
 
@@ -35,7 +32,6 @@ Make deployments flexible and reusable with parameters, enable multi-tenant, mul
 
 ---
 
-
 ## 🚀 Getting Started: What is Parameterization?
 
 Parameterization means making every deployment flexible and reusable, no more hardcoded values. You can deploy the same templates and scripts for any organization, region, or environment, simply by changing parameters. This approach unlocks:
@@ -46,7 +42,6 @@ Parameterization means making every deployment flexible and reusable, no more ha
 - **Migration-ready:** Move from hardcoded to parameterized with minimal risk
 
 ---
-
 
 # 📋 Template Parameterization Guide
 
@@ -124,6 +119,7 @@ _Figure: Migration path from hardcoded values to configurable parameters; use as
 ## 🔧 New Parameters Added
 
 ### **Organization Parameters**
+
 | Parameter | Description | Default Value | Usage |
 |-----------|-------------|---------------|-------|
 | `organizationDomain` | The organization domain (e.g., contoso.com) | `contoso.com` | DNS zones, email addresses |
@@ -136,6 +132,7 @@ _Figure: Migration path from hardcoded values to configurable parameters; use as
 _Table: Organization-scoped parameters for identity, cost allocation, and ownership._
 
 ### **Geography Parameters**
+
 | Parameter | Description | Default Value | Usage |
 |-----------|-------------|---------------|-------|
 | `geoName` | The geography name (e.g., northamerica, europe, asia) | `northamerica` | Resource naming, tagging |
@@ -144,6 +141,7 @@ _Table: Organization-scoped parameters for identity, cost allocation, and owners
 _Table: Geography-scoped parameters that drive DNS and region naming conventions._
 
 ### **Computed Parameters**
+
 | Parameter | Description | Computed From |
 |-----------|-------------|---------------|
 | `dnsZoneName` | The complete DNS zone name | `${baseDnsZoneName}.${organizationDomain}` |
@@ -153,6 +151,7 @@ _Note: Computed parameters reduce duplication and prevent drift across files._
 ## 🏗️ Template Changes Made
 
 ### **1. Parameter Additions**
+
 ```bicep
 // Organization Parameters
 @description('The organization domain (e.g., contoso.com)')
@@ -168,6 +167,7 @@ param baseDnsZoneName string = 'stamps'
 _Snippet: New inputs added to templates; defaults are safe for local testing but should be overridden per environment._
 
 ### **2. Dynamic DNS Zone Construction**
+
 ```bicep
 // Before (hardcoded):
 param dnsZoneName string = 'stamps.contoso.com'
@@ -179,6 +179,7 @@ param dnsZoneName string = '${baseDnsZoneName}.${organizationDomain}'
 _Change: Replace hardcoded DNS with computed patterns to enable multi-organization reuse._
 
 ### **3. Dynamic Base Domains**
+
 ```bicep
 // Before (hardcoded):
 baseDomain: 'eastus.stamps.contoso.com'
@@ -190,6 +191,7 @@ baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
 _Change: Ensure regional base domains derive from parameters rather than fixed strings._
 
 ### **4. Parameterized Tags**
+
 ```bicep
 // Before (hardcoded):
 var baseTags = {
@@ -209,6 +211,7 @@ var baseTags = {
 _Change: Uniform tagging enables governance, ownership tracking, and cost allocation._
 
 ### **5. Parameterized Geography**
+
 ```bicep
 // Before (hardcoded):
 geoName: 'northamerica'
@@ -222,6 +225,7 @@ _Change: Geography becomes an input so deployments adapt to your landing zone to
 ## 🚀 PowerShell Script Updates
 
 ### **New Parameters Added**
+
 ```powershell
 [Parameter(Mandatory = $false)]
 [string]$OrganizationDomain = "contoso.com",
@@ -236,6 +240,7 @@ _Change: Geography becomes an input so deployments adapt to your landing zone to
 _Snippet: Script inputs align with template parameters to keep a single source of truth._
 
 ### **Updated Domain Construction**
+
 ```powershell
 # Before (hardcoded):
 baseDomain = "$Location.stamps.contoso.com"
@@ -249,6 +254,7 @@ _Change: Domain construction switches to parameterized composition for consisten
 ## 📝 Usage Examples
 
 ### **Example 1: Different Organization**
+
 ```powershell
 .\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-prod" `
@@ -260,6 +266,7 @@ _Change: Domain construction switches to parameterized composition for consisten
 ```
 
 ### **Example 2: European Geography**
+
 ```powershell
 .\deploy-stamps.ps1 `
   -ResourceGroupName "rg-stamps-eu-prod" `
@@ -270,6 +277,7 @@ _Change: Domain construction switches to parameterized composition for consisten
 ```
 
 ### **Example 3: Using Parameters File**
+
 ```json
 {
   "organizationDomain": { "value": "healthcare.org" },
@@ -284,21 +292,25 @@ _Change: Domain construction switches to parameterized composition for consisten
 ## ✅ Benefits Achieved
 
 ### **1. Multi-Organization Support**
+
 - ✅ **Complete Domain Flexibility**: Any organization can use their own domain
 - ✅ **Custom Branding**: Organization name, department, project name are configurable
 - ✅ **Email Customization**: Owner contact information is parameterized
 
 ### **2. Multi-Geography Support**
+
 - ✅ **Geography Flexibility**: Support for different geographic regions (US, Europe, Asia)
 - ✅ **Region-Agnostic**: No hardcoded region assumptions
 - ✅ **Localized Naming**: Geographic context preserved in resource names
 
 ### **3. Environment Flexibility**
+
 - ✅ **DNS Zone Flexibility**: Custom DNS zone patterns for different environments
 - ✅ **Subdomain Control**: Complete control over subdomain structure
 - ✅ **Multi-Environment**: Support for dev, test, staging, prod with appropriate DNS
 
 ### **4. Operational Excellence**
+
 - ✅ **Proper Tagging**: All resources properly tagged with configurable metadata
 - ✅ **Ownership Tracking**: Clear ownership information in tags
 - ✅ **Cost Allocation**: Department and project tags for cost tracking
@@ -306,6 +318,7 @@ _Change: Domain construction switches to parameterized composition for consisten
 ## 🔍 Validation
 
 ### **Template Validation**
+
 ```powershell
 # Validate the Bicep template
 az deployment group validate `
@@ -315,6 +328,7 @@ az deployment group validate `
 ```
 
 ### **Parameter File Validation**
+
 - ✅ All required parameters have default values
 - ✅ Parameter file example includes all new parameters
 - ✅ PowerShell script passes all new parameters correctly
@@ -322,19 +336,20 @@ az deployment group validate `
 ## 🎭 Migration Notes
 
 ### **For Existing Deployments**
+
 1. **Review Current Values**: Document current hardcoded values
 2. **Update Parameters**: Use current values as parameter defaults
 3. **Test in Dev**: Validate new parameters in development environment
 4. **Gradual Rollout**: Update environments incrementally
 
 ### **For New Deployments**
+
 1. **Copy Example File**: Use `main.parameters.example.json` as starting point
 2. **Customize Values**: Update all organization-specific parameters
 3. **Validate Template**: Run validation before deployment
 4. **Deploy**: Use enhanced PowerShell script with new parameters
 
 ---
-
 
 ## 🧪 Environment Profiles
 
@@ -376,8 +391,5 @@ The orchestrator sets `diagnosticsMode` automatically based on `environmentProfi
 - [KNOWN_ISSUES.md](./KNOWN_ISSUES.md), Known issues
 - [GLOSSARY.md](./GLOSSARY.md), Key terms
 - <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener">Azure Naming Conventions</a>
- - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
- - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
-
-
-
+- [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
+- [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)

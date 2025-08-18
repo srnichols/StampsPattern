@@ -20,15 +20,16 @@ Fast, reliable paths to deploy the Azure Stamps Pattern, from simple two-region 
 This guide walks you through deploying the Azure Stamps Pattern - think of it as setting up a global network of identical "application factories" that can serve tenants efficiently and securely.
 
 **What you're building:**
+
 - **Global Infrastructure**: Like setting up franchise locations worldwide
 - **Flexible Tenancy**: Some locations serve many customers (shared), others serve VIP clients exclusively (dedicated)
 - **Zero-Trust Security**: Every connection is verified - no exceptions
 - **Auto-Scaling**: Resources automatically adjust based on demand
 
 **Time Investment:**
+
 - **Simple Setup**: 45-60 minutes for basic 2-region deployment
 - **Enterprise Setup**: 2-3 hours for full multi-GEO production deployment
-
 
 ## 🧭 Quick Navigation
 
@@ -55,6 +56,7 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 > Imagine deploying a network of identical, secure “application factories” (CELLs) worldwide. Each can serve many customers (shared) or VIPs (dedicated), all managed with zero-trust security and automated scaling. This guide helps you set up, customize, and validate your own global, multi-tenant Azure platform.
 
 **Why use this pattern?**
+>
 > - **Predictable scaling:** Add more “factories” as you grow
 > - **Isolation:** Issues in one CELL don’t affect others
 > - **Global reach:** Serve users from the nearest location
@@ -72,7 +74,6 @@ pwsh -File ./scripts/verify-doc-links.ps1 -IncludeImages -CheckExternal
 
 Our CI runs the same check on pull requests and pushes. Fix any reported links (relative or external) before submitting your PR to avoid CI failures.
 
-
 ## 🧪 Run locally (Functions + Emulator)
 
 Use this quick-start to run the Functions app and local data services for development.
@@ -80,51 +81,60 @@ Use this quick-start to run the Functions app and local data services for develo
 Developer-focused, step-by-step path: see [Developer Quickstart](./DEVELOPER_QUICKSTART.md) for a concise workflow and deeper troubleshooting.
 
 Prerequisites:
+
 - .NET SDK 6.x or newer (for build)
 - Node.js + npm (to install Azure Functions Core Tools)
 - Docker Desktop (for Cosmos DB Emulator)
 
 Steps:
+
 1) Start local data stack (Cosmos Emulator, DAB, Portal) [optional]
-  - PowerShell (Windows):
-    - pwsh -File ./scripts/run-local.ps1
-  - Default ports: Cosmos Emulator 8085, DAB 8082, Portal 8081
+
+- PowerShell (Windows):
+  - pwsh -File ./scripts/run-local.ps1
+- Default ports: Cosmos Emulator 8085, DAB 8082, Portal 8081
 
 2) Ensure local.settings.json
-  - File: AzureArchitecture/local.settings.json
-  - CosmosDbConnection should point to https://localhost:8085/
+
+- File: AzureArchitecture/local.settings.json
+- CosmosDbConnection should point to <https://localhost:8085/>
 
 3) Install Azure Functions Core Tools v4
-  - npm i -g azure-functions-core-tools@4
-  - If func isn’t found, ensure your npm global bin is on PATH.
+
+- npm i -g azure-functions-core-tools@4
+- If func isn’t found, ensure your npm global bin is on PATH.
 
 4) Build and run the Functions host
-  - From repo root: cd AzureArchitecture
-  - Build: dotnet build
-  - Start: func start
+
+- From repo root: cd AzureArchitecture
+- Build: dotnet build
+- Start: func start
 
 5) Verify endpoints
-  - Health:    http://localhost:7071/api/health
-  - SwaggerUI: http://localhost:7071/api/swagger/ui
-  - ApiInfo:   http://localhost:7071/api/api/info
+
+- Health:    <http://localhost:7071/api/health>
+- SwaggerUI: <http://localhost:7071/api/swagger/ui>
+- ApiInfo:   <http://localhost:7071/api/api/info>
 
 Tips:
-- Port busy? Run: func start --port 7072
-- Cosmos TLS trust: the run-local.ps1 script imports the emulator certificate into CurrentUser/Root; if calls fail, open https://localhost:8085/_explorer/emulator.pem once in a browser to trust the cert.
-- Functions task in VS Code: use the default “build (functions)” task, then start with func start from the AzureArchitecture folder.
 
+- Port busy? Run: func start --port 7072
+- Cosmos TLS trust: the run-local.ps1 script imports the emulator certificate into CurrentUser/Root; if calls fail, open <https://localhost:8085/_explorer/emulator.pem> once in a browser to trust the cert.
+- Functions task in VS Code: use the default “build (functions)” task, then start with func start from the AzureArchitecture folder.
 
 ## 📖 Key Concepts Before You Start
 
 Use this section to align on terminology and deployment flow before you run scripts. It summarizes tenancy choices, the GEO/Region/CELL hierarchy, and shows how a deployment progresses from prerequisites to validation.
 
 ### **Tenancy Models Explained**
+
 | Model | Analogy | Best For | Cost per Tenant |
 |-------|---------|----------|-----------------|
 | **Shared CELL** | Apartment building | Startups, SMBs | $8-16/month |
 | **Dedicated CELL** | Private house | Enterprises, Compliance-required | $3,200/month |
 
 ### **Geographic Hierarchy**
+
 ```
 🌍 GEO (North America)
   └── 🏢 Region (East US)
@@ -163,25 +173,26 @@ flowchart TD
 _Figure: End-to-end deployment decision tree from prerequisites through tenancy choice to validation._
 
 ### **What Gets Deployed**
+
 - **Global Layer**: DNS routing, Azure Front Door Standard, Traffic Manager, global tenant directory
 - **Regional Layer**: Security gateways, monitoring, regional services  
 - **CELL Layer**: Your actual applications and databases (shared or dedicated)
 
-
 ---
 
 **🔐 Zero-Trust Network Architecture**: All deployments now include enhanced security with:
+
 - **Private Endpoints Only**: Complete isolation from public internet for all data services
 - **Enhanced JWT Validation**: 85-90% performance improvement with intelligent caching
 - **Managed Identity First**: 100% elimination of password-based authentication
 - **Conditional Security**: Smart firewall rules that adapt based on private endpoint configuration
 
 **⚡ Performance Improvements**:
+
 - **JWT Validation**: Reduced from ~100-200ms to ~10-20ms
 - **Database Access**: All connections via private endpoints with zero external exposure
 - **Caching Layer**: Redis implementation reduces database hits by 80-90%
 - **Query Optimization**: Composite indexes for Cosmos DB significantly improve tenant lookup performance
-
 
 ---
 
@@ -191,7 +202,6 @@ The Azure Stamps Pattern offers flexible deployment options designed to meet dif
 
 The following sections map these concepts to concrete commands, parameters, and CI/CD examples so you can pick the path that fits your team today and scale it later without rework.
 
-
 ---
 
 ### 🔧 **What You Need Before Starting**
@@ -199,6 +209,7 @@ The following sections map these concepts to concrete commands, parameters, and 
 **Think of prerequisites like having the right tools before building a house:**
 
 #### **Azure Access Requirements**
+
 - **Azure Subscription**: Like having a building permit
   - Need **Contributor** access (ability to create resources)
   - Subscription with sufficient quota for required resources
@@ -207,6 +218,7 @@ The following sections map these concepts to concrete commands, parameters, and 
   - Permission to assign roles to managed identities
 
 #### **Local Development Tools**
+
 ```powershell
 # Azure CLI (latest version) - Your main tool for talking to Azure
 az --version
@@ -222,16 +234,19 @@ pwsh --version
 ```
 
 **Why these tools?**
+
 - **Azure CLI**: Communicates with Azure to create resources
 - **Bicep**: Defines what infrastructure to build (like architectural blueprints)
 - **PowerShell**: Orchestrates the deployment process
 
 #### **Knowledge Prerequisites**
+
 - **Basic Azure concepts**: Resource groups, subscriptions, regions
 - **DNS basics**: Understanding of domain names and routing
 - **Multi-tenancy concepts**: Review [GLOSSARY.md](./GLOSSARY.md) if needed
 
 ### 🔧 **Template Customization**
+
 For deployments using custom domains, organization names, or multi-geography requirements, first review the [📋 Parameterization Guide](./PARAMETERIZATION_GUIDE.md) for template customization options.
 
 ### 🌐 Domain naming (test vs. production)
@@ -239,11 +254,10 @@ For deployments using custom domains, organization names, or multi-geography req
 - Test framework: No global domain reservation is required. Use Azure base domains/hostnames for Container Apps/Functions during development and testing.
 - Production: Implement a global domain reservation to guarantee uniqueness across tenants. See “Domain naming and global uniqueness” in the [Management Portal User Guide](./MANAGEMENT_PORTAL_USER_GUIDE.md) for patterns and caveats.
 
-
-
 ---
 
 #### **Minimum Resources Needed**
+
 | Resource Type | Minimum SKU | Purpose | Estimated Monthly Cost |
 |---------------|-------------|---------|----------------------|
 | Container Apps Environment | Consumption | Host applications | $0-50 |
@@ -257,16 +271,12 @@ For deployments using custom domains, organization names, or multi-geography req
 
 _Table: Starting SKUs and rough monthly costs to budget initial environments; adjust by tenancy model and availability zone count._
 
-
 ---
-
 
 > **🧩 Template Flexibility**: The templates are **fully parameterized** for organization reusability! All domains, geography names, and organizational metadata are configurable parameters. Deploy for any organization without code changes.
 
 > **🏆 Enterprise Compliance**: This deployment achieves **94/100 overall CAF/WAF compliance** (with **96/100 WAF Security**), with zero-trust security, automated governance, and AI-driven operations. See [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md) for detailed assessment.  
 > 🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** to align deployments with your enterprise landing zone topology.
-
-
 
 ---
 
@@ -281,6 +291,7 @@ At a glance: You’ll run a parameterized deployment that creates global, region
 Choose your deployment path based on your tenancy requirements:
 
 ### Option A: PowerShell Deployment (Recommended) 🌟
+
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
@@ -301,6 +312,7 @@ flowchart TD
 _Figure: Choosing shared, dedicated, or hybrid determines script flags and expected cost/SLA._
 
 #### **Shared Tenancy Deployment**
+
 ```powershell
 # Cost-optimized for SMBs (multiple tenants per CELL) with basic HA
 ../scripts/deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod -AvailabilityZones 2
@@ -325,6 +337,7 @@ _Figure: Choosing shared, dedicated, or hybrid determines script flags and expec
 _Caption: Use shared CELLs to minimize per-tenant cost; enforce isolation at the application and data schema level._
 
 #### **Dedicated Tenancy Deployment**
+
 ```powershell
 # Enterprise-grade isolation (one tenant per CELL) with maximum resilience
 ../scripts/deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod -AvailabilityZones 3
@@ -349,6 +362,7 @@ _Caption: Use shared CELLs to minimize per-tenant cost; enforce isolation at the
 _Caption: Dedicated CELLs maximize isolation and compliance at higher cost; ideal for regulated or high-throughput tenants._
 
 #### **Mixed Tenancy Deployment**
+
 ```powershell
 # Intelligent assignment based on tenant requirements with maximum resilience
 # Alternative: PowerShell approach
@@ -378,6 +392,7 @@ _Caption: Hybrid deployments let you start tenants in shared CELLs and promote t
 The deployment script supports **organization-specific parameters** for true multi-tenant reusability:
 
 #### **Core Organization Parameters**
+
 | Parameter | Description | Default | Example Values |
 |-----------|-------------|---------|----------------|
 | `OrganizationDomain` | Your organization's domain | `contoso.com` | `fabrikam.com`, `healthcare.org` |
@@ -388,6 +403,7 @@ The deployment script supports **organization-specific parameters** for true mul
 | `OwnerEmail` | Owner email for tagging | `platform-team@contoso.com` | `devops@company.com` |
 
 #### **Geography Parameters**
+
 | Parameter | Description | Default | Example Values |
 |-----------|-------------|---------|----------------|
 | `GeoName` | Geographic region name | `northamerica` | `europe`, `asia`, `australia` |
@@ -396,6 +412,7 @@ The deployment script supports **organization-specific parameters** for true mul
 #### **Usage Examples by Industry**
 
 **Healthcare Organization:**
+
 ```powershell
 ./deploy-stamps.ps1 `
   -OrganizationDomain "healthsystem.org" `
@@ -407,6 +424,7 @@ The deployment script supports **organization-specific parameters** for true mul
 ```
 
 **Financial Services:**
+
 ```powershell
 ./deploy-stamps.ps1 `
   -OrganizationDomain "globalbank.com" `
@@ -418,6 +436,7 @@ The deployment script supports **organization-specific parameters** for true mul
 ```
 
 **SaaS Platform:**
+
 ```powershell
 ./deploy-stamps.ps1 `
   -OrganizationDomain "saasprovider.io" `
@@ -429,6 +448,7 @@ The deployment script supports **organization-specific parameters** for true mul
 ```
 
 ### Option B: Legacy Shell Deployment
+
 ```powershell
 # Traditional deployment (single tenancy model)
 chmod +x ../scripts/deploy-stamps.sh
@@ -440,6 +460,7 @@ chmod +x ../scripts/deploy-stamps.sh
 ## 📋 Prerequisites
 
 ### ✅ Required Tools
+
 ```powershell
 # Azure CLI (latest version)
 az --version
@@ -455,7 +476,9 @@ pwsh --version
 ```
 
 ### 🔐 Azure Access Requirements
+
 ### 👥 Identity Prerequisite (Microsoft Entra External ID for customers)
+
 - Create your External ID tenant in the Azure portal (replacement for Azure AD B2C)
 - Configure app registrations and user flows (e.g., signupsignin)
 - In your function app configuration, set:
@@ -470,11 +493,13 @@ pwsh --version
 The management portal supports Azure Entra ID authentication for administrative access. Configuration includes:
 
 **Bicep Parameters Required:**
+
 - `azureClientId`: Application (Client) ID from your Azure Entra ID app registration
 - `azureTenantId`: Directory (Tenant) ID for your organization
 - `azureClientSecret`: Client secret generated in your app registration
 
 **Azure AD App Registration Requirements:**
+
 1. **Authentication Settings:**
    - Platform: Web
    - Redirect URI: `https://{your-container-app-url}/signin-oidc`
@@ -487,6 +512,7 @@ The management portal supports Azure Entra ID authentication for administrative 
    - `reader`: Read-only access
 
 **Post-Deployment Steps:**
+
 1. Update the app registration redirect URIs with the actual Container App URL
 2. Configure client secret in Container App secrets
 3. Test authentication flow with your organization's users
@@ -495,6 +521,7 @@ For External ID (B2C) customer authentication setup, see Security Guide → [Mic
 
 - **Azure subscription** with Contributor access
 - **Resource Provider registrations**:
+
   ```bash
   az provider register --namespace Microsoft.Network
   az provider register --namespace Microsoft.DocumentDB
@@ -504,7 +531,9 @@ For External ID (B2C) customer authentication setup, see Security Guide → [Mic
   ```
 
 ### 🌍 Regional Considerations
+
 - Verify service availability in target regions:
+
   ```bash
   az provider show --namespace Microsoft.App --query "resourceTypes[?resourceType=='containerApps'].locations"
   ```
@@ -522,11 +551,13 @@ For External ID (B2C) customer authentication setup, see Security Guide → [Mic
 #### Quick start with sample parameters
 
 Use the ready-to-run sample parameter files under `AzureArchitecture/examples/`:
+
 - `main.sample.smoke.json`, minimal, lab-friendly (HTTP, no certs)
 - `main.sample.silver.json`, moderate HA, still lab-friendly
 - `main.sample.platinum.json`, higher HA/DR settings, still lab-friendly
 
 Notes:
+
 - In lab mode, set `useHttpForSmoke: true` (already set in the samples). This enables HTTP on the regional Application Gateway so you don’t need a Key Vault certificate to start.
 - Network prerequisites (VNet/Subnet/Public IP) are created automatically by the template via the regional network module; no pre-created networking is required for a first run.
 
@@ -542,7 +573,8 @@ az deployment group what-if --resource-group $rg --template-file $tmpl --paramet
 az deployment group create --resource-group $rg --template-file $tmpl --parameters @$params --verbose
 ```
 
-#### Configuration (`traffic-routing.parameters.json`):
+#### Configuration (`traffic-routing.parameters.json`)
+
 ```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -561,7 +593,8 @@ az deployment group create --resource-group $rg --template-file $tmpl --paramete
 }
 ```
 
-#### Main Template Configuration (`AzureArchitecture/main.parameters.json`):
+#### Main Template Configuration (`AzureArchitecture/main.parameters.json`)
+
 ```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -587,7 +620,8 @@ az deployment group create --resource-group $rg --template-file $tmpl --paramete
 }
 ```
 
-#### Enterprise Configuration (`traffic-routing.parameters.enterprise.json`):
+#### Enterprise Configuration (`traffic-routing.parameters.enterprise.json`)
+
 ```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -615,7 +649,8 @@ az deployment group create --resource-group $rg --template-file $tmpl --paramete
 }
 ```
 
-#### Deployment:
+#### Deployment
+
 ```powershell
 # Option A: PowerShell Script (Recommended)
 ./deploy-stamps.ps1 -TenancyModel mixed -Environment prod -AvailabilityZones 3
@@ -637,7 +672,8 @@ az deployment group create \
 
 ### 🌍 **Option 2: Global Multi-GEO Setup** (Advanced Manual Deployment)
 
-#### Configuration (`AzureArchitecture/main.parameters.json`):
+#### Configuration (`AzureArchitecture/main.parameters.json`)
+
 ```jsonc
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -664,13 +700,15 @@ az deployment group create \
 ```
 
 > **💡 Note**: The parameterized approach automatically constructs region-specific domains:
+>
 > - `eastus.stamps.contoso.com` (computed from parameters)
 > - `westus2.stamps.contoso.com` (computed from parameters)
 > - DNS zone: `stamps.contoso.com` (computed from `baseDnsZoneName.organizationDomain`)
 
 > Additional locations format: For `AzureArchitecture/main.bicep`, `additionalLocations` is an array of region name strings (e.g., `["westus2", "westeurope"]`). Failover priority is computed internally by the template; you do not need to provide `{locationName, failoverPriority}` objects.
 
-#### Enterprise Multi-Geography Example:
+#### Enterprise Multi-Geography Example
+
 ```jsonc
 {
   "environment": { "value": "prod" },
@@ -683,9 +721,12 @@ az deployment group create \
   "useHttpForSmoke": { "value": true }
 }
 ```
+
 This results in:
+
 - DNS Zone: `api.globalcorp.com`
 - Regional domains: `westeurope.api.globalcorp.com`, `northeurope.api.globalcorp.com`
+
 ```
 
 #### Deployment:
@@ -1041,6 +1082,7 @@ az monitor metrics alert create \
 ## 🧪 Post-Deployment Testing & Validation
 
 ### ✅ **Tenancy Features Validation**
+
 ```powershell
 # Test intelligent tenant assignment
 ./test-tenancy.ps1 -TestType TenantAssignment
@@ -1053,6 +1095,7 @@ az monitor metrics alert create \
 ```
 
 ### 🔍 **Health Check Commands**
+
 ```bash
 # Verify all stamps are healthy
 az rest --method GET --uri "https://func-stamps-management.azurewebsites.net/api/GetStampHealth"
@@ -1065,6 +1108,7 @@ az monitor metrics list --resource <resource-id> --metric "CostPerTenant"
 ```
 
 ### 📊 **Cost Validation**
+
 ```bash
 # Shared tenancy: Verify $8-16/tenant/month range
 az consumption usage list --billing-period-name <period> --query "[?contains(instanceName, 'shared')]"
@@ -1074,6 +1118,7 @@ az consumption usage list --billing-period-name <period> --query "[?contains(ins
 ```
 
 ### 🎯 **Functional Testing**
+
 ```bash
 # Test tenant onboarding workflow
 curl -X POST "https://func-stamps-management.azurewebsites.net/api/CreateTenant" \
@@ -1124,6 +1169,7 @@ Use this quick checklist before promoting a test deployment to production. Cross
   - Azure Policy (policy as code) assigned; Defender for Cloud recommendations addressed; audit logs retained.
 
 References:
+
 - Management Portal User Guide: Operational patterns and data model (./MANAGEMENT_PORTAL_USER_GUIDE.md)
 - Security Baseline: Zero‑trust, identity, and network controls (./SECURITY_GUIDE.md)
 - Parameterization: Organization/geography/DNS inputs (./PARAMETERIZATION_GUIDE.md)
@@ -1131,6 +1177,7 @@ References:
 ## 🛠️ Troubleshooting Common Issues
 
 ### ❌ **Issue 1: Resource Name Conflicts**
+
 ```bash
 # Check for existing resources
 az resource list --query "[?contains(name, 'stamps')]" --output table
@@ -1140,6 +1187,7 @@ az resource list --query "[?contains(name, 'stamps')]" --output table
 ```
 
 ### ❌ **Issue 2: Application Gateway Backend Configuration**
+
 ```bash
 # If Azure Front Door returns 502 errors, check Application Gateway backend pools
 # Backend pools should point to function app FQDNs, not placeholder domains
@@ -1153,6 +1201,7 @@ az network application-gateway show-backend-health \
 ```
 
 ### ❌ **Issue 3: API Management Deployment Timeout**
+
 ```bash
 # APIM takes 45-60 minutes to deploy
 # Check deployment status
@@ -1163,6 +1212,7 @@ az deployment group show \
 ```
 
 ### ❌ **Issue 4: Cosmos DB Region Unavailability**
+
 ```bash
 # Check Cosmos DB service availability
 az cosmosdb locations list --query "[?contains(name, 'eastus')]" --output table
@@ -1172,6 +1222,7 @@ az cosmosdb locations list --query "[?contains(name, 'eastus')]" --output table
 ```
 
 ### ❌ **Issue 5: SQL Password Complexity Requirements**
+
 ```bash
 # Ensure password meets requirements:
 # - At least 8 characters
@@ -1182,6 +1233,7 @@ az cosmosdb locations list --query "[?contains(name, 'eastus')]" --output table
 ## 🔄 Updating Existing Deployments
 
 ### ➕ **Adding New CELLs**
+
 ```bash
 # Update parameters file with new CELL
 # Then redeploy
@@ -1193,6 +1245,7 @@ az deployment group create \
 ```
 
 ### 🌍 **Regional Expansion**
+
 ```bash
 # For global architecture, update geos array in main.parameters.json
 # Deploy updated template
@@ -1205,6 +1258,7 @@ az deployment group create \
 ## 🧹 Cleanup
 
 ### 🗑️ **Complete Environment Cleanup**
+
 ```bash
 # Remove resource group (WARNING: Irreversible)
 az group delete --name $RESOURCE_GROUP_NAME --yes --no-wait
@@ -1214,6 +1268,7 @@ az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAM
 ```
 
 ### 🧪 Local Dev Cleanup
+
 ```powershell
 # Stop local stack (Cosmos Emulator/DAB/Portal) if you started it
 pwsh -File ./scripts/stop-local.ps1
@@ -1226,7 +1281,6 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 ```
 
 ---
-
 
 ---
 
@@ -1245,7 +1299,7 @@ dotnet clean ./AzureArchitecture/AzureArchitecture.csproj
 
 ---
 
-*Last updated: August 2025*
+_Last updated: August 2025_
 
 **Pattern Version:** v1.2.2*
 
@@ -1274,14 +1328,9 @@ This repo includes two lightweight GitHub Actions to keep deployments safe:
   - Purpose: Catch profile-specific issues early
 
 How to run What-If:
+
 1) In GitHub Actions, select "Bicep What-If (Smoke)"
 2) Provide your Subscription ID; use or change the default Resource Group and Location
 3) Ensure required secrets exist as noted above
 
 Tip: The workflow uses AzureArchitecture/examples/main.sample.smoke.json and validates with az deployment group what-if.
-
-
-
-
-
-

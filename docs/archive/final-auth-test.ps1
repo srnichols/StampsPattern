@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+# !/usr/bin/env pwsh
 param(
     [string]$ClientSecret = ""
 )
@@ -15,7 +15,7 @@ Write-Host "🌐 Testing Portal Accessibility..." -ForegroundColor Yellow
 try {
     $response = Invoke-WebRequest -Uri $portalUrl -Method HEAD -UseBasicParsing 2>$null
     Write-Host "✅ Portal is accessible (Status: $($response.StatusCode))" -ForegroundColor Green
-    
+
     # Check if we get redirect to Azure AD
     if ($response.StatusCode -eq 302) {
         $location = $response.Headers.Location
@@ -50,7 +50,7 @@ try {
 Write-Host ""
 Write-Host "🔑 Manual Azure AD Configuration Required:" -ForegroundColor Yellow
 Write-Host "===========================================" -ForegroundColor Yellow
-Write-Host "1. Open: https://portal.azure.com" -ForegroundColor White
+Write-Host "1. Open: <https://portal.azure.com>" -ForegroundColor White
 Write-Host "2. Navigate to: Azure Entra ID → App registrations" -ForegroundColor White
 Write-Host "3. Find: StampsManagementClient ($clientId)" -ForegroundColor White
 Write-Host "4. Go to: Authentication" -ForegroundColor White

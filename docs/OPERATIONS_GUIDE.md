@@ -2,8 +2,6 @@
 
 Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predictive analytics, automated governance, and incident response for resilient, compliant, and cost-optimized operations.
 
-
-
 - What's inside: Monitoring, incident response, maintenance, scaling, and automation playbooks
 - Best for: Operations/SRE, DevOps engineers, IT leaders, and security/compliance teams
 - Outcomes: Faster MTTR/MTTD, higher resilience, better cost control, and consistent runbooks
@@ -17,7 +15,6 @@ Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predicti
 
 ---
 
-
 ## 🧭 Quick Navigation
 
 | Section | Focus Area | Time to Read | Best for |
@@ -30,6 +27,7 @@ Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predicti
 | [📚 Related Guides](#-related-guides) | More docs | 2 min | All readers |
 
 ### 🔗 **Key Subsections You Can Jump To:**
+
 - 🎛️ AI-Driven Operational Maturity
 - 📊 Key Performance Indicators (KPIs)
 - 🚨 Alert Configuration  
@@ -50,13 +48,13 @@ Operational runbook for the Azure Stamps Pattern, AI-driven monitoring, predicti
 > Think of operations as running a global network of “smart factories” (CELLs) that are monitored, maintained, and optimized by AI. This guide helps you keep everything healthy, secure, and cost-effective, whether you’re responding to incidents, scaling up, or automating routine tasks.
 
 **Why is this important?**
+>
 > - **Proactive monitoring:** Spot issues before they impact users
 > - **Automated maintenance:** Reduce manual toil and errors
 > - **Predictive analytics:** Plan for growth and optimize costs
 > - **Resilience:** Rapid, automated incident response
 
 ---
-
 
 ### 🎛️ **AI-Driven Operational Maturity**
 
@@ -124,6 +122,7 @@ This uses profile-specific example parameters and ensures the resource group exi
 ```
 
 Notes:
+
 - Parameter files used per profile:
   - smoke → `AzureArchitecture/examples/main.sample.smoke.json`
   - dev → `AzureArchitecture/examples/main.sample.silver.json`
@@ -170,7 +169,8 @@ _Diagram: Layered monitoring scope from global to CELL; align dashboards and ale
 
 ### 📊 **Key Performance Indicators (KPIs)**
 
-#### Global KPIs:
+#### Global KPIs
+
 ```jsonc
 {
   "globalKPIs": {
@@ -205,7 +205,8 @@ _Diagram: Layered monitoring scope from global to CELL; align dashboards and ale
 
 _Block: Suggested global SLO/SLA indicators and alert thresholds for baseline monitoring._
 
-#### CELL-Level KPIs:
+#### CELL-Level KPIs
+
 ```jsonc
 {
   "cellKPIs": {
@@ -237,7 +238,8 @@ _Block: CELL-level KPIs to guide scaling, capacity, and tenant experience SLIs._
 
 ### 🚨 **Alert Configuration**
 
-#### Critical Alerts:
+#### Critical Alerts
+
 ```powershell
 #!/bin/bash
 # Create comprehensive alert rules
@@ -360,12 +362,12 @@ az monitor metrics alert create \
 
 ---
 
-
 ---
 
 ### 📈 **Flexible Tenant Management Operations**
 
 #### **🏠 Shared CELL Tenant Onboarding**
+
 ```powershell
 # 1. Check shared CELL capacity before adding tenants
 SHARED_CELL="shared-smb-eastus"
@@ -393,6 +395,7 @@ az cosmosdb sql container create \
 ```
 
 #### **🏢 Dedicated CELL Tenant Deployment**
+
 ```powershell
 # 1. Deploy dedicated infrastructure for enterprise tenant
 ENTERPRISE_TENANT="banking-corp"
@@ -422,6 +425,7 @@ az apim policy create \
 ```
 
 #### **🔄 Tenant Migration: Shared → Dedicated**
+
 ```powershell
 # 1. Deploy new dedicated CELL for growing tenant
 GROWING_TENANT="fintech-scale"
@@ -459,6 +463,7 @@ curl -H "X-Tenant-ID: $GROWING_TENANT" \
 ```
 
 #### **Monitoring Tenant API Usage**
+
 ```powershell
 # Get tenant API usage analytics
 az monitor metrics list \
@@ -478,6 +483,7 @@ az monitor metrics list \
 ```
 
 #### **APIM Health Checks**
+
 ```powershell
 # Verify APIM gateway status across regions
 az apim show \
@@ -498,6 +504,7 @@ az apim policy show \
 ```
 
 ### 🔧 **Tenant Onboarding Automation**
+
 ```powershell
 #!/bin/bash
 # Automated tenant onboarding script
@@ -556,7 +563,8 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 
 ### 📊 **Custom Dashboards**
 
-#### Global Operations Dashboard:
+#### Global Operations Dashboard
+
 ```jsonc
 {
   "dashboardConfig": {
@@ -591,7 +599,8 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 }
 ```
 
-#### CELL Operations Dashboard:
+#### CELL Operations Dashboard
+
 ```jsonc
 {
   "dashboardConfig": {
@@ -620,7 +629,6 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 }
 ```
 
-
 ---
 
 ---
@@ -629,7 +637,8 @@ echo "✅ Tenant $TENANT_ID onboarded successfully with $TIER tier"
 
 ### 🔄 **Routine Maintenance Tasks**
 
-#### Weekly Tasks:
+#### Weekly Tasks
+
 ```bash
 #!/bin/bash
 # Weekly maintenance script
@@ -670,7 +679,8 @@ az keyvault certificate list --vault-name kv-stamps-global \
 echo "✅ Weekly maintenance completed"
 ```
 
-#### Monthly Tasks:
+#### Monthly Tasks
+
 ```bash
 #!/bin/bash
 # Monthly maintenance script
@@ -713,7 +723,8 @@ echo "✅ Monthly maintenance completed"
 
 ### 📦 **Update Management**
 
-#### Application Updates:
+#### Application Updates
+
 ```bash
 #!/bin/bash
 # Application update procedure
@@ -780,7 +791,8 @@ else
 fi
 ```
 
-#### Infrastructure Updates:
+#### Infrastructure Updates
+
 ```bash
 #!/bin/bash
 # Infrastructure update procedure using Bicep
@@ -828,7 +840,6 @@ az deployment group create \
 echo "✅ Infrastructure update completed"
 ```
 
-
 ---
 
 ## 🚨 Incident Response
@@ -837,7 +848,8 @@ Incident response in the Azure Stamps Pattern leverages AI-driven detection and 
 
 ### 📞 **Incident Classification**
 
-#### Severity Levels:
+#### Severity Levels
+
 ```json
 {
   "incidentSeverity": {
@@ -871,7 +883,8 @@ Incident response in the Azure Stamps Pattern leverages AI-driven detection and 
 
 ### 🔧 **Incident Response Playbooks**
 
-#### Global Outage Response:
+#### Global Outage Response
+
 ```bash
 #!/bin/bash
 # Global outage response playbook
@@ -939,7 +952,8 @@ curl -X POST "https://events.pagerduty.com/v2/enqueue" \
 echo "🎯 Incident response initiated"
 ```
 
-#### CELL Isolation Procedure:
+#### CELL Isolation Procedure
+
 ```bash
 #!/bin/bash
 # CELL isolation procedure for security or performance issues
@@ -983,7 +997,6 @@ echo "$(date): CELL $CELL_NAME isolated for investigation" >> isolation_log.txt
 echo "✅ CELL $CELL_NAME successfully isolated"
 ```
 
-
 ---
 
 ## 🚑 Incident Playbooks (step-by-step)
@@ -995,6 +1008,7 @@ This section consolidates concise, runnable playbooks for common incidents (Port
 Goal: confirm the portal can reach DAB GraphQL and diagnose where the failure sits (config, DNS, network, auth, or DAB itself).
 
 Checklist:
+
 - [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct
 - [ ] Confirm DAB Container App revision is healthy
 - [ ] Tail DAB logs for GraphQL errors
@@ -1059,6 +1073,7 @@ If the above shows schema, the portal should be able to fetch data; if not, cont
 Goal: diagnose container start failures, image pull problems, missing config files, or permission errors.
 
 Checklist:
+
 - [ ] Confirm image exists in ACR
 - [ ] Confirm managed identity has AcrPull on ACR
 - [ ] Tail container logs for startup exceptions
@@ -1127,6 +1142,7 @@ If you must rebuild the image, follow normal build/push flow and update the cont
 Goal: fix 401/403 issues coming from local dev or deployed services using DefaultAzureCredential or managed identities.
 
 Checklist:
+
 - [ ] Determine if call is from local dev or deployed resource
 - [ ] For local dev: verify `az login` or VS Code account
 - [ ] For deployed: confirm managed identity presence and role assignments
@@ -1203,6 +1219,7 @@ az role assignment create --assignee <principalId> --role AcrPull --scope <scope
 ---
 
 If you'd like, I can also:
+
 - convert these playbooks into step-by-step runbooks in `docs/OPERATIONS_GUIDE.md` under a dedicated "Incident Playbooks" section, or
 - add a small `bin/diagnostics.ps1` script that runs a subset of these checks and prints a short report for the current environment.
 
@@ -1218,21 +1235,15 @@ If you'd like, I can also:
 - [Glossary](./GLOSSARY.md)
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
- - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
- - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
+- [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
+- [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 ---
 
-*Last updated: August 2025*
+_Last updated: August 2025_
 
 **Pattern Version:** v1.2.2*
 
 **Pattern Version:** v1.2.1*
 
 **Pattern Version:** v1.2.0*
-
-
-
-
-
-

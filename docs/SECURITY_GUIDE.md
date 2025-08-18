@@ -14,6 +14,7 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern, netwo
 - **Compliance Teams:** Audit and verify regulatory controls
 
 ---
+
 ## 👤 Who Should Read This Guide?
 
 - **Security Architects:** Design and validate zero-trust controls
@@ -46,6 +47,7 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern, netwo
 > Security in the Stamps Pattern means building a fortress around every layer, network, identity, data, and operations, using zero-trust principles. This guide helps you understand how to protect sensitive data, enforce compliance, and automate threat response in a multi-tenant, cloud-native environment.
 
 **Why is this important?**
+>
 > - **Zero-trust by default:** Every request is verified, every resource is isolated
 > - **Automated governance:** Policies and controls are enforced at scale
 > - **Threat intelligence:** AI-driven detection and rapid response
@@ -60,7 +62,6 @@ Practical blueprint to implement zero‑trust in the Azure Stamps Pattern, netwo
 > 📊 See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** , how this implementation maps to Microsoft frameworks.
 >
 > 🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how these security controls align with CAF/WAF-aligned enterprise landing zones.
-
 
 ---
 
@@ -97,18 +98,21 @@ This guide establishes security baselines and best practices for the Azure Stamp
 
 ### 🚨 **Recent Security Enhancements (August 2025)**
 
-**⚡ Zero-Trust Network Architecture**: 
+**⚡ Zero-Trust Network Architecture**:
+
 - **Cosmos DB Public Access**: Now **DISABLED** by default for all deployments
 - **SQL Firewall Rules**: Conditional deployment based on private endpoint configuration
 - **Private Endpoints**: Enhanced configuration for complete network isolation
 
 **🔐 Enhanced JWT Authentication**:
+
 - **JWKS Caching**: 24-hour caching reduces validation latency by 85-90%
 - **Audience & Issuer Validation**: Strict validation prevents token replay attacks
 - **Clock Skew Tolerance**: 5-minute tolerance for distributed system clock differences
 - **Error Handling**: Comprehensive logging with fallback mechanisms
 
 **📊 Performance Security Gains**:
+
 - JWT Validation: ~100-200ms → ~10-20ms (85-90% improvement)
 - Token Caching: Eliminates repeated JWKS endpoint calls
 - Database Connections: Always use private endpoints with zero external exposure
@@ -156,18 +160,21 @@ _Diagram: Defense-in-depth layers across global, regional, and CELL tiers; apply
 #### **Flexible Tenancy Security Models**
 
 **🏠 Shared CELL Security**:
+
 - **Application-level isolation**: Tenant ID validation in all API calls
 - **Schema-based database access**: Row-level security (RLS) for tenant data separation
 - **Container-based storage**: Tenant-specific blob containers with SAS tokens
 - **API rate limiting**: Per-tenant quotas within shared infrastructure
 
 **🏢 Dedicated CELL Security**:
+
 - **Infrastructure-level isolation**: Complete network and resource separation
 - **Dedicated databases**: Individual SQL instances with private endpoints
 - **Isolated storage**: Dedicated storage accounts with private networking
 - **Custom security policies**: Tenant-specific WAF rules and access controls
 
 #### **Enterprise Security Policies**
+
 ```xml
 <!-- Global APIM Security Policy -->
 <policies>
@@ -216,18 +223,22 @@ _Diagram: Defense-in-depth layers across global, regional, and CELL tiers; apply
 #### **Tenant Isolation Security Models**
 
 ##### **🏠 Shared CELL Security**
+
 - **Application-Level Tenant Validation**: Every API call validates tenant context
 - **Row-Level Security (RLS)**: Database policies enforce tenant data isolation
+
   ```sql
   CREATE SECURITY POLICY tenant_security_policy
   ADD FILTER PREDICATE tenant_id = SESSION_CONTEXT('tenant_id')
   ON dbo.customer_data;
   ```
+
 - **Tenant-Scoped Storage**: SAS tokens with tenant-specific permissions
 - **API Rate Limiting**: Per-tenant quotas within shared infrastructure
 - **Audit Trail**: Comprehensive logging with tenant correlation IDs
 
 ##### **🏢 Dedicated CELL Security**
+
 - **Infrastructure Isolation**: Complete network and resource separation
 - **Private Endpoints**: Dedicated SQL and storage with private connectivity
 - **Custom NSG Rules**: Tenant-specific network security groups
@@ -235,6 +246,7 @@ _Diagram: Defense-in-depth layers across global, regional, and CELL tiers; apply
 - **Compliance-Ready**: Meets regulatory requirements (HIPAA, SOX, PCI-DSS)
 
 ##### **Security Policy Enforcement**
+
 - **Subscription-based access**: Each tenant gets unique API keys and policies
 - **Dynamic policy application**: Different security rules based on tenant tier
 - **Request validation**: Schema validation and payload inspection per tenant type
@@ -247,7 +259,8 @@ Identity and Access Management (IAM) forms the cornerstone of the zero-trust sec
 
 ### 🎫 **Microsoft Entra External ID (customers) Integration**
 
-#### Multi-Tenant Identity Architecture:
+#### Multi-Tenant Identity Architecture
+
 ```bicep
 // External ID tenants cannot be created via Bicep/ARM. Configure in portal.
 ```
@@ -257,16 +270,19 @@ Identity and Access Management (IAM) forms the cornerstone of the zero-trust sec
 Because External ID (customers, formerly Azure AD B2C) tenants can’t be created via Bicep/ARM, prepare these items in the Azure portal first:
 
 1) Create or select your External ID tenant (CIAM)
+
 - Portal: Microsoft Entra admin center → External ID → Customers
 - Confirm the tenant name (e.g., contoso) and primary domain (e.g., contoso.onmicrosoft.com)
 
 2) Create an App registration for your client app (SPA or web app)
+
 - Name: Stamps Client (example)
 - Supported account types: Accounts in this organizational directory only
-- Redirect URIs: add your local and prod URIs (e.g., http://localhost:3000, https://app.contoso.com)
+- Redirect URIs: add your local and prod URIs (e.g., <http://localhost:3000>, <https://app.contoso.com>)
 - Certificates & secrets: create a client secret only if your app type requires it (not needed for SPA PKCE)
 
 3) Create an App registration for your protected API (if validating aud)
+
 - Name: Stamps API (example)
 - Expose an API → Set Application ID URI to match your audience
   - Example: api://stamps-pattern (or your custom URI)
@@ -274,17 +290,20 @@ Because External ID (customers, formerly Azure AD B2C) tenants can’t be create
 - Note: This must align with the APIM policy in this guide that validates aud "api://stamps-pattern". If you use a different URI, update the APIM policy to match.
 
 4) Create a user flow (policy) for sign-up/sign-in
+
 - External ID → User flows → New user flow → Sign up and sign in
 - Name: B2C_1_signupsignin (recommended conventional naming)
 - Add identity providers and attributes/claims as needed
 
 5) Collect these values for app configuration
+
 - Tenant name: contoso (External ID tenant short name)
 - Client (application) ID: from the client app registration
 - User flow (policy) name: B2C_1_signupsignin
 - Audience / Application ID URI: api://stamps-pattern (or your chosen URI)
 
 6) Map to application settings (local and deployment)
+
 - Local development (local.settings.json):
   - EXTERNAL_ID_TENANT: contoso
   - EXTERNAL_ID_CLIENT_ID: <client-app-id>
@@ -293,11 +312,13 @@ Because External ID (customers, formerly Azure AD B2C) tenants can’t be create
 - Deployment (Function App / Container App settings): set the same keys as app settings
 
 Reference docs:
-- Microsoft Entra External ID (customers) overview: https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam
-- Create user flows: https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-user-flow-sign-up-sign-in-customers
-- Expose an API & scopes: https://learn.microsoft.com/en-us/entra/identity-platform/v2-permissions-and-consent
 
-#### Security Policies:
+- Microsoft Entra External ID (customers) overview: <https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam>
+- Create user flows: <https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-user-flow-sign-up-sign-in-customers>
+- Expose an API & scopes: <https://learn.microsoft.com/en-us/entra/identity-platform/v2-permissions-and-consent>
+
+#### Security Policies
+
 - **Multi-Factor Authentication (MFA)**: Required for all admin accounts
 - **Conditional Access**: Location and device-based restrictions
 - **Identity Protection**: Risk-based authentication
@@ -337,7 +358,8 @@ Network security in the Azure Stamps Pattern implements a sophisticated defense-
 
 ### 🛡️ **Web Application Firewall (WAF)**
 
-#### Global WAF (Front Door):
+#### Global WAF (Front Door)
+
 ```jsonc
 {
   "wafConfig": {
@@ -374,7 +396,8 @@ Network security in the Azure Stamps Pattern implements a sophisticated defense-
 }
 ```
 
-#### Regional WAF (Application Gateway):
+#### Regional WAF (Application Gateway)
+
 ```bicep
 resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
   properties: {
@@ -395,7 +418,8 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
 
 ### 🔒 **Network Segmentation**
 
-#### VNET and Subnet Architecture:
+#### VNET and Subnet Architecture
+
 ```
 🌐 Hub VNET (10.0.0.0/16)
 ├─ 🔐 Management Subnet (10.0.1.0/24)
@@ -408,7 +432,8 @@ resource appGateway 'Microsoft.Network/applicationGateways@2022-09-01' = {
 └─ 🏠 CELL-3 Subnet (10.1.3.0/24)
 ```
 
-#### Network Security Groups:
+#### Network Security Groups
+
 ```bicep
 resource cellNSG 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
   properties: {
@@ -448,18 +473,21 @@ resource cellNSG 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
 
 ### 🔐 **Encryption Standards**
 
-#### At Rest:
+#### At Rest
+
 - **SQL Database**: Transparent Data Encryption (TDE) with customer-managed keys
 - **Cosmos DB**: Double encryption with service-managed keys
 - **Storage Accounts**: Customer-managed keys with Key Vault
 - **Key Vault**: FIPS 140-2 Level 2 validated HSMs
 
-#### In Transit:
+#### In Transit
+
 - **TLS 1.3** for all HTTP communications
 - **VPN Gateway** for site-to-site connectivity
 - **Private Endpoints** for Azure PaaS services
 
-#### Encryption Configuration:
+#### Encryption Configuration
+
 ```bicep
 resource sqlServer 'Microsoft.Sql/servers@2022-11-01' = {
   properties: {
@@ -490,13 +518,15 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 ### 🛡️ **Data Classification & Protection**
 
-#### Data Sensitivity Levels:
+#### Data Sensitivity Levels
+
 1. **Public**: Marketing content, public documentation
 2. **Internal**: Business processes, internal communications  
 3. **Confidential**: Customer data, financial information
 4. **Restricted**: Personal data, payment information
 
-#### Protection Controls by Classification:
+#### Protection Controls by Classification
+
 ```jsonc
 {
   "dataClassification": {
@@ -559,7 +589,8 @@ resource sentinelSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-p
 
 ### 🚨 **Security Alerts & Automation**
 
-#### Critical Security Alerts:
+#### Critical Security Alerts
+
 ```jsonc
 {
   "securityAlerts": [
@@ -592,14 +623,16 @@ resource sentinelSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-p
 
 ### 🔐 **Security Baseline Compliance**
 
-#### CIS Azure Foundations Benchmark:
+#### CIS Azure Foundations Benchmark
+
 - ✅ **2.1.1**: Ensure that standard pricing tier is selected
 - ✅ **2.1.2**: Ensure that 'Automatic provisioning of monitoring agent' is set to 'On'
 - ✅ **2.1.3**: Ensure ASC Default policy setting is not set to 'Disabled'
 - ✅ **3.1**: Ensure that 'Secure transfer required' is set to 'Enabled'
 - ✅ **3.2**: Ensure that storage account access keys are periodically regenerated
 
-#### Azure Security Benchmark:
+#### Azure Security Benchmark
+
 - ✅ **NS-1**: Implement security segmentation
 - ✅ **NS-2**: Connect private networks together  
 - ✅ **ID-1**: Standardize Microsoft Entra ID (formerly Azure AD)
@@ -611,16 +644,19 @@ resource sentinelSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-p
 ### 🔧 **Incident Response Plan**
 
 #### Phase 1: Detection & Analysis
+
 1. **Automated Detection**: Azure Sentinel analytics rules
 2. **Alert Triage**: Security Operations Center (SOC) review
 3. **Initial Analysis**: Threat classification and impact assessment
 
 #### Phase 2: Containment & Eradication  
+
 1. **Immediate Containment**: Isolate affected resources
 2. **Evidence Collection**: Preserve logs and artifacts
 3. **Root Cause Analysis**: Determine attack vector
 
 #### Phase 3: Recovery & Lessons Learned
+
 1. **Service Restoration**: Gradual service restoration
 2. **Monitoring**: Enhanced monitoring for similar threats
 3. **Documentation**: Update security playbooks
@@ -657,28 +693,32 @@ actions:
 
 ### ✅ **Pre-Production Security Review**
 
-#### Identity & Access:
+#### Identity & Access
+
 - [ ] External ID (customers) configured with MFA
 - [ ] Privileged Identity Management (PIM) enabled
 - [ ] Service principals use managed identities
 - [ ] Role-based access control (RBAC) implemented
 - [ ] Guest user access reviewed and limited
 
-#### Network Security:
+#### Network Security
+
 - [ ] WAF policies configured and tested
 - [ ] Network security groups restrict unnecessary traffic
 - [ ] Private endpoints configured for PaaS services
 - [ ] DDoS protection enabled
 - [ ] VPN/ExpressRoute for hybrid connectivity
 
-#### Data Protection:
+#### Data Protection
+
 - [ ] Encryption at rest enabled with customer-managed keys
 - [ ] TLS 1.3 enforced for all communications
 - [ ] Data classification and labeling implemented
 - [ ] Backup encryption enabled
 - [ ] Key rotation policies defined
 
-#### Monitoring & Compliance:
+#### Monitoring & Compliance
+
 - [ ] Azure Sentinel deployed and configured
 - [ ] Security baseline compliance verified
 - [ ] Incident response procedures tested
@@ -688,19 +728,20 @@ actions:
 ## 📚 Security Resources
 
 ### 📖 **Documentation References**
- - <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Security Benchmark</a>&nbsp;<sup>↗</sup>
- - <a href="https://learn.microsoft.com/azure/architecture/framework/security/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Well-Architected Security Pillar</a>&nbsp;<sup>↗</sup>
- - <a href="https://www.cisecurity.org/benchmark/azure" target="_blank" rel="noopener" title="Opens in a new tab">CIS Azure Foundations Benchmark</a>&nbsp;<sup>↗</sup>
- - <a href="https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam" target="_blank" rel="noopener" title="Opens in a new tab">Microsoft Entra External ID for customers</a>&nbsp;<sup>↗</sup>
+
+- <a href="https://learn.microsoft.com/security/benchmark/azure/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Security Benchmark</a>&nbsp;<sup>↗</sup>
+- <a href="https://learn.microsoft.com/azure/architecture/framework/security/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Well-Architected Security Pillar</a>&nbsp;<sup>↗</sup>
+- <a href="https://www.cisecurity.org/benchmark/azure" target="_blank" rel="noopener" title="Opens in a new tab">CIS Azure Foundations Benchmark</a>&nbsp;<sup>↗</sup>
+- <a href="https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam" target="_blank" rel="noopener" title="Opens in a new tab">Microsoft Entra External ID for customers</a>&nbsp;<sup>↗</sup>
 
 ### 🛠️ **Security Tools**
+
 - **Azure Security Center**: Unified security management
 - **Azure Sentinel**: SIEM and SOAR capabilities  
 - **Azure Key Vault**: Secrets and key management
 - **Azure Policy**: Governance and compliance automation
 
 ---
-
 
 ---
 
@@ -715,20 +756,14 @@ actions:
 - [Known Issues](./KNOWN_ISSUES.md)
 - [Cost Optimization](./COST_OPTIMIZATION_GUIDE.md)
 - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
- - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
+- [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 
 ---
 
-*Last updated: August 2025*
+_Last updated: August 2025_
 
 **Pattern Version:** v1.2.2*
 
 **Pattern Version:** v1.2.1*
 
 **Pattern Version:** v1.2.0*
-
-
-
-
-
-

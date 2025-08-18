@@ -98,12 +98,14 @@ _Figure: Global-to-CELL hierarchy with zone-aware deployment. Azure Front Door a
 ### 🚨 **Latest Security Enhancements (August 2025)**
 
 **🔐 Zero-Trust Network Implementation**:
+
 - **Private Endpoints Only**: All data services isolated from public internet
 - **Conditional Firewall Rules**: SQL firewall rules deploy only when private endpoints disabled
 - **Enhanced JWT Validation**: 85-90% performance improvement with JWKS caching
 - **Managed Identity First**: 100% elimination of connection strings and passwords
 
 **⚡ Performance & Security Gains**:
+
 - Cosmos DB: Public access permanently disabled (`publicNetworkAccess: 'Disabled'`)
 - JWT Validation: ~100-200ms → ~10-20ms latency reduction
 - Database Security: All connections through private endpoints with zero external exposure
@@ -114,9 +116,11 @@ _Figure: Global-to-CELL hierarchy with zone-aware deployment. Azure Front Door a
 The Azure Stamps Pattern supports **multiple tenancy models** within the same architecture, providing maximum flexibility for different business requirements:
 
 ### 🏠 **Shared CELL Tenancy** (Multi-tenant per CELL)
+
 **Use Case**: Cost-effective hosting for smaller tenants, startups, and standardized workloads
 
 **Characteristics**:
+
 - **10-100 smaller clients** can share a single CELL
 - **Application-level isolation** within shared CELL resources
 - **Shared infrastructure costs** across tenants in the same CELL
@@ -124,15 +128,18 @@ The Azure Stamps Pattern supports **multiple tenancy models** within the same ar
 - **Cost-effective** for price-sensitive customers
 
 **Isolation Strategy**:
+
 - **Database schemas**: Separate schemas per tenant in shared SQL DB
 - **Storage containers**: Tenant-specific blob containers within shared storage
 - **API Management**: Tenant-specific rate limiting and access policies
 - **Application routing**: Tenant ID-based data segregation
 
 ### 🏢 **Dedicated CELL Tenancy** (Single tenant per CELL)
+
 **Use Case**: Enterprise clients, regulated industries, high-compliance requirements
 
 **Characteristics**:
+
 - **Large enterprise clients** get their own dedicated CELL
 - **Complete infrastructure isolation** - separate SQL database, storage, container apps
 - **Custom configurations** and performance guarantees
@@ -140,6 +147,7 @@ The Azure Stamps Pattern supports **multiple tenancy models** within the same ar
 - **Premium SLA** with dedicated resources and monitoring
 
 **Isolation Strategy**:
+
 - **Infrastructure-level**: Completely separate Azure resources per tenant
 - **Network isolation**: Dedicated VNets and subnets
 - **Separate databases**: Individual SQL databases per tenant
@@ -231,12 +239,14 @@ _Figure: Regional architecture distributing traffic across zone-pinned instances
 ### 📊 **Zone-Aware Service Configuration**
 
 #### **Zone-Redundant Services (Recommended)**
+
 - **🔄 Application Gateway**: Automatically distributes across zones
 - **🗄️ Azure SQL Database**: Zone-redundant database option
 - **📊 Azure Cosmos DB**: Zone-redundant writes and reads
 - **🔐 Azure Key Vault**: Zone-redundant by default in supported regions
 
 #### **Zone-Pinned Services (CELL-Specific)**
+
 - **🏗️ Container Apps Environment**: Pin to specific zones per CELL
 - **💾 Storage Accounts**: Zone-redundant storage (ZRS) or specific zone
 - **📦 Container Registry**: Zone-redundant with geo-replication
@@ -277,26 +287,28 @@ _Listing: Example CELL configuration demonstrating how to express tenancy model 
 ### 🚨 **Zone Failure Scenarios**
 
 #### **Single Zone Failure (zones 1-3 configuration)**
+
 - **Impact**: 33% capacity reduction
 - **Response**: Traffic automatically redistributes to healthy zones
 - **Recovery**: Auto-healing within remaining zones
 
 #### **Multi-Zone Failure (zones 1-3 configuration)**  
+
 - **Impact**: 66% capacity reduction
 - **Response**: Regional failover triggers
 - **Recovery**: Cross-region disaster recovery
 
 #### **Complete Regional Failure**
+
 - **Impact**: 100% regional capacity loss
 - **Response**: Traffic Manager routes to backup region
 - **Recovery**: Geo-disaster recovery procedures
 
-
 **Why Availability Zones Matter:**
+
 - **High Availability (HA):** Deploying CELLs across multiple AZs protects against datacenter failures.
 - **Disaster Recovery (DR):** AZs enable rapid failover and business continuity.
 - **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload.
-
 
 ### 🌍 **Hierarchical Structure with Availability Zones**
 
@@ -338,6 +350,7 @@ flowchart TD
 _Figure: Layered view (GEO → Region → Zone → CELL) highlighting where isolation and redundancy are applied._
 
 **📐 Architecture Dimensions:**
+
 - **Depth**: 4 layers (GEO → Region → Zone → CELL)
 - **Width**: Unlimited expansion at each layer
 - **Zone Resilience**: 0-3 zones per CELL based on SLA requirements
@@ -377,9 +390,11 @@ The Azure Stamps Pattern is built using a carefully orchestrated five-layer arch
 Use this section as a map: start at the Global Layer for entry points and control plane, then follow down to the CELL Layer for tenant workloads. Cross-cutting layers (Geodes, Monitoring) provide shared capabilities across all tiers.
 
 ### 1️⃣ **Global Layer** (`globalLayer.bicep`)
+
 **Purpose**: Worldwide traffic distribution and control plane
 
 **Components**:
+
 - **🌐 Azure Front Door**: Global CDN, SSL termination, Web Application Firewall
 - **📡 Traffic Manager**: DNS-based global load balancing with performance routing
 - **🚪 API Management**: Enterprise API gateway deployed per geography (see Geodes Layer)
@@ -392,18 +407,22 @@ Use this section as a map: start at the Global Layer for entry points and contro
 - **📈 Global Log Analytics**: Centralized monitoring and observability
 
 ### 2️⃣ **Regional Layer** (`regionalLayer.bicep`)
+
 **Purpose**: Regional traffic routing and operational services
 
 **Components**:
+
 - **🔄 Application Gateway**: Regional WAF, SSL termination, path-based routing to CELLs
 - **🔐 Azure Key Vault**: Regional secrets and certificate management
 - **🤖 Automation Account**: Regional runbooks and operational automation
 - **📊 Regional Log Analytics**: Regional monitoring and compliance
 
 ### 3️⃣ **CELL Layer** (`deploymentStampLayer.bicep`)
+
 **Purpose**: Flexible tenant application instances supporting both shared and dedicated models with configurable zone resilience
 
 **Components**:
+
 - **🏗️ Container Apps Environment**: Kubernetes-based application hosting with tenant routing and zone distribution
 - **🗄️ Azure SQL Database**: Configurable for shared schemas or dedicated databases per tenant with zone-redundant options
 - **💾 Storage Account**: Tenant-specific blob containers with zone-redundant storage (ZRS) or zone-pinned options
@@ -412,11 +431,13 @@ Use this section as a map: start at the Global Layer for entry points and contro
 - **🔍 Diagnostic Settings**: CELL-level monitoring with tenant correlation and zone-aware metrics
 
 **Tenancy Flexibility**:
+
 - **Shared Model**: Multiple tenants (10-100) share CELL resources with application-level isolation
 - **Dedicated Model**: Single enterprise tenant gets complete CELL resource isolation
 - **Hybrid Model**: Mix of shared and dedicated CELLs within the same region
 
 **Zone Configuration**:
+
 - **0 Zones (z0)**: Single zone deployment for development/testing
 - **1 Zone (z1)**: Standard deployment in single zone
 - **2 Zones (z2)**: Basic high availability with 99.95% SLA
@@ -425,6 +446,7 @@ Use this section as a map: start at the Global Layer for entry points and contro
 ### 4️⃣ **Cross-Cutting Layers**
 
 #### **Geodes Layer** (`geodesLayer.bicep`)
+
 - **🚪 API Management Premium**: Enterprise-grade multi-region API gateway with:
   - **Tenant-specific rate limiting**: Different quotas per tenant tier (Basic: 10K/hour, Premium: 50K/hour)
   - **API versioning**: Side-by-side v1/v2 API deployment capabilities
@@ -436,6 +458,7 @@ Use this section as a map: start at the Global Layer for entry points and contro
 - **🌌 Global Control Plane Cosmos DB**: Multi-region write replication for tenant routing
 
 #### **Monitoring Layer** (`monitoringLayer.bicep`)
+
 - **📈 Regional Log Analytics Workspaces**: Compliance and data residency
 - **🔔 Azure Monitor**: Alerts and dashboards per region
 
@@ -448,6 +471,7 @@ At a glance: Global ingress (Front Door/Traffic Manager) enforces security and g
 ### 🎯 **Traffic Flow Explained (For Beginners)**
 
 Think of the traffic flow like ordering food delivery:
+
 1. **You place an order** (User makes API request)
 2. **Delivery app routes to nearest restaurant** (Front Door + Traffic Manager)
 3. **Restaurant manager checks your account** (APIM + Tenant Resolution)
@@ -532,18 +556,19 @@ flowchart TD
 
     ```
 
-
 _Figure: End-to-end request path with tenant resolution. Note how APIM consults the global directory to select a CELL before regional routing occurs._
 
 ### 🔍 **Detailed: Tenant Resolution Process**
 
 **Step 1: Request Analysis**
+
 ```
 Incoming Request: GET https://api.myapp.com/v1/customers/123
 Headers: Authorization: Bearer JWT_TOKEN
 ```
 
 **Step 2: Tenant Identification**
+
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
@@ -556,6 +581,7 @@ flowchart LR
 _Figure: Tenant identification sequence from JWT to routing decision._
 
 **Step 3: CELL Assignment Logic**
+
 | Tenant Type | Criteria | Target CELL | Isolation Level |
 |-------------|----------|-------------|-----------------|
 | **Startup** | < 1000 users, Basic SLA | Shared CELL | Schema-based |
@@ -585,6 +611,7 @@ This section connects the conceptual layers to the actual deployment templates. 
 ### 📂 Template Orchestration
 
 1. **`main.bicep`** - Master orchestrator using nested loops:
+
    ```bicep
    for (geo, geoIdx) in geos
    for (region, regionIdx) in geo.regions
@@ -592,6 +619,7 @@ This section connects the conceptual layers to the actual deployment templates. 
    ```
 
 2. **Dependency Chain**:
+
    ```
    Global Resources (DNS, Traffic Manager, Front Door)
        ↓
@@ -605,6 +633,7 @@ _Figure: Orchestration and dependency flow from global to regional to CELL resou
 ### 🎯 Parameterization Strategy
 
 All environments configured through `geos` array in parameters:
+
 ```json
 {
   "geos": [
@@ -649,29 +678,34 @@ Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth st
 #### 🎫 **Microsoft Entra External ID (customers) Integration**
 
 **⚠️ Important Deployment Notes:**
+
 - Microsoft Entra External ID (customers, formerly Azure AD B2C) tenants cannot be created or linked via Bicep/ARM
 - Create and configure your External ID tenant manually in the Azure portal
 - Register applications (client APIs/web apps) and configure user flows/policies (sign-up/sign-in, password reset) there
 
 **Deployment Steps:**
+
 1. Create your External ID tenant in the Azure portal (customers)
 2. Create app registrations and user flows required by this app (e.g., signupsignin)
 3. Set function app settings: EXTERNAL_ID_TENANT, EXTERNAL_ID_CLIENT_ID, EXTERNAL_ID_USER_FLOW (legacy B2C_* also supported)
 4. Deploy the rest of your solution (`main.bicep` and related modules)
 
 **Multi-Tenant Identity Architecture:**
+
 ```text
 // External ID for customers cannot be created via Bicep/ARM.
 // Use the Azure portal to create the tenant and configure user flows.
 ```
 
 **Security Policies:**
+
 - **Multi-Factor Authentication (MFA)**: Required for all admin accounts
 - **Conditional Access**: Location and device-based restrictions
 - **Identity Protection**: Risk-based authentication
 - **Privileged Identity Management (PIM)**: Just-in-time admin access
 
 #### 🔑 **Managed Identity Strategy**
+
 - **Service-to-service authentication**: All Azure services use managed identities
 - **RBAC**: Granular access control per layer
 - **Key Vault Integration**: Secure secret and certificate management
@@ -691,17 +725,20 @@ CELL Level: Tenant-specific metrics, application performance
 ### 📈 Key Metrics by Layer
 
 **Global**:
+
 - DNS resolution times
 - Front Door cache hit ratios
 - Global Cosmos DB latency
 - Cross-region failover times
 
 **Regional**:
+
 - Application Gateway response times
 - Regional resource utilization
 - Key Vault access patterns
 
 **CELL**:
+
 - Application response times
 - Database performance per tenant
 - Storage utilization per tenant
@@ -712,12 +749,14 @@ CELL Level: Tenant-specific metrics, application performance
 ### ➕ Adding New Tenants (CELLs)
 
 #### **Shared CELL Onboarding**
+
 1. Check existing CELL capacity (recommended: 10-100 tenants per shared CELL)
 2. Add tenant to shared CELL via Global Cosmos DB routing
 3. Configure application-level tenant isolation (schemas, containers)
 4. Update API Management policies for new tenant tier
 
 #### **Dedicated CELL Deployment**
+
 1. Update `geos` array with new dedicated CELL name
 2. Deploy updated template with dedicated resources
 3. Configure dedicated monitoring and alerting
@@ -726,6 +765,7 @@ CELL Level: Tenant-specific metrics, application performance
 ### 🔄 **Tenancy Model Migration**
 
 #### **Shared → Dedicated Migration**
+
 ```powershell
 # 1. Deploy new dedicated CELL
 az deployment group create \
@@ -744,6 +784,7 @@ az deployment group create \
 ```
 
 ### 🌍 Geographic Expansion
+
 1. Add new GEO to `geos` array
 2. Configure DNS for new geography
 3. Deploy regional infrastructure
@@ -751,6 +792,7 @@ az deployment group create \
 5. **Consider tenancy models** for new geography (shared vs dedicated mix)
 
 ### 📈 CELL Scaling Models
+
 - **Horizontal Shared**: Add more shared CELLs as tenant count grows
 - **Horizontal Dedicated**: Deploy dedicated CELLs for enterprise clients
 - **Vertical**: Upgrade CELL resources (SQL tier, storage class) based on tenant requirements
@@ -781,12 +823,12 @@ az deployment group create \
 - **Storage**: Lifecycle policies for blob storage
 
 ### 📊 Cost Monitoring
+
 - Per-CELL cost allocation
 - Regional cost breakdown
 - Service-level cost tracking
 
 ---
-
 
 ---
 
@@ -806,7 +848,7 @@ az deployment group create \
 
 ---
 
-*Last updated: August 2025*
+_Last updated: August 2025_
 
 **Pattern Version:** v1.2.2*
 
@@ -843,9 +885,3 @@ flowchart LR
 ```
 
 Short caption: requests flow from the browser to the Management Portal which calls DAB (GraphQL); DAB uses the Cosmos SDK for reads/writes. Functions (seeder) write to Cosmos using DefaultAzureCredential; Application Insights collects telemetry from each component.
-
-
-
-
-
-

@@ -11,6 +11,7 @@ Concise, operator-focused playbooks that expand the decision trees into step-by-
 Goal: confirm the portal can reach DAB GraphQL and diagnose where the failure sits (config, DNS, network, auth, or DAB itself).
 
 Checklist:
+
 - [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct
 - [ ] Confirm DAB Container App revision is healthy
 - [ ] Tail DAB logs for GraphQL errors
@@ -75,6 +76,7 @@ If the above shows schema, the portal should be able to fetch data; if not, cont
 Goal: diagnose container start failures, image pull problems, missing config files, or permission errors.
 
 Checklist:
+
 - [ ] Confirm image exists in ACR
 - [ ] Confirm managed identity has AcrPull on ACR
 - [ ] Tail container logs for startup exceptions
@@ -143,6 +145,7 @@ If you must rebuild the image, follow normal build/push flow and update the cont
 Goal: fix 401/403 issues coming from local dev or deployed services using DefaultAzureCredential or managed identities.
 
 Checklist:
+
 - [ ] Determine if call is from local dev or deployed resource
 - [ ] For local dev: verify `az login` or VS Code account
 - [ ] For deployed: confirm managed identity presence and role assignments
@@ -219,8 +222,6 @@ az role assignment create --assignee <principalId> --role AcrPull --scope <scope
 ---
 
 If you'd like, I can also:
+
 - convert these playbooks into step-by-step runbooks in `docs/OPERATIONS_GUIDE.md` under a dedicated "Incident Playbooks" section, or
 - add a small `bin/diagnostics.ps1` script that runs a subset of these checks and prints a short report for the current environment.
-
-
-

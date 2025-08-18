@@ -1,4 +1,5 @@
 # Azure AD Authentication Fix - Complete Configuration Script
+
 # This script provides both manual steps and CLI commands (requires admin privileges)
 
 param(
@@ -11,10 +12,11 @@ Write-Host "=============================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Configuration details
+
 $appObjectId = "4074e1f0-08f2-4b83-b399-0a150bd4c3d0"
 $clientId = "d8f3024a-0c6a-4cea-af8b-7a7cd985354f"
 $tenantId = "30dd575a-bca7-491b-adf6-41d5f39275d4"
-$portalUrl = "https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io"
+$portalUrl = "<https://ca-stamps-portal.wittywave-3d4ef36b.westus2.azurecontainerapps.io>"
 $redirectUri = "$portalUrl/signin-oidc"
 $logoutUrl = "$portalUrl/signout-callback-oidc"
 
@@ -31,7 +33,7 @@ if ($UseManualSteps) {
     Write-Host "🔧 MANUAL STEPS (Recommended - No special permissions needed):" -ForegroundColor Green
     Write-Host "============================================================" -ForegroundColor Green
     Write-Host ""
-    
+
     Write-Host "1. 🌐 Open Azure Portal:" -ForegroundColor Yellow
     Write-Host "   https://portal.azure.com" -ForegroundColor Cyan
     Write-Host ""
@@ -76,7 +78,7 @@ if ($UseManualSteps) {
     Write-Host "🤖 ATTEMPTING AUTOMATED CONFIGURATION:" -ForegroundColor Yellow
     Write-Host "=====================================" -ForegroundColor Yellow
     Write-Host ""
-    
+
     Write-Host "Trying to update app registration..." -ForegroundColor Yellow
     
     # Try to enable ID tokens
@@ -101,6 +103,7 @@ if ($UseManualSteps) {
 }
 
 # Update Container App Secret
+
 if ($ClientSecret) {
     Write-Host "7. 🐳 Updating Container App Secret..." -ForegroundColor Yellow
     try {
@@ -128,8 +131,8 @@ Write-Host "6. Should return to portal successfully" -ForegroundColor White
 Write-Host ""
 Write-Host "📖 REFERENCE LINKS:" -ForegroundColor Yellow
 Write-Host "==================" -ForegroundColor Yellow
-Write-Host "Azure Portal: https://portal.azure.com" -ForegroundColor Cyan
-Write-Host "Your App Registration: https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Authentication/appId/$clientId" -ForegroundColor Cyan
+Write-Host "Azure Portal: <https://portal.azure.com>" -ForegroundColor Cyan
+Write-Host "Your App Registration: <https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Authentication/appId/$clientId>" -ForegroundColor Cyan
 Write-Host "Portal URL: $portalUrl" -ForegroundColor Cyan
 
 Write-Host ""

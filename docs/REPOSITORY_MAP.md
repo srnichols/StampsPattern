@@ -32,6 +32,3 @@ Quick file index
 - `AzureArchitecture/Seeder/` — seeder project to populate Cosmos
 
 If you can't find a file, use `git grep <term>` or open the `docs/DOCS.md` sitemap.
-
-
-
