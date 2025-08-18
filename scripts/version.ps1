@@ -3,7 +3,8 @@
 .SYNOPSIS
     Version management script for Azure Stamps Pattern
 .DESCRIPTION
-    Updates version numbers across the project and manages changelog entries
+    Manages version numbers through CHANGELOG.md and git tags instead of a VERSION file.
+    Updates version entries in CHANGELOG.md and creates git tags for releases.
 .PARAMETER Action
     Action to perform: 'bump' (increment version), 'set' (set specific version), or 'get' (show current version)
 .PARAMETER Type
@@ -34,16 +35,22 @@ param(
     [string]$Message
 )
 
-$versionFile = "VERSION"
-$readmeFile = "README.md"
+# Since VERSION file was removed, version is now managed in CHANGELOG.md
+# This script now reads version from CHANGELOG.md and manages releases through git tags
 $changelogFile = "CHANGELOG.md"
+$readmeFile = "README.md"
 
 function Get-CurrentVersion {
-    if (Test-Path $versionFile) {
-        return (Get-Content $versionFile).Trim()
-    } else {
-        return "1.0.0"
+    if (Test-Path $changelogFile) {
+        # Extract version from first ## [version] line in CHANGELOG.md
+        $content = Get-Content $changelogFile
+        foreach ($line in $content) {
+            if ($line -match '## \[(\d+\.\d+\.\d+)\]') {
+                return $matches[1]
+            }
+        }
     }
+    return "1.0.0"
 }
 
 function Set-Version {
@@ -51,8 +58,8 @@ function Set-Version {
     
     Write-Host "Setting version to $NewVersion..." -ForegroundColor Green
     
-    # Update VERSION file
-    $NewVersion | Set-Content $versionFile
+    # Note: VERSION file removed - version now tracked in CHANGELOG.md and git tags
+    # Update CHANGELOG.md with new version entry if it doesn't exist
     
     # Update README.md
     $readme = Get-Content $readmeFile -Raw
@@ -94,7 +101,7 @@ function Set-Version {
         }
     }
     
-    Write-Host "Version files updated to $NewVersion" -ForegroundColor Green
+    Write-Host "Version information updated to $NewVersion in CHANGELOG.md and documentation" -ForegroundColor Green
 }
 
 function Step-Version {
