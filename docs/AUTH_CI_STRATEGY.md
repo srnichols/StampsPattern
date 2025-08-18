@@ -83,3 +83,4 @@ Purpose: consolidate authentication and CI notes for implementers and reviewers.
 6) Next steps
 - Expand this page with common error codes, example OIDC setups, and a sample GitHub Actions deploy job using OIDC. Link back to `docs/SECURITY_GUIDE.md` and deployment docs.
 
+

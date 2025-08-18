@@ -239,3 +239,4 @@ az containerapp revision restart --name ca-stamps-portal --resource-group rg-sta
 
 **Need immediate help?** Check the app registration settings first, as this is the most likely cause of the authentication error.
 
+

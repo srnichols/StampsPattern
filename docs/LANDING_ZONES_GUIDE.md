@@ -424,3 +424,4 @@ flowchart LR
   <sup>↗</sup>
 - Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener" title="Opens in a new tab">docs</a> <sup>↗</sup>
 
+

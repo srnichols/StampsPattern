@@ -418,3 +418,4 @@ README → ARCHITECTURE → DEPLOYMENT → SECURITY → OPERATIONS → KNOWN_ISS
 
 > Authoring tip: When code examples contain comments, use `jsonc` code fences. For diagrams, prefer the standard Mermaid template in `docs/mermaid-template.md`.
 
+

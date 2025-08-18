@@ -161,3 +161,4 @@ Overview
 - Internal DAB FQDN may be private to the Container Apps environment; use `az containerapp show` to fetch the ingress if exposed or consult deployment outputs.
 
 
+

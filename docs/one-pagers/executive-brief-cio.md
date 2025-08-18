@@ -62,3 +62,4 @@ The objective is executive clarity: understand what you get, what it costs, and 
 ---
 Prepared for executive stakeholders evaluating strategic platform investments.  
 
+
