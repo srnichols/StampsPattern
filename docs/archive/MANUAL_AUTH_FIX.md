@@ -81,3 +81,4 @@ az containerapp secret set --name ca-stamps-portal --resource-group rg-stamps-mg
 **This will fix the AADSTS700054 error and enable authentication!** 🎉
 
 
+

@@ -109,3 +109,4 @@ Notes:
 If you want, I can now add a brief section listing the exact env var names per repository component (file paths) — say "add per-component file mappings" and I'll insert them next.
 
 
+
