@@ -180,7 +180,7 @@ Quick live-data reference: if you want to verify the Management Portal shows liv
 
 ## 🧭 Quick Navigation
 
- - [📈 Documentation Improvements Plan](./docs/DOCUMENTATION_IMPROVEMENTS.md)
+ - [📈 Documentation Improvements Plan](./docs/DOCS.md)
 
 
 
@@ -193,7 +193,7 @@ We've rebaselined the documentation to make the getting-started experience fast 
 - Consolidated authentication, secrets, and RBAC guidance for operators (`docs/AUTH_CI_STRATEGY.md`, `docs/SECRETS_AND_CONFIG.md`, `docs/RBAC_CHEATSHEET.md`).
 - An **Operations Guide** with incident playbooks and a concise Logs & Quick Commands panel for fast triage.
 
-For the full improvement backlog and rationale (including longer-term items), see the master plan: `docs/DOCUMENTATION_IMPROVEMENTS.md`.
+For the full improvement backlog and rationale (including longer-term items), see the master plan: `docs/DOCS.md`.
 
 ## 💡 Why This Project?
 

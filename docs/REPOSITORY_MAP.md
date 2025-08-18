@@ -27,7 +27,7 @@ Quick file index
 
 - `README.md` — project overview and minimal happy path
 - `docs/DOCS.md` — documentation sitemap and learning paths
-- `docs/DOCUMENTATION_IMPROVEMENTS.md` — improvement plan and backlog
+- `docs/DOCS.md` — improvement plan and backlog
 - `management-portal/infra/management-portal.bicep` — DAB and Portal IaC
 - `AzureArchitecture/Seeder/` — seeder project to populate Cosmos
 
