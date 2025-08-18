@@ -164,7 +164,7 @@ Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) f
 
 ## 🧭 Quick Navigation
 
-- [📈 Documentation Improvements Plan](./docs/DOCS.md)
+- [📈 Documentation Hub & Improvements](./docs/DOCS.md)
 
 ## 💡 Why This Project?
 

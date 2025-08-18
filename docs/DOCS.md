@@ -48,7 +48,13 @@ flowchart LR
 
     Your single source of truth for the Azure Stamps Pattern, organized by role and learning path to help you navigate architecture, deployment, operations, security, and compliance.
 
+    ---
+    # Documentation Hub
+
+    This is the central documentation index for the Azure Stamps Pattern. It is organized by role and learning path so newcomers, developers, architects, and operators can quickly find what they need.
+
     ## 🎯 Start Here — 60 second checklist
+
     - Read `README.md` (project overview & prerequisites).
     - Run the Live Data Path: `docs/LIVE_DATA_PATH.md` to seed Cosmos and validate Management Portal ↔ DAB ↔ Cosmos.
     - For local development: follow `docs/DEVELOPER_QUICKSTART.md` (run Functions + Portal locally).
@@ -56,252 +62,94 @@ flowchart LR
 
     ## 👤 Who Should Use This Guide?
 
-    - **Newcomers:** Start here to understand the big picture and find your learning path
-    - **Developers/DevOps:** Quickly locate deployment, troubleshooting, and implementation guides
-    - **Solution Architects:** Access deep-dive technical and compliance documentation
-    - Use the [Quick Start Paths](#-quick-start-paths-by-experience-level) to jump in based on your experience
-    - Reference the [Documentation Overview](#-documentation-overview) for a summary of all guides
+    - Newcomers: start here to understand the big picture and find a learning path.
+    - Developers/DevOps: deployment, troubleshooting, and implementation guides.
+    - Solution Architects: deep technical and compliance documentation.
 
     ---
 
-    - External links to Microsoft Learn and other sites use HTML anchors with target="_blank" and rel="noopener", plus a small visual cue ↗. Some viewers (GitHub, VS Code preview) may ignore target. Tip: use Ctrl+Click (Windows/Linux) or Cmd+Click (macOS) to open in a new tab.
-    ---
+    ## 📚 Documentation Sitemap (high level)
 
-    Follow this sequence to build understanding logically from concepts to implementation:
-
-    %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-    flowchart LR
-        D --> E[🛡️ 5. Security]
-
-    ### **Phase 1: Understanding the Basics (30-45 minutes)**
-    1. **📄 [README.md](../README.md)** - Project overview and business value *(15 minutes)*
-    2. **📖 [GLOSSARY.md](./GLOSSARY.md)** - **NEW** - Key terms explained with analogies *(15 minutes)*
-    3. **📁 [REPOSITORY_MAP.md](./REPOSITORY_MAP.md)** - Where code, infra, and docs live *(5 minutes)*
-    4. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
-
-    ### **Phase 2: Technical Deep Dive (60-90 minutes)**
-    5. **🏗️ [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)** - System design with visual diagrams *(30 minutes)*
-    6. **🚀 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step implementation *(45 minutes)*
-  7. **📋 <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">PARAMETERIZATION_GUIDE.md</a>** - Template customization *(15 minutes)*
-    8. **🗂️ [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)** - Manage tenants and cells *(20 minutes)*
-    9. **🏢 [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)** - Map Stamps to Azure Landing Zones *(20 minutes)*
-
-    ### **Phase 3: Operations, Security & Cost (75-105 minutes)**
-    10. **⚙️ [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)** - AI-driven operations and monitoring *(30 minutes)*
-    11. **🛡️ [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)** - Zero-trust security implementation *(30 minutes)*
-    12. **💰 [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)** - Cost models and savings strategies *(15-30 minutes)*
-    13. **📋 [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)** - Resource naming standards *(15 minutes)*
-
-    ### **Phase 4: Status & Troubleshooting (As Needed)**
-    14. **🛠️ [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)** - Troubleshooting guide *(Reference as needed)*
-
-    ## 📈 Capabilities
-
-    - **Capabilities Matrix**: [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md)
-
-    ## 🏆 **Enterprise Compliance Showcase**
-
-    **Overall Score: 94/100** - Placing this architecture in the **top 5% of enterprise implementations**
-
-    | **Framework** | **Score** | **Achievement** |
-    |---------------|-----------|-----------------|
-    | **CAF: Governance** | 95/100 | **Industry Leading** |
-    | **WAF: Security** | 96/100 | **World Class** |
-    | **WAF: Operational Excellence** | 95/100 | **AI-Powered** |
-    | **Overall Compliance** | **94/100** | **Gold Standard** |
-
-    📊 **[View Complete Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**
-    🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how CAF/WAF alignment maps to enterprise landing zones setup.
-
-    ---
-
-    ## 📚 **Quick Start Paths by Experience Level**
-
-    ### 🆕 **New to Azure Multi-Tenancy** (2-3 hours total)
-    ```
-    Glossary → README → Architecture Guide → Simple Deployment
-       15min     15min        30min              45min
-    ```
-
-    ### 👨‍💻 **Experienced Developer** (1.5-2.5 hours total)
-    ```
-    README → Deployment Guide → Developer Security → Known Issues
-      15min         45min              20min            As needed
-    ```
-
-    ### 👨‍💼 **IT Leadership** (30-45 minutes total)
-    ```
-    README → Compliance Analysis
-      15min         25min
-    ```
-
-    ### 🏗️ **Solution Architect** (2-3 hours total)
-    ```
-    Architecture Guide → Security Guide → Operations Guide
-          30min             30min            45min
-    ```
-
-    ## 🗺️ **Learning Journey Map**
-
-    ```mermaid
-    %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-    flowchart TD
-        A[📚 Start Here] --> B{Your Role?}
-    
-        B -->|Decision Maker| C[📄 README<br/>Business Value & ROI<br/>⏱️ 15 min]
-        B -->|Architect| D[🏗️ ARCHITECTURE<br/>Technical Deep-Dive<br/>⏱️ 30 min]
-        B -->|Developer/DevOps| E[🚀 DEPLOYMENT<br/>Implementation<br/>⏱️ 45 min]
-        B -->|Operations| F[⚙️ OPERATIONS<br/>AI-Driven Operations<br/>⏱️ 30 min]
-        B -->|Security| G[🛡️ SECURITY<br/>Zero-Trust & Compliance<br/>⏱️ 30 min]
-        B -->|Compliance| N[📊 CAF/WAF<br/>Enterprise Compliance<br/>⏱️ 25 min]
-    
-        C --> H[✅ Business Case Validated]
-        D --> I[✅ Architecture Designed]
-        E --> J[✅ Ready to Deploy]
-        F --> K[✅ Operations Automated]
-        G --> L[✅ Security Hardened]
-        N --> O[✅ Compliance Verified]
-    
-        H --> M[🎯 Implementation Phase]
-        I --> M
-        J --> M
-        K --> M
-        L --> M
-        O --> M
-    ```
-
-    ---
-
-    ## 📚 Documentation Overview
-
-    A complete index of the documentation set. Use this as a quick catalog and to verify coverage.
+    The documentation is grouped into logical areas. Use the links below to jump to the guide you need.
 
     ### Core Guides
     - 🏗️ Architecture: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
     - 🚀 Deployment: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-    - 📐 Deployment Architecture Patterns: [DEPLOYMENT_ARCHITECTURE_GUIDE.md](./DEPLOYMENT_ARCHITECTURE_GUIDE.md)
     - ⚙️ Operations: [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)
-    - 🛡️ Security: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
+    - �️ Security: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
     - 💰 Cost Optimization: [COST_OPTIMIZATION_GUIDE.md](./COST_OPTIMIZATION_GUIDE.md)
     - 🧩 Parameterization: [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md)
-    - 🏷️ Naming Conventions: [NAMING_CONVENTIONS_GUIDE.md](./NAMING_CONVENTIONS_GUIDE.md)
-
-    ### Management Portal
-    - 📘 User Guide: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
-    - 🔁 Live Data Path: [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)
-
-    ### Enterprise Alignment
-    - 🧭 CAF/WAF Compliance Analysis: [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
-    - 🗺️ Azure Landing Zones: [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)
 
     ### Developer & Authoring
     - 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
     - 👨‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
-    - 🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
-    - 🔐 Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
-    - 🔒 Secrets & Config: [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md)
-    - 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
+    - 🖊️ Mermaid Template: [mermaid-template.md](./mermaid-template.md)
+    - � Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
 
+    ### Management Portal
+    - � User Guide: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
+    - � Live Data Path: [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)
 
-    ---
-
-    ## 🤝 **Getting Help**
-
-    ### 📝 **Documentation Feedback**
-    If you find gaps or areas for improvement in this documentation:
-    1. Review the specific guide for detailed information
-    2. Check the troubleshooting sections for common issues
-    3. Refer to the architecture guide for technical context
-
-    ### 🔧 **Implementation Support**
-    - **Architecture Questions**: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
-    - **Deployment Issues**: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-    - **Operations Problems**: [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)
-    - **Security Concerns**: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
-
-    ### 📚 **Additional Resources**
-    - **Azure Documentation**: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Architecture Center</a>&nbsp;<sup>↗</sup>
-    - **Azure Stamps Pattern**: <a href="https://learn.microsoft.com/azure/architecture/guide/" target="_blank" rel="noopener" title="Opens in a new tab">Azure Application Architecture Guide</a>&nbsp;<sup>↗</sup>
-    - **Multi-Tenant SaaS**: <a href="https://learn.microsoft.com/azure/architecture/solution-ideas/articles/saas-multitenant-database-sharding-pattern" target="_blank" rel="noopener" title="Opens in a new tab">SaaS architecture and patterns</a>&nbsp;<sup>↗</sup>
-    - **Azure Landing Zones**: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener" title="Opens in a new tab">Landing Zones overview</a>&nbsp;<sup>↗</sup>
+    ### Enterprise Alignment
+    - 🧭 CAF/WAF Compliance Analysis: [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
+    - �️ Azure Landing Zones: [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md)
 
     ---
 
-    ## 🏷️ **Navigation Tips**
+    ## 📚 Quick Start Paths by Experience Level
 
-    ### 📱 **Mobile/Quick Reference**
-    - Each guide has a table of contents for easy navigation
-    - Use browser search (Ctrl+F) to find specific topics quickly
-    - Cross-references between guides use clear hyperlinks
+    ### 🆕 New to Azure Multi-Tenancy (2-3 hours)
+    Glossary → README → Architecture Guide → Simple Deployment
+
+    ### 👨‍💻 Experienced Developer (1.5-2.5 hours)
+    README → Deployment Guide → Developer Security → Known Issues
+
+    ### 👨‍💼 IT Leadership (30-45 minutes)
+    README → Compliance Analysis
+
+    ### 🏗️ Solution Architect (2-3 hours)
+    Architecture Guide → Security Guide → Operations Guide
 
     ---
 
-    **🎯 Start Here**: Begin with [README.md](../README.md)
+    ## 🗺️ Learning Journey Map
 
-    **⚡ Quick Deploy**: Ready to deploy? Jump to [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+    ```mermaid
+    flowchart TD
+      A[📚 Start Here] --> B{Your Role?}
+      B -->|Decision Maker| C[📄 README - Business Value & ROI]
+      B -->|Architect| D[🏗️ ARCHITECTURE - Technical Deep-Dive]
+      B -->|Developer/DevOps| E[🚀 DEPLOYMENT - Implementation]
+      B -->|Operations| F[⚙️ OPERATIONS - Monitoring & Runbooks]
+      B -->|Security| G[🛡️ SECURITY - Zero-Trust & Compliance]
+    ```
 
-    **🏗️ Deep Dive**: Want technical details? Explore [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
+    ---
 
-    **🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to contribute, report issues, or suggest improvements.
+    ## � Documentation Overview
 
-    ````
-| **WAF: Security** | 96/100 | **World Class** |
-| **WAF: Operational Excellence** | 95/100 | **AI-Powered** |
-| **Overall Compliance** | **94/100** | **Gold Standard** |
+    Use this section as a catalog and reference.
 
-📊 **[View Complete Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**
-🔗 See also: **[Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)** for how CAF/WAF alignment maps to enterprise landing zones setup.
+    - 🏗️ Architecture: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
+    - 🚀 Deployment: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+    - ⚙️ Operations: [OPERATIONS_GUIDE.md](./OPERATIONS_GUIDE.md)
+    - 🛡️ Security: [SECURITY_GUIDE.md](./SECURITY_GUIDE.md)
+    - 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
+    - 👨‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
+    - � Management Portal: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
+    - � Live Data Path: [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)
 
----
+    ---
 
-## 📚 **Quick Start Paths by Experience Level**
+    ## 🤝 Getting Help
 
-### 🆕 **New to Azure Multi-Tenancy** (2-3 hours total)
+    - Documentation feedback: open an issue or submit a PR with suggested improvements.
+    - Implementation support: check the relevant guide (Architecture, Deployment, Operations, Security).
 
-```
-Glossary → README → Architecture Guide → Simple Deployment
-   15min     15min        30min              45min
-```
+    ---
 
-### 👨‍💻 **Experienced Developer** (1.5-2.5 hours total)
+    **Start here**: [README.md](../README.md)
 
-```
-README → Deployment Guide → Developer Security → Known Issues
-  15min         45min              20min            As needed
-```
-
-### 👨‍💼 **IT Leadership** (30-45 minutes total)
-
-```
-README → Compliance Analysis
-  15min         25min
-```
-
-### 🏗️ **Solution Architect** (2-3 hours total)
-
-```
-Architecture Guide → Security Guide → Operations Guide
-      30min             30min            45min
-```
-
-## 🗺️ **Learning Journey Map**
-
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-flowchart TD
-    A[📚 Start Here] --> B{Your Role?}
-    
-    B -->|Decision Maker| C[📄 README<br/>Business Value & ROI<br/>⏱️ 15 min]
-    B -->|Architect| D[🏗️ ARCHITECTURE<br/>Technical Deep-Dive<br/>⏱️ 30 min]
-    B -->|Developer/DevOps| E[🚀 DEPLOYMENT<br/>Implementation<br/>⏱️ 45 min]
-    B -->|Operations| F[⚙️ OPERATIONS<br/>AI-Driven Operations<br/>⏱️ 30 min]
-    B -->|Security| G[🛡️ SECURITY<br/>Zero-Trust & Compliance<br/>⏱️ 30 min]
-    B -->|Compliance| N[📊 CAF/WAF<br/>Enterprise Compliance<br/>⏱️ 25 min]
-    
-    C --> H[✅ Business Case Validated]
-    D --> I[✅ Architecture Designed]
-    E --> J[✅ Ready to Deploy]
-    F --> K[✅ Operations Automated]
     G --> L[✅ Security Hardened]
     N --> O[✅ Compliance Verified]
     
