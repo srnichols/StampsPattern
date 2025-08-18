@@ -20,13 +20,13 @@ How to implement zero‑trust security in code and infra: JWT validation, privat
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🚨 Critical Security Changes](#-critical-security-changes-august-2025) | Breaking changes, compliance | All developers |
-| [🔧 Implementation Guide](#-developer-implementation-guide) | JWT, DB, DI, caching | Developers |
-| [🧪 Testing Guidelines](#-testing-guidelines) | Unit/integration tests | Developers |
-| [📋 Configuration Checklist](#-configuration-checklist) | Env vars, NuGet, indexing | DevOps |
-| [🔍 Debugging & Troubleshooting](#-debugging-and-troubleshooting) | Common issues, monitoring | All |
-| [📚 Additional Resources](#-additional-resources) | Best practices, docs | All |
-| [🔗 Related Documentation](#-related-documentation) | Other guides | All |
+| [🚨 Critical Security Changes](#critical-security-changes) | Breaking changes, compliance | All developers |
+| [🔧 Implementation Guide](#implementation-guide) | JWT, DB, DI, caching | Developers |
+| [🧪 Testing Guidelines](#testing-guidelines) | Unit/integration tests | Developers |
+| [📋 Configuration Checklist](#configuration-checklist) | Env vars, NuGet, indexing | DevOps |
+| [🔍 Debugging & Troubleshooting](#debugging-&-troubleshooting) | Common issues, monitoring | All |
+| [📚 Additional Resources](#additional-resources) | Best practices, docs | All |
+| [🔗 Related Documentation](#related-documentation) | Other guides | All |
 
 ---
 

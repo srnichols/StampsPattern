@@ -37,18 +37,18 @@ The Azure Stamps Pattern architecture demonstrates **exceptional adherence** to 
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🏆 Framework Scorecard](#-framework-scorecard) | Compliance overview | All |
-| [🚀 What Makes This Architecture Exceptional](#-what-makes-this-architecture-exceptional) | Key differentiators | Decision makers |
-| [CAF Excellence](#-1-cloud-adoption-framework-caf-excellence) | CAF pillar details | Architects |
-| [WAF Excellence](#-well-architected-framework-waf-assessment) | WAF pillar details | Technical teams |
-| [Competitive Differentiators](#-competitive-differentiators) | Unique strengths | All |
-| [Business Outcomes & ROI](#-business-outcomes--roi) | Value delivered | Leadership |
-| [Industry Recognition & Standards](#-industry-recognition--standards) | Certifications | Compliance teams |
-| [Getting Started](#-getting-started) | Onboarding steps | All |
-| [Implementation Status](#-implementation-status) | Progress tracking | Project managers |
-| [Priority Recommendations](#-priority-recommendations) | Action items | All |
-| [Next Steps](#-next-steps) | Roadmap | All |
-| [References](#-references) | Further reading | All |
+| [🏆 Framework Scorecard](#framework-scorecard) | Compliance overview | All |
+| [🚀 What Makes This Architecture Exceptional](#what-makes-this-architecture-exceptional) | Key differentiators | Decision makers |
+| [CAF Excellence](#caf-excellence) | CAF pillar details | Architects |
+| [WAF Excellence](#waf-excellence) | WAF pillar details | Technical teams |
+| [Competitive Differentiators](#competitive-differentiators) | Unique strengths | All |
+| [Business Outcomes & ROI](#business-outcomes-&-roi) | Value delivered | Leadership |
+| [Industry Recognition & Standards](#industry-recognition-&-standards) | Certifications | Compliance teams |
+| [Getting Started](#getting-started) | Onboarding steps | All |
+| [Implementation Status](#implementation-status) | Progress tracking | Project managers |
+| [Priority Recommendations](#priority-recommendations) | Action items | All |
+| [Next Steps](#next-steps) | Roadmap | All |
+| [References](#references) | Further reading | All |
 
 ---
 
@@ -442,7 +442,7 @@ lifecycleRules: [
 
 ### **🎯 For Enterprise Decision Makers**
 
-1. **Review Business Case**: [Competitive Differentiators](#-competitive-differentiators)
+1. **Review Business Case**: [Competitive Differentiators](#competitive-differentiators)
 2. **Assess ROI Impact**: [Business Outcomes](#-business-outcomes--roi)
 3. **Plan Implementation**: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 4. **Schedule Demo**: Contact your Microsoft account team for architecture review
@@ -456,7 +456,7 @@ lifecycleRules: [
 
 ### **🛡️ For Compliance Teams**
 
-1. **Framework Mapping**: [Implementation Status](#-implementation-status) below
+1. **Framework Mapping**: [Implementation Status](#implementation-status) below
 2. **Security Controls**: [Zero-Trust Security](#%EF%B8%8F-security-96100---world-class-zero-trust)
 3. **Governance Automation**: [Azure Policy as Code](#-govern-95100---industry-leading-governance)
 4. **Audit Preparation**: [Compliance Certifications](#-compliance-certifications-supported)

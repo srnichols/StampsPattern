@@ -20,12 +20,12 @@ Operational runbook for the Azure Stamps Pattern - Architecture (ASPA), AI-drive
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🎯 Environment profiles and diagnostics](#-environment-profiles-and-diagnostics-ops-quick-start) | What operations covers | All readers |
-| [📈 Monitoring & Observability](#-monitoring--observability) | Multi-layer monitoring | Ops, DevOps |
-| [🚨 Incident Response](#-incident-response) | Emergency procedures | Ops, SRE |
-| [🔧 Maintenance Procedures](#-maintenance-procedures) | Routine/automated tasks | Ops, DevOps |
-| [📊 Performance & Scaling](#-performance--scaling-capacity-planning) | Optimization, scaling | Ops, IT Leaders |
-| [📚 Related Guides](#-related-guides) | More docs | All readers |
+| [🎯 Environment profiles and diagnostics](#environment-profiles-and-diagnostics) | What operations covers | All readers |
+| [📈 Monitoring & Observability](#monitoring-&-observability) | Multi-layer monitoring | Ops, DevOps |
+| [🚨 Incident Response](#incident-response) | Emergency procedures | Ops, SRE |
+| [🔧 Maintenance Procedures](#maintenance-procedures) | Routine/automated tasks | Ops, DevOps |
+| [📊 Performance & Scaling](#performance-&-scaling) | Optimization, scaling | Ops, IT Leaders |
+| [📚 Related Guides](#related-guides) | More docs | All readers |
 
 ### 🔗 **Key Subsections (Detailed Navigation):**
 

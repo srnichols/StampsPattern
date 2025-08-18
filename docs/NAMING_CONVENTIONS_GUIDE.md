@@ -24,9 +24,9 @@ Standard naming for the Azure Stamps Pattern, patterns per resource type, region
 |---------|------------|----------|
 | [🎯 Overview](#overview) | Why naming conventions matter | All readers |
 | [🌍 Resource Group Naming](#resource-group-naming) | Patterns and examples | DevOps, Architects |
-| [🗺️ Region Abbreviations](#region-abbreviations) | Standard short names | DevOps |
+| [🗺️ Region Abbreviations](#️-region-abbreviations) | Standard short names | DevOps |
 | [🏗️ Resource Naming Patterns](#resource-naming-patterns) | Compute, data, network, security | DevOps, Architects |
-| [🌀 Zone-Aware Naming](#zone-aware-naming-considerations) | When/why to include zones | DevOps |
+| [🌀 Zone-Aware Naming](#zone-aware-naming) | When/why to include zones | DevOps |
 | [🏷️ Tagging Strategy](#tagging-strategy) | Required/optional tags | IT Leaders |
 | [📝 Implementation Guidelines](#implementation-guidelines) | Template/script helpers | DevOps |
 | [✅ Validation Rules](#validation-rules) | Naming checks | DevOps |
