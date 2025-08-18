@@ -221,7 +221,7 @@ resource costOptimizationWorkbook 'Microsoft.Insights/workbooks@2022-04-01' = {
               "version": "KqlItem/1.0",
               "query": "requests\\n| where timestamp > ago(7d)\\n| extend TenantId = tostring(customDimensions.TenantId)\\n| summarize RequestCount = count(), AvgDuration = avg(duration) by TenantId, bin(timestamp, 1d)\\n| render timechart",
               "size": 0,
-              "title": "� Resource Utilization Trends",
+              "title": "Resource Utilization Trends",
               "queryType": 0,
               "visualization": "timechart"
             }

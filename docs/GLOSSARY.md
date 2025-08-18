@@ -29,10 +29,10 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 | [🗄️ Data & Storage](#-data--storage-terms) | Cosmos DB, partitioning, TTL | Architects, Devs |
 | [🌐 Networking & Routing](#-networking--routing-terms) | Global vs regional routing, private connectivity | Architects, DevOps |
 | [🔗 Integration & Messaging](#-integration--messaging-terms) | Queues and messaging patterns | Devs, DevOps |
-| [�️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
+| [🛠️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
 | [📊 Monitoring & Operations](#-monitoring--operations-terms) | Observability, metrics | Operations |
-| [�️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
-| [�💰 Cost & Business](#-cost--business-terms) | TCO, optimization | IT Leaders |
+| [🛠️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
+| [💰 Cost & Business](#-cost--business-terms) | TCO, optimization | IT Leaders |
 | [🏛️ Compliance & Governance](#-compliance--governance-terms) | CAF, WAF, standards | Compliance |
 | [🚀 Getting Started Tips](#-getting-started-tips) | Learning path, resources | Newcomers |
 | [📞 Need Help?](#-need-help) | Support, troubleshooting | All readers |
@@ -206,7 +206,7 @@ Distributing incoming requests across multiple servers.
 
 ---
 
-## �️ **Data & Storage Terms**
+## 📚 **Data & Storage Terms**
 
 ### **Azure Cosmos DB (NoSQL)**
 Globally distributed, multi-model database used for the control-plane in this repo.
@@ -257,7 +257,7 @@ Provisioned request units per second for predictable performance.
 
 ---
 
-## �🛠️ **Infrastructure & DevOps Terms**
+## 🛠️ **Infrastructure & DevOps Terms**
 
 ### **Infrastructure as Code (IaC)**
 Managing infrastructure through machine-readable definition files.

@@ -1,4 +1,3 @@
-````markdown
 # Implementation Report: Azure Stamps Pattern Improvements
 
 ## Overview

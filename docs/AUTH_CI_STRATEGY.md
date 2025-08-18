@@ -1,37 +1,22 @@
-````markdown
 # Auth & CI Strategy (quick reference)
 
 Purpose
-- Consolidate authentication patterns (Portal, DAB, Seeder) and CI recommendations for first-time readers and operators.
 
 Scope
-- Portal sign-in: Microsoft Entra / AAD (id_token)
-- Portal -> DAB: internal network calls using container-app secrets; DAB uses MI or connection string to talk to Cosmos
-- Seeder: uses DefaultAzureCredential (local dev) or a service principal/managed identity in CI
-- CI: GitHub Actions example for pushing DAB image to ACR and running IaC non-interactively
 
 Key patterns
 
 1) Portal authentication (AAD)
-- Use an AAD app registration for the Management Portal (SPA/Server components). Configure redirect URIs and implicit flow or code flow with PKCE for SPA.
 
 2) DAB and secrets
-- DAB does not require user interactive auth. For production, prefer a Managed Identity attached to the Container App with RBAC roles (Cosmos DB Data Reader/Contributor as required).
-- Optionally store `DAB_GRAPHQL_URL` and other secrets in Key Vault and use container-app identity to access them; or use container-app secretRefs for simpler setups.
 
 3) Seeder authentication
-- Local developer: `DefaultAzureCredential` will use Visual Studio / Azure CLI cached creds. Ensure the signed-in account has Data Contributor on the Cosmos account.
-- CI: create a service principal or GitHub federated credential with minimal RBAC scope (Cosmos data contributor on `stamps-control-plane`).
 
 Common AAD errors & quick fixes
 
-- AADSTS700016: Application with identifier 'xyz' not found — check App Registration clientId and tenant.
-- AADSTS50011: Redirect URI mismatch — register exact URI (including trailing slash) used by the portal.
-- 401/403 on seeder: role missing — assign Cosmos DB Built-in Data Contributor to the cred principal.
 
 CI recommendations (minimal)
 
-- Build & push DAB image to ACR (use GitHub Actions with OIDC federated identity or service principal):
 
 ```yaml
 # Example job snippet (GitHub Actions)
@@ -53,24 +38,17 @@ jobs:
           docker push $ACR/my-dab:latest
 ```
 
-- Non-interactive IaC deploy example (PowerShell):
 
 ```powershell
 az deployment group create -g rg-stamps-mgmt -f management-portal/infra/management-portal.bicep --parameters @management-portal/infra/parameters.json
 ```
 
 Secrets guidance (quick)
-- For quick/short-lived deployments, container-app secrets are the fastest option. For production, prefer Key Vault with managed identity to avoid secret leakage in repositories.
 
 Minimal RBAC (starter)
-- Managed Identity for container apps: AcrPull role on ACR and Cosmos DB Data Contributor on the database.
-- Seeder/CI identity: Cosmos DB Data Contributor on `stamps-control-plane` and limited scope service principal for ACR push (ACR Push role).
 
 Related docs
-- `docs/LIVE_DATA_PATH.md` — quick smoke checks and GraphQL examples
-- `management-portal/infra/management-portal.bicep` — parameter names and secret wiring
-````
-# Auth & CI Strategy (summary)
+# Azure CI/CD & Authentication Strategy
 
 Purpose: consolidate authentication and CI notes for implementers and reviewers.
 

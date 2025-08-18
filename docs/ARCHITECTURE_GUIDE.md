@@ -12,20 +12,12 @@ A concise tour of the Azure Stamps Pattern architecture, layers, flows, and core
 
 > Symbols & Conventions: External links open in a new tab/window using HTML anchors with target="_blank" and carry a small ↗ cue; some viewers may ignore target. Use jsonc for commented JSON, and the standard Mermaid template for diagrams.
 
-## 👤 Who Should Read This Guide?
-
-- **Solution Architects:** Deep-dive into system design, scalability, and compliance
-- **Developers:** Understand deployment, tenancy, and integration patterns
-- **IT Leaders:** Evaluate architecture for onboarding, scaling, and governance
-- **Security/Compliance Teams:** Review security, monitoring, and compliance controls
-
 ---
-
 ## 🧭 Quick Navigation
 
 | Section | Focus Area | Time to Read | Best for |
 |---------|------------|--------------|----------|
-| [� Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
+| [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | 10 min | All readers |
 | [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | 15 min | Architects, Devs |
 | [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | 10 min | DevOps, Network |
 | [🔒 Security Architecture](#-security-architecture) | Multi-layer security | 15 min | Security Teams |
@@ -55,6 +47,13 @@ A concise tour of the Azure Stamps Pattern architecture, layers, flows, and core
 
 
 This solution implements a sophisticated **GEO → Region → Availability Zone → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution. Availability Zones (AZs) are a critical layer for high availability (HA) and disaster recovery (DR), allowing each CELL to be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.
+
+## 👤 Who Should Read This Guide?
+
+- **Solution Architects:** Deep-dive into system design, scalability, and compliance
+- **Developers:** Understand deployment, tenancy, and integration patterns
+- **IT Leaders:** Evaluate architecture for onboarding, scaling, and governance
+- **Security/Compliance Teams:** Review security, monitoring, and compliance controls
 
 > **Global Capacity Management & Cloud Supply Constraints**
 >

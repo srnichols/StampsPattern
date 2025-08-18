@@ -31,8 +31,8 @@ flowchart LR
 ### **Phase 1: Understanding the Basics (30-45 minutes)**
 1. **📄 [README.md](../README.md)** - Project overview and business value *(15 minutes)*
 2. **📖 [GLOSSARY.md](./GLOSSARY.md)** - **NEW** - Key terms explained with analogies *(15 minutes)*
-3. **�️ [Repository Map](./REPOSITORY_MAP.md)** - Where code, infra, and docs live *(5 minutes)*
-3. **�📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
+3. **🗺️ [Repository Map](./REPOSITORY_MAP.md)** - Where code, infra, and docs live *(5 minutes)*
+4. **📊 [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)** - Enterprise compliance showcase *(15 minutes)*
 
 # 📚 Azure Stamps Pattern - Documentation Sitemap
 

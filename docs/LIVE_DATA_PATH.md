@@ -8,186 +8,98 @@ Who this is for
 Overview
 - Path: Management Portal (UI) → DAB (GraphQL) → Cosmos DB (control-plane containers: tenants, cells, operations)
 - Secrets and identity: Portal authenticates users via AAD; Portal calls DAB over internal network; DAB uses MI or connection string to read Cosmos.
+ # Live Data Path — Portal → DAB → Cosmos (quick guide)
 
-Quick diagram
+ Purpose
+ - One-page smoke path and quick checks to validate the Management Portal consumes live data from Data API Builder (DAB) backed by Cosmos DB.
 
-```mermaid
-flowchart LR
-  Portal[Management Portal]
-  DAB[Data API Builder (Container App)]
-  Cosmos[Cosmos DB - stamps-control-plane]
+ Who this is for
+ - Developers, platform engineers, and operators who need a fast, repeatable set of checks to confirm the live-data flow is healthy.
 
-  Portal -->|HTTP GraphQL POST| DAB
-  DAB -->|Cosmos SDK / REST| Cosmos
-```
-Essential variables
-- DAB GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql
-- Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault
-- Seeder location: `AzureArchitecture/Seeder` (uses DefaultAzureCredential)
+ Overview
+ - Path: Management Portal (UI) → DAB (GraphQL) → Cosmos DB (control-plane containers: tenants, cells, operations)
+ - Secrets and identity: Portal authenticates users via AAD; Portal calls DAB over internal network; DAB uses MI or connection string to read Cosmos.
 
-Smoke checks (fast)
+ Quick diagram
 
-1) Validate DAB is healthy (Container Apps)
+ ```mermaid
+ flowchart LR
+   Portal[Management Portal]
+   DAB[Data API Builder (Container App)]
+   Cosmos[Cosmos DB - stamps-control-plane]
 
-```powershell
-# List revisions and health
-az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
+   Portal -->|HTTP GraphQL POST| DAB
+   DAB -->|Cosmos SDK / REST| Cosmos
+ ```
 
-# Show ingress configuration (confirm targetPort matches container)
-az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
-```
-2) Tail DAB logs (look for startup errors and GraphQL listening)
+ Essential variables
+ - DAB GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql
+ - Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault
+ - Seeder location: `AzureArchitecture/Seeder` (uses DefaultAzureCredential)
 
-```powershell
-az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
-```
-3) Quick GraphQL introspection / simple query
+ Smoke checks (fast)
 
-Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the DAB GraphQL URL (from secret/outputs):
+ 1) Validate DAB is healthy (Container Apps)
 
-```powershell
-$DAB = 'https://<dab-fqdn>/graphql'
-$body = @{ query = 'query { __schema { queryType { name } } }' } | ConvertTo-Json
+ ```powershell
+ # List revisions and health
+ az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
 
-# Use -UseBasicParsing if needed in older PowerShell
-Invoke-RestMethod -Uri $DAB -Method Post -ContentType 'application/json' -Body $body
-```
-Or curl (if available):
+ # Show ingress configuration (confirm targetPort matches container)
+ az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
+ ```
 
-```powershell
-curl -s -X POST $DAB -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
-```
-Expected results
-- Introspection returns a schema object (or tenants query returns a JSON list). If requests time out, DAB is not responding — check container logs and ingress.
+ 2) Tail DAB logs (look for startup errors and GraphQL listening)
 
-Seeder (run locally or in CI)
+ ```powershell
+ az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
+ ```
 
-The seeder project uses `DefaultAzureCredential` and requires an identity with Cosmos DB Data Contributor on the `stamps-control-plane` account.
-From the workspace root (PowerShell):
+ 3) Quick GraphQL introspection / simple query
 
-```powershell
-# Build and run the seeder (example path)
-dotnet build ./AzureArchitecture/Seeder/Seeder.csproj
-dotnet run --project ./AzureArchitecture/Seeder/Seeder.csproj -- --environment dev
-```
-Notes
-- If the seeder receives 401/403, ensure the principal (local user/service principal/managed identity) has the Cosmos DB Data Contributor role and firewall rules allow access.
-- If DAB responds but returns schema errors, validate `dab-config.json` and `schema.graphql` in the image; confirm the image entrypoint points to `/App/dab-config.json`.
+ Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the DAB GraphQL URL (from secret/outputs):
 
-Troubleshooting quick hits
+ ```powershell
+ $DAB = 'https://<dab-fqdn>/graphql'
+ $body = @{ query = 'query { __schema { queryType { name } } }' } | ConvertTo-Json
 
-Container crashing: tail DAB logs and search for missing files, permission errors, or command not found.
-````markdown
-# Live Data Path — Portal → DAB → Cosmos (quick guide)
+ # Use -UseBasicParsing if needed in older PowerShell
+ Invoke-RestMethod -Uri $DAB -Method Post -ContentType 'application/json' -Body $body
+ ```
 
-Purpose
-- One-page smoke path and quick checks to validate the Management Portal consumes live data from Data API Builder (DAB) backed by Cosmos DB.
+ Or curl (if available):
 
-Who this is for
-- Developers, platform engineers, and operators who need a fast, repeatable set of checks to confirm the live-data flow is healthy.
+ ```powershell
+ curl -s -X POST $DAB -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
+ ```
 
-Overview
-- Path: Management Portal (UI) → DAB (GraphQL) → Cosmos DB (control-plane containers: tenants, cells, operations)
-- Secrets and identity: Portal authenticates users via AAD; Portal calls DAB over internal network; DAB uses MI or connection string to read Cosmos.
+ Expected results
+ - Introspection returns a schema object (or tenants query returns a JSON list). If requests time out, DAB is not responding — check container logs and ingress.
 
-Quick diagram
+ Seeder (run locally or in CI)
 
-```mermaid
-flowchart LR
-  Portal[Management Portal]
-  DAB[Data API Builder (Container App)]
-  Cosmos[Cosmos DB - stamps-control-plane]
+ The seeder project uses `DefaultAzureCredential` and requires an identity with Cosmos DB Data Contributor on the `stamps-control-plane` account.
+ From the workspace root (PowerShell):
 
-  Portal -->|HTTP GraphQL POST| DAB
-  DAB -->|Cosmos SDK / REST| Cosmos
-- Port mismatch: confirm Dockerfile exposes the same port referenced by container app `targetPort` (common mismatch: 5000 vs 80).
-- Portal timeouts: check Portal secret `DAB_GRAPHQL_URL`, ensure it points to the internal FQDN/proxy, and confirm network egress/ingress rules.
+ ```powershell
+ # Build and run the seeder (example path)
+ dotnet build ./AzureArchitecture/Seeder/Seeder.csproj
+ dotnet run --project ./AzureArchitecture/Seeder/Seeder.csproj -- --environment dev
+ ```
 
-Related docs
-- `docs/AUTH_CI_STRATEGY.md` — authentication and CI notes
-- `management-portal/infra/management-portal.bicep` — IaC for DAB and Portal
-```
+ Notes
+ - If the seeder receives 401/403, ensure the principal (local user/service principal/managed identity) has the Cosmos DB Data Contributor role and firewall rules allow access.
+ - If DAB responds but returns schema errors, validate `dab-config.json` and `schema.graphql` in the image; confirm the image entrypoint points to `/App/dab-config.json`.
 
-Essential variables
-- DAB GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql
-- Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault
-- Seeder location: `AzureArchitecture/Seeder` (uses DefaultAzureCredential)
+ Troubleshooting quick hits
 
-Smoke checks (fast)
+ - Container crashing: tail DAB logs and search for missing files, permission errors, or command not found.
+ - Port mismatch: confirm Dockerfile exposes the same port referenced by container app `targetPort` (common mismatch: 5000 vs 80).
+ - Portal timeouts: check Portal secret `DAB_GRAPHQL_URL`, ensure it points to the internal FQDN/proxy, and confirm network egress/ingress rules.
 
-1) Validate DAB is healthy (Container Apps)
-
-```powershell
-# List revisions and health
-az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
-
-# Show ingress configuration (confirm targetPort matches container)
-az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
-```
-
-2) Tail DAB logs (look for startup errors and GraphQL listening)
-
-```powershell
-az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
-```
-
-3) Quick GraphQL introspection / simple query
-
-Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the DAB GraphQL URL (from secret/outputs):
-
-```powershell
-$DAB = 'https://<dab-fqdn>/graphql'
-$body = @{ query = 'query { __schema { queryType { name } } }' } | ConvertTo-Json
-
-# Use -UseBasicParsing if needed in older PowerShell
-Invoke-RestMethod -Uri $DAB -Method Post -ContentType 'application/json' -Body $body
-```
-
-Or curl (if available):
-
-```powershell
-curl -s -X POST $DAB -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
-```
-
-Expected results
-- Introspection returns a schema object (or tenants query returns a JSON list). If requests time out, DAB is not responding — check container logs and ingress.
-
-Seeder (run locally or in CI)
-
-The seeder project uses `DefaultAzureCredential` and requires an identity with Cosmos DB Data Contributor on the `stamps-control-plane` account.
-
-From the workspace root (PowerShell):
-
-```powershell
-# Build and run the seeder (example path)
-dotnet build ./AzureArchitecture/Seeder/Seeder.csproj
-dotnet run --project ./AzureArchitecture/Seeder/Seeder.csproj -- --environment dev
-```
-
-Notes
-- If the seeder receives 401/403, ensure the principal (local user/service principal/managed identity) has the Cosmos DB Data Contributor role and firewall rules allow access.
-- If DAB responds but returns schema errors, validate `dab-config.json` and `schema.graphql` in the image; confirm the image entrypoint points to `/App/dab-config.json`.
-
-Troubleshooting quick hits
-- Container crashing: tail DAB logs and search for missing files, permission errors, or command not found.
-- Port mismatch: confirm Dockerfile exposes the same port referenced by container app `targetPort` (common mismatch: 5000 vs 80).
-- Portal timeouts: check Portal secret `DAB_GRAPHQL_URL`, ensure it points to the internal FQDN/proxy, and confirm network egress/ingress rules.
-
-Related docs
-- `docs/AUTH_CI_STRATEGY.md` — authentication and CI notes
-- `management-portal/infra/management-portal.bicep` — IaC for DAB and Portal
-````
-# Live Data Path — Portal ↔ DAB ↔ Cosmos (quick reference)
-
-Purpose: a compact, end-to-end reference for the Management Portal live-data flow and smoke checks.
-
-1) What this connects
-- Management Portal (Container App) → DAB (Data API Builder) → Azure Cosmos DB (stamps-control-plane)
-
-2) Key env / secrets
-- `DAB_GRAPHQL_URL` — internal FQDN for DAB GraphQL (portal uses this to switch from mock to live)
-- DAB secrets: Cosmos connection string or managed identity; App Insights connection string for telemetry
-- Portal: AAD client id/tenant id, and `DAB_GRAPHQL_URL` secret
+ Related docs
+ - `docs/AUTH_CI_STRATEGY.md` — authentication and CI notes
+ - `management-portal/infra/management-portal.bicep` — IaC for DAB and Portal
 
 3) Quick smoke checks
 - Test DAB health (replace host):
