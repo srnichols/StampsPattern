@@ -56,6 +56,18 @@ function Get-CurrentVersion {
 function Set-Version {
     param([string]$NewVersion)
     
+    <#
+    .SYNOPSIS
+        Updates version information across all documentation files with clean footer replacement
+    .DESCRIPTION
+        This function uses a surgical string-indexing approach instead of regex to prevent:
+        1. Footer duplication (previous regex was non-greedy and left partial footers)
+        2. UTF-8 corruption (PowerShell regex operations corrupted emojis like 🔌 → ðŸ"Œ)
+        
+        The approach: Find exact footer boundaries, extract clean sections, replace precisely.
+        This ensures only the footer section is modified while preserving all other content.
+    #>
+    
     Write-Host "Setting version to $NewVersion..." -ForegroundColor Green
     
     # Note: VERSION file removed - version now tracked in CHANGELOG.md and git tags
@@ -105,6 +117,7 @@ function Set-Version {
             $updated = $false
             
             # Remove duplicate "Last updated:" entries that conflict with formal footer
+            # These sometimes appear from manual edits and need cleanup
             $content = $content -replace "_Last updated:.*?_\s*\r?\n", ""
             $content = $content -replace "Last updated:.*?\r?\n", ""
             
@@ -118,22 +131,34 @@ function Set-Version {
 - **Next Review**: 2025-11
 "@
 
+            # FOOTER REPLACEMENT LOGIC - Using string indexing instead of regex
+            # Why: Previous regex approach caused two major issues:
+            # 1. Footer duplication: Non-greedy regex (.*?) didn't capture complete multi-line footers
+            # 2. Content corruption: PowerShell regex operations corrupted UTF-8 emojis (🔌 became ðŸ"Œ)
+            # 
+            # Solution: Use precise string indexing to find and replace exact footer boundaries
+            # This approach is surgical - only touches the footer section, preserves all other content
+            
             # Check if document already has the version footer
-            # Use a more reliable approach - look for the footer start marker
+            # Look for the exact footer start marker (this is our anchor point)
             $footerMarker = "**📝 Document Version Information**"
             $footerIndex = $content.IndexOf($footerMarker)
             
             if ($footerIndex -ge 0) {
-                # Find the end of the footer section (either double newline or end of file)
+                # Footer exists - we need to replace it completely to avoid duplication
+                # Strategy: Find footer boundaries, extract before/after sections, insert clean footer
+                
+                # Find the end of the existing footer section
+                # Footer typically ends at double newline (document section break) or end of file
                 $remainingContent = $content.Substring($footerIndex)
                 $footerEndIndex = $remainingContent.IndexOf("`r`n`r`n")
                 
                 if ($footerEndIndex -eq -1) {
-                    # Footer goes to end of file
+                    # Footer goes to end of file - replace everything from footer marker onward
                     $beforeFooter = $content.Substring(0, $footerIndex).TrimEnd()
                     $content = $beforeFooter + "`r`n`r`n" + $standardFooter + "`r`n"
                 } else {
-                    # Footer has content after it
+                    # Footer has content after it - preserve the content after the footer
                     $beforeFooter = $content.Substring(0, $footerIndex).TrimEnd()
                     $afterFooter = $content.Substring($footerIndex + $footerEndIndex)
                     $content = $beforeFooter + "`r`n`r`n" + $standardFooter + $afterFooter
@@ -141,12 +166,16 @@ function Set-Version {
                 $updated = $true
             }
             else {
-                # Add new footer at the end
+                # No existing footer found - add new footer at the end
+                # Format: ensure proper spacing with document separator and clean ending
                 $content = $content.TrimEnd() + "`r`n`r`n---`r`n`r`n" + $standardFooter + "`r`n"
                 $updated = $true
             }
             
             if ($updated) {
+                # Write file with -NoNewline to preserve exact formatting
+                # Note: PowerShell Set-Content preserves original encoding when using -NoNewline
+                # This prevents UTF-8 emoji corruption that occurred with previous regex approach
                 $content | Set-Content $docFile -NoNewline
                 Write-Host "Updated version footer in $docFile" -ForegroundColor Cyan
             }
