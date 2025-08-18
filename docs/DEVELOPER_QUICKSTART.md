@@ -150,7 +150,7 @@ az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --paramet
 
 7. For auth or CI/OIDC troubleshooting, see `docs/AUTH_CI_STRATEGY.md`.
 
-When complete, continue to the full [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) for production hardening and parameterization.
+When complete, continue to the full [Deployment Guide](./DEPLOYMENT_GUIDE.md) for production hardening and parameterization.
 
 
 ## 7) Quick code tour
