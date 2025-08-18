@@ -184,17 +184,16 @@ Quick live-data reference: if you want to verify the Management Portal shows liv
 
 
 
-## �️ Documentation improvements (P0)
+## 📚 Documentation baseline
 
-We maintain a short, actionable documentation improvements plan focused on reducing first-time user friction. The P0 items (first priority) are:
+We've rebaselined the documentation to make the getting-started experience fast for new readers. Key items included in this baseline:
 
-- Add a 10-step "Start Here" Minimal Happy Path (done — see above)
-- NEW: `docs/LIVE_DATA_PATH.md` — a single page describing the Portal → DAB → Cosmos live-data flow and quick checks
-- Known Issues: add a "Top 10 Fixes" quick triage section
-- Consolidate auth and CI guidance into `docs/AUTH_CI_STRATEGY.md`
-- Ensure all command blocks are PowerShell-friendly and copy-paste safe
+- A single **Start Here — Minimal Happy Path** with exact steps to deploy, seed, and validate the Management Portal shows live data.
+- A dedicated **Live Data Path** page (`docs/LIVE_DATA_PATH.md`) that walks through Portal → DAB → Cosmos validation and quick smoke checks.
+- Consolidated authentication, secrets, and RBAC guidance for operators (`docs/AUTH_CI_STRATEGY.md`, `docs/SECRETS_AND_CONFIG.md`, `docs/RBAC_CHEATSHEET.md`).
+- An **Operations Guide** with incident playbooks and a concise Logs & Quick Commands panel for fast triage.
 
-See the full recommendations and backlog: [Documentation Improvement Recommendations](./docs/DOCUMENTATION_IMPROVEMENTS.md)
+For the full improvement backlog and rationale (including longer-term items), see the master plan: `docs/DOCUMENTATION_IMPROVEMENTS.md`.
 
 ## 💡 Why This Project?
 
