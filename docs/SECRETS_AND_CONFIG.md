@@ -1,69 +1,84 @@
-# Secrets & Configuration (decision guide)
+# Secrets & Configuration (dev → prod)
 
-Purpose
-- Quick decision tree and examples for secrets and configuration patterns used in this repository. This guide describes recommended production patterns and pragmatic developer shortcuts for smoke deployments.
+This page lists the configuration and secret names used across the project, guidance for local development, and recommended Key Vault secret names for production.
 
-When to use which pattern
+Keep secrets out of source control. Use Azure Key Vault (recommended) for production and `local.settings.json` for local developer runs.
 
-1) Container App secrets
-- Pros: Quick to set up, no external Key Vault dependency, easier for smoke/dev deployments.
-- Cons: Secrets stored in Container App resource (less auditability), not recommended for production secrets.
-- Use for: Demo secrets, local smoke runs, or temporary values while iterating.
+## Quick reference — key secrets & env vars
+- COSMOS_CONN: Cosmos DB connection string (Key Vault secret: `secrets/cosmos-conn`)
+- DAB_GRAPHQL_URL: Data API Builder GraphQL endpoint (set as app config / container env)
+- DAB_CONFIG_BLOB or DAB_CONFIG_FILE: path to DAB configuration (if in-image)
+- ACR_SERVER: ACR login server (e.g. `cr<...>.azurecr.io`)
+- ACR_USERNAME / ACR_PASSWORD: use Managed Identity or service principal instead; prefer `az acr login` with MI
+- KEY_VAULT_NAME: Key Vault which stores secrets for apps
+- MI_CLIENT_ID / MSI_ENDPOINT: only for specialized local testing; prefer DefaultAzureCredential + Managed Identity in AKS/ContainerApps
+- SEEDER_CLIENT_ID / SEEDER_TENANT_ID: for seeder when using service principal (optional)
 
-2) Azure Key Vault + Managed Identity (recommended for production)
-- Pros: Centralized secret management, RBAC and access logs, key rotation, soft-delete/recovery.
-- Cons: Slightly more setup (Key Vault, access policy or RBAC), need to grant MI or SP access.
-- Use for: Production connection strings, certificates, and any secret requiring audit/rotation.
+## Local development
+Use `local.settings.json` for Functions + DAB when running locally. Example minimal `local.settings.json`:
 
-Decision checklist
-- Is this a production secret? → Use Key Vault + MI.
-- Is the deployment short-lived or for local smoke? → Container App secret is acceptable.
-- Do you need audit trail or rotation? → Key Vault.
-
-Common env vars (Portal & DAB)
-
-- Portal (management-portal/src/Portal)
-  - `DAB_GRAPHQL_URL` — GraphQL endpoint for Data API Builder
-  - `AzureAd__ClientId` / `AzureAd__TenantId` — AAD app settings for portal sign-in
-  - `APPINSIGHTS_INSTRUMENTATIONKEY` — App Insights (or connection string variant)
-
-- DAB (container image / dab-config.json)
-  - `COSMOS_DB_CONNECTION` (if using connection string) or use Managed Identity
-  - `DAB_LOG_LEVEL` — debug/info
-
-Example: reference Key Vault secret from Bicep (container app)
-
-```powershell
-# In Bicep you can reference a key vault secret for container apps like this (pseudo):
-# properties.configuration.secrets: [{ name: 'DAB_GRAPHQL_URL', value: keyVaultSecretUri }]
-
-# In PowerShell/Az CLI you might set a secret value before deploying
-az keyvault secret set --vault-name kv-stamps --name "DabGraphqlUrl" --value "https://ca-stamps-dab.internal/graphql"
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "COSMOS_CONN": "AccountEndpoint=https://<your-cosmos>.documents.azure.com:443/;AccountKey=<key>;",
+    "DAB_GRAPHQL_URL": "http://localhost:5000/graphql"
+  }
+}
 ```
 
-Quick how-to: switch from container-app secret to Key Vault (high level)
+- Never commit `local.settings.json` with real secrets. Use environment variables in CI/build pipelines or Key Vault for production.
 
-1. Create Key Vault and add secret(s):
+## Container / App configuration (production)
+- Use Azure Key Vault references (recommended) or environment variables set in the platform (Container Apps, App Service, etc.).
+- Recommended Key Vault secret naming convention:
+  - `secrets/cosmos-conn` — Cosmos DB connection string
+  - `secrets/acr-credentials` — if you must store registry creds (avoid if using MI)
+  - `secrets/dab-config-json` — optional: DAB config if not baked into image
+  - `secrets/jwt-signing-key` — if using app-specific signing keys
+
+## DefaultAzureCredential and Managed Identity notes
+- The repository uses `DefaultAzureCredential` in several places (seeder, functions). In Azure this will pick Managed Identity when available. Locally it will fall back to Visual Studio / Azure CLI credentials.
+- Recommended workflow:
+  1. For infrastructure and prod apps, enable a system- or user-assigned managed identity and grant it minimal permissions (ACR pull, Cosmos DB data contributor where needed).
+  2. Grant the seeder or automation identity the appropriate Cosmos DB data-plane role (Cosmos DB Built-in Data Contributor) to allow writes.
+
+## Sample Azure CLI snippets (replace placeholders)
+- Set a secret in Key Vault (PowerShell / bash):
 
 ```powershell
-az keyvault create -g rg-stamps-mgmt -n kv-stamps --location eastus
-az keyvault secret set --vault-name kv-stamps --name "DabGraphqlUrl" --value "https://ca-stamps-dab.internal/graphql"
+# Set variables
+$kvName = "<your-keyvault-name>"
+az keyvault secret set --vault-name $kvName --name "secrets/cosmos-conn" --value "<COSMOS_CONNECTION_STRING>"
 ```
 
-2. Grant the Container App managed identity access to Key Vault (get & list):
+- Assign AcrPull role to a managed identity for an ACR:
 
 ```powershell
-# Get principal id of the container app's user-assigned or system identity
-PRINCIPAL_ID=$(az resource show -g rg-stamps-mgmt -n ca-stamps-dab --resource-type Microsoft.App/containerApps --query identity.principalId -o tsv)
-az keyvault set-policy -n kv-stamps --object-id $PRINCIPAL_ID --secret-permissions get list
+$identityPrincipalId = "<managed-identity-principal-id>"
+$acrResourceId = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/<acr>"
+az role assignment create --assignee $identityPrincipalId --role "AcrPull" --scope $acrResourceId
 ```
 
-3. Update Bicep to use `keyVaultReference` or set the secretRef in container-app configuration.
+- Grant Cosmos DB data contributor (data-plane) role to a principal (replace scope with your cosmos account resource id):
 
-Operational notes
-- Rotate secrets in Key Vault and re-deploy if references change. Prefer Key Vault references that the platform will resolve at runtime.
-- For CI, use OIDC or a service principal with minimal access; store transient CI secrets in GitHub Secrets if absolutely needed.
+```powershell
+$principalId = "<principal-object-id>"
+$cosmosResourceId = "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.DocumentDB/databaseAccounts/<cosmosAccount>"
+az role assignment create --assignee $principalId --role "Cosmos DB Built-in Data Contributor" --scope $cosmosResourceId
+```
 
-Related docs
-- `docs/LIVE_DATA_PATH.md` — quick checks for Portal → DAB → Cosmos
-- `docs/AUTH_CI_STRATEGY.md` — auth patterns and CI notes
+## CI / Pipeline recommendations
+- Use Key Vault-backed secrets in your pipeline for deployments. Example actions:
+  - Fetch Key Vault secrets in pipeline and inject as environment variables to deployment step.
+  - Use a service principal scoped to the resource group for CI only if necessary; prefer managed identities in production.
+
+## Troubleshooting
+- If apps can't read secrets in Azure: verify Key Vault access policies or RBAC, and that the managed identity is enabled and has GET permission for secrets (or is granted Key Vault Secrets User role via RBAC).
+- If DAB/Portal can't pull image: confirm ACR role assignment and that the container host has network access to the registry.
+
+---
+
+If you'd like, I can add exact environment variable mappings for each service (Portal, DAB, Seeder, Functions) in a short table — say yes and I'll insert them next.
