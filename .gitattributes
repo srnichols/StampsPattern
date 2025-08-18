@@ -1,0 +1,19 @@
+# Enforce LF line endings in the repo to avoid CRLF/LF churn across platforms
+* text=auto eol=lf
+
+# Explicitly ensure common documentation and config files use LF
+*.md text eol=lf
+*.markdown text eol=lf
+*.mdx text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.ps1 text eol=lf
+*.sh text eol=lf
+docs/** text eol=lf
+
+# Keep binary files untouched
+*.png binary
+*.jpg binary
+*.gif binary
+*.zip binary
