@@ -6,12 +6,13 @@ See first: **[CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)**, 
 
 This Architecture Overview provides a concise tour of the Azure Stamps Pattern architecture, layers, flows, and core decisions so you can design, build, and scale compliant multi-tenant systems with confidence.
 
-## 👤 Who Should Read This Guide?
+This solution implements a sophisticated **GEO → Region → Availability Zone → CELL** hierarchy using Azure's stamps pattern for maximum scalability, isolation, and global distribution. Availability Zones (AZs) are a critical layer for high availability (HA) and disaster recovery (DR), allowing each CELL to be deployed in 0, 1, 2, or 3 zones depending on business and SLA requirements.
 
-- **Solution Architects:** Deep-dive into system design, scalability, and compliance
-- **Developers:** Understand deployment, tenancy, and integration patterns
-- **IT Leaders:** Evaluate architecture for onboarding, scaling, and governance
-- **Security/Compliance Teams:** Review security, monitoring, and compliance controls
+> **Global Capacity Management & Cloud Supply Constraints**
+>
+> All major cloud providers occasionally face regional or zone capacity limits for compute and storage resources, due to demand surges, supply chain disruptions, or quota exhaustion. The Azure Stamps Pattern architecture is designed to address this reality: its modular, zone-aware, and multi-region CELL approach enables organizations to deploy new workloads or scale existing ones in any available region or zone, minimizing business disruption. If a preferred region or AZ is at capacity, new CELLs can be provisioned elsewhere with minimal reconfiguration, ensuring business continuity and operational agility even in constrained environments.
+
+...existing content...
 
 ---
 ## 🧭 Quick Navigation
