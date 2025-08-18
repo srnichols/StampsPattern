@@ -31,6 +31,53 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 - **Simple Setup**: 45-60 minutes for basic 2-region deployment
 - **Enterprise Setup**: 2-3 hours for full multi-GEO production deployment
 
+### Minimal Happy Path (Live Data)
+
+If you want the fastest, repeatable route to a working Management Portal backed by live Cosmos data, follow these steps. This path deploys the smoke sample, seeds representative baseline data using the Seeder (AAD RBAC), and verifies Portal ↔ DAB ↔ Cosmos connectivity.
+
+1. Create a resource group and deploy the smoke sample (lab-friendly parameters):
+
+```powershell
+pwsh -Command "az group create --name rg-stamps-smoke --location eastus"
+pwsh -Command "az deployment group create --resource-group rg-stamps-smoke --template-file AzureArchitecture/main.bicep --parameters @AzureArchitecture/examples/main.sample.smoke.json"
+```
+
+2. Grant the principal you will use to run the Seeder the Cosmos DB data contributor role.
+
+Replace <ASSIGNEE> and <COSMOS_RESOURCE_ID> with your user/principal and the Cosmos account resource id from the deployment outputs.
+
+```powershell
+pwsh -Command "az role assignment create --assignee <ASSIGNEE> --role \"Cosmos DB Built-in Data Contributor\" --scope <COSMOS_RESOURCE_ID>"
+```
+
+3. Run the Seeder to populate baseline data.
+
+From the repo root, run the Seeder project. The Seeder uses DefaultAzureCredential; ensure you are signed in (az login) or the principal above is available.
+
+```powershell
+cd management-portal/Seeder
+# If the Seeder is a dotnet project (adjust path if needed)
+dotnet run
+```
+
+4. Verify the deployment and seeded data.
+
+- Retrieve deployment outputs to get the Portal and DAB endpoints:
+
+```powershell
+pwsh -Command "az deployment group show --resource-group rg-stamps-smoke --name $(az deployment group list --resource-group rg-stamps-smoke --query '[0].name' -o tsv) --query properties.outputs"
+```
+
+- Open the Management Portal URL in a browser and confirm seeded tenants/cells are visible. Optionally test the GraphQL endpoint:
+
+```powershell
+pwsh -Command "curl -s -X POST 'https://<DAB_GRAPHQL_URL>/graphql' -H 'Content-Type: application/json' -d '{\"query\":\"{ tenants { id name } }\"}'"
+```
+
+Notes:
+- The Seeder uses AAD/DefaultAzureCredential and requires a principal with Cosmos DB data permissions to write. If you prefer connection-string based seeding, set the expected environment variables for the Seeder per its README.
+- This path intentionally uses the smoke parameters (HTTP lab toggle) to avoid certificate/key vault friction; switch to production parameters for HTTPS and certs.
+
 ## 🧭 Quick Navigation
 
 | Section | Focus Area | Time to Read | Best for |
