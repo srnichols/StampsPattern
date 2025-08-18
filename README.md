@@ -1,4 +1,5 @@
-# Azure Stamps Pattern - Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
+# Azure Stamps Pattern - Architecture (ASPA)
+## Enterprise CAF/WAF Compliant Architecture (94/100 Overall)
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Azure](https://img.shields.io/badge/Azure-Infrastructure-blue)
