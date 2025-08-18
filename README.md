@@ -229,7 +229,8 @@ This solution is designed for:
 
 1. **Review the [Documentation Hub](./docs/DOCS.md)** for a guided overview.
 2. **Clone the repository:**
-    ```sh
+    ```powershell
+    # Clone the repository (PowerShell)
     git clone <repository-url>
     cd StampsPattern
     ```
