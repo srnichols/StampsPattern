@@ -159,20 +159,18 @@ P0 (next 1–2 days)
 
 P1 (this week)
 
- - [x] DOCS.md: Move progressive path to top; link to new guides; unify nav tables.
- - [x] NEW: docs/AUTH_CI_STRATEGY.md; consolidate scattered auth notes and scripts.
- - [x] NEW: docs/SECRETS_AND_CONFIG.md with clear decision tree.
- - [x] Add “Repository Map” and “Capabilities Matrix”.
- - [x] NEW: docs/RBAC_CHEATSHEET.md (exists)
-
+- [x] DOCS.md: Move progressive path to top; link to new guides; unify nav tables.
+- [x] NEW: docs/AUTH_CI_STRATEGY.md; consolidate scattered auth notes and scripts.
+- [x] NEW: docs/SECRETS_AND_CONFIG.md with clear decision tree.
+- [x] Add “Repository Map” and “Capabilities Matrix”.
+- [x] NEW: docs/RBAC_CHEATSHEET.md (exists)
 
 P2 (next)
 
- - [x] KNOWN_ISSUES: Add troubleshooting decision trees.
- - [x] ARCHITECTURE_GUIDE: Add E2E runtime diagram block.
- - [x] OPERATIONS_GUIDE: Add “Logs & Quick Commands”.
- - [ ] Add markdownlint + codespell to CI for docs.
-
+- [x] KNOWN_ISSUES: Add troubleshooting decision trees.
+- [x] ARCHITECTURE_GUIDE: Add E2E runtime diagram block.
+- [x] OPERATIONS_GUIDE: Add “Logs & Quick Commands”.
+- [ ] Add markdownlint + codespell to CI for docs.
 
 Ownership
 

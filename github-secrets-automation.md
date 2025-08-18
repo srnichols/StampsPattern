@@ -5,7 +5,8 @@
 After you set up the federated credential in Azure Portal, use these commands to quickly set up your GitHub secrets.
 
 ### Prerequisites
-1. Install GitHub CLI: `winget install GitHub.cli` or download from https://cli.github.com/
+
+1. Install GitHub CLI: `winget install GitHub.cli` or download from <https://cli.github.com/>
 2. Authenticate: `gh auth login`
 
 ### Quick Setup Commands
@@ -33,7 +34,7 @@ gh secret list
 
 If you prefer the web interface:
 
-1. Go to: https://github.com/srnichols/StampsPattern/settings/secrets/actions
+1. Go to: <https://github.com/srnichols/StampsPattern/settings/secrets/actions>
 
 2. **Delete** the old secret:
    - Click on `AZURE_CREDENTIALS` and delete it
@@ -51,11 +52,13 @@ If you prefer the web interface:
 
 ## Quick Azure Portal Links
 
-- **App Registration:** https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Credentials/appId/e691193e-4e25-4a72-9185-1ce411aa2fd8
+- **App Registration:** <https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/~/Credentials/appId/e691193e-4e25-4a72-9185-1ce411aa2fd8>
 - **Federated Credentials Tab:** Click "Certificates & secrets" → "Federated credentials" → "Add credential"
 
 ## Federated Credential Settings
+
 When adding the federated credential in Azure Portal:
+
 - **Scenario:** GitHub Actions deploying Azure resources
 - **Organization:** `srnichols`
 - **Repository:** `StampsPattern`

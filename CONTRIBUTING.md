@@ -81,22 +81,26 @@ Please be respectful and considerate in all interactions. See our [Code of Condu
 Use this style for all Markdown under `docs/` and the root `README.md` where applicable.
 
 ### Structure
+
 - Start with a short, value‑focused intro.
 - Include three bullets near the top: “What’s inside”, “Best for”, “Outcomes”.
 - Use clear emoji section headers for scannability (e.g., `## 🧭`, `## 🚀`).
 - Prefer compact, actionable prose over long narrative.
 
 ### Voice & Wording
+
 - Use “Azure Stamps Pattern” when referring to the solution.
 - Keep tone friendly, direct, and enterprise‑ready.
 - Use ASCII punctuation and sentence‑case headings.
 
 ### Compliance Statements
+
 - Overall CAF/WAF compliance: 94/100
 - WAF Security pillar: 96/100
 - Do not state 96/100 as the overall score
 
 ### Mermaid Diagrams
+
 - All diagrams must use a per‑diagram init with neutral theme:
 
 ```
@@ -110,6 +114,7 @@ Use this style for all Markdown under `docs/` and the root `README.md` where app
 - Keep diagrams minimal and readable.
 
 ### Links & Anchors
+
 - Prefer relative links (e.g., `./file.md`, `../folder/file.md`).
 - Validate all links; remove or fix dead links.
 - Match anchors exactly; verify section titles if you change headings.

@@ -14,6 +14,7 @@ az ad sp create-for-rbac --name "github-actions-stamps" --role contributor --sco
 ```
 
 This will output JSON like:
+
 ```json
 {
   "clientId": "xxx-xxx-xxx",
@@ -31,7 +32,7 @@ This will output JSON like:
 
 ## Step 2: Add GitHub Repository Secrets
 
-1. Go to: https://github.com/srnichols/StampsPattern/settings/secrets/actions
+1. Go to: <https://github.com/srnichols/StampsPattern/settings/secrets/actions>
 
 2. Click **"New repository secret"** and add these:
 
@@ -44,12 +45,14 @@ This will output JSON like:
 ## Step 3: Verify Secrets
 
 The workflow should now have access to:
+
 - `secrets.AZURE_CREDENTIALS` - Full service principal JSON
 - `secrets.AZURE_SUBSCRIPTION_ID` - Your subscription ID
 
 ## Step 4: Re-run the Workflow
 
 After adding the secrets:
+
 1. Go to GitHub Actions
 2. Find the failed workflow run
 3. Click **"Re-run jobs"** → **"Re-run all jobs"**
@@ -57,8 +60,9 @@ After adding the secrets:
 ## Alternative: Use OIDC Authentication (Modern Method)
 
 If you prefer the newer OIDC method, we can update the workflow to use:
+
 - `client-id`
-- `tenant-id` 
+- `tenant-id`
 - `subscription-id`
 
 Let me know which approach you prefer!

@@ -7,11 +7,13 @@ This folder contains sample parameter sets for `AzureArchitecture/main.bicep`.
 - `main.sample.platinum.json`, higher HA/DR toggles; still lab-friendly.
 
 Notes:
+
 - `additionalLocations` is an array of region name strings (e.g., ["westus2", "westeurope"]). Failover priority is computed internally by the template.
 - The template auto-creates per-region networking (VNet, `subnet-agw`, Public IP) for initial runs.
 - For production HTTPS, set `useHttpForSmoke` to false and ensure the Key Vault certificate references in the template are valid.
 
 Profiles and diagnostics:
+
 - `environmentProfile` drives defaults: `smoke` (minimal), `dev` (default), `prod` (full features).
 - Smoke mode is derived as `isSmoke = useHttpForSmoke || environmentProfile == 'smoke'`.
 - Diagnostics: the stamp layer uses `metricsOnly` in smoke and `standard` in dev/prod; you can override per-cell if needed.

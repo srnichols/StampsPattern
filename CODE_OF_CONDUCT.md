@@ -28,6 +28,7 @@ Last updated: August 2025
 ## 🔎 Scope
 
 This Code applies to all project spaces and activities, including but not limited to:
+
 - GitHub repositories, issues, pull requests, and discussions
 - Documentation and design artifacts
 - Community communication channels linked to this project
@@ -38,6 +39,7 @@ This Code applies to all project spaces and activities, including but not limite
 ## ✅ Our Standards
 
 We strive to create a positive environment where all people feel welcome. Examples of expected behavior include:
+
 - Being respectful, considerate, and constructive
 - Welcoming differing viewpoints and experiences
 - Giving and receiving constructive feedback gracefully
@@ -49,6 +51,7 @@ We strive to create a positive environment where all people feel welcome. Exampl
 ## 🚫 Unacceptable Behavior
 
 Behavior that undermines a safe and inclusive environment is not tolerated, including:
+
 - Harassment, discrimination, or derogatory comments
 - Personal attacks, insults, or demeaning language
 - Trolling, deliberate disruption, or thread derailment
@@ -66,12 +69,14 @@ Project maintainers are responsible for clarifying standards of acceptable behav
 ## 📣 Reporting a Concern
 
 If you experience or witness unacceptable behavior:
+
 - If safe, raise the concern in the relevant thread to de‑escalate and refocus.
 - Otherwise, report privately using one of the following:
   - Open a GitHub issue with the `code-of-conduct` label (omit sensitive details if necessary), or
   - Contact the repository owner/maintainers via email or direct message through their GitHub profiles.
 
 Please include:
+
 - A description of the behavior
 - Links, screenshots, or other context
 - Where and when it happened, and any prior attempts to resolve it
@@ -83,6 +88,7 @@ We will handle reports promptly, confidentially, and with care.
 ## ⚖️ Enforcement & Consequences
 
 Maintainers may take any action they deem appropriate, including but not limited to:
+
 - Warning the reported individual(s)
 - Removing or editing content
 - Temporary or permanent bans from any project space

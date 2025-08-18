@@ -1,12 +1,14 @@
 # Assign Contributor Role to Service Principal
 
 ## Service Principal Details
+
 - **Name**: github-actions-stamps
 - **Application (client) ID**: e691193e-4e25-4a72-9185-1ce411aa2fd8
 - **Object ID**: d292a2f4-6d7e-41a7-8738-e9d752e81b03
 - **Tenant ID**: 16b3c013-d300-468d-ac64-7eda0820b6d3
 
 ## Target Subscription
+
 - **Subscription**: MCAPS-Hybrid-REQ-103709-2024-scnichol-Hub
 - **Subscription ID**: 480cb033-9a92-4912-9d30-c6b7bf795a87
 
@@ -42,18 +44,23 @@
    - Click "Assign" to complete the assignment
 
 ## Verification
+
 After completing the role assignment, you can verify it worked by:
+
 - Going back to the subscription's "Access control (IAM)" page
 - Click on the "Role assignments" tab
 - Look for "github-actions-stamps" in the list with "Contributor" role
 
 ## Next Steps
+
 Once the role is assigned:
+
 1. Test GitHub Actions deployment by pushing a commit
 2. Check that the deployment succeeds without "No subscriptions found" errors
 3. Verify the management portal updates to version 1.2.4 with live data connection
 
 ## Alternative: PowerShell Command
+
 If you prefer to use PowerShell (requires Az PowerShell module):
 
 ```powershell

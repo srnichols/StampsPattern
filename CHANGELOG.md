@@ -4,24 +4,28 @@ All notable changes to the Azure Stamps Pattern project will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [1.2.2] - 2025-08-14
 
 ### Added
+
 - Fixed authentication redirect loop (AADSTS700054) and enabled ID token issuance for Stamps Portal
+
 ## [1.2.1] - 2025-08-14
 
 ### Added
+
 - Enhanced version management system with automated documentation footer updates
 - Restored DEPLOYMENT_ARCHITECTURE_GUIDE.md with critical subscription deployment patterns
 - Comprehensive documentation link validation and cleanup
 
 ### Changed
+
 - Improved version script to update multiple documentation files with version footers
 - Fixed README.md formatting and badge consistency
 - Updated all documentation cross-references to use active files instead of archived ones
 
 ### Fixed
+
 - Documentation link integrity across all guides
 - Version badge and header formatting in README.md
 - Archive organization with proper historical context
@@ -29,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.2.0] - 2025-08-14
 
 ### Added
+
 - **Management Portal Authentication**: Complete Azure Entra ID integration with OpenID Connect
   - Container Apps deployment with authentication middleware
   - Support for Azure AD app registrations and role-based access control
@@ -43,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Authentication flow tracking and troubleshooting
 
 ### Changed
+
 - **Documentation Updates**: Enhanced deployment and user guides with authentication setup
   - Updated DEPLOYMENT_GUIDE.md with management portal authentication requirements
   - Improved MANAGEMENT_PORTAL_USER_GUIDE.md with authentication flow details
@@ -50,11 +56,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Security Improvements**: HTTPS enforcement and forwarded headers handling for container environments
 
 ### Fixed
+
 - **HTTPS Redirect Issues**: Resolved authentication redirect URI problems in container environments
 - **Azure AD Token Configuration**: Fixed AADSTS700054 errors with proper ID token enablement
 - **Container App Secrets**: Proper client secret configuration and management
 
 ### Archived
+
 - Moved temporary authentication setup documentation to docs/archive/
   - FINAL_AUTH_SETUP.md
   - AZURE_ENTRA_SETUP.md  
@@ -64,16 +72,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - MONITORING_GUIDE.md
 
 ## [1.1.0] - Previous Release
+
 - Base Azure Stamps Pattern infrastructure
 - Bicep templates for multi-tenant architecture
 - Azure Functions for tenant management
 - Cosmos DB integration for control plane data
 
 ## [1.0.0] - Initial Release
+
 - Azure Stamps Pattern foundation
 - Multi-tenant architecture patterns
 - Security and compliance frameworks
 - Documentation and deployment guides
-
-
-

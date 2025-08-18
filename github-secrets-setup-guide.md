@@ -10,7 +10,7 @@ Since I can't add secrets directly, here's exactly what you need to do:
 
 ## Step 2: Create Service Principal
 
-1. **Azure Portal** → **Microsoft Entra ID** → **App registrations** 
+1. **Azure Portal** → **Microsoft Entra ID** → **App registrations**
 2. Make sure you're in the correct tenant (same as where your container apps are)
 3. Click **"New registration"**
 4. Name: `github-actions-stamps-sp`
@@ -56,22 +56,24 @@ Replace YOUR_* placeholders with actual values:
 
 ## Step 6: Add to GitHub
 
-**CLICK THIS LINK:** https://github.com/srnichols/StampsPattern/settings/secrets/actions
+**CLICK THIS LINK:** <https://github.com/srnichols/StampsPattern/settings/secrets/actions>
 
 Then add these secrets:
 
 **Secret 1:**
+
 - Name: `AZURE_CREDENTIALS`
 - Value: The entire JSON from Step 5
 
-**Secret 2:** 
+**Secret 2:**
+
 - Name: `AZURE_SUBSCRIPTION_ID`
 - Value: `480cb033-9a92-4912-9d30-c6b7bf795a87`
 
 ## Step 7: Test
 
 After adding secrets, go to:
-https://github.com/srnichols/StampsPattern/actions
+<https://github.com/srnichols/StampsPattern/actions>
 
 Find the failed workflow runs and click **"Re-run jobs"**
 

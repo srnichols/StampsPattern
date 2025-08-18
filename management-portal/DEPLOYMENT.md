@@ -5,6 +5,7 @@ This guide covers deploying the Azure Stamps Pattern Management Portal to produc
 ## Overview
 
 The management portal consists of two main components:
+
 - **Portal Application**: Blazor Server app with advanced SaaS features
 - **Data API Builder (DAB)**: GraphQL/REST API over Cosmos DB
 
@@ -39,6 +40,7 @@ The management portal consists of two main components:
 ## Step 1: Azure Entra ID Setup
 
 1. **Create App Registration**:
+
    ```bash
    az ad app create --display-name "Stamps Management Portal" \
      --web-redirect-uris "https://[YOUR-PORTAL-DOMAIN]/signin-oidc" \
@@ -51,12 +53,14 @@ The management portal consists of two main components:
    - Add required API permissions for Microsoft Graph (optional)
 
 3. **Create Client Secret**:
+
    ```bash
    az ad app credential reset --id [APP-ID]
    ```
 
 4. **Update Configuration**:
    Edit `src/Portal/appsettings.Production.json`:
+
    ```json
    {
      "AzureAd": {
@@ -76,6 +80,7 @@ Run the deployment script:
 ```
 
 This script will:
+
 1. Create/update resource group
 2. Deploy Azure infrastructure (Cosmos DB, Container Apps, etc.)
 3. Build and push container images
@@ -100,6 +105,7 @@ az containerapp update \
 ## Step 4: Verify Deployment
 
 1. **Check Application Health**:
+
    ```bash
    curl https://[PORTAL-URL]/health
    ```
@@ -108,6 +114,7 @@ az containerapp update \
    Navigate to the portal URL and verify login flow
 
 3. **Verify GraphQL API**:
+
    ```bash
    curl https://[DAB-URL]/graphql \
      -H "Content-Type: application/json" \
@@ -172,12 +179,14 @@ ContainerAppSystemLogs_CL
 ## Scaling Configuration
 
 ### Portal Application
+
 - **Min Replicas**: 1
 - **Max Replicas**: 5
 - **Scale Rule**: HTTP requests (50 concurrent)
 - **Resources**: 0.5 CPU, 1GB RAM
 
 ### Data API Builder
+
 - **Min Replicas**: 1
 - **Max Replicas**: 3
 - **Scale Rule**: HTTP requests (30 concurrent)
@@ -233,6 +242,7 @@ az containerapp replica list --name ca-stamps-portal --resource-group rg-stamps-
 ## Support
 
 For issues or questions:
+
 1. Check Application Insights for errors
 2. Review Container Apps logs
 3. Consult Azure documentation

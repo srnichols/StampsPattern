@@ -3,10 +3,12 @@
 This folder contains minimal, safe-to-clone Bicep starters to help align your Azure Stamps Pattern with Azure Landing Zones (ALZ).
 
 Contents:
+
 - mg-policy-assign.bicep, Assign a Policy/Initiative at a management group scope.
 - subscription-map.bicep, Reference existing platform/shared-services and cell subscriptions at tenant scope (no creation).
 
 Notes:
+
 - mg-policy-assign deploys at managementGroup scope. For DeployIfNotExists/Modify policies, add identity and location to the assignment resource.
 - subscription-map only maps existing subscriptions. No creation path is included.
 
@@ -72,6 +74,7 @@ module map './subscription-map.bicep' = {
 ```
 
 ## Next steps
+
 - Replace placeholder IDs with your actual policy/initiative IDs.
 - For subscription creation, if ever needed later, implement Microsoft.Subscription/aliases or Microsoft.Billing calls and ensure proper RBAC and billing permissions.
 - Consider adding modules for MG hierarchy creation and policy assignment at each MG per ALZ guidance.

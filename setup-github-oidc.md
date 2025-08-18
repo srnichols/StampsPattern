@@ -14,6 +14,7 @@ Since Azure CLI isn't working on your machine, you can do this in the Azure Port
 ## Step 2: Note Down IDs
 
 After creating the app registration, note these values:
+
 - **Application (client) ID**: Found on the Overview page
 - **Directory (tenant) ID**: Found on the Overview page  
 - **Subscription ID**: Your Azure subscription ID (you already know this)
@@ -45,7 +46,7 @@ After creating the app registration, note these values:
 
 ## Step 5: Add GitHub Secrets
 
-Go to: https://github.com/srnichols/StampsPattern/settings/secrets/actions
+Go to: <https://github.com/srnichols/StampsPattern/settings/secrets/actions>
 
 Add these three secrets:
 
@@ -63,6 +64,7 @@ Add these three secrets:
 I'll update the workflow to use OIDC authentication instead of the old service principal method.
 
 This is much more secure because:
+
 - ✅ No client secrets stored in GitHub
 - ✅ Temporary tokens only
 - ✅ Scoped to your specific repository and branch
