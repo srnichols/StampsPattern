@@ -81,4 +81,29 @@ az role assignment create --assignee $principalId --role "Cosmos DB Built-in Dat
 
 ---
 
-If you'd like, I can add exact environment variable mappings for each service (Portal, DAB, Seeder, Functions) in a short table — say yes and I'll insert them next.
+## Per-service environment variable mappings
+A compact mapping of environment variables used by each service, their purpose, and where to set them.
+
+| Env var | Purpose | Service(s) | Where to set |
+|---|---|---|---|
+| COSMOS_CONN | Cosmos DB connection string (read-only for queries or read-write for seeder) | DAB, Functions, Seeder | Key Vault secret (`secrets/cosmos-conn`) or platform env |
+| DAB_GRAPHQL_URL | GraphQL endpoint for the Data API Builder | Management Portal (frontend/back-end integrations), Tests | Platform env for deployed portal; `local.settings.json` for local dev |
+| DAB_CONFIG_FILE / DAB_CONFIG_BLOB | Path or blob name for DAB config JSON (if not baked into image) | DAB (container) | Mount/secret reference or baked into image |
+| ASPNETCORE_URLS | Container binding URL (e.g. `http://+:5000`) | DAB | Container env / image Dockerfile |
+| ACR_SERVER | ACR login server (for image pulls) | Container hosting infra | Platform env / container registry setting |
+| KEY_VAULT_NAME | Name of Key Vault storing secrets | All services that read secrets | Platform env / deployment parameter |
+| AzureWebJobsStorage | Functions storage account connection | Azure Functions | Key Vault or platform env |
+| FUNCTIONS_WORKER_RUNTIME | Worker runtime for Functions | Azure Functions (local/dev) | `local.settings.json` or platform env |
+| APPINSIGHTS_CONNECTION_STRING | Application Insights ingestion | Portal, Functions, DAB (optional) | Key Vault or platform env |
+| AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_CLIENT_SECRET | Service principal credentials (only for SP-based auth; prefer MI) | Seeder (if not using DefaultAzureCredential) | CI secret or Key Vault (avoid committing) |
+| SEEDER_CLIENT_ID / SEEDER_TENANT_ID / SEEDER_CLIENT_SECRET | Optional separate SP used by seeder automation | Seeder | Key Vault / pipeline secret |
+| JWT_SIGNING_KEY | App-specific JWT signing secret (if used) | Portal / API | Key Vault secret |
+
+Notes:
+- Prefer Managed Identity + DefaultAzureCredential: avoids storing tenant/client secrets. When MI is used, set `KEY_VAULT_NAME` and assign proper access to the identity.
+- Use Key Vault references in Container Apps (or App Service managed identity + Key Vault) rather than injecting raw secrets into env vars where the platform supports it.
+- For local development, use `local.settings.json` or environment variables on your workstation; never commit secret values.
+
+---
+
+If you want, I can now add a brief section listing the exact env var names per repository component (file paths) — say "add per-component file mappings" and I'll insert them next.
