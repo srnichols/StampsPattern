@@ -1,7 +1,7 @@
 # RBAC Cheat Sheet
 
 Purpose
-- Quick role assignments and example commands for identities used in the Stamps Pattern (P1 deliverable).
+- Quick role assignments and example commands for identities used in the Stamps Pattern.
 
 Common roles and why
 

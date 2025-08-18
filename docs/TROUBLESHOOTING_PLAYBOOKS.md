@@ -1,4 +1,4 @@
-# 🔧 Troubleshooting Playbooks (P2)
+# 🔧 Troubleshooting Playbooks
 
 Concise, operator-focused playbooks that expand the decision trees into step-by-step commands you can run during incidents. All commands are PowerShell-friendly and use `az` where applicable. Replace placeholders (resource names, principal IDs, image tags) with your environment values.
 

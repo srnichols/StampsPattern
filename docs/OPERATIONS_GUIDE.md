@@ -841,19 +841,19 @@ Incident response in the Azure Stamps Pattern leverages AI-driven detection and 
 ```json
 {
   "incidentSeverity": {
-    "P0-Critical": {
+  "Critical": {
       "description": "Complete service outage affecting all users",
       "responseTime": "15 minutes",
       "escalation": "Immediate executive notification",
       "examples": ["Global Front Door down", "All Traffic Manager endpoints failed"]
     },
-    "P1-High": {
+  "High": {
       "description": "Major service degradation affecting multiple CELLs",
       "responseTime": "30 minutes", 
       "escalation": "Operations manager notification",
       "examples": ["Regional Application Gateway down", "Multiple CELL failures"]
     },
-    "P2-Medium": {
+  "Medium": {
       "description": "Single CELL or limited service impact",
       "responseTime": "2 hours",
       "escalation": "Team lead notification",

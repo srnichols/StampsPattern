@@ -1,11 +1,11 @@
 # Secrets & Configuration (decision guide)
 
 Purpose
-- Quick decision tree and examples for secrets and configuration patterns used in this repo (P1 deliverable).
+- Quick decision tree and examples for secrets and configuration patterns used in this repository. This guide describes recommended production patterns and pragmatic developer shortcuts for smoke deployments.
 
 When to use which pattern
 
-1) Container App secrets (fast, P0)
+1) Container App secrets
 - Pros: Quick to set up, no external Key Vault dependency, easier for smoke/dev deployments.
 - Cons: Secrets stored in Container App resource (less auditability), not recommended for production secrets.
 - Use for: Demo secrets, local smoke runs, or temporary values while iterating.

@@ -60,7 +60,7 @@ az deployment group create -g rg-stamps-mgmt -f management-portal/infra/manageme
 ```
 
 Secrets guidance (quick)
-- For P0, container-app secrets are quickest. For production, prefer Key Vault with managed identity to avoid secret leakage in repos.
+- For quick/short-lived deployments, container-app secrets are the fastest option. For production, prefer Key Vault with managed identity to avoid secret leakage in repositories.
 
 Minimal RBAC (starter)
 - Managed Identity for container apps: AcrPull role on ACR and Cosmos DB Data Contributor on the database.

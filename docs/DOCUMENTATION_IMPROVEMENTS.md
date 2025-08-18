@@ -55,47 +55,21 @@ Key integration paths
 
 ---
 
-## 4) Top recommendations (prioritized: P0 → P2)
+## 4) Top recommendations
 
-P0 – Make the first 60 minutes smooth
-1. Create a “Start Here” section in README that points to one exact “happy path”:
-   - 10-step Minimal Happy Path: Deploy core infra + DAB + Portal; seed data; open dashboard; verify health.
-   - Link out to advanced options only after success.
-2. New guide: “Live Data Path (Portal ↔ DAB ↔ Cosmos)” with:
-   - One diagram, URLs, env vars, and how secrets/MI/RBAC tie together.
-   - Quick checks: curl GraphQL, tail Container Apps logs, validate Cosmos containers, seed rerun.
-3. Consolidate authentication and CI guidance:
-   - “Auth & CI Strategy” page: AAD app (id_token), redirect URIs, OIDC vs SP secret (with CA considerations), GitHub federated credential steps, common AADSTS errors.
-4. Known Issues overhaul (two-layer):
-   - Short “Top 10 Fixes” at the top (copy/paste commands).
-   - Keep long-form recipes below, indexed and cross-linked.
-5. Fix TROUBLESHOOT_AUTH.md (or merge into the Auth & CI Strategy page and delete the empty file).
-6. Ensure all commands are pwsh-friendly and one-per-line blocks with explicit shells; add “copy” ready snippets.
+These recommendations form the baseline 1.0 documentation set for the Azure Stamps Pattern. They are organized to make the project easy to understand and operate for first-time readers and operators.
 
-P1 – Reduce duplication and improve navigation
-7. Unify “Quick Navigation” patterns: pick one table style (columns, icons) and use consistently across README and DOCS.md.
-8. In DOCS.md, move “Progressive Learning Path” to the top and keep “Role-based Paths” right after; de-emphasize long link tables initially.
-9. Add a “Repository Map” page: folders, key files, and where typical tasks live (infra, portal, DAB, functions, scripts).
-10. Add a “Capabilities Matrix”: which enterprise features are implemented, experimental, or roadmap (e.g., Web App Firewall, advanced monitoring, policy-as-code).
-11. Cross-link the Seeder doc from Deployment Guide and Portal User Guide (and from the new Live Data Path).
+Core actions to include in this baseline:
+- Provide a single "Start Here: Minimal Happy Path" that walks a new user through deploy → seed → validate.
+- Add a `docs/LIVE_DATA_PATH.md` that shows the end-to-end Portal ↔ DAB ↔ Cosmos flow with env var names, secrets, and quick checks.
+- Consolidate authentication and CI guidance into an `AUTH_CI_STRATEGY.md` page (AAD app registration, OIDC/GitHub federation, common errors).
+- Improve `docs/KNOWN_ISSUES.md` with a concise "Top 10 Fixes" section and keep long-form recipes indexed below.
+- Standardize code fences to `powershell` and ensure copy-paste safety for Windows users.
 
-P2 – Improve depth and consistency
-12. Create “Secrets & Configuration” guide:
-    - Container-app secrets vs Key Vault references; pros/cons, when to use each.
-    - Required env vars for Portal and DAB; example param files.
-13. Add “RBAC Cheat Sheet”:
-    - Infra (Contributor, AcrPull).
-    - Data-plane (Cosmos DB Built-in Data Contributor).
-    - KV access (Secrets User).
-    - Scope examples and az CLI one-liners.
-14. “Troubleshooting Decision Trees”: small mermaid flowcharts for:
-    - Deployment failures (Bicep/IaC).
-    - Portal shows no data.
-    - DAB won’t start / schema errors.
-    - AAD auth errors (common codes with remediations).
-15. Normalize headings/emoji and code fences; adopt a mini style guide checklist (see below).
-16. Add a short “How We Version” in README (tie into VERSION file and tags).
-17. Provide a “Local Portal & DAB run” quickstart (if feasible), or explicitly say we don’t support local DAB run and why.
+Follow-ups and lower-priority improvements
+- Add a Repository Map and Capabilities Matrix for discoverability.
+- Expand Secrets & Configuration and RBAC cheat sheets with scope examples and CLI snippets.
+- Add troubleshooting decision trees and an E2E runtime diagram in the Architecture Guide.
 
 ---
 
