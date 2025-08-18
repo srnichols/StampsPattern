@@ -4,6 +4,29 @@ All notable changes to the Azure Stamps Pattern project will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-08-17
+
+### Added
+
+- Complete documentation reorganization and cleanup
+- Live Data Path guide for Portal → DAB → Cosmos validation  
+- Repaired Documentation Hub with role-based learning paths
+- Enhanced Quick Navigation in README with proper links
+
+### Changed
+
+- Normalized Parameterization Guide links to HTML anchors across all documentation
+- Improved code fence labeling (mermaid, powershell, jsonc) for better markdown lint compliance
+- Tidied Developer Quickstart with clearer Minimal Happy Path section
+- Fixed broken relative links in documentation
+
+### Fixed
+
+- Removed duplicate content from LIVE_DATA_PATH.md
+- Corrected README Quick Navigation link to point to docs/DOCS.md
+- Resolved corrupted Documentation Hub content
+- Applied markdownlint autofix across repository where safe
+
 ## [1.2.2] - 2025-08-14
 
 ### Added
