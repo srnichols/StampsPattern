@@ -1,5 +1,6 @@
 
-# 📖 Azure Stamps Pattern - Glossary of Key Terms
+# Azure Stamps Pattern - Architecture (ASPA)
+## 📖 Glossary of Key Terms
 
 Key terminology for the Azure Stamps Pattern with plain-language explanations and analogies to speed up onboarding and reduce ambiguity.
 

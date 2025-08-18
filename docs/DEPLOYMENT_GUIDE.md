@@ -1,4 +1,5 @@
-# 🚀 Azure Stamps Pattern - Architecture (ASPA) - Deployment Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🚀 Deployment Guide
 
 Fast, reliable paths to deploy the Azure Stamps Pattern - Architecture (ASPA), from simple two-region setups to enterprise multi‑GEO, covering prerequisites, options, automation, validation, and troubleshooting.
 

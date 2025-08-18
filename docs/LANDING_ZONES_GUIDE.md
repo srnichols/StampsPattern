@@ -1,4 +1,5 @@
-# 🏗️ Azure Stamps Pattern - Azure Landing Zones Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🏗️ Azure Landing Zones Guide
 
 Practical guide to placing Azure Stamps Pattern components within Azure Landing Zones - platform versus workload boundaries, management group hierarchy, policy guardrails, and IaC entry points - so you can scale safely with clear ownership and governance.
 

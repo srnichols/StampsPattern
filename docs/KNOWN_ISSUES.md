@@ -1,4 +1,5 @@
-# 🛠️ Azure Stamps Pattern - Architecture (ASPA) - Known Issues & Workarounds
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🛠️ Known Issues & Workarounds
 
 Practical fixes and workarounds for common issues across development, deployment, and operations of the Azure Stamps Pattern - Architecture (ASPA), aimed at developers, DevOps, ops, and support to restore health fast.
 

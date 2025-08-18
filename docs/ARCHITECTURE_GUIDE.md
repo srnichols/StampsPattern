@@ -1,4 +1,5 @@
-# 🏗️ Azure Stamps Pattern - Architecture (ASPA) - Enterprise Guide (CAF/WAF Compliant)
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🏗️ Enterprise Guide (CAF/WAF Compliant)
 
 ## 🏗 Architecture Overview
 

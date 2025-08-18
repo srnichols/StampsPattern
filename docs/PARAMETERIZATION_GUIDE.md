@@ -1,5 +1,6 @@
 
-# 📋 Parameterization Guide for Azure Stamps Pattern
+# Azure Stamps Pattern - Architecture (ASPA)
+## 📋 Parameterization Guide
 
 Make deployments flexible and reusable with parameters, enable multi-tenant, multi-region, multi-environment support using a single codebase with strong tagging and governance.
 

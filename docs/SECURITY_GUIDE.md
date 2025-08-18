@@ -1,4 +1,5 @@
-# 🛡️ Azure Stamps Pattern - Architecture (ASPA) - Zero-Trust Security Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🛡️ Zero-Trust Security Guide
 
 ---
 

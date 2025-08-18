@@ -1,4 +1,5 @@
-# 🏗️ Azure Stamps Pattern - Deployment Architecture Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 🏗️ Deployment Architecture Guide
 
 This guide explains the two deployment architecture patterns supported by the Azure Stamps Pattern: **Single Subscription** and **Multi-Subscription (Landing Zone)** patterns.
 

@@ -1,5 +1,6 @@
 
-# 💰 Azure Stamps Pattern - Cost Optimization Guide
+# Azure Stamps Pattern - Architecture (ASPA)
+## 💰 Cost Optimization Guide
 
 Practical ways to reduce spend across compute, storage, networking, data, and operations, without sacrificing reliability or security, plus staged cost models and a ready-to-use checklist aligned to CAF/WAF.
 
