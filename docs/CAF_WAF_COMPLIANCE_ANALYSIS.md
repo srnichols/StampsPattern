@@ -1101,6 +1101,39 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 - **Disaster Recovery (DR):** AZs enable rapid failover and business continuity for each CELL.
 - **Flexible Cost/SLA:** You can choose the number of AZs per CELL to balance cost and durability for each tenant or workload, supporting both enterprise and cost-sensitive scenarios.
 
-*Assessment completed on: August 2, 2025*  
-*Assessor: AI Architecture Review Agent*  
-*Version: 1.0*
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 00:55:39 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+
+*Assessment completed on: August 2, 2025*
+*Assessor: AI Architecture Review Agent*
+---
+
+**📝 Document Information**
+- **Version**: 
+- **Last Updated**: 2025-08-18 00:58:22 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 00:58:44 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*

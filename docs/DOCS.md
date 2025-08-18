@@ -191,3 +191,37 @@ If you find gaps or areas for improvement in this documentation:
 **🏗️ Deep Dive**: Want technical details? Explore [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
 
 **🤝 Contribution Guidelines**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to contribute, report issues, or suggest improvements.
+
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 00:55:39 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Information**
+- **Version**: 
+- **Last Updated**: 2025-08-18 00:58:22 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 00:58:44 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
