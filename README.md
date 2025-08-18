@@ -30,6 +30,15 @@ It also aligns with Azure Landing Zones (ALZ), providing clear mapping for platf
 
 **Perfect for organizations building mission-critical SaaS platforms** in healthcare (patient data isolation), financial services (regulatory compliance), government (data sovereignty), or any industry where security, compliance, and scalability are non-negotiable. The pattern provides a proven foundation to accelerate your SaaS journey, reduce architectural risk, and deliver measurable business value from day one.
 
+## Quick reads (leadership & architecture)
+
+If you want the short, executive view or the deep technical analysis up front, these two documents are excellent starting points:
+
+- 💼 Executive Brief for CIOs & Business Leaders: `docs/one-pagers/executive-brief-cio.md` — 10-minute brief that explains the business case, KPIs, phased adoption plan, and unit economics for the Stamps approach.
+- 🧠 Concept Whitepaper: `docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md` — an in-depth analysis covering design principles, data strategy, HA/DR modes, and trade-offs for teams planning architecture or large-scale adoption.
+
+Tip: Skim the Executive Brief for stakeholder alignment, then read the Concept Whitepaper to inform design choices and SLO/cost tradeoffs.
+
 ---
 
 ## 🏗️ Architecture at a Glance
