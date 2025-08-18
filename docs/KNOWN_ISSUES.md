@@ -17,6 +17,20 @@ Practical fixes and workarounds for common issues across development, deployment
 
 ## 🧭 Quick Navigation
 
+## ⚡ Top 10 Quick Fixes (fast triage)
+
+1. [Bicep/template validation failures](#-deployment-issues): run `bicep build <file>.bicep` and `az deployment group what-if --resource-group rg -f <file>.bicep --parameters @params.json`.
+2. [Resource name conflicts](#-deployment-issues): change `resourceToken` in parameters or use uniqueString(resourceGroup().id) to generate prefixes.
+3. [DAB Container crashing or port mismatch](#-deployment-issues): ensure DAB container listens on the same port as container-app `targetPort` (Dockerfile sets ASPNETCORE_URLS).
+4. [Portal timeouts talking to DAB](#-deployment-issues): check DAB ingress FQDN/secret and Container App logs; validate `DAB_GRAPHQL_URL` secret.
+5. [Seeder unauthorized (401/403)](#-development-issues): verify managed identity/service principal has Cosmos DB Data Contributor role and use DefaultAzureCredential locally.
+6. [Key Vault/Secret access denied](#-security-issues): grant the principal `get`/`list` permissions or add the managed identity to Key Vault access policies.
+7. [Cosmos 429 throttling](#-performance-issues): add retry/backoff, scale RU/s or enable autoscale, optimize queries and add composite indexes.
+8. [Functions host exits locally](#-development-issues): build from `AzureArchitecture` and run `func start --verbose`; check `local.settings.json` for emulator endpoints.
+9. [Link checker failures in docs](#-troubleshooting-tools): run `pwsh ./scripts/verify-doc-links.ps1` and fix relative links.
+10. [APIM or premium resource timeouts](#-deployment-issues): allow extended timeouts and monitor provisioning state via `az deployment group show`.
+
+
 | Section | Focus Area | Best for |
 |---------|------------|----------|
 | [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, External ID | DevOps |

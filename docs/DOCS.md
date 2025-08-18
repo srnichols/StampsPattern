@@ -11,40 +11,19 @@ Your single source of truth for the Azure Stamps Pattern, organized by role and 
 - **Newcomers:** Start here to understand the big picture and find your learning path
 - **Developers/DevOps:** Quickly locate deployment, troubleshooting, and implementation guides
 - **Solution Architects:** Access deep-dive technical and compliance documentation
-- **IT Leaders/Compliance:** Review business value, compliance, and operational excellence
-
----
-
-## 🧭 How to Use This Documentation
-
-1. **Start with the [README.md](../README.md)** for a project overview and business value
-2. **Follow the [Progressive Learning Path](#-progressive-learning-path-recommended-for-new-users)** for a logical sequence
 3. **Use the [Quick Start Paths](#-quick-start-paths-by-experience-level)** to jump in based on your experience
 4. **Reference the [Documentation Portfolio](#-documentation-overview)** for a summary of all guides
-5. **Bookmark this page** for future navigation and onboarding
 
 ---
-
-## 🔣 Symbols & Conventions
 
 - External links to Microsoft Learn and other sites: we use HTML anchors with target="_blank" and rel="noopener", plus a small visual cue ↗. Some viewers (GitHub, VS Code preview) may ignore target. Tip: use Ctrl+Click (Windows/Linux) or Cmd+Click (macOS) to open in a new tab.
-- When JSON examples include comments, we use jsonc code fences.
-- Use the standard Mermaid template in docs/mermaid-template.md for consistent theming.
-
 ---
-
-## 🧭 **Progressive Learning Path (Recommended for New Users)**
 
 Follow this sequence to build understanding logically from concepts to implementation:
 
-```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
-    A[📖 1. Concepts] --> B[🏗️ 2. Architecture] 
-    B --> C[🚀 3. Deployment]
-    C --> D[⚙️ 4. Operations]
     D --> E[🛡️ 5. Security]
-    E --> F[✅ 6. Status & Issues]
 ```
 
 ### **Phase 1: Understanding the Basics (30-45 minutes)**
@@ -74,6 +53,7 @@ flowchart LR
 
 | **Framework** | **Score** | **Achievement** |
 |---------------|-----------|-----------------|
+ 4.1 **🔁 [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)** - Management Portal ↔ DAB ↔ Cosmos quick checks
 | **CAF: Governance** | 95/100 | **Industry Leading** |
 | **WAF: Security** | 96/100 | **World Class** |
 | **WAF: Operational Excellence** | 95/100 | **AI-Powered** |
@@ -158,6 +138,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 ### Management Portal
 - 📘 User Guide: [MANAGEMENT_PORTAL_USER_GUIDE.md](./MANAGEMENT_PORTAL_USER_GUIDE.md)
+ - 🔁 Live Data Path: [LIVE_DATA_PATH.md](./LIVE_DATA_PATH.md)
 
 ### Enterprise Alignment
 - 🧭 CAF/WAF Compliance Analysis: [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
@@ -167,6 +148,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 🔐 Developer Security Guide: [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md)
 - �‍💻 Developer Quickstart: [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md)
 - �🖊️ Mermaid Template (light blue): [mermaid-template.md](./mermaid-template.md)
+ - 🔐 Auth & CI Strategy: [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md)
  
 
 ### One-Pagers & Checklists

@@ -152,24 +152,47 @@ flowchart TB
 
 Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) for framework mapping and scoring, then map implementation to your enterprise platform using the [Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md).
 
+## 🚦 Start Here — Minimal Happy Path (see live data)
+
+Follow these exact steps to deploy a minimal environment, seed representative data, and confirm the Management Portal shows live data via DAB/GraphQL.
+
+1. Verify prerequisites: Azure CLI (latest), PowerShell 7+, Bicep CLI, .NET 6+.
+2. Clone the repo and cd to the workspace root.
+3. Deploy a smoke/lab environment (example):
+     - PowerShell (recommended):
+         ```powershell
+         pwsh -File ./scripts/deploy-stamps.ps1 -ResourceGroupName rg-stamps-smoke -Location eastus -TenancyModel shared
+         ```
+     - Or manual Bicep:
+         ```powershell
+         az group create -n rg-stamps-smoke -l eastus
+         az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --parameters @AzureArchitecture/examples/main.sample.smoke.json
+         ```
+4. Wait for deployment outputs and note the Management Portal URL and the DAB Container App info.
+5. Seed baseline data using the provided seeder or script (see `AzureArchitecture/Seeder` or repo scripts).
+6. Validate DAB GraphQL is healthy: POST a simple query to the DAB endpoint (see `docs/LIVE_DATA_PATH.md`).
+7. Open the Management Portal URL, sign in, and verify Tenants/Cells appear.
+8. If the portal shows no data: check logs for `ca-stamps-dab` (DAB) and `ca-stamps-portal` (Portal); confirm DAB GraphQL responds.
+9. For auth issues or CI/OIDC guidance, see `docs/AUTH_CI_STRATEGY.md`.
+10. When happy, continue with the full [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) for production hardening.
+
 ## 🧭 Quick Navigation
 
-- [📚 Documentation Hub](./docs/DOCS.md)
-- [📄 Executive Brief (CIO)](./docs/one-pagers/executive-brief-cio.md)
-- [👩‍💻 Developer Quickstart](./docs/DEVELOPER_QUICKSTART.md)
-- [🧪 Run Locally (Functions + Emulator)](./docs/DEPLOYMENT_GUIDE.md#-run-locally-functions--emulator)
-- [🏗️ Architecture Guide](./docs/ARCHITECTURE_GUIDE.md)
-- [🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
-- [⚙️ Operations Guide](./docs/OPERATIONS_GUIDE.md)
-- [🛡️ Security Guide](./docs/SECURITY_GUIDE.md)
-- [🏆 CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md)
-- [🌐 Azure Landing Zones Guide](./docs/LANDING_ZONES_GUIDE.md)
-- [🆕 What’s New](./docs/releases/v0.9.0-local-run.md)
-- [Known Issues](./docs/KNOWN_ISSUES.md)
-- [Contributing](#contributing)
-- [Support](#support--community)
+ - [📈 Documentation Improvements Plan](./docs/DOCUMENTATION_IMPROVEMENTS.md)
 
----
+
+
+## �️ Documentation improvements (P0)
+
+We maintain a short, actionable documentation improvements plan focused on reducing first-time user friction. The P0 items (first priority) are:
+
+- Add a 10-step "Start Here" Minimal Happy Path (done — see above)
+- NEW: `docs/LIVE_DATA_PATH.md` — a single page describing the Portal → DAB → Cosmos live-data flow and quick checks
+- Known Issues: add a "Top 10 Fixes" quick triage section
+- Consolidate auth and CI guidance into `docs/AUTH_CI_STRATEGY.md`
+- Ensure all command blocks are PowerShell-friendly and copy-paste safe
+
+See the full recommendations and backlog: [Documentation Improvement Recommendations](./docs/DOCUMENTATION_IMPROVEMENTS.md)
 
 ## 💡 Why This Project?
 
