@@ -19,15 +19,18 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
 | [🏗 Architecture Overview](#-architecture-overview) | High-level design and hierarchy | All readers |
-| [🏛 Architecture Layers](#-architecture-layers) | Component breakdown | Architects, Devs |
+| [�️ Flexible Tenancy Models](#-flexible-tenancy-models) | Shared vs dedicated CELLs | Architects, IT Leaders |
+| [🔄 Availability Zone Architecture](#-availability-zone-architecture) | Zone resilience and HA/DR | Architects, DevOps |
+| [�🏛 Architecture Layers](#-architecture-layers) | Component breakdown | Architects, Devs |
 | [🚀 Traffic Flow](#-traffic-flow-architecture) | Request/data flow | DevOps, Network |
+| [🏗️ Deployment Architecture](#-deployment-architecture) | Template orchestration | DevOps |
 | [🔒 Security Architecture](#-security-architecture) | Multi-layer security | Security Teams |
 | [📊 Monitoring & Observability](#-monitoring--observability) | Observability strategy | Operations |
 | [🌱 Scaling Strategies](#-scaling-strategies) | Growth/expansion | IT Leaders |
+| [🚨 Disaster Recovery](#-disaster-recovery) | Multi-region redundancy | Operations, SRE |
+| [💰 Cost Optimization](#-cost-optimization) | Right-sizing strategies | IT Leaders, Finance |
 
 ---
-
-## 🧭 Quick Navigation
 
 ### 🌍 **Visual: Global Architecture Hierarchy with Availability Zones**
 

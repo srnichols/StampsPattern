@@ -47,14 +47,16 @@ Practical fixes and workarounds for common issues across development, deployment
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🚀 Deployment Issues](#deployment-issues) | Bicep, naming, External ID | DevOps |
-| [🔧 Development Issues](#development-issues) | Emulator, Redis, local dev | Developers |
-| [⚡ Performance Issues](#performance-issues) | JWT, Cosmos DB, scaling | DevOps |
-| [🔐 Security Issues](#security-issues) | Defender, Key Vault | Security, DevOps |
-| [🗃️ Database Issues](#database-issues) | SQL, timeouts, pooling | DevOps |
-| [🧰 Operational Issues](#operational-issues) | Health checks, memory | Operations |
-| [🔍 Troubleshooting Tools](#troubleshooting-tools) | CLI, Kusto, logs | All readers |
-| [📞 Getting Help](#getting-help) | Support, escalation | All readers |
+| [⚡ Top 10 Quick Fixes](#-top-10-quick-fixes-fast-triage) | Fast triage | All readers |
+| [🔁 Troubleshooting Playbooks](#-troubleshooting-playbooks-decision-trees) | Decision trees | All readers |
+| [🚀 Deployment Issues](#-deployment-issues) | Bicep, naming, External ID | DevOps |
+| [🔧 Development Issues](#-development-issues) | Emulator, Redis, local dev | Developers |
+| [⚡ Performance Issues](#-performance-issues) | JWT, Cosmos DB, scaling | DevOps |
+| [🔐 Security Issues](#-security-issues) | Defender, Key Vault | Security, DevOps |
+| [🗃️ Database Issues](#-database-issues) | SQL, timeouts, pooling | DevOps |
+| [🧰 Operational Issues](#-operational-issues) | Health checks, memory | Operations |
+| [🔍 Troubleshooting Tools](#-troubleshooting-tools) | CLI, Kusto, logs | All readers |
+| [📞 Getting Help](#-getting-help) | Support, escalation | All readers |
 
 ---
 

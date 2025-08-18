@@ -23,20 +23,19 @@ Key terminology for the Azure Stamps Pattern with plain-language explanations an
 
 | Section | Focus Area | Best for |
 |---------|------------|----------|
-| [🏗️ Architectural Terms](#architectural-terms) | Core Stamps concepts | All readers |
-| [🏠 Tenancy Models](#tenancy-models) | Multi-tenancy, assignment | Architects, DevOps |
-| [🔒 Security Terms](#security-terms) | Security, identity, endpoints | Security, DevOps |
-| [⚡ Performance & Scaling](#performance-&-scaling) | Caching, scaling, load balancing | DevOps |
-| [🗄️ Data & Storage](#data-&-storage) | Cosmos DB, partitioning, TTL | Architects, Devs |
-| [🌐 Networking & Routing](#networking-&-routing) | Global vs regional routing, private connectivity | Architects, DevOps |
-| [🔗 Integration & Messaging](#integration-&-messaging) | Queues and messaging patterns | Devs, DevOps |
-| [🛠️ Infrastructure & DevOps](#infrastructure-&-devops) | IaC, Bicep, CI/CD | DevOps |
-| [📊 Monitoring & Operations](#monitoring-&-operations) | Observability, metrics | Operations |
-| [🛠️ Infrastructure & DevOps](#infrastructure-&-devops) | IaC, Bicep, CI/CD | DevOps |
-| [💰 Cost & Business](#cost-&-business) | TCO, optimization | IT Leaders |
-| [🏛️ Compliance & Governance](#compliance-&-governance) | CAF, WAF, standards | Compliance |
-| [🚀 Getting Started Tips](#getting-started-tips) | Learning path, resources | Newcomers |
-| [📞 Need Help?](#need-help) | Support, troubleshooting | All readers |
+| [🏗️ Architectural Terms](#-architectural-terms) | Core Stamps concepts | All readers |
+| [🏠 Tenancy Models](#-tenancy-models) | Multi-tenancy, assignment | Architects, DevOps |
+| [🔒 Security Terms](#-security-terms) | Security, identity, endpoints | Security, DevOps |
+| [⚡ Performance & Scaling](#-performance--scaling-terms) | Caching, scaling, load balancing | DevOps |
+| [� Data & Storage](#-data--storage-terms) | Cosmos DB, partitioning, TTL | Architects, Devs |
+| [🌐 Networking & Routing](#-networking--routing-terms) | Global vs regional routing, private connectivity | Architects, DevOps |
+| [🔗 Integration & Messaging](#-integration--messaging-terms) | Queues and messaging patterns | Devs, DevOps |
+| [🛠️ Infrastructure & DevOps](#-infrastructure--devops-terms) | IaC, Bicep, CI/CD | DevOps |
+| [📊 Monitoring & Operations](#-monitoring--operations-terms) | Observability, metrics | Operations |
+| [ Cost & Business](#-cost--business-terms) | TCO, optimization | IT Leaders |
+| [🏛️ Compliance & Governance](#-compliance--governance-terms) | CAF, WAF, standards | Compliance |
+| [🚀 Getting Started Tips](#-getting-started-tips) | Learning path, resources | Newcomers |
+| [📞 Need Help?](#-need-help) | Support, troubleshooting | All readers |
 
 ---
 
