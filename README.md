@@ -184,16 +184,6 @@ Quick live-data reference: if you want to verify the Management Portal shows liv
 
 
 
-## 📚 Documentation baseline
-
-We've rebaselined the documentation to make the getting-started experience fast for new readers. Key items included in this baseline:
-
-- A single **Start Here — Minimal Happy Path** with exact steps to deploy, seed, and validate the Management Portal shows live data.
-- A dedicated **Live Data Path** page (`docs/LIVE_DATA_PATH.md`) that walks through Portal → DAB → Cosmos validation and quick smoke checks.
-- Consolidated authentication, secrets, and RBAC guidance for operators (`docs/AUTH_CI_STRATEGY.md`, `docs/SECRETS_AND_CONFIG.md`, `docs/RBAC_CHEATSHEET.md`).
-- An **Operations Guide** with incident playbooks and a concise Logs & Quick Commands panel for fast triage.
-
-For the full improvement backlog and rationale (including longer-term items), see the master plan: `docs/DOCS.md`.
 
 ## 💡 Why This Project?
 
