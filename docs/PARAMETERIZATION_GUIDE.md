@@ -393,3 +393,26 @@ The orchestrator sets `diagnosticsMode` automatically based on `environmentProfi
 - <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging" target="_blank" rel="noopener">Azure Naming Conventions</a>
 - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
+
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:02:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:03:41 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*

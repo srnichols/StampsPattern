@@ -121,6 +121,30 @@ $filesToUpdate = @(
         NewFooter = $footerTemplate
         Description = "Known Issues"
     }
+    @{
+        Path = "docs\LANDING_ZONES_GUIDE.md"
+        OldPattern = "---\s*\*\*📝 Document Information\*\*.*?documentation suite\*"
+        NewFooter = $footerTemplate
+        Description = "Landing Zones Guide"
+    }
+    @{
+        Path = "docs\NAMING_CONVENTIONS_GUIDE.md"
+        OldPattern = "---\s*\*\*📝 Document Information\*\*.*?documentation suite\*"
+        NewFooter = $footerTemplate
+        Description = "Naming Conventions Guide"
+    }
+    @{
+        Path = "docs\PARAMETERIZATION_GUIDE.md"
+        OldPattern = "---\s*\*\*📝 Document Information\*\*.*?documentation suite\*"
+        NewFooter = $footerTemplate
+        Description = "Parameterization Guide"
+    }
+    @{
+        Path = "docs\GLOSSARY.md"
+        OldPattern = "---\s*\*\*📝 Document Information\*\*.*?documentation suite\*"
+        NewFooter = $footerTemplate
+        Description = "Glossary"
+    }
 )
 
 $updatedCount = 0

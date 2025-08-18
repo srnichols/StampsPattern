@@ -513,6 +513,25 @@ README → ARCHITECTURE → DEPLOYMENT → SECURITY → OPERATIONS → KNOWN_ISS
 
 ---
 
-*This glossary is maintained alongside the documentation. Last updated: August 2025*
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:02:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
 
 > Authoring tip: When code examples contain comments, use `jsonc` code fences. For diagrams, prefer the standard Mermaid template in `docs/mermaid-template.md`.
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:03:41 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
