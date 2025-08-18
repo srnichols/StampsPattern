@@ -228,4 +228,12 @@ Expose and thread these parameters through main → regional/stamp layers:
 
 ---
 
-*Last updated: August 2025*
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:08:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*

@@ -651,3 +651,15 @@ flowchart TD
 **💰 Remember:** Cost optimization is not a one-time activity, it's an ongoing practice that should be integrated into your operational processes for maximum effectiveness!
 
 **🚀 Ready to start optimizing?** Begin with the 5-minute assessment above, then follow the 30-day plan for systematic cost reduction.
+
+---
+
+**📝 Document Information**
+- **Version**: 1.3.0
+- **Last Updated**: 2025-08-18 01:08:00 UTC  
+- **Status**: Current
+- **Next Review**: 2025-11
+
+---
+
+*Part of the [Azure Stamps Pattern](../README.md) documentation suite*
