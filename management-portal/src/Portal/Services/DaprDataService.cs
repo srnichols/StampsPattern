@@ -1,5 +1,6 @@
 using Dapr.Client;
 using System.Text.Json;
+using System.Diagnostics;
 using Stamps.ManagementPortal.Models;
 
 namespace Stamps.ManagementPortal.Services;
@@ -13,6 +14,7 @@ public class DaprDataService : IDataService
     private readonly DaprClient _daprClient;
     private readonly IDataService _innerDataService;
     private readonly ILogger<DaprDataService> _logger;
+    private static readonly ActivitySource ActivitySource = new("DaprDataService");
     
     public DaprDataService(
         DaprClient daprClient, 
@@ -24,43 +26,37 @@ public class DaprDataService : IDataService
         _logger = logger;
     }
 
-    public async Task<List<Tenant>> GetTenantsAsync()
+    public async Task<IReadOnlyList<Tenant>> GetTenantsAsync(CancellationToken ct = default)
     {
-        using var activity = System.Diagnostics.Activity.StartActivity("DaprDataService.GetTenants");
+        using var activity = ActivitySource.StartActivity("DaprDataService.GetTenants");
         
         try
         {
             // Try to get from Dapr state store first (cache)
-            var cachedTenants = await _daprClient.GetStateAsync<List<Tenant>>("cache-store", "tenants");
+            var cachedTenants = await _daprClient.GetStateAsync<List<Tenant>>("cache-store", "tenants", cancellationToken: ct);
             if (cachedTenants != null && cachedTenants.Any())
             {
                 _logger.LogInformation("Retrieved {Count} tenants from cache", cachedTenants.Count);
                 activity?.SetTag("cache.hit", "true");
-                return cachedTenants;
+                return cachedTenants.AsReadOnly();
             }
 
             activity?.SetTag("cache.hit", "false");
             
-            // Fallback to GraphQL service via Dapr service invocation
-            _logger.LogInformation("Cache miss, invoking DAB service via Dapr");
-            
-            var tenants = await _daprClient.InvokeMethodAsync<List<Tenant>>(
-                "dab", 
-                "tenants",
-                new HttpInvocationOptions
-                {
-                    Timeout = TimeSpan.FromSeconds(30)
-                });
+            // Fallback to inner service
+            _logger.LogInformation("Cache miss, falling back to inner service");
+            var tenants = await _innerDataService.GetTenantsAsync(ct);
 
-            // Cache the results
-            if (tenants?.Any() == true)
+            // Cache the results if we have a list
+            if (tenants is List<Tenant> tenantList && tenantList.Any())
             {
-                await _daprClient.SaveStateAsync("cache-store", "tenants", tenants, 
-                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "300" }); // 5 minute cache
-                _logger.LogInformation("Cached {Count} tenants", tenants.Count);
+                await _daprClient.SaveStateAsync("cache-store", "tenants", tenantList, 
+                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "300" }, // 5 minute cache
+                    cancellationToken: ct);
+                _logger.LogInformation("Cached {Count} tenants", tenantList.Count);
             }
 
-            return tenants ?? new List<Tenant>();
+            return tenants;
         }
         catch (Exception ex)
         {
@@ -69,46 +65,41 @@ public class DaprDataService : IDataService
             activity?.SetTag("error.message", ex.Message);
             
             // Fallback to direct service call
-            _logger.LogWarning("Falling back to direct GraphQL service call");
-            return await _innerDataService.GetTenantsAsync();
+            _logger.LogWarning("Falling back to direct service call");
+            return await _innerDataService.GetTenantsAsync(ct);
         }
     }
 
-    public async Task<List<Cell>> GetCellsAsync()
+    public async Task<IReadOnlyList<Cell>> GetCellsAsync(CancellationToken ct = default)
     {
-        using var activity = System.Diagnostics.Activity.StartActivity("DaprDataService.GetCells");
+        using var activity = ActivitySource.StartActivity("DaprDataService.GetCells");
         
         try
         {
             // Try cache first
-            var cachedCells = await _daprClient.GetStateAsync<List<Cell>>("cache-store", "cells");
+            var cachedCells = await _daprClient.GetStateAsync<List<Cell>>("cache-store", "cells", cancellationToken: ct);
             if (cachedCells != null && cachedCells.Any())
             {
                 _logger.LogInformation("Retrieved {Count} cells from cache", cachedCells.Count);
                 activity?.SetTag("cache.hit", "true");
-                return cachedCells;
+                return cachedCells.AsReadOnly();
             }
 
             activity?.SetTag("cache.hit", "false");
             
-            // Service invocation via Dapr
-            var cells = await _daprClient.InvokeMethodAsync<List<Cell>>(
-                "dab", 
-                "cells",
-                new HttpInvocationOptions
-                {
-                    Timeout = TimeSpan.FromSeconds(30)
-                });
+            // Fallback to inner service
+            var cells = await _innerDataService.GetCellsAsync(ct);
 
-            // Cache results
-            if (cells?.Any() == true)
+            // Cache results if we have a list
+            if (cells is List<Cell> cellList && cellList.Any())
             {
-                await _daprClient.SaveStateAsync("cache-store", "cells", cells,
-                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "300" });
-                _logger.LogInformation("Cached {Count} cells", cells.Count);
+                await _daprClient.SaveStateAsync("cache-store", "cells", cellList,
+                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "300" },
+                    cancellationToken: ct);
+                _logger.LogInformation("Cached {Count} cells", cellList.Count);
             }
 
-            return cells ?? new List<Cell>();
+            return cells;
         }
         catch (Exception ex)
         {
@@ -117,45 +108,40 @@ public class DaprDataService : IDataService
             activity?.SetTag("error.message", ex.Message);
             
             // Fallback to direct service call
-            return await _innerDataService.GetCellsAsync();
+            return await _innerDataService.GetCellsAsync(ct);
         }
     }
 
-    public async Task<List<Operation>> GetOperationsAsync()
+    public async Task<IReadOnlyList<Operation>> GetOperationsAsync(CancellationToken ct = default)
     {
-        using var activity = System.Diagnostics.Activity.StartActivity("DaprDataService.GetOperations");
+        using var activity = ActivitySource.StartActivity("DaprDataService.GetOperations");
         
         try
         {
             // Try cache first
-            var cachedOps = await _daprClient.GetStateAsync<List<Operation>>("cache-store", "operations");
+            var cachedOps = await _daprClient.GetStateAsync<List<Operation>>("cache-store", "operations", cancellationToken: ct);
             if (cachedOps != null && cachedOps.Any())
             {
                 _logger.LogInformation("Retrieved {Count} operations from cache", cachedOps.Count);
                 activity?.SetTag("cache.hit", "true");
-                return cachedOps;
+                return cachedOps.AsReadOnly();
             }
 
             activity?.SetTag("cache.hit", "false");
             
-            // Service invocation via Dapr
-            var operations = await _daprClient.InvokeMethodAsync<List<Operation>>(
-                "dab", 
-                "operations",
-                new HttpInvocationOptions
-                {
-                    Timeout = TimeSpan.FromSeconds(30)
-                });
+            // Fallback to inner service
+            var operations = await _innerDataService.GetOperationsAsync(ct);
 
-            // Cache results
-            if (operations?.Any() == true)
+            // Cache results if we have a list
+            if (operations is List<Operation> opList && opList.Any())
             {
-                await _daprClient.SaveStateAsync("cache-store", "operations", operations,
-                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "180" }); // 3 minute cache
-                _logger.LogInformation("Cached {Count} operations", operations.Count);
+                await _daprClient.SaveStateAsync("cache-store", "operations", opList,
+                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "180" }, // 3 minute cache
+                    cancellationToken: ct);
+                _logger.LogInformation("Cached {Count} operations", opList.Count);
             }
 
-            return operations ?? new List<Operation>();
+            return operations;
         }
         catch (Exception ex)
         {
@@ -164,56 +150,231 @@ public class DaprDataService : IDataService
             activity?.SetTag("error.message", ex.Message);
             
             // Fallback to direct service call
-            return await _innerDataService.GetOperationsAsync();
+            return await _innerDataService.GetOperationsAsync(ct);
         }
     }
 
-    public async Task<Tenant?> GetTenantAsync(string id)
+    // CRUD Operations - Pass through to inner service with tracing
+    public async Task<Tenant> CreateTenantAsync(Tenant tenant, CancellationToken ct = default)
     {
-        using var activity = System.Diagnostics.Activity.StartActivity("DaprDataService.GetTenant");
+        using var activity = ActivitySource.StartActivity("DaprDataService.CreateTenant");
+        activity?.SetTag("tenant.id", tenant.Id);
+        
+        try
+        {
+            var result = await _innerDataService.CreateTenantAsync(tenant, ct);
+            // Invalidate cache after creation
+            await InvalidateCacheAsync("tenants", ct);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating tenant {TenantId}", tenant.Id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task<Tenant> UpdateTenantAsync(Tenant tenant, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.UpdateTenant");
+        activity?.SetTag("tenant.id", tenant.Id);
+        
+        try
+        {
+            var result = await _innerDataService.UpdateTenantAsync(tenant, ct);
+            // Invalidate cache after update
+            await InvalidateCacheAsync("tenants", ct);
+            await InvalidateCacheAsync($"tenant-{tenant.Id}", ct);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating tenant {TenantId}", tenant.Id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task DeleteTenantAsync(string id, string partitionKey, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.DeleteTenant");
         activity?.SetTag("tenant.id", id);
         
         try
         {
-            // Try cache first
-            var cacheKey = $"tenant-{id}";
-            var cachedTenant = await _daprClient.GetStateAsync<Tenant>("cache-store", cacheKey);
-            if (cachedTenant != null)
-            {
-                _logger.LogInformation("Retrieved tenant {TenantId} from cache", id);
-                activity?.SetTag("cache.hit", "true");
-                return cachedTenant;
-            }
-
-            activity?.SetTag("cache.hit", "false");
-            
-            // Service invocation via Dapr
-            var tenant = await _daprClient.InvokeMethodAsync<Tenant>(
-                "dab", 
-                $"tenants/{id}",
-                new HttpInvocationOptions
-                {
-                    Timeout = TimeSpan.FromSeconds(30)
-                });
-
-            // Cache result
-            if (tenant != null)
-            {
-                await _daprClient.SaveStateAsync("cache-store", cacheKey, tenant,
-                    metadata: new Dictionary<string, string> { ["ttlInSeconds"] = "600" }); // 10 minute cache
-                _logger.LogInformation("Cached tenant {TenantId}", id);
-            }
-
-            return tenant;
+            await _innerDataService.DeleteTenantAsync(id, partitionKey, ct);
+            // Invalidate cache after deletion
+            await InvalidateCacheAsync("tenants", ct);
+            await InvalidateCacheAsync($"tenant-{id}", ct);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving tenant {TenantId} via Dapr", id);
+            _logger.LogError(ex, "Error deleting tenant {TenantId}", id);
             activity?.SetTag("error", "true");
-            activity?.SetTag("error.message", ex.Message);
-            
-            // Fallback to direct service call
-            return await _innerDataService.GetTenantAsync(id);
+            throw;
+        }
+    }
+
+    public async Task<Cell> CreateCellAsync(Cell cell, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.CreateCell");
+        activity?.SetTag("cell.id", cell.Id);
+        
+        try
+        {
+            var result = await _innerDataService.CreateCellAsync(cell, ct);
+            await InvalidateCacheAsync("cells", ct);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating cell {CellId}", cell.Id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task<Cell> UpdateCellAsync(Cell cell, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.UpdateCell");
+        activity?.SetTag("cell.id", cell.Id);
+        
+        try
+        {
+            var result = await _innerDataService.UpdateCellAsync(cell, ct);
+            await InvalidateCacheAsync("cells", ct);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating cell {CellId}", cell.Id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task DeleteCellAsync(string id, string partitionKey, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.DeleteCell");
+        activity?.SetTag("cell.id", id);
+        
+        try
+        {
+            await _innerDataService.DeleteCellAsync(id, partitionKey, ct);
+            await InvalidateCacheAsync("cells", ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting cell {CellId}", id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task<Operation> CreateOperationAsync(Operation op, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.CreateOperation");
+        activity?.SetTag("operation.id", op.Id);
+        
+        try
+        {
+            var result = await _innerDataService.CreateOperationAsync(op, ct);
+            await InvalidateCacheAsync("operations", ct);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating operation {OperationId}", op.Id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task<Operation> UpdateOperationAsync(Operation op, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.UpdateOperation");
+        activity?.SetTag("operation.id", op.Id);
+        
+        try
+        {
+            var result = await _innerDataService.UpdateOperationAsync(op, ct);
+            await InvalidateCacheAsync("operations", ct);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating operation {OperationId}", op.Id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task DeleteOperationAsync(string id, string partitionKey, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.DeleteOperation");
+        activity?.SetTag("operation.id", id);
+        
+        try
+        {
+            await _innerDataService.DeleteOperationAsync(id, partitionKey, ct);
+            await InvalidateCacheAsync("operations", ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting operation {OperationId}", id);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task<bool> ReserveDomainAsync(string domain, string ownerTenantId, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.ReserveDomain");
+        activity?.SetTag("domain", domain);
+        activity?.SetTag("owner.tenant.id", ownerTenantId);
+        
+        try
+        {
+            return await _innerDataService.ReserveDomainAsync(domain, ownerTenantId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error reserving domain {Domain} for tenant {TenantId}", domain, ownerTenantId);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    public async Task ReleaseDomainAsync(string domain, CancellationToken ct = default)
+    {
+        using var activity = ActivitySource.StartActivity("DaprDataService.ReleaseDomain");
+        activity?.SetTag("domain", domain);
+        
+        try
+        {
+            await _innerDataService.ReleaseDomainAsync(domain, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error releasing domain {Domain}", domain);
+            activity?.SetTag("error", "true");
+            throw;
+        }
+    }
+
+    // Helper method to invalidate cache entries
+    private async Task InvalidateCacheAsync(string key, CancellationToken ct = default)
+    {
+        try
+        {
+            await _daprClient.DeleteStateAsync("cache-store", key, cancellationToken: ct);
+            _logger.LogDebug("Invalidated cache key: {Key}", key);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to invalidate cache key: {Key}", key);
+            // Don't throw - cache invalidation failure shouldn't break the operation
         }
     }
 

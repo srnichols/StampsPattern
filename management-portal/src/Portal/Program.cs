@@ -62,7 +62,7 @@ if (builder.Environment.IsProduction())
             .RequireAuthenticatedUser()
             .Build();
         options.Filters.Add(new AuthorizeFilter(policy));
-    });
+    }).AddDapr();
     
     builder.Services.AddRazorPages()
         .AddMicrosoftIdentityUI();
@@ -70,6 +70,7 @@ if (builder.Environment.IsProduction())
 else
 {
     builder.Services.AddRazorPages();
+    builder.Services.AddControllers().AddDapr();
 }
 
 builder.Services.AddServerSideBlazor();
@@ -80,27 +81,12 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["ApplicationInsights:Connec
     builder.Services.AddApplicationInsightsTelemetry();
 }
 
-// Configure Dapr client and services
-builder.Services.AddDapr(daprClientBuilder =>
+// Configure OpenTelemetry for distributed tracing (simplified)
+if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
 {
-    var daprHttpPort = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500";
-    var daprGrpcPort = Environment.GetEnvironmentVariable("DAPR_GRPC_PORT") ?? "50001";
-    daprClientBuilder.UseHttpEndpoint($"http://localhost:{daprHttpPort}")
-                    .UseGrpcEndpoint($"http://localhost:{daprGrpcPort}");
-});
-
-// Configure OpenTelemetry for distributed tracing
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracingBuilder => tracingBuilder
-        .AddAspNetCoreInstrumentation()
-        .AddSource("Dapr.Client")
-        .AddConsoleExporter() // For debugging
-        .AddAzureMonitorTraceExporter()) // For Azure Monitor
-    .WithMetrics(metricsBuilder => metricsBuilder
-        .AddAspNetCoreInstrumentation()
-        .AddMeter("Dapr.Client")
-        .AddConsoleExporter() // For debugging
-        .AddAzureMonitorMetricExporter()); // For Azure Monitor
+    // Basic Azure Monitor integration - will be enhanced later
+    builder.Services.AddApplicationInsightsTelemetry();
+}
 
 // Configure GraphQL client
 builder.Services.AddHttpClient("GraphQL", (sp, client) =>
