@@ -6,15 +6,18 @@ public class InMemoryDataService : IDataService
 {
     private static readonly List<Tenant> Tenants = new()
     {
-        // Empty - no seeded data, use only real discovered data
+        new("contoso","Contoso","contoso.com","enterprise","active","cell-eastus-1"),
+        new("fabrikam","Fabrikam","fabrikam.io","smb","active","cell-westus-1")
     };
     private static readonly List<Cell> Cells = new()
     {
-        // Empty - no seeded data, use only real discovered data from westus2/westus3
+        new("cell-eastus-1","eastus","1","healthy",60,100),
+        new("cell-westus-1","westus","2","healthy",40,100)
     };
     private static readonly List<Operation> Operations = new()
     {
-        // Empty - no seeded data, use only real data
+        new("op-001","contoso","migrate","running", DateTimeOffset.UtcNow.AddMinutes(-12)),
+        new("op-002","fabrikam","suspend","completed", DateTimeOffset.UtcNow.AddDays(-1))
     };
 
     public Task<IReadOnlyList<Tenant>> GetTenantsAsync(CancellationToken ct = default) => Task.FromResult((IReadOnlyList<Tenant>)Tenants.ToList());
@@ -81,7 +84,7 @@ public class InMemoryDataService : IDataService
     // Catalogs / Domain reservations (in-memory)
     private static readonly HashSet<string> ReservedDomains = new(StringComparer.OrdinalIgnoreCase)
     {
-        // Empty - no seeded domains, use only real data
+        "contoso.com", "fabrikam.io"
     };
 
     public Task<bool> ReserveDomainAsync(string domain, string ownerTenantId, CancellationToken ct = default)

@@ -20,27 +20,9 @@
     <span class="hint">CRUD requires GraphQL/DAB to be enabled</span>
 </EditForm>
 
-@if (loading)
+@if (cells is null)
 {
     <p>Loading...</p>
-}
-else if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-warning">
-        <strong>Data Service Unavailable:</strong> @errorMessage
-        <br />
-        <small>This feature requires the DAB (Data API Builder) service to be running and properly configured.</small>
-        <br />
-        <button class="btn btn-link" @onclick="RetryLoadAsync">Retry</button>
-    </div>
-}
-else if (cells is null || !cells.Any())
-{
-    <div class="alert alert-info">
-        <strong>No Cells Found</strong>
-        <br />
-        <small>Create your first cell using the form above.</small>
-    </div>
 }
 else
 {
@@ -70,8 +52,6 @@ else
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Cell>? cells;
     private CellEdit edit = new();
-    private bool loading = true;
-    private string? errorMessage;
 
     class CellEdit
     {
@@ -82,68 +62,28 @@ else
         public int CapacityUsed { get; set; }
         public int CapacityTotal { get; set; }
     }
-    
     protected override async Task OnInitializedAsync()
     {
-        await LoadCellsAsync();
-    }
-
-    async Task LoadCellsAsync()
-    {
-        try
-        {
-            loading = true;
-            errorMessage = null;
-            cells = await Data.GetCellsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            cells = new List<Stamps.ManagementPortal.Models.Cell>();
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-
-    async Task RetryLoadAsync()
-    {
-        await LoadCellsAsync();
+        cells = await Data.GetCellsAsync();
     }
 
     void Edit(Stamps.ManagementPortal.Models.Cell c)
         => edit = new CellEdit { Id = c.Id, Region = c.Region, AvailabilityZone = c.AvailabilityZone, Status = c.Status, CapacityUsed = c.CapacityUsed, CapacityTotal = c.CapacityTotal };
-    
     Task NewAsync() { edit = new CellEdit(); return Task.CompletedTask; }
 
     async Task OnSaveAsync()
     {
-        try
-        {
-            var rec = new Stamps.ManagementPortal.Models.Cell(edit.Id, edit.Region, edit.AvailabilityZone, edit.Status, edit.CapacityUsed, edit.CapacityTotal);
-            if (cells?.Any(x => x.Id == rec.Id) == true)
-                await Data.UpdateCellAsync(rec);
-            else
-                await Data.CreateCellAsync(rec);
-            await LoadCellsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Save failed: {ex.Message}";
-        }
+        var rec = new Stamps.ManagementPortal.Models.Cell(edit.Id, edit.Region, edit.AvailabilityZone, edit.Status, edit.CapacityUsed, edit.CapacityTotal);
+        if (cells?.Any(x => x.Id == rec.Id) == true)
+            await Data.UpdateCellAsync(rec);
+        else
+            await Data.CreateCellAsync(rec);
+        cells = await Data.GetCellsAsync();
     }
 
     async Task DeleteAsync(Stamps.ManagementPortal.Models.Cell c)
     {
-        try
-        {
-            await Data.DeleteCellAsync(c.Id, c.Id);
-            await LoadCellsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Delete failed: {ex.Message}";
-        }
+        await Data.DeleteCellAsync(c.Id, c.Id);
+        cells = await Data.GetCellsAsync();
     }
 }

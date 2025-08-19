@@ -1,109 +1,57 @@
-
 <!-- Brand -->
-<div class="sidebar-brand mb-4 @(IsCollapsed ? "collapsed" : "")">
-    @if (!IsCollapsed)
-    {
-        <h4 class="text-white mb-0">🏗️ Stamps Portal</h4>
-        <small class="text-white-50">Multi-Tenant SaaS Platform</small>
-    }
-    else
-    {
-        <div class="text-center">
-            <span class="fs-4">🏗️</span>
-        </div>
-    }
+<div class="sidebar-brand mb-4">
+    <h4 class="text-white mb-0">🏗️ Stamps Portal</h4>
+    <small class="text-white-50">Multi-Tenant SaaS Platform</small>
 </div>
 
 <!-- Navigation Links -->
 <ul class="nav flex-column">
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/" title="Dashboard">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/" Match="NavLinkMatch.All">
             <i class="bi bi-house-door"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Dashboard</span>
-            }
-        </a>
+            <span>Dashboard</span>
+        </NavLink>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/onboarding" title="New Tenant">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/onboarding">
             <i class="bi bi-rocket-takeoff"></i>
-            @if (!IsCollapsed)
-            {
-                <span>New Tenant</span>
-            }
-        </a>
+            <span>New Tenant</span>
+        </NavLink>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/tenants" title="Tenants">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/tenants">
             <i class="bi bi-people"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Tenants</span>
-            }
-        </a>
+            <span>Tenants</span>
+        </NavLink>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/cell-management" title="Cell Management">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/cell-management">
             <i class="bi bi-grid-3x3-gap"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Cell Management</span>
-            }
-        </a>
+            <span>Cell Management</span>
+        </NavLink>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/cells" title="Cells">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/cells">
             <i class="bi bi-bar-chart"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Cells</span>
-            }
-        </a>
+            <span>Cells</span>
+        </NavLink>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/operations" title="Operations">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/operations">
             <i class="bi bi-gear"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Operations</span>
-            }
-        </a>
+            <span>Operations</span>
+        </NavLink>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/infrastructure" title="Infrastructure">
+        <NavLink class="nav-link text-white d-flex align-items-center gap-2" href="/infrastructure">
             <i class="bi bi-diagram-3"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Infrastructure</span>
-            }
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/configuration" title="DAB Configuration">
-            <i class="bi bi-gear"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Configuration</span>
-            }
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/deployment" title="Aspire Deployment">
-            <i class="bi bi-rocket"></i>
-            @if (!IsCollapsed)
-            {
-                <span>Deployment</span>
-            }
-        </a>
+            <span>Infrastructure</span>
+        </NavLink>
     </li>
     <li class="nav-item mt-3 pt-3 border-top border-secondary">
-        <a class="nav-link text-white d-flex align-items-center @(IsCollapsed ? "justify-content-center" : "gap-2")" href="/docs/MANAGEMENT_PORTAL_USER_GUIDE.md" target="_blank" title="User Guide">
+        <a class="nav-link text-white d-flex align-items-center gap-2" href="/docs/MANAGEMENT_PORTAL_USER_GUIDE.md" target="_blank">
             <i class="bi bi-book"></i>
-            @if (!IsCollapsed)
-            {
-                <span>User Guide</span>
-            }
+            <span>User Guide</span>
         </a>
     </li>
 </ul>
@@ -114,7 +62,6 @@
         border-radius: 8px;
         margin-bottom: 4px;
         transition: all 0.2s ease;
-        position: relative;
     }
     
     .nav-link:hover {
@@ -129,24 +76,12 @@
     }
     
     .sidebar-brand {
-        padding: 1rem;
+        padding-bottom: 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .sidebar-brand.collapsed {
-        padding: 1rem 0.5rem;
-        text-align: center;
     }
     
     .bi {
         font-size: 1.1rem;
         width: 20px;
-        min-width: 20px;
-        text-align: center;
     }
 </style>
-
-@code {
-    [Parameter] public bool IsCollapsed { get; set; } = false;
-}

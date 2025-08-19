@@ -1,236 +1,72 @@
 @inherits LayoutComponentBase
 @inject IConfiguration Configuration
-@inject IJSRuntime JSRuntime
 @using System.Reflection
 
-<div class="app-container">
+<div class="d-flex">
     <!-- Sidebar Navigation -->
-    <nav class="sidebar @(sidebarCollapsed ? "collapsed" : "")" id="sidebar">
-        <NavMenu IsCollapsed="sidebarCollapsed" />
+    <nav class="sidebar bg-dark text-white p-3">
+        <NavMenu />
     </nav>
 
-    <!-- Sidebar Overlay for Mobile -->
-    <div class="sidebar-overlay @(sidebarVisible ? "show" : "")" @onclick="HideSidebar"></div>
-
     <!-- Main Content Area -->
-    <main class="main-content @(sidebarCollapsed ? "expanded" : "")">
+    <main class="flex-fill">
         <!-- Top Navigation Bar -->
-        <header class="top-navbar">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link sidebar-toggle p-2 me-3" @onclick="ToggleSidebar">
-                        <i class="bi @(sidebarCollapsed ? "bi-list" : "bi-x-lg") fs-5"></i>
-                    </button>
-                    <h5 class="mb-0 text-dark fw-semibold">🏗️ Azure Stamps SaaS Platform</h5>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <span class="badge bg-primary fs-6 px-3 py-2">@GetVersion()</span>
-                    <span class="badge @GetDataSourceBadgeClass() fs-6 px-3 py-2">@GetDataSource()</span>
-                    <a href="https://github.com/srnichols/StampsPattern" target="_blank" 
-                       class="btn btn-outline-primary btn-modern">
-                        <i class="bi bi-github me-2"></i>GitHub
-                    </a>
-                </div>
+        <div class="top-navbar bg-light border-bottom px-4 py-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">🏗️ Azure Stamps SaaS Platform</h5>
+            <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-primary fs-6">@GetVersion()</span>
+                <span class="badge @GetDataSourceBadgeClass()">@GetDataSource()</span>
+                <a href="https://github.com/srnichols/StampsPattern" target="_blank" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-github"></i> GitHub
+                </a>
             </div>
-        </header>
+        </div>
 
         <!-- Page Content -->
-        <div class="page-content">
+        <div class="main-content p-4">
             @Body
         </div>
     </main>
 </div>
 
 <style>
-    /* Modern Cloud-Native Layout */
-    .app-container {
-        display: flex;
-        min-height: 100vh;
-        background-color: #f8fafc;
-    }
-    
-    /* Collapsible Sidebar */
     .sidebar {
         width: 280px;
-        background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
         position: fixed;
         top: 0;
         left: 0;
-        bottom: 0;
         z-index: 1000;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
     
-    .sidebar.collapsed {
-        width: 80px;
-    }
-    
-    /* Main Content */
-    .main-content {
-        flex: 1;
+    main {
         margin-left: 280px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
         min-height: 100vh;
     }
     
-    .main-content.expanded {
-        margin-left: 80px;
-    }
-    
-    /* Top Navigation */
     .top-navbar {
-        background: linear-gradient(90deg, #ffffff 0%, #f8fafc 100%);
-        border-bottom: 1px solid #e2e8f0;
-        padding: 16px 24px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 999;
+        background-color: #f8f9fa !important;
     }
     
-    /* Page Content */
-    .page-content {
-        flex: 1;
-        padding: 24px;
-        background: #f8fafc;
+    .main-content {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 60px);
     }
     
-    /* Modern Button Styles */
-    .btn-modern {
-        border-radius: 12px;
-        padding: 12px 24px;
-        font-weight: 500;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-modern:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .btn-modern:active {
-        transform: translateY(0);
-    }
-    
-    .btn-outline-primary.btn-modern {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        border: none;
-        color: white;
-    }
-    
-    .btn-outline-primary.btn-modern:hover {
-        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-        color: white;
-    }
-    
-    /* Sidebar Toggle */
-    .sidebar-toggle {
-        color: #64748b;
-        border: none;
-        background: none;
-        padding: 8px !important;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-    }
-    
-    .sidebar-toggle:hover {
-        background-color: #f1f5f9;
-        color: #334155;
-    }
-    
-    /* Modern Badges */
-    .badge {
-        border-radius: 12px;
-        font-weight: 500;
-        letter-spacing: 0.025em;
-    }
-    
-    /* Sidebar Overlay for Mobile */
-    .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .sidebar-overlay.show {
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    /* Responsive Design */
     @@media (max-width: 768px) {
         .sidebar {
-            transform: translateX(-100%);
-            width: 280px;
+            width: 100%;
+            height: auto;
+            position: relative;
         }
         
-        .sidebar.show {
-            transform: translateX(0);
-        }
-        
-        .sidebar.collapsed {
-            transform: translateX(-100%);
-            width: 280px;
-        }
-        
-        .main-content {
+        main {
             margin-left: 0;
         }
-        
-        .main-content.expanded {
-            margin-left: 0;
-        }
-    }
-    
-    /* Smooth animations */
-    * {
-        scroll-behavior: smooth;
     }
 </style>
 
 @code {
-    private bool sidebarCollapsed = false;
-    private bool sidebarVisible = false;
-
-    private async Task ToggleSidebar()
-    {
-        if (await IsDesktop())
-        {
-            sidebarCollapsed = !sidebarCollapsed;
-        }
-        else
-        {
-            sidebarVisible = !sidebarVisible;
-            await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('sidebar').classList.toggle('show', {sidebarVisible.ToString().ToLower()})");
-        }
-    }
-
-    private async Task HideSidebar()
-    {
-        sidebarVisible = false;
-        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('sidebar').classList.remove('show')");
-    }
-
-    private async Task<bool> IsDesktop()
-    {
-        return await JSRuntime.InvokeAsync<bool>("eval", "window.innerWidth >= 768");
-    }
-
     private string GetVersion()
     {
         // Prefer an explicit build version, then informational version (may include git sha), then assembly version.

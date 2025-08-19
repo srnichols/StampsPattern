@@ -1,17 +1,6 @@
-// SEEDER DISABLED: This seeder is disabled to prevent adding fake data
-// Only use real data discovered from these two subscriptions:
-// MCAPS-Hybrid-REQ-101203-2024-scnichol-Host: 2fb123ca-e419-4838-9b44-c2eb71a21769 (westus2/westus3)
-// MCAPS-Hybrid-REQ-103709-2024-scnichol-Hub: 480cb033-9a92-4912-9d30-c6b7bf795a87 (westus2/westus3)
-
-Console.WriteLine("❌ SEEDER DISABLED");
-Console.WriteLine("This seeder is intentionally disabled to prevent adding fake eastus/westus data.");
-Console.WriteLine("The system should only show real data from:");
-Console.WriteLine("  - MCAPS-Hybrid-REQ-101203-2024-scnichol-Host (2fb123ca-e419-4838-9b44-c2eb71a21769)");
-Console.WriteLine("  - MCAPS-Hybrid-REQ-103709-2024-scnichol-Hub (480cb033-9a92-4912-9d30-c6b7bf795a87)");
-Console.WriteLine("  - Expected regions: westus2, westus3");
-Console.WriteLine();
-Console.WriteLine("To re-enable, remove the early return in Seeder/Program.cs");
-return 0;
+using Microsoft.Azure.Cosmos;
+using Azure.Identity;
+using System.Net;
 
 // Prefer AAD auth: provide COSMOS_ACCOUNT_ENDPOINT (https://<account>.documents.azure.com/) and use DefaultAzureCredential.
 // Fallback to COSMOS_CONNECTION_STRING for local emulator/dev scenarios.

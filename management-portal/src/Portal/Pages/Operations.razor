@@ -19,27 +19,9 @@
     <span class="hint">CRUD requires GraphQL/DAB to be enabled</span>
 </EditForm>
 
-@if (loading)
+@if (ops is null)
 {
     <p>Loading...</p>
-}
-else if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-warning">
-        <strong>Data Service Unavailable:</strong> @errorMessage
-        <br />
-        <small>This feature requires the DAB (Data API Builder) service to be running and properly configured.</small>
-        <br />
-        <button class="btn btn-link" @onclick="RetryLoadAsync">Retry</button>
-    </div>
-}
-else if (ops is null || !ops.Any())
-{
-    <div class="alert alert-info">
-        <strong>No Operations Found</strong>
-        <br />
-        <small>Operations will appear here as tenants are managed and cells are provisioned.</small>
-    </div>
 }
 else
 {
@@ -69,8 +51,6 @@ else
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Operation>? ops;
     private OperationEdit edit = new();
-    private bool loading = true;
-    private string? errorMessage;
 
     class OperationEdit
     {
@@ -85,68 +65,28 @@ else
             set => CreatedAt = new DateTimeOffset(value, DateTimeOffset.Now.Offset);
         }
     }
-    
     protected override async Task OnInitializedAsync()
     {
-        await LoadOperationsAsync();
-    }
-
-    async Task LoadOperationsAsync()
-    {
-        try
-        {
-            loading = true;
-            errorMessage = null;
-            ops = await Data.GetOperationsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            ops = new List<Stamps.ManagementPortal.Models.Operation>();
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-
-    async Task RetryLoadAsync()
-    {
-        await LoadOperationsAsync();
+        ops = await Data.GetOperationsAsync();
     }
 
     void Edit(Stamps.ManagementPortal.Models.Operation o)
         => edit = new OperationEdit { Id = o.Id, TenantId = o.TenantId, Type = o.Type, Status = o.Status, CreatedAt = o.CreatedAt };
-    
     Task NewAsync() { edit = new OperationEdit(); return Task.CompletedTask; }
 
     async Task OnSaveAsync()
     {
-        try
-        {
-            var rec = new Stamps.ManagementPortal.Models.Operation(edit.Id, edit.TenantId, edit.Type, edit.Status, edit.CreatedAt);
-            if (ops?.Any(x => x.Id == rec.Id) == true)
-                await Data.UpdateOperationAsync(rec);
-            else
-                await Data.CreateOperationAsync(rec);
-            await LoadOperationsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Save failed: {ex.Message}";
-        }
+        var rec = new Stamps.ManagementPortal.Models.Operation(edit.Id, edit.TenantId, edit.Type, edit.Status, edit.CreatedAt);
+        if (ops?.Any(x => x.Id == rec.Id) == true)
+            await Data.UpdateOperationAsync(rec);
+        else
+            await Data.CreateOperationAsync(rec);
+        ops = await Data.GetOperationsAsync();
     }
 
     async Task DeleteAsync(Stamps.ManagementPortal.Models.Operation o)
     {
-        try
-        {
-            await Data.DeleteOperationAsync(o.Id, o.TenantId);
-            await LoadOperationsAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Delete failed: {ex.Message}";
-        }
+        await Data.DeleteOperationAsync(o.Id, o.TenantId);
+        ops = await Data.GetOperationsAsync();
     }
 }

@@ -35,6 +35,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md) - Quick start for developers
 - [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md) - Security implementation guide
 - [DOCS.md](./DOCS.md) - This documentation hub
+- [DOCUMENTATION_IMPROVEMENTS.md](./DOCUMENTATION_IMPROVEMENTS.md) - Documentation enhancement guide
 - [GLOSSARY.md](./GLOSSARY.md) - Terminology and definitions
 - [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) - Common issues and solutions
 - [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md) - Azure Landing Zones integration
@@ -91,6 +92,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
 - 🗂️ Repository Map: [REPOSITORY_MAP.md](./REPOSITORY_MAP.md)
 - 🔧 Troubleshooting Playbooks: [TROUBLESHOOTING_PLAYBOOKS.md](./TROUBLESHOOTING_PLAYBOOKS.md)
+- 📚 Documentation Improvements: [DOCUMENTATION_IMPROVEMENTS.md](./DOCUMENTATION_IMPROVEMENTS.md)
 - 🏗️ Sample App Plan: [Azure_Stamp_Pattern_Sample_App_Plan.md](./Azure_Stamp_Pattern_Sample_App_Plan.md)
 - 📋 Capabilities Matrix: [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md)
 

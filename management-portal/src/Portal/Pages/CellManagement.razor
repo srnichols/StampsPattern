@@ -12,26 +12,7 @@
                 <h5 class="card-title mb-0">Cell Capacity Overview</h5>
             </div>
             <div class="card-body">
-                @if (loading)
-                {
-                    <div class="text-center py-4">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2">Loading cell data...</p>
-                    </div>
-                }
-                else if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-warning">
-                        <strong>Data Service Unavailable:</strong> @errorMessage
-                        <br />
-                        <small>This feature requires the DAB (Data API Builder) service to be running.</small>
-                        <br />
-                        <button class="btn btn-link p-0" @onclick="LoadData">Retry</button>
-                    </div>
-                }
-                else if (cells != null)
+                @if (cells != null)
                 {
                     <div class="cell-grid">
                         @foreach (var cell in cells.OrderBy(c => c.Region).ThenBy(c => c.AvailabilityZone))
@@ -290,8 +271,6 @@
 
 @code {
     private List<Stamps.ManagementPortal.Models.Cell>? cells;
-    private bool loading = true;
-    private string? errorMessage;
     private string assignmentTier = "startup";
     private string assignmentRegion = "";
     private string expectedLoad = "light";
@@ -317,23 +296,8 @@
     
     private async Task LoadData()
     {
-        try
-        {
-            loading = true;
-            errorMessage = null;
-            cells = (await Data.GetCellsAsync()).ToList();
-            CalculateAnalytics();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            cells = new List<Stamps.ManagementPortal.Models.Cell>();
-            analytics = new CellAnalytics();
-        }
-        finally
-        {
-            loading = false;
-        }
+        cells = (await Data.GetCellsAsync()).ToList();
+        CalculateAnalytics();
     }
     
     private void CalculateAnalytics()
