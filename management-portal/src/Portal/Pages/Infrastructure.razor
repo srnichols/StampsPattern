@@ -16,8 +16,8 @@
             <button class="btn btn-primary" @onclick="RefreshInfrastructure">
                 <i class="fas fa-sync-alt"></i> Discover Infrastructure
             </button>
-            <button class="btn btn-outline-secondary" @onclick="ExportInfrastructureData">
-                <i class="fas fa-download"></i> Export
+            <button class="btn btn-outline-secondary" @onclick="DownloadCsv">
+                <i class="fas fa-download"></i> Export CSV
             </button>
         </div>
     </div>
@@ -538,6 +538,20 @@
     {
         // TODO: Export infrastructure data to CSV/JSON
         await JSRuntime.InvokeVoidAsync("alert", "Export functionality coming soon!");
+    }
+
+    private async Task DownloadCsv()
+    {
+        try
+        {
+            // Open the discovery CSV endpoint in a new tab/window. In production, the endpoint requires x-api-key header; for browser-based call we assume a server-side proxy or public endpoint for now.
+            var url = "/api/discovery/csv";
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Failed to open CSV: {ex.Message}");
+        }
     }
     
     private async Task ViewCellDetails(string cellId)
