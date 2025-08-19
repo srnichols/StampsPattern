@@ -1,5 +1,6 @@
 @page "/infrastructure"
 @using Stamps.ManagementPortal.Models
+@using Microsoft.JSInterop
 @inject Stamps.ManagementPortal.Services.IDataService Data
 @inject IJSRuntime JSRuntime
 
@@ -199,9 +200,6 @@
                         <div class="quick-actions">
                             <button class="btn btn-outline-primary btn-block mb-2" @onclick="RefreshInfrastructure">
                                 🔄 Refresh Discovery
-                            </button>
-                            <button class="btn btn-outline-secondary btn-block mb-2" @onclick="SyncWithSeederData">
-                                🔗 Sync with Portal Data
                             </button>
                             <button class="btn btn-outline-info btn-block mb-2" @onclick="ViewHealthDashboard">
                                 📊 Health Dashboard
@@ -446,69 +444,87 @@
     
     private async Task LoadInfrastructureData()
     {
-        // TODO: Call the InfrastructureDiscoveryFunction
-        // For now, load simulated discovery data
-        await LoadSimulatedDiscoveryData();
+        loading = true;
+        try
+        {
+            // Call the real Azure Infrastructure Discovery Function
+            await LoadRealDiscoveryData();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load real discovery data: {ex.Message}");
+            // Fallback to empty data - no seeded/simulated data
+            discoveredCells = new List<DiscoveredCell>();
+            discoveredResources = new List<DiscoveredResource>();
+            resourceTypeBreakdown = new Dictionary<string, int>();
+            regions = new List<string>();
+            resourceGroups = new List<string>();
+        }
+        finally
+        {
+            loading = false;
+            lastUpdated = DateTime.Now;
+        }
     }
     
-    private async Task LoadSimulatedDiscoveryData()
+    private async Task LoadRealDiscoveryData()
     {
-        // Simulate discovered infrastructure based on your 6 CELLs in 2 regions
-        discoveredCells = new List<DiscoveredCell>
+        // Call the actual infrastructure discovery function from your Azure Functions
+        // This should discover resources from your two subscriptions:
+        // MCAPS-Hybrid-REQ-101203-2024-scnichol-Host: 2fb123ca-e419-4838-9b44-c2eb71a21769
+        // MCAPS-Hybrid-REQ-103709-2024-scnichol-Hub: 480cb033-9a92-4912-9d30-c6b7bf795a87
+        // Expected regions: westus2, westus3
+        
+        using var httpClient = new HttpClient();
+        
+        try 
         {
-            new DiscoveredCell { Id = "cell-eastus-01", Name = "East US CELL 01", Region = "eastus", Status = "healthy", 
-                    CapacityTotal = 1000, CapacityUsed = 650, ResourceGroup = "rg-stamps-eastus-01",
-                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
-            new DiscoveredCell { Id = "cell-eastus-02", Name = "East US CELL 02", Region = "eastus", Status = "healthy", 
-                    CapacityTotal = 1000, CapacityUsed = 720, ResourceGroup = "rg-stamps-eastus-02",
-                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
-            new DiscoveredCell { Id = "cell-eastus-03", Name = "East US CELL 03", Region = "eastus", Status = "degraded", 
-                    CapacityTotal = 1000, CapacityUsed = 890, ResourceGroup = "rg-stamps-eastus-03",
-                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
-            new DiscoveredCell { Id = "cell-westus-01", Name = "West US CELL 01", Region = "westus", Status = "healthy", 
-                    CapacityTotal = 1000, CapacityUsed = 450, ResourceGroup = "rg-stamps-westus-01",
-                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
-            new DiscoveredCell { Id = "cell-westus-02", Name = "West US CELL 02", Region = "westus", Status = "healthy", 
-                    CapacityTotal = 1000, CapacityUsed = 580, ResourceGroup = "rg-stamps-westus-02",
-                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
-            new DiscoveredCell { Id = "cell-westus-03", Name = "West US CELL 03", Region = "westus", Status = "healthy", 
-                    CapacityTotal = 1000, CapacityUsed = 320, ResourceGroup = "rg-stamps-westus-03",
-                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } }
-        };
-        
-        discoveredResources = new List<DiscoveredResource>
+            // TODO: Replace with your actual Azure Function URL
+            var discoveryUrl = "https://your-azure-function-app.azurewebsites.net/api/DiscoverInfrastructure";
+            
+            var response = await httpClient.GetAsync(discoveryUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonContent = await response.Content.ReadAsStringAsync();
+                // TODO: Parse the JSON response and populate discoveredCells and discoveredResources
+                // The response should contain resources from westus2 and westus3 regions
+                
+                // For now, set empty until we connect to real discovery function
+                discoveredCells = new List<DiscoveredCell>();
+                discoveredResources = new List<DiscoveredResource>();
+                resourceTypeBreakdown = new Dictionary<string, int>();
+                regions = new List<string> { "westus2", "westus3" }; // Your actual regions
+                resourceGroups = new List<string>();
+            }
+            else
+            {
+                Console.WriteLine($"Discovery API returned {response.StatusCode}");
+                // Return empty data - no fallback to seeded data
+                discoveredCells = new List<DiscoveredCell>();
+                discoveredResources = new List<DiscoveredResource>();
+                resourceTypeBreakdown = new Dictionary<string, int>();
+                regions = new List<string>();
+                resourceGroups = new List<string>();
+            }
+        }
+        catch (Exception ex)
         {
-            // Sample resources across your 6 CELLs
-            // Each CELL typically has: App Services, SQL Databases, Container Apps, Storage, etc.
-        };
-        
-        resourceTypeBreakdown = new Dictionary<string, int>
-        {
-            { "Microsoft.Web/sites", 18 },
-            { "Microsoft.Sql/servers", 12 },
-            { "Microsoft.App/containerApps", 24 },
-            { "Microsoft.Storage/storageAccounts", 6 },
-            { "Microsoft.Network/applicationGateways", 2 },
-            { "Microsoft.KeyVault/vaults", 6 }
-        };
-        
-        regions = discoveredCells.Select(c => c.Region).Distinct().ToList();
-        resourceGroups = discoveredCells.Select(c => c.ResourceGroup).Distinct().ToList();
-        
-        lastUpdated = DateTime.Now;
-    }
-    
-    private async Task RefreshInfrastructure()
+              Console.WriteLine($"Error calling discovery API: {ex.Message}");
+              // Return empty data - no fallback to seeded data
+              discoveredCells = new List<DiscoveredCell>();
+              discoveredResources = new List<DiscoveredResource>();
+              resourceTypeBreakdown = new Dictionary<string, int>();
+              regions = new List<string>();
+              resourceGroups = new List<string>();
+          }
+      }    private async Task RefreshInfrastructure()
     {
         loading = true;
         StateHasChanged();
         
         try
         {
-            // TODO: Call Azure Function to discover real infrastructure
-            // For now, simulate the discovery process
-            await Task.Delay(2000); // Simulate discovery time
-            await LoadInfrastructureData();
+            await LoadInfrastructureData(); // Call real discovery data
         }
         finally
         {
@@ -533,11 +549,6 @@
     {
         var portalUrl = $"https://portal.azure.com/#@/resource/subscriptions/{{subscription-id}}/resourceGroups/{resourceGroup}/overview";
         await JSRuntime.InvokeVoidAsync("open", portalUrl, "_blank");
-    }
-    
-    private async Task SyncWithSeederData()
-    {
-        await JSRuntime.InvokeVoidAsync("alert", "Sync with seeder data functionality coming soon!");
     }
     
     private async Task ViewHealthDashboard()
