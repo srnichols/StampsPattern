@@ -2,91 +2,506 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 @inject Stamps.ManagementPortal.Services.IDataService Data
+@inject IJSRuntime JSRuntime
 
-<h1>Operations</h1>
-
-<EditForm Model="edit" OnValidSubmit="OnSaveAsync">
-    <DataAnnotationsValidator />
-    <div class="form-grid">
-        <input @bind="edit.Id" placeholder="Id" />
-        <input @bind="edit.TenantId" placeholder="Tenant Id" />
-        <input @bind="edit.Type" placeholder="Type" />
-        <input @bind="edit.Status" placeholder="Status" />
-        <input type="datetime-local" @bind-value="edit.CreatedAtLocal" />
+<div class="operations-container">
+    <div class="page-header">
+        <h1>⚙️ Operations Management</h1>
+        <p class="lead">Track and manage tenant operations, deployments, and maintenance activities</p>
     </div>
-    <button type="submit">Save</button>
-    <button type="button" @onclick="NewAsync">New</button>
-    <span class="hint">CRUD requires GraphQL/DAB to be enabled</span>
-</EditForm>
 
-@if (ops is null)
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        @if (isEditing)
+                        {
+                            <i class="bi bi-pencil"></i> <text>Edit Operation</text>
+                        }
+                        else
+                        {
+                            <i class="bi bi-plus-circle"></i> <text>New Operation</text>
+                        }
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="editModel" OnValidSubmit="OnSaveAsync">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Operation ID</label>
+                            <InputText @bind-Value="editModel.Id" class="form-control" placeholder="Auto-generated if empty" disabled="@isEditing" />
+                            <small class="form-text text-muted">Leave empty for auto-generation</small>
+                            <ValidationMessage For="@(() => editModel.Id)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Tenant ID</label>
+                            <InputText @bind-Value="editModel.TenantId" class="form-control" placeholder="Enter tenant ID" />
+                            <ValidationMessage For="@(() => editModel.TenantId)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Operation Type</label>
+                            <InputSelect @bind-Value="editModel.Type" class="form-control">
+                                <option value="">Select operation type...</option>
+                                <option value="onboard">Tenant Onboarding</option>
+                                <option value="migrate">Cell Migration</option>
+                                <option value="scale">Scaling Operation</option>
+                                <option value="suspend">Tenant Suspension</option>
+                                <option value="resume">Tenant Resume</option>
+                                <option value="archive">Tenant Archive</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="backup">Backup Operation</option>
+                                <option value="restore">Restore Operation</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.Type)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Status</label>
+                            <InputSelect @bind-Value="editModel.Status" class="form-control">
+                                <option value="">Select status...</option>
+                                <option value="pending">Pending</option>
+                                <option value="running">Running</option>
+                                <option value="completed">Completed</option>
+                                <option value="failed">Failed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="rollback">Rolling Back</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.Status)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Created Date</label>
+                            <InputDate @bind-Value="editModel.CreatedAtLocal" class="form-control" />
+                            <small class="form-text text-muted">Local time</small>
+                            <ValidationMessage For="@(() => editModel.CreatedAtLocal)" class="text-danger" />
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i> @errorMessage
+                            </div>
+                        }
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <text> Saving...</text>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-check-circle"></i>
+                                    <text> @(isEditing ? "Update Operation" : "Create Operation")</text>
+                                }
+                            </button>
+                            @if (isEditing)
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="CancelEdit">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Operation History</h5>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="RefreshData">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (operations is null)
+                    {
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading operations...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading operation history...</p>
+                        </div>
+                    }
+                    else if (!operations.Any())
+                    {
+                        <div class="empty-state text-center py-4">
+                            <div class="empty-icon mb-3">
+                                <i class="bi bi-gear" style="font-size: 3rem; color: #6c757d;"></i>
+                            </div>
+                            <h5>No Operations Found</h5>
+                            <p class="text-muted">Operations will appear here as tenants are managed and infrastructure changes occur.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Operation</th>
+                                        <th>Tenant</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th width="120">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var operation in operations.OrderByDescending(o => o.CreatedAt))
+                                {
+                                    <tr class="@(editModel.Id == operation.Id ? "table-active" : "")">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="operation-icon me-2">
+                                                    <i class="bi @GetOperationIcon(operation.Type)"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@operation.Id</div>
+                                                    <small class="text-muted">@GetOperationDescription(operation.Type)</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <code class="small">@operation.TenantId</code>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetTypeBadgeClass(operation.Type)">
+                                                @operation.Type.ToUpper()
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetStatusBadgeClass(operation.Status)">
+                                                <i class="bi @GetStatusIcon(operation.Status)"></i>
+                                                @operation.Status.ToUpper()
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>@operation.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                            <small class="text-muted">@operation.CreatedAt.ToString("HH:mm:ss")</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-outline-primary" @onclick="() => Edit(operation)" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" @onclick="() => ConfirmDelete(operation)" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal)
 {
-    <p>Loading...</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        Confirm Delete
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete operation <strong>@operationToDelete?.Id</strong>?</p>
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="bi bi-info-circle"></i>
+                            This will remove the operation record from the history but will not affect any completed changes.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteOperation" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            <text> Deleting...</text>
+                        }
+                        else
+                        {
+                            <i class="bi bi-trash"></i>
+                            <text> Delete Operation</text>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
-else
-{
-    <table>
-        <thead>
-            <tr><th>Id</th><th>Tenant</th><th>Type</th><th>Status</th><th>Created</th></tr>
-        </thead>
-        <tbody>
-        @foreach (var o in ops)
-        {
-            <tr>
-                <td>@o.Id</td>
-                <td>@o.TenantId</td>
-                <td>@o.Type</td>
-                <td>@o.Status</td>
-                <td>@o.CreatedAt.ToLocalTime()</td>
-                <td>
-                    <button @onclick="() => Edit(o)">Edit</button>
-                    <button @onclick="() => DeleteAsync(o)">Delete</button>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+
+<style>
+    .operations-container { padding: 1rem; }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #fd7e14 0%, #dc3545 100%);
+        color: white;
+        border-radius: 12px;
+    }
+    
+    .page-header h1 { margin: 0; font-size: 2.5rem; }
+    .page-header .lead { margin: 0.5rem 0 0 0; opacity: 0.9; }
+    
+    .form-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .operation-icon {
+        width: 32px;
+        height: 32px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+    
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(253,126,20,0.05);
+    }
+    
+    .table-active {
+        background-color: rgba(253,126,20,0.1) !important;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
 
 @code {
-    private IReadOnlyList<Stamps.ManagementPortal.Models.Operation>? ops;
-    private OperationEdit edit = new();
+    private IReadOnlyList<Stamps.ManagementPortal.Models.Operation>? operations;
+    private OperationEdit editModel = new();
+    private bool isLoading = false;
+    private bool isEditing = false;
+    private string errorMessage = "";
+    private bool showDeleteModal = false;
+    private Stamps.ManagementPortal.Models.Operation? operationToDelete;
 
-    class OperationEdit
+    public class OperationEdit
     {
         public string Id { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Tenant ID is required")]
         public string TenantId { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Operation type is required")]
         public string Type { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; } = string.Empty;
+        
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        
         public DateTime CreatedAtLocal
         {
             get => CreatedAt.LocalDateTime;
             set => CreatedAt = new DateTimeOffset(value, DateTimeOffset.Now.Offset);
         }
     }
+
     protected override async Task OnInitializedAsync()
     {
-        ops = await Data.GetOperationsAsync();
+        await RefreshData();
     }
 
-    void Edit(Stamps.ManagementPortal.Models.Operation o)
-        => edit = new OperationEdit { Id = o.Id, TenantId = o.TenantId, Type = o.Type, Status = o.Status, CreatedAt = o.CreatedAt };
-    Task NewAsync() { edit = new OperationEdit(); return Task.CompletedTask; }
-
-    async Task OnSaveAsync()
+    private async Task RefreshData()
     {
-        var rec = new Stamps.ManagementPortal.Models.Operation(edit.Id, edit.TenantId, edit.Type, edit.Status, edit.CreatedAt);
-        if (ops?.Any(x => x.Id == rec.Id) == true)
-            await Data.UpdateOperationAsync(rec);
-        else
-            await Data.CreateOperationAsync(rec);
-        ops = await Data.GetOperationsAsync();
+        try
+        {
+            operations = await Data.GetOperationsAsync();
+            errorMessage = "";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load operations: {ex.Message}";
+        }
     }
 
-    async Task DeleteAsync(Stamps.ManagementPortal.Models.Operation o)
+    private void Edit(Stamps.ManagementPortal.Models.Operation operation)
     {
-        await Data.DeleteOperationAsync(o.Id, o.TenantId);
-        ops = await Data.GetOperationsAsync();
+        editModel = new OperationEdit 
+        { 
+            Id = operation.Id, 
+            TenantId = operation.TenantId, 
+            Type = operation.Type, 
+            Status = operation.Status, 
+            CreatedAt = operation.CreatedAt 
+        };
+        isEditing = true;
+        errorMessage = "";
     }
+
+    private void CancelEdit()
+    {
+        editModel = new OperationEdit();
+        isEditing = false;
+        errorMessage = "";
+    }
+
+    private async Task OnSaveAsync()
+    {
+        isLoading = true;
+        errorMessage = "";
+        
+        try
+        {
+            var operationId = string.IsNullOrEmpty(editModel.Id) ? Guid.NewGuid().ToString() : editModel.Id;
+            
+            var operation = new Stamps.ManagementPortal.Models.Operation(
+                operationId,
+                editModel.TenantId, 
+                editModel.Type, 
+                editModel.Status, 
+                editModel.CreatedAt
+            );
+
+            if (isEditing)
+            {
+                await Data.UpdateOperationAsync(operation);
+            }
+            else
+            {
+                await Data.CreateOperationAsync(operation);
+            }
+            
+            await RefreshData();
+            CancelEdit(); // Reset form
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to save operation: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ConfirmDelete(Stamps.ManagementPortal.Models.Operation operation)
+    {
+        operationToDelete = operation;
+        showDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        operationToDelete = null;
+        showDeleteModal = false;
+    }
+
+    private async Task DeleteOperation()
+    {
+        if (operationToDelete == null) return;
+        
+        isLoading = true;
+        try
+        {
+            await Data.DeleteOperationAsync(operationToDelete.Id, operationToDelete.TenantId);
+            await RefreshData();
+            CancelDelete();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to delete operation: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string GetOperationIcon(string type) => type switch
+    {
+        "onboard" => "bi-rocket-takeoff",
+        "migrate" => "bi-arrow-repeat",
+        "scale" => "bi-arrows-expand",
+        "suspend" => "bi-pause-circle",
+        "resume" => "bi-play-circle",
+        "archive" => "bi-archive",
+        "maintenance" => "bi-tools",
+        "backup" => "bi-shield-check",
+        "restore" => "bi-arrow-clockwise",
+        _ => "bi-gear"
+    };
+
+    private static string GetOperationDescription(string type) => type switch
+    {
+        "onboard" => "New tenant deployment",
+        "migrate" => "Cell migration process",
+        "scale" => "Capacity scaling",
+        "suspend" => "Tenant suspension",
+        "resume" => "Tenant reactivation",
+        "archive" => "Data archival",
+        "maintenance" => "System maintenance",
+        "backup" => "Data backup",
+        "restore" => "Data restoration",
+        _ => "System operation"
+    };
+
+    private static string GetTypeBadgeClass(string type) => type switch
+    {
+        "onboard" => "bg-success",
+        "migrate" => "bg-info",
+        "scale" => "bg-primary",
+        "suspend" => "bg-warning text-dark",
+        "resume" => "bg-success",
+        "archive" => "bg-secondary",
+        "maintenance" => "bg-dark",
+        "backup" => "bg-info",
+        "restore" => "bg-warning text-dark",
+        _ => "bg-light text-dark"
+    };
+
+    private static string GetStatusBadgeClass(string status) => status switch
+    {
+        "completed" => "bg-success",
+        "running" => "bg-primary",
+        "pending" => "bg-warning text-dark",
+        "failed" => "bg-danger",
+        "cancelled" => "bg-secondary",
+        "rollback" => "bg-warning text-dark",
+        _ => "bg-light text-dark"
+    };
+
+    private static string GetStatusIcon(string status) => status switch
+    {
+        "completed" => "bi-check-circle",
+        "running" => "bi-arrow-repeat",
+        "pending" => "bi-hourglass-split",
+        "failed" => "bi-x-circle",
+        "cancelled" => "bi-stop-circle",
+        "rollback" => "bi-arrow-counterclockwise",
+        _ => "bi-question-circle"
+    };
 }

@@ -1,100 +1,476 @@
 @page "/tenants"
 @using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
 @inject Stamps.ManagementPortal.Services.IDataService Data
+@inject IJSRuntime JSRuntime
 
-<h1>Tenants</h1>
-
-<EditForm Model="editModel" OnValidSubmit="OnSaveAsync">
-    <DataAnnotationsValidator />
-    <div class="form-grid">
-    <input @bind="editModel.Id" placeholder="Id" />
-    <input @bind="editModel.DisplayName" placeholder="Display Name" />
-    <input @bind="editModel.Domain" placeholder="Domain" />
-    <input @bind="editModel.Tier" placeholder="Tier" />
-    <input @bind="editModel.Status" placeholder="Status" />
-    <input @bind="editModel.CellId" placeholder="CellId" />
+<div class="tenants-container">
+    <div class="page-header">
+        <h1>👥 Tenant Management</h1>
+        <p class="lead">Manage your SaaS platform tenants with intelligent cell assignment</p>
     </div>
-    <button type="submit">Save</button>
-    <button type="button" @onclick="NewAsync">New</button>
-</EditForm>
 
-@if (tenants is null)
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        @if (isEditing)
+                        {
+                            <i class="bi bi-pencil"></i> <text>Edit Tenant</text>
+                        }
+                        else
+                        {
+                            <i class="bi bi-plus-circle"></i> <text>Add New Tenant</text>
+                        }
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="editModel" OnValidSubmit="OnSaveAsync">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Tenant ID</label>
+                            <InputText @bind-Value="editModel.Id" class="form-control" placeholder="Enter unique tenant ID" disabled="@isEditing" />
+                            <ValidationMessage For="@(() => editModel.Id)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Organization Name</label>
+                            <InputText @bind-Value="editModel.DisplayName" class="form-control" placeholder="Enter organization name" />
+                            <ValidationMessage For="@(() => editModel.DisplayName)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Domain</label>
+                            <InputText @bind-Value="editModel.Domain" class="form-control" placeholder="contoso.com" />
+                            <small class="form-text text-muted">Must be unique across the platform</small>
+                            <ValidationMessage For="@(() => editModel.Domain)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Service Tier</label>
+                            <InputSelect @bind-Value="editModel.Tier" class="form-control">
+                                <option value="">Select a tier...</option>
+                                <option value="startup">Startup - Shared Infrastructure</option>
+                                <option value="smb">SMB - Premium Shared</option>
+                                <option value="enterprise">Enterprise - Dedicated</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.Tier)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Status</label>
+                            <InputSelect @bind-Value="editModel.Status" class="form-control">
+                                <option value="">Select status...</option>
+                                <option value="active">Active</option>
+                                <option value="provisioning">Provisioning</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="archived">Archived</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.Status)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Assigned Cell</label>
+                            <InputText @bind-Value="editModel.CellId" class="form-control" placeholder="Auto-assigned if empty" />
+                            <small class="form-text text-muted">Leave empty for intelligent assignment</small>
+                            <ValidationMessage For="@(() => editModel.CellId)" class="text-danger" />
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i> @errorMessage
+                            </div>
+                        }
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <text> Saving...</text>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-check-circle"></i>
+                                    <text> @(isEditing ? "Update Tenant" : "Create Tenant")</text>
+                                }
+                            </button>
+                            @if (isEditing)
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="CancelEdit">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">All Tenants</h5>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="RefreshData">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (tenants is null)
+                    {
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading tenants...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading tenant data...</p>
+                        </div>
+                    }
+                    else if (!tenants.Any())
+                    {
+                        <div class="empty-state text-center py-4">
+                            <div class="empty-icon mb-3">
+                                <i class="bi bi-people" style="font-size: 3rem; color: #6c757d;"></i>
+                            </div>
+                            <h5>No Tenants Found</h5>
+                            <p class="text-muted">Get started by creating your first tenant using the form on the left.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Organization</th>
+                                        <th>Domain</th>
+                                        <th>Tier</th>
+                                        <th>Status</th>
+                                        <th>Cell</th>
+                                        <th width="120">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var tenant in tenants)
+                                {
+                                    <tr class="@(editModel.Id == tenant.Id ? "table-active" : "")">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="tenant-avatar me-2">
+                                                    <i class="bi bi-building"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@tenant.DisplayName</div>
+                                                    <small class="text-muted">@tenant.Id</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark">@tenant.Domain</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetTierBadgeClass(tenant.Tier)">
+                                                @tenant.Tier.ToUpper()
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetStatusBadgeClass(tenant.Status)">
+                                                <i class="bi @GetStatusIcon(tenant.Status)"></i>
+                                                @tenant.Status.ToUpper()
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <code class="small">@tenant.CellId</code>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-outline-primary" @onclick="() => Edit(tenant)" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" @onclick="() => ConfirmDelete(tenant)" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal)
 {
-    <p>Loading...</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        Confirm Delete
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete tenant <strong>@tenantToDelete?.DisplayName</strong>?</p>
+                    <div class="alert alert-warning">
+                        <small>
+                            <i class="bi bi-info-circle"></i>
+                            This will also release the domain <strong>@tenantToDelete?.Domain</strong> and remove all associated data.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteTenant" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            <text> Deleting...</text>
+                        }
+                        else
+                        {
+                            <i class="bi bi-trash"></i>
+                            <text> Delete Tenant</text>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
-else
-{
-    <table>
-        <thead>
-            <tr><th>Id</th><th>Name</th><th>Domain</th><th>Tier</th><th>Status</th><th>Cell</th></tr>
-        </thead>
-        <tbody>
-        @foreach (var t in tenants)
-        {
-            <tr>
-                <td>@t.Id</td>
-                <td>@t.DisplayName</td>
-                <td>@t.Domain</td>
-                <td>@t.Tier</td>
-                <td>@t.Status</td>
-                <td>@t.CellId</td>
-                <td>
-                    <button @onclick="() => Edit(t)">Edit</button>
-                    <button @onclick="() => DeleteAsync(t)">Delete</button>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+
+<style>
+    .tenants-container { padding: 1rem; }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #6f42c1 0%, #007bff 100%);
+        color: white;
+        border-radius: 12px;
+    }
+    
+    .page-header h1 { margin: 0; font-size: 2.5rem; }
+    .page-header .lead { margin: 0.5rem 0 0 0; opacity: 0.9; }
+    
+    .form-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .tenant-avatar {
+        width: 32px;
+        height: 32px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+    
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,123,255,0.05);
+    }
+    
+    .table-active {
+        background-color: rgba(0,123,255,0.1) !important;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
 
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Tenant>? tenants;
-    class TenantEdit
+    private TenantEdit editModel = new();
+    private bool isLoading = false;
+    private bool isEditing = false;
+    private string errorMessage = "";
+    private bool showDeleteModal = false;
+    private Stamps.ManagementPortal.Models.Tenant? tenantToDelete;
+
+    public class TenantEdit
     {
+        [Required(ErrorMessage = "Tenant ID is required")]
+        [RegularExpression(@"^[a-zA-Z0-9][a-zA-Z0-9-_]*[a-zA-Z0-9]$", ErrorMessage = "Tenant ID must contain only letters, numbers, hyphens, and underscores")]
         public string Id { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Organization name is required")]
+        [StringLength(100, ErrorMessage = "Organization name cannot exceed 100 characters")]
         public string DisplayName { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Domain is required")]
+        [RegularExpression(@"^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}$", ErrorMessage = "Please enter a valid domain (e.g., contoso.com)")]
         public string Domain { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Service tier is required")]
         public string Tier { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; } = string.Empty;
+        
         public string CellId { get; set; } = string.Empty;
     }
 
-    private TenantEdit editModel = new();
     protected override async Task OnInitializedAsync()
     {
-        tenants = await Data.GetTenantsAsync();
+        await RefreshData();
     }
 
-    void Edit(Stamps.ManagementPortal.Models.Tenant t)
-        => editModel = new TenantEdit { Id = t.Id, DisplayName = t.DisplayName, Domain = t.Domain, Tier = t.Tier, Status = t.Status, CellId = t.CellId };
-    Task NewAsync() { editModel = new TenantEdit(); return Task.CompletedTask; }
-
-    async Task OnSaveAsync()
+    private async Task RefreshData()
     {
-        var rec = new Stamps.ManagementPortal.Models.Tenant(editModel.Id, editModel.DisplayName, editModel.Domain, editModel.Tier, editModel.Status, editModel.CellId);
-        if (tenants?.Any(x => x.Id == rec.Id) == true)
-            await Data.UpdateTenantAsync(rec);
-        else
+        try
         {
-            // Reserve domain first to ensure global uniqueness
-            var reserved = await Data.ReserveDomainAsync(editModel.Domain, editModel.Id);
-            if (!reserved)
-            {
-                // Domain already reserved by another tenant; abort create
-                // A nicer UX would surface this inline; for now just reload and return
-                tenants = await Data.GetTenantsAsync();
-                return;
-            }
-            await Data.CreateTenantAsync(rec);
+            tenants = await Data.GetTenantsAsync();
+            errorMessage = "";
         }
-        tenants = await Data.GetTenantsAsync();
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load tenants: {ex.Message}";
+        }
     }
 
-    async Task DeleteAsync(Stamps.ManagementPortal.Models.Tenant t)
+    private void Edit(Stamps.ManagementPortal.Models.Tenant tenant)
     {
-        await Data.DeleteTenantAsync(t.Id, t.Id);
-    await Data.ReleaseDomainAsync(t.Domain);
-        tenants = await Data.GetTenantsAsync();
+        editModel = new TenantEdit 
+        { 
+            Id = tenant.Id, 
+            DisplayName = tenant.DisplayName, 
+            Domain = tenant.Domain, 
+            Tier = tenant.Tier, 
+            Status = tenant.Status, 
+            CellId = tenant.CellId 
+        };
+        isEditing = true;
+        errorMessage = "";
     }
+
+    private void CancelEdit()
+    {
+        editModel = new TenantEdit();
+        isEditing = false;
+        errorMessage = "";
+    }
+
+    private async Task OnSaveAsync()
+    {
+        isLoading = true;
+        errorMessage = "";
+        
+        try
+        {
+            var tenant = new Stamps.ManagementPortal.Models.Tenant(
+                editModel.Id, 
+                editModel.DisplayName, 
+                editModel.Domain, 
+                editModel.Tier, 
+                editModel.Status, 
+                editModel.CellId
+            );
+
+            if (isEditing)
+            {
+                await Data.UpdateTenantAsync(tenant);
+            }
+            else
+            {
+                // Reserve domain first to ensure global uniqueness
+                var reserved = await Data.ReserveDomainAsync(editModel.Domain, editModel.Id);
+                if (!reserved)
+                {
+                    errorMessage = "Domain is already reserved by another tenant. Please choose a different domain.";
+                    return;
+                }
+                
+                await Data.CreateTenantAsync(tenant);
+            }
+            
+            await RefreshData();
+            CancelEdit(); // Reset form
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to save tenant: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ConfirmDelete(Stamps.ManagementPortal.Models.Tenant tenant)
+    {
+        tenantToDelete = tenant;
+        showDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        tenantToDelete = null;
+        showDeleteModal = false;
+    }
+
+    private async Task DeleteTenant()
+    {
+        if (tenantToDelete == null) return;
+        
+        isLoading = true;
+        try
+        {
+            await Data.DeleteTenantAsync(tenantToDelete.Id, tenantToDelete.Id);
+            await Data.ReleaseDomainAsync(tenantToDelete.Domain);
+            await RefreshData();
+            CancelDelete();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to delete tenant: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string GetTierBadgeClass(string tier) => tier switch
+    {
+        "startup" => "bg-success",
+        "smb" => "bg-warning text-dark",
+        "enterprise" => "bg-primary",
+        _ => "bg-secondary"
+    };
+
+    private static string GetStatusBadgeClass(string status) => status switch
+    {
+        "active" => "bg-success",
+        "provisioning" => "bg-info",
+        "suspended" => "bg-warning text-dark",
+        "archived" => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
+
+    private static string GetStatusIcon(string status) => status switch
+    {
+        "active" => "bi-check-circle",
+        "provisioning" => "bi-hourglass-split",
+        "suspended" => "bi-pause-circle",
+        "archived" => "bi-archive",
+        _ => "bi-question-circle"
+    };
 }

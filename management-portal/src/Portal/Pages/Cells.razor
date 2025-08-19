@@ -2,88 +2,536 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 @inject Stamps.ManagementPortal.Services.IDataService Data
+@inject IJSRuntime JSRuntime
 
-<h1>Cells</h1>
-
-<EditForm Model="edit" OnValidSubmit="OnSaveAsync">
-    <DataAnnotationsValidator />
-    <div class="form-grid">
-        <input @bind="edit.Id" placeholder="Id" />
-        <input @bind="edit.Region" placeholder="Region" />
-        <input @bind="edit.AvailabilityZone" placeholder="AZ" />
-        <input @bind="edit.Status" placeholder="Status" />
-        <input type="number" @bind-value="edit.CapacityUsed" placeholder="Used" />
-        <input type="number" @bind-value="edit.CapacityTotal" placeholder="Total" />
+<div class="cells-container">
+    <div class="page-header">
+        <h1>📊 Cell Overview</h1>
+        <p class="lead">Manage and monitor your SaaS infrastructure cells across regions</p>
     </div>
-    <button type="submit">Save</button>
-    <button type="button" @onclick="NewAsync">New</button>
-    <span class="hint">CRUD requires GraphQL/DAB to be enabled</span>
-</EditForm>
 
-@if (cells is null)
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        @if (isEditing)
+                        {
+                            <i class="bi bi-pencil"></i> <text>Edit Cell</text>
+                        }
+                        else
+                        {
+                            <i class="bi bi-plus-circle"></i> <text>Add New Cell</text>
+                        }
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="editModel" OnValidSubmit="OnSaveAsync">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Cell ID</label>
+                            <InputText @bind-Value="editModel.Id" class="form-control" placeholder="cell-eastus-001" disabled="@isEditing" />
+                            <small class="form-text text-muted">Unique identifier for the cell</small>
+                            <ValidationMessage For="@(() => editModel.Id)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Region</label>
+                            <InputSelect @bind-Value="editModel.Region" class="form-control">
+                                <option value="">Select region...</option>
+                                <option value="eastus">East US</option>
+                                <option value="westus">West US</option>
+                                <option value="westus2">West US 2</option>
+                                <option value="westus3">West US 3</option>
+                                <option value="centralus">Central US</option>
+                                <option value="westeurope">West Europe</option>
+                                <option value="northeurope">North Europe</option>
+                                <option value="eastasia">East Asia</option>
+                                <option value="southeastasia">Southeast Asia</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.Region)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Availability Zone</label>
+                            <InputSelect @bind-Value="editModel.AvailabilityZone" class="form-control">
+                                <option value="">Select AZ...</option>
+                                <option value="1">Zone 1</option>
+                                <option value="2">Zone 2</option>
+                                <option value="3">Zone 3</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.AvailabilityZone)" class="text-danger" />
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Status</label>
+                            <InputSelect @bind-Value="editModel.Status" class="form-control">
+                                <option value="">Select status...</option>
+                                <option value="healthy">Healthy</option>
+                                <option value="degraded">Degraded</option>
+                                <option value="unhealthy">Unhealthy</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="provisioning">Provisioning</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => editModel.Status)" class="text-danger" />
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Capacity Used</label>
+                                    <InputNumber @bind-Value="editModel.CapacityUsed" class="form-control" min="0" />
+                                    <ValidationMessage For="@(() => editModel.CapacityUsed)" class="text-danger" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Total Capacity</label>
+                                    <InputNumber @bind-Value="editModel.CapacityTotal" class="form-control" min="1" />
+                                    <ValidationMessage For="@(() => editModel.CapacityTotal)" class="text-danger" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if (editModel.CapacityTotal > 0)
+                        {
+                            <div class="capacity-preview mb-3">
+                                <label class="form-label">Capacity Preview</label>
+                                <div class="progress">
+                                    <div class="progress-bar @GetCapacityProgressClass(editModel.CapacityUsed, editModel.CapacityTotal)" 
+                                         style="width: @(editModel.CapacityUsed * 100.0 / editModel.CapacityTotal)%">
+                                    </div>
+                                </div>
+                                <small class="text-muted">
+                                    @editModel.CapacityUsed/@editModel.CapacityTotal tenants 
+                                    (@(Math.Round(editModel.CapacityUsed * 100.0 / editModel.CapacityTotal, 1))% utilization)
+                                </small>
+                            </div>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i> @errorMessage
+                            </div>
+                        }
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <text> Saving...</text>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-check-circle"></i>
+                                    <text> @(isEditing ? "Update Cell" : "Create Cell")</text>
+                                }
+                            </button>
+                            @if (isEditing)
+                            {
+                                <button type="button" class="btn btn-secondary" @onclick="CancelEdit">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Infrastructure Cells</h5>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="RefreshData">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (cells is null)
+                    {
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading cells...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading infrastructure cells...</p>
+                        </div>
+                    }
+                    else if (!cells.Any())
+                    {
+                        <div class="empty-state text-center py-4">
+                            <div class="empty-icon mb-3">
+                                <i class="bi bi-grid-3x3-gap" style="font-size: 3rem; color: #6c757d;"></i>
+                            </div>
+                            <h5>No Cells Found</h5>
+                            <p class="text-muted">Infrastructure cells will appear here as they are discovered or manually added.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Cell</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Capacity</th>
+                                        <th>Utilization</th>
+                                        <th width="120">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var cell in cells.OrderBy(c => c.Region).ThenBy(c => c.AvailabilityZone))
+                                {
+                                    var utilizationPercent = cell.CapacityTotal > 0 ? (cell.CapacityUsed * 100.0 / cell.CapacityTotal) : 0;
+                                    
+                                    <tr class="@(editModel.Id == cell.Id ? "table-active" : "")">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="cell-icon me-2">
+                                                    <i class="bi bi-hdd-stack"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@cell.Id</div>
+                                                    <small class="text-muted">Infrastructure Cell</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span class="badge bg-info">@cell.Region.ToUpper()</span>
+                                            </div>
+                                            <small class="text-muted">AZ @cell.AvailabilityZone</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetStatusBadgeClass(cell.Status)">
+                                                <i class="bi @GetStatusIcon(cell.Status)"></i>
+                                                @cell.Status.ToUpper()
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="capacity-display">
+                                                <div class="progress mb-1" style="height: 8px;">
+                                                    <div class="progress-bar @GetCapacityProgressClass(cell.CapacityUsed, cell.CapacityTotal)" 
+                                                         style="width: @(utilizationPercent)%">
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">@cell.CapacityUsed/@cell.CapacityTotal</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge @GetUtilizationBadgeClass(utilizationPercent)">
+                                                @(Math.Round(utilizationPercent, 1))%
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-outline-primary" @onclick="() => Edit(cell)" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" @onclick="() => ConfirmDelete(cell)" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal)
 {
-    <p>Loading...</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        Confirm Delete
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete cell <strong>@cellToDelete?.Id</strong>?</p>
+                    <div class="alert alert-danger">
+                        <small>
+                            <i class="bi bi-exclamation-triangle"></i>
+                            This will remove the cell from the system. Ensure all tenants are migrated before deletion.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteCell" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            <text> Deleting...</text>
+                        }
+                        else
+                        {
+                            <i class="bi bi-trash"></i>
+                            <text> Delete Cell</text>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
-else
-{
-    <table>
-        <thead>
-            <tr><th>Id</th><th>Region</th><th>AZ</th><th>Status</th><th>Utilization</th></tr>
-        </thead>
-        <tbody>
-        @foreach (var c in cells)
-        {
-            <tr>
-                <td>@c.Id</td>
-                <td>@c.Region</td>
-                <td>@c.AvailabilityZone</td>
-                <td>@c.Status</td>
-                <td>@c.CapacityUsed/@c.CapacityTotal</td>
-                <td>
-                    <button @onclick="() => Edit(c)">Edit</button>
-                    <button @onclick="() => DeleteAsync(c)">Delete</button>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+
+<style>
+    .cells-container { padding: 1rem; }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+        color: white;
+        border-radius: 12px;
+    }
+    
+    .page-header h1 { margin: 0; font-size: 2.5rem; }
+    .page-header .lead { margin: 0.5rem 0 0 0; opacity: 0.9; }
+    
+    .form-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .cell-icon {
+        width: 32px;
+        height: 32px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+    
+    .empty-state {
+        padding: 3rem 1rem;
+    }
+    
+    .capacity-display {
+        min-width: 80px;
+    }
+    
+    .capacity-preview {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(32,201,151,0.05);
+    }
+    
+    .table-active {
+        background-color: rgba(32,201,151,0.1) !important;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
 
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Cell>? cells;
-    private CellEdit edit = new();
+    private CellEdit editModel = new();
+    private bool isLoading = false;
+    private bool isEditing = false;
+    private string errorMessage = "";
+    private bool showDeleteModal = false;
+    private Stamps.ManagementPortal.Models.Cell? cellToDelete;
 
-    class CellEdit
+    public class CellEdit
     {
+        [Required(ErrorMessage = "Cell ID is required")]
+        [RegularExpression(@"^[a-zA-Z0-9][a-zA-Z0-9-_]*[a-zA-Z0-9]$", ErrorMessage = "Cell ID must contain only letters, numbers, hyphens, and underscores")]
         public string Id { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Region is required")]
         public string Region { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Availability Zone is required")]
         public string AvailabilityZone { get; set; } = string.Empty;
+        
+        [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; } = string.Empty;
-        public int CapacityUsed { get; set; }
-        public int CapacityTotal { get; set; }
+        
+        [Range(0, int.MaxValue, ErrorMessage = "Capacity used must be 0 or greater")]
+        public int CapacityUsed { get; set; } = 0;
+        
+        [Range(1, int.MaxValue, ErrorMessage = "Total capacity must be 1 or greater")]
+        public int CapacityTotal { get; set; } = 100;
     }
+
     protected override async Task OnInitializedAsync()
     {
-        cells = await Data.GetCellsAsync();
+        await RefreshData();
     }
 
-    void Edit(Stamps.ManagementPortal.Models.Cell c)
-        => edit = new CellEdit { Id = c.Id, Region = c.Region, AvailabilityZone = c.AvailabilityZone, Status = c.Status, CapacityUsed = c.CapacityUsed, CapacityTotal = c.CapacityTotal };
-    Task NewAsync() { edit = new CellEdit(); return Task.CompletedTask; }
-
-    async Task OnSaveAsync()
+    private async Task RefreshData()
     {
-        var rec = new Stamps.ManagementPortal.Models.Cell(edit.Id, edit.Region, edit.AvailabilityZone, edit.Status, edit.CapacityUsed, edit.CapacityTotal);
-        if (cells?.Any(x => x.Id == rec.Id) == true)
-            await Data.UpdateCellAsync(rec);
-        else
-            await Data.CreateCellAsync(rec);
-        cells = await Data.GetCellsAsync();
+        try
+        {
+            cells = await Data.GetCellsAsync();
+            errorMessage = "";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load cells: {ex.Message}";
+        }
     }
 
-    async Task DeleteAsync(Stamps.ManagementPortal.Models.Cell c)
+    private void Edit(Stamps.ManagementPortal.Models.Cell cell)
     {
-        await Data.DeleteCellAsync(c.Id, c.Id);
-        cells = await Data.GetCellsAsync();
+        editModel = new CellEdit 
+        { 
+            Id = cell.Id, 
+            Region = cell.Region, 
+            AvailabilityZone = cell.AvailabilityZone, 
+            Status = cell.Status, 
+            CapacityUsed = cell.CapacityUsed, 
+            CapacityTotal = cell.CapacityTotal 
+        };
+        isEditing = true;
+        errorMessage = "";
     }
+
+    private void CancelEdit()
+    {
+        editModel = new CellEdit();
+        isEditing = false;
+        errorMessage = "";
+    }
+
+    private async Task OnSaveAsync()
+    {
+        isLoading = true;
+        errorMessage = "";
+        
+        try
+        {
+            // Validate capacity
+            if (editModel.CapacityUsed > editModel.CapacityTotal)
+            {
+                errorMessage = "Capacity used cannot exceed total capacity.";
+                return;
+            }
+            
+            var cell = new Stamps.ManagementPortal.Models.Cell(
+                editModel.Id, 
+                editModel.Region, 
+                editModel.AvailabilityZone, 
+                editModel.Status, 
+                editModel.CapacityUsed, 
+                editModel.CapacityTotal
+            );
+
+            if (isEditing)
+            {
+                await Data.UpdateCellAsync(cell);
+            }
+            else
+            {
+                await Data.CreateCellAsync(cell);
+            }
+            
+            await RefreshData();
+            CancelEdit(); // Reset form
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to save cell: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ConfirmDelete(Stamps.ManagementPortal.Models.Cell cell)
+    {
+        cellToDelete = cell;
+        showDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        cellToDelete = null;
+        showDeleteModal = false;
+    }
+
+    private async Task DeleteCell()
+    {
+        if (cellToDelete == null) return;
+        
+        isLoading = true;
+        try
+        {
+            await Data.DeleteCellAsync(cellToDelete.Id, cellToDelete.Id);
+            await RefreshData();
+            CancelDelete();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to delete cell: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string GetStatusBadgeClass(string status) => status switch
+    {
+        "healthy" => "bg-success",
+        "degraded" => "bg-warning text-dark",
+        "unhealthy" => "bg-danger",
+        "maintenance" => "bg-info",
+        "provisioning" => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
+
+    private static string GetStatusIcon(string status) => status switch
+    {
+        "healthy" => "bi-check-circle",
+        "degraded" => "bi-exclamation-triangle",
+        "unhealthy" => "bi-x-circle",
+        "maintenance" => "bi-tools",
+        "provisioning" => "bi-hourglass-split",
+        _ => "bi-question-circle"
+    };
+
+    private static string GetCapacityProgressClass(int used, int total) => total > 0 ? (used * 100.0 / total) switch
+    {
+        >= 90 => "bg-danger",
+        >= 75 => "bg-warning",
+        >= 50 => "bg-info",
+        _ => "bg-success"
+    } : "bg-secondary";
+
+    private static string GetUtilizationBadgeClass(double percent) => percent switch
+    {
+        >= 90 => "bg-danger",
+        >= 75 => "bg-warning text-dark",
+        >= 50 => "bg-info",
+        _ => "bg-success"
+    };
 }
