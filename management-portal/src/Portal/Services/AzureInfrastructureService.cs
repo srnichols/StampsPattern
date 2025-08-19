@@ -15,7 +15,14 @@ namespace Stamps.ManagementPortal.Services
     {
         private readonly ILogger<AzureInfrastructureService> _logger;
         private readonly IConfiguration _configuration;
-        private readonly ArmClient _armClient;
+    private ArmClient? _armClient;
+        private bool _armClientInitialized = false;
+        private readonly List<string> _candidateClientIds = new()
+        {
+            // Known client IDs for mi-stamps-mgmt instances (will try these if no explicit config)
+            "b1a030a7-2623-4c34-839f-9f37a9c4b303",
+            "089c14a4-e28f-417b-9c92-5d92deacb9ff"
+        };
         
         // Target subscriptions for live data
         private readonly List<string> _targetSubscriptions = new()
@@ -36,13 +43,66 @@ namespace Stamps.ManagementPortal.Services
             _logger = logger;
             _configuration = configuration;
             
-            // For Container Apps with user-assigned managed identity, we need to specify the client ID
-            // Client ID for mi-stamps-mgmt: b1a030a7-2623-4c34-839f-9f37a9c4b303
-            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            // Delay ArmClient initialization until we can pick a working credential at runtime
+            _armClient = null!; // initialized lazily in DiscoverInfrastructureAsync
+         }
+
+        private async Task EnsureArmClientInitializedAsync()
+        {
+            if (_armClientInitialized)
+                return;
+
+            // Allow explicit override via configuration or environment variable
+            var configuredClientId = _configuration["AzureManagedIdentityClientId"] ?? Environment.GetEnvironmentVariable("AzureManagedIdentityClientId");
+            var candidates = new List<string>();
+            if (!string.IsNullOrWhiteSpace(configuredClientId)) candidates.Add(configuredClientId);
+            candidates.AddRange(_candidateClientIds);
+
+            // Finally include a null entry which means use system/default credential without specifying a client id
+            candidates.Add(null!);
+
+            foreach (var candidate in candidates)
             {
-                ManagedIdentityClientId = "b1a030a7-2623-4c34-839f-9f37a9c4b303"
-            });
-            _armClient = new ArmClient(credential);
+                try
+                {
+                    var options = new DefaultAzureCredentialOptions();
+                    if (!string.IsNullOrWhiteSpace(candidate))
+                    {
+                        options.ManagedIdentityClientId = candidate;
+                        _logger.LogInformation("Trying managed identity client id: {ClientId}", candidate);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Trying DefaultAzureCredential without a user-assigned client id");
+                    }
+
+                    var credential = new DefaultAzureCredential(options);
+                    var arm = new ArmClient(credential);
+
+                    // Quick smoke test: enumerate subscriptions (first page) to validate the credential
+                    var subscriptionFound = false;
+                    await foreach (var _sub in arm.GetSubscriptions().GetAllAsync())
+                    {
+                        subscriptionFound = true;
+                        break;
+                    }
+                    if (subscriptionFound)
+                    {
+                        // If we got here, the credential worked
+                        _armClient = arm;
+                        _armClientInitialized = true;
+                        _logger.LogInformation("Selected managed identity credential: {ClientId}", candidate ?? "(default)");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Credential attempt failed for client id '{ClientId}'", candidate ?? "(default)");
+                    // try next candidate
+                }
+            }
+
+            throw new InvalidOperationException("Unable to authenticate with any candidate managed identity or default credential.");
         }
 
         public async Task<AzureInfrastructureData> DiscoverInfrastructureAsync()
@@ -64,11 +124,12 @@ namespace Stamps.ManagementPortal.Services
 
             try
             {
-                // Test authentication first
-                _logger.LogInformation("Testing Azure authentication...");
+                // Ensure ArmClient is initialized with a working credential
+                _logger.LogInformation("Ensuring ARM client is authenticated and initialized...");
                 try
                 {
-                    var subscriptions = _armClient.GetSubscriptions();
+                    await EnsureArmClientInitializedAsync();
+                    var subscriptions = _armClient!.GetSubscriptions();
                     var subscriptionCount = 0;
                     await foreach (var sub in subscriptions)
                     {
