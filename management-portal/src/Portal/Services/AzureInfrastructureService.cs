@@ -27,8 +27,29 @@ public class AzureInfrastructureService : IAzureInfrastructureService
 
         try
         {
-            // Use DefaultAzureCredential for authentication (supports various auth methods)
-            var credential = new DefaultAzureCredential();
+            // Use appropriate credential based on environment
+            Azure.Core.TokenCredential credential;
+            
+            if (Environment.GetEnvironmentVariable("RUNNING_IN_PRODUCTION") == "true")
+            {
+                // In production, use DefaultAzureCredential (supports managed identity)
+                credential = new DefaultAzureCredential();
+            }
+            else
+            {
+                // In development, try Azure CLI credential first, then fallback to interactive
+                try
+                {
+                    credential = new AzureCliCredential();
+                    _logger.LogInformation("Using Azure CLI credential for local development");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Azure CLI credential failed, falling back to simulated discovery");
+                    return CreateSimulatedDiscoveryResult();
+                }
+            }
+            
             var armClient = new ArmClient(credential);
 
             var cells = new List<DiscoveredCell>();
@@ -226,6 +247,85 @@ public class AzureInfrastructureService : IAzureInfrastructureService
             return "warning";
         else
             return "error";
+    }
+
+    private InfrastructureDiscoveryResult CreateSimulatedDiscoveryResult()
+    {
+        _logger.LogInformation("Creating simulated discovery result for local development");
+        
+        var simulatedCells = new List<DiscoveredCell>
+        {
+            new DiscoveredCell
+            {
+                Id = "cell-eastus-001",
+                Name = "STAMPS-EASTUS-001",
+                Region = "eastus",
+                Status = "healthy",
+                CapacityUsed = 65,
+                CapacityTotal = 100,
+                ResourceGroup = "rg-stamps-eastus-001",
+                ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.Storage/storageAccounts" }
+            },
+            new DiscoveredCell
+            {
+                Id = "cell-westus-001", 
+                Name = "STAMPS-WESTUS-001",
+                Region = "westus",
+                Status = "healthy",
+                CapacityUsed = 45,
+                CapacityTotal = 100,
+                ResourceGroup = "rg-stamps-westus-001",
+                ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.Storage/storageAccounts" }
+            },
+            new DiscoveredCell
+            {
+                Id = "cell-westeurope-001",
+                Name = "STAMPS-WESTEUROPE-001", 
+                Region = "westeurope",
+                Status = "warning",
+                CapacityUsed = 85,
+                CapacityTotal = 100,
+                ResourceGroup = "rg-stamps-westeurope-001",
+                ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Storage/storageAccounts" }
+            }
+        };
+
+        var simulatedResources = new List<DiscoveredResource>();
+        foreach (var cell in simulatedCells)
+        {
+            simulatedResources.AddRange(new[]
+            {
+                new DiscoveredResource 
+                { 
+                    Id = $"/subscriptions/simulation/resourceGroups/{cell.ResourceGroup}/providers/Microsoft.Web/sites/app-{cell.Region}",
+                    Name = $"app-{cell.Region}",
+                    Type = "Microsoft.Web/sites",
+                    Location = cell.Region,
+                    ResourceGroup = cell.ResourceGroup
+                },
+                new DiscoveredResource
+                {
+                    Id = $"/subscriptions/simulation/resourceGroups/{cell.ResourceGroup}/providers/Microsoft.Storage/storageAccounts/st{cell.Region}001",
+                    Name = $"st{cell.Region}001", 
+                    Type = "Microsoft.Storage/storageAccounts",
+                    Location = cell.Region,
+                    ResourceGroup = cell.ResourceGroup
+                }
+            });
+        }
+
+        return new InfrastructureDiscoveryResult
+        {
+            Cells = simulatedCells,
+            Resources = simulatedResources,
+            DiscoveredAt = DateTime.UtcNow,
+            TotalCells = simulatedCells.Count,
+            TotalResources = simulatedResources.Count,
+            Regions = simulatedCells.Select(c => c.Region).Distinct().ToList(),
+            ResourceGroups = simulatedCells.Select(c => c.ResourceGroup).Distinct().ToList(),
+            ResourceTypeBreakdown = simulatedResources.GroupBy(r => r.Type).ToDictionary(g => g.Key, g => g.Count()),
+            ErrorMessages = new List<string> { "Using simulated data for local development - Azure CLI not configured" }
+        };
     }
 }
 

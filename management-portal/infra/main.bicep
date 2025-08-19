@@ -70,6 +70,16 @@ module managementPortal 'management-portal.bicep' = {
   }
 }
 
+// Grant managed identity Reader permissions at subscription level for Azure resource discovery
+resource readerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(subscription().id, 'portal-reader-role', resourceGroupName)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7') // Reader
+    principalId: managementPortal.outputs.managedIdentityPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // Outputs
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId

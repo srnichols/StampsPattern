@@ -288,7 +288,7 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
         enableApiLogging: true
       }
       ingress: {
-        external: false
+        external: true
         targetPort: 80
         allowInsecure: false
         corsPolicy: {
@@ -484,6 +484,10 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'AzureAd__SignedOutCallbackPath'
               value: '/signout-callback-oidc'
             }
+            {
+              name: 'RUNNING_IN_PRODUCTION'
+              value: 'true'
+            }
           ]
           resources: {
             cpu: json('0.5')
@@ -518,3 +522,4 @@ output portalUrl string = 'https://${portalContainerApp.properties.configuration
 output dabUrl string = 'https://${dabContainerApp.properties.configuration.ingress.fqdn}'
 output containerRegistryName string = containerRegistry.name
 output containerRegistryLoginServer string = containerRegistry.properties.loginServer
+output managedIdentityPrincipalId string = managedIdentity.properties.principalId

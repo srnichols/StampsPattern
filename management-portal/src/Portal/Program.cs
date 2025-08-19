@@ -100,8 +100,11 @@ builder.Services.AddHttpClient("GraphQL", (sp, client) =>
 });
 
 // Configure data service with Dapr capabilities
-var useGraphQL = !string.IsNullOrWhiteSpace(builder.Configuration["DAB_GRAPHQL_URL"]);
+var dabGraphQLUrl = builder.Configuration["DAB_GRAPHQL_URL"];
+var useGraphQL = !string.IsNullOrWhiteSpace(dabGraphQLUrl);
 var useDapr = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DAPR_HTTP_PORT"));
+
+Console.WriteLine($"Service Configuration - UseGraphQL: {useGraphQL}, UseDapr: {useDapr}, DAB_URL: '{dabGraphQLUrl}'");
 
 if (useGraphQL && useDapr)
 {
@@ -112,12 +115,13 @@ if (useGraphQL && useDapr)
 else if (useGraphQL)
 {
     // Use direct GraphQL service
-    builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.GraphQLDataService>();
+    builder.Services.AddScoped<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.GraphQLDataService>();
 }
 else
 {
     // Use in-memory service for development
-    builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.InMemoryDataService>();
+    Console.WriteLine("Using InMemoryDataService for development");
+    builder.Services.AddScoped<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.InMemoryDataService>();
 }
 
 // Configure Azure Infrastructure Service
