@@ -277,7 +277,7 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     configuration: {
       ingress: {
         external: false
-  targetPort: 5000
+        targetPort: 80
         allowInsecure: false
         corsPolicy: {
           allowedOrigins: ['*']
@@ -313,10 +313,10 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       containers: [
         {
           // Use the built image for DAB which expects to be exposed on port 80
-          image: 'crxgjwtecm3g5pi.azurecr.io/stamps-dab:fix-schema-1'
+          image: 'crxgjwtecm3g5pi.azurecr.io/stamps-dab:working-fix-3'
           name: 'dab'
-          // Start DAB explicitly to surface startup logs; keep env minimal and correct
-          command: [ 'dab', 'start', '--host', '0.0.0.0', '--config', '/App/dab-config.json' ]
+          // Let the container use its default entrypoint instead of overriding
+          // command: [ 'dab', 'start', '--host', '0.0.0.0', '--config', '/App/dab-config.json' ]
           env: [
             {
               name: 'COSMOS_CONNECTION_STRING'
@@ -426,7 +426,7 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          image: '${containerRegistry.properties.loginServer}/stamps-portal:ui-fixes-1'
           name: 'portal'
           env: [
             {

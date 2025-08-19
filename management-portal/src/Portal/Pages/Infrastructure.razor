@@ -1,0 +1,590 @@
+@page "/infrastructure"
+@inject Stamps.ManagementPortal.Services.IDataService Data
+@inject IJSRuntime JSRuntime
+
+<div class="infrastructure-container">
+    <div class="page-header">
+        <h1>🏗️ Infrastructure Discovery</h1>
+        <p class="lead">Real-time view of your Azure Stamps infrastructure across all regions</p>
+        
+        <div class="header-actions">
+            <button class="btn btn-primary" @onclick="RefreshInfrastructure">
+                <i class="fas fa-sync-alt"></i> Discover Infrastructure
+            </button>
+            <button class="btn btn-outline-secondary" @onclick="ExportInfrastructureData">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    @if (loading)
+    {
+        <div class="loading-section">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Discovering infrastructure...</span>
+            </div>
+            <p class="mt-2">Scanning Azure subscriptions for Stamps pattern resources...</p>
+        </div>
+    }
+    else
+    {
+        <div class="infrastructure-overview">
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-icon">🌍</div>
+                    <div class="metric-content">
+                        <div class="metric-value">@discoveredCells.Count</div>
+                        <div class="metric-label">Discovered CELLs</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">📦</div>
+                    <div class="metric-content">
+                        <div class="metric-value">@discoveredResources.Count</div>
+                        <div class="metric-label">Azure Resources</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">🗂️</div>
+                    <div class="metric-content">
+                        <div class="metric-value">@resourceGroups.Count</div>
+                        <div class="metric-label">Resource Groups</div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">📍</div>
+                    <div class="metric-content">
+                        <div class="metric-value">@regions.Count</div>
+                        <div class="metric-label">Regions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>🏗️ Discovered CELLs</h5>
+                        <small class="text-muted">Last updated: @lastUpdated.ToString("MMM dd, yyyy HH:mm")</small>
+                    </div>
+                    <div class="card-body">
+                        @if (discoveredCells.Any())
+                        {
+                            <div class="cells-grid">
+                                @foreach (var cell in discoveredCells)
+                                {
+                                    <div class="cell-card @(cell.IsHealthy ? "healthy" : "unhealthy")">
+                                        <div class="cell-header">
+                                            <h6>@cell.Name</h6>
+                                            <span class="badge badge-@(cell.IsHealthy ? "success" : "danger")">@cell.Status</span>
+                                        </div>
+                                        
+                                        <div class="cell-details">
+                                            <div class="detail-row">
+                                                <span class="label">Region:</span>
+                                                <span class="value">@cell.Region</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Resource Group:</span>
+                                                <span class="value">@cell.ResourceGroup</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Capacity:</span>
+                                                <span class="value">@cell.CapacityUsed / @cell.CapacityTotal (@cell.UtilizationPercentage.ToString("F1")%)</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="label">Resources:</span>
+                                                <span class="value">@string.Join(", ", cell.ResourceTypes.Take(3))@(cell.ResourceTypes.Count > 3 ? "..." : "")</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="cell-actions">
+                                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewCellDetails(cell.Id)">
+                                                View Details
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => OpenInAzurePortal(cell.ResourceGroup)">
+                                                Azure Portal
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-icon">🔍</div>
+                                <h6>No Infrastructure Discovered</h6>
+                                <p>Click "Discover Infrastructure" to scan your Azure subscriptions for Stamps pattern resources.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>📦 Resource Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (resourceTypeBreakdown.Any())
+                        {
+                            <div class="resource-breakdown">
+                                @foreach (var resourceType in resourceTypeBreakdown.Take(10))
+                                {
+                                    <div class="resource-type-item">
+                                        <div class="resource-type-name">@GetFriendlyResourceTypeName(resourceType.Key)</div>
+                                        <div class="resource-type-count">@resourceType.Value</div>
+                                        <div class="resource-type-bar">
+                                            <div class="resource-type-fill" style="width: @(resourceType.Value * 100.0 / resourceTypeBreakdown.Values.Max())%"></div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No resources discovered yet.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📍 Regional Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (regions.Any())
+                        {
+                            <div class="regions-list">
+                                @foreach (var region in regions)
+                                {
+                                    var cellsInRegion = discoveredCells.Where(c => c.Region == region).ToList();
+                                    <div class="region-item">
+                                        <div class="region-header">
+                                            <strong>@region.ToUpper()</strong>
+                                            <span class="badge badge-secondary">@cellsInRegion.Count CELLs</span>
+                                        </div>
+                                        <div class="region-cells">
+                                            @foreach (var cell in cellsInRegion)
+                                            {
+                                                <div class="region-cell">
+                                                    <span class="status-dot @(cell.IsHealthy ? "healthy" : "unhealthy")"></span>
+                                                    <span class="cell-name">@cell.Name</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No regions discovered yet.</p>
+                        }
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>⚡ Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <button class="btn btn-outline-primary btn-block mb-2" @onclick="RefreshInfrastructure">
+                                🔄 Refresh Discovery
+                            </button>
+                            <button class="btn btn-outline-secondary btn-block mb-2" @onclick="SyncWithSeederData">
+                                🔗 Sync with Portal Data
+                            </button>
+                            <button class="btn btn-outline-info btn-block mb-2" @onclick="ViewHealthDashboard">
+                                📊 Health Dashboard
+                            </button>
+                            <button class="btn btn-outline-warning btn-block" @onclick="ScheduleDiscovery">
+                                ⏰ Schedule Auto-Discovery
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .infrastructure-container { padding: 1rem; }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 12px;
+    }
+    
+    .header-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .loading-section {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .metrics-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .metric-icon { font-size: 2.5rem; }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #28a745;
+        line-height: 1;
+    }
+    
+    .metric-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+    
+    .cells-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+    
+    .cell-card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .cell-card.healthy { border-left: 4px solid #28a745; }
+    .cell-card.unhealthy { border-left: 4px solid #dc3545; }
+    
+    .cell-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    
+    .cell-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .cell-header h6 {
+        margin: 0;
+        color: #495057;
+    }
+    
+    .cell-details {
+        margin-bottom: 1rem;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
+    .detail-row .label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+    
+    .detail-row .value {
+        color: #495057;
+    }
+    
+    .cell-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .resource-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .resource-type-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .resource-type-name {
+        flex: 1;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    
+    .resource-type-count {
+        font-weight: 600;
+        color: #28a745;
+        min-width: 2rem;
+        text-align: right;
+    }
+    
+    .resource-type-bar {
+        flex: 1;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    
+    .resource-type-fill {
+        height: 100%;
+        background: #28a745;
+        transition: width 0.3s ease;
+    }
+    
+    .regions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .region-item {
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 1rem;
+    }
+    
+    .region-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .region-cells {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .region-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+    
+    .status-dot.healthy { background-color: #28a745; }
+    .status-dot.unhealthy { background-color: #dc3545; }
+    
+    .cell-name {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .quick-actions .btn {
+        text-align: left;
+    }
+</style>
+
+@code {
+    private bool loading = false;
+    private DateTime lastUpdated = DateTime.Now;
+    
+    private List<DiscoveredCell> discoveredCells = new List<DiscoveredCell>();
+    private List<DiscoveredResource> discoveredResources = new List<DiscoveredResource>();
+    private Dictionary<string, int> resourceTypeBreakdown = new Dictionary<string, int>();
+    private List<string> regions = new List<string>();
+    private List<string> resourceGroups = new List<string>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInfrastructureData();
+    }
+    
+    private async Task LoadInfrastructureData()
+    {
+        // TODO: Call the InfrastructureDiscoveryFunction
+        // For now, load simulated discovery data
+        await LoadSimulatedDiscoveryData();
+    }
+    
+    private async Task LoadSimulatedDiscoveryData()
+    {
+        // Simulate discovered infrastructure based on your 6 CELLs in 2 regions
+        discoveredCells = new List<DiscoveredCell>
+        {
+            new DiscoveredCell { Id = "cell-eastus-01", Name = "East US CELL 01", Region = "eastus", Status = "healthy", 
+                    CapacityTotal = 1000, CapacityUsed = 650, ResourceGroup = "rg-stamps-eastus-01",
+                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
+            new DiscoveredCell { Id = "cell-eastus-02", Name = "East US CELL 02", Region = "eastus", Status = "healthy", 
+                    CapacityTotal = 1000, CapacityUsed = 720, ResourceGroup = "rg-stamps-eastus-02",
+                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
+            new DiscoveredCell { Id = "cell-eastus-03", Name = "East US CELL 03", Region = "eastus", Status = "degraded", 
+                    CapacityTotal = 1000, CapacityUsed = 890, ResourceGroup = "rg-stamps-eastus-03",
+                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
+            new DiscoveredCell { Id = "cell-westus-01", Name = "West US CELL 01", Region = "westus", Status = "healthy", 
+                    CapacityTotal = 1000, CapacityUsed = 450, ResourceGroup = "rg-stamps-westus-01",
+                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
+            new DiscoveredCell { Id = "cell-westus-02", Name = "West US CELL 02", Region = "westus", Status = "healthy", 
+                    CapacityTotal = 1000, CapacityUsed = 580, ResourceGroup = "rg-stamps-westus-02",
+                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } },
+            new DiscoveredCell { Id = "cell-westus-03", Name = "West US CELL 03", Region = "westus", Status = "healthy", 
+                    CapacityTotal = 1000, CapacityUsed = 320, ResourceGroup = "rg-stamps-westus-03",
+                    ResourceTypes = new List<string> { "Microsoft.Web/sites", "Microsoft.Sql/servers", "Microsoft.App/containerApps" } }
+        };
+        
+        discoveredResources = new List<DiscoveredResource>
+        {
+            // Sample resources across your 6 CELLs
+            // Each CELL typically has: App Services, SQL Databases, Container Apps, Storage, etc.
+        };
+        
+        resourceTypeBreakdown = new Dictionary<string, int>
+        {
+            { "Microsoft.Web/sites", 18 },
+            { "Microsoft.Sql/servers", 12 },
+            { "Microsoft.App/containerApps", 24 },
+            { "Microsoft.Storage/storageAccounts", 6 },
+            { "Microsoft.Network/applicationGateways", 2 },
+            { "Microsoft.KeyVault/vaults", 6 }
+        };
+        
+        regions = discoveredCells.Select(c => c.Region).Distinct().ToList();
+        resourceGroups = discoveredCells.Select(c => c.ResourceGroup).Distinct().ToList();
+        
+        lastUpdated = DateTime.Now;
+    }
+    
+    private async Task RefreshInfrastructure()
+    {
+        loading = true;
+        StateHasChanged();
+        
+        try
+        {
+            // TODO: Call Azure Function to discover real infrastructure
+            // For now, simulate the discovery process
+            await Task.Delay(2000); // Simulate discovery time
+            await LoadInfrastructureData();
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+    
+    private async Task ExportInfrastructureData()
+    {
+        // TODO: Export infrastructure data to CSV/JSON
+        await JSRuntime.InvokeVoidAsync("alert", "Export functionality coming soon!");
+    }
+    
+    private async Task ViewCellDetails(string cellId)
+    {
+        // TODO: Navigate to detailed cell view
+        await JSRuntime.InvokeVoidAsync("alert", $"Cell details for {cellId} coming soon!");
+    }
+    
+    private async Task OpenInAzurePortal(string resourceGroup)
+    {
+        var portalUrl = $"https://portal.azure.com/#@/resource/subscriptions/{{subscription-id}}/resourceGroups/{resourceGroup}/overview";
+        await JSRuntime.InvokeVoidAsync("open", portalUrl, "_blank");
+    }
+    
+    private async Task SyncWithSeederData()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Sync with seeder data functionality coming soon!");
+    }
+    
+    private async Task ViewHealthDashboard()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Health dashboard coming soon!");
+    }
+    
+    private async Task ScheduleDiscovery()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Auto-discovery scheduling coming soon!");
+    }
+    
+    private string GetFriendlyResourceTypeName(string resourceType)
+    {
+        return resourceType switch
+        {
+            "Microsoft.Web/sites" => "App Services",
+            "Microsoft.Sql/servers" => "SQL Servers",
+            "Microsoft.App/containerApps" => "Container Apps",
+            "Microsoft.Storage/storageAccounts" => "Storage Accounts",
+            "Microsoft.Network/applicationGateways" => "Application Gateways",
+            "Microsoft.KeyVault/vaults" => "Key Vaults",
+            _ => resourceType.Split('/').Last()
+        };
+    }
+}
+
+// Supporting models for the UI (these would typically be in a shared library)
+public class DiscoveredCell
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
+    public string Status { get; set; } = "unknown";
+    public int CapacityTotal { get; set; } = 100;
+    public int CapacityUsed { get; set; } = 0;
+    public string ResourceGroup { get; set; } = string.Empty;
+    public List<string> ResourceTypes { get; set; } = new List<string>();
+    
+    public double UtilizationPercentage => CapacityTotal > 0 ? (double)CapacityUsed / CapacityTotal * 100 : 0;
+    public bool IsHealthy => Status.Equals("healthy", StringComparison.OrdinalIgnoreCase);
+}
+
+public class DiscoveredResource
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public string ResourceGroup { get; set; } = string.Empty;
+}
