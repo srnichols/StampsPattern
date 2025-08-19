@@ -45,6 +45,8 @@ namespace Stamps.ManagementPortal.Services
         public async Task<AzureInfrastructureData> DiscoverInfrastructureAsync()
         {
             _logger.LogInformation("Starting Azure infrastructure discovery for stamps pattern...");
+            _logger.LogInformation($"Target subscriptions: {string.Join(", ", _targetSubscriptions)}");
+            _logger.LogInformation($"Target regions: {string.Join(", ", _targetRegions)}");
             
             var result = new AzureInfrastructureData
             {
@@ -53,27 +55,62 @@ namespace Stamps.ManagementPortal.Services
                 Resources = new List<DiscoveredResource>(),
                 Regions = new List<string>(),
                 ResourceGroups = new List<string>(),
-                ResourceTypeBreakdown = new Dictionary<string, int>()
+                ResourceTypeBreakdown = new Dictionary<string, int>(),
+                ErrorMessages = new List<string>()
             };
 
             try
             {
+                // Test authentication first
+                _logger.LogInformation("Testing Azure authentication...");
+                try
+                {
+                    var subscriptions = _armClient.GetSubscriptions();
+                    var subscriptionCount = 0;
+                    await foreach (var sub in subscriptions)
+                    {
+                        subscriptionCount++;
+                        _logger.LogInformation($"Found subscription: {sub.Data.DisplayName} ({sub.Data.SubscriptionId})");
+                        if (subscriptionCount >= 5) break; // Limit logging
+                    }
+                    _logger.LogInformation($"Authentication successful. Found {subscriptionCount}+ subscriptions.");
+                }
+                catch (Exception authEx)
+                {
+                    _logger.LogError(authEx, "Authentication failed");
+                    result.ErrorMessages.Add($"Authentication failed: {authEx.Message}");
+                    return result;
+                }
+
                 foreach (var subscriptionId in _targetSubscriptions)
                 {
                     _logger.LogInformation($"Discovering resources in subscription: {subscriptionId}");
-                    await DiscoverSubscriptionResourcesAsync(subscriptionId, result);
+                    try
+                    {
+                        await DiscoverSubscriptionResourcesAsync(subscriptionId, result);
+                    }
+                    catch (Exception subEx)
+                    {
+                        _logger.LogError(subEx, $"Failed to discover resources in subscription {subscriptionId}");
+                        result.ErrorMessages.Add($"Subscription {subscriptionId}: {subEx.Message}");
+                    }
                 }
                 
                 // Process discovered data to identify cells and patterns
                 ProcessStampsPattern(result);
                 
                 _logger.LogInformation($"Discovery completed. Found {result.Resources.Count} resources across {result.Regions.Count} regions");
+                if (result.ErrorMessages.Any())
+                {
+                    _logger.LogWarning($"Discovery completed with {result.ErrorMessages.Count} errors");
+                }
                 return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to discover Azure infrastructure");
-                throw;
+                result.ErrorMessages.Add($"Discovery failed: {ex.Message}");
+                return result;
             }
         }
 
@@ -81,17 +118,26 @@ namespace Stamps.ManagementPortal.Services
         {
             try
             {
+                _logger.LogInformation($"Attempting to access subscription: {subscriptionId}");
                 var subscription = _armClient.GetSubscriptionResource(new Azure.Core.ResourceIdentifier($"/subscriptions/{subscriptionId}"));
                 
+                // Test subscription access
+                var subscriptionData = await subscription.GetAsync();
+                _logger.LogInformation($"Successfully accessed subscription: {subscriptionData.Value.Data.DisplayName}");
+                
                 // Get all resource groups in the subscription
+                var resourceGroupCount = 0;
                 await foreach (var resourceGroup in subscription.GetResourceGroups())
                 {
+                    resourceGroupCount++;
                     var rgLocation = resourceGroup.Data.Location.Name;
+                    
+                    _logger.LogInformation($"Found resource group: {resourceGroup.Data.Name} in {rgLocation}");
                     
                     // Only process resources in our target regions
                     if (_targetRegions.Contains(rgLocation))
                     {
-                        _logger.LogInformation($"Discovering resources in resource group: {resourceGroup.Data.Name} ({rgLocation})");
+                        _logger.LogInformation($"Processing resource group: {resourceGroup.Data.Name} ({rgLocation}) - matches target region");
                         
                         if (!result.Regions.Contains(rgLocation))
                             result.Regions.Add(rgLocation);
@@ -101,11 +147,17 @@ namespace Stamps.ManagementPortal.Services
                         
                         await DiscoverResourceGroupResourcesAsync(resourceGroup, result);
                     }
+                    else
+                    {
+                        _logger.LogDebug($"Skipping resource group: {resourceGroup.Data.Name} ({rgLocation}) - not in target regions");
+                    }
                 }
+                _logger.LogInformation($"Processed {resourceGroupCount} resource groups in subscription {subscriptionId}");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to discover resources in subscription {subscriptionId}");
+                result.ErrorMessages?.Add($"Subscription {subscriptionId}: {ex.Message}");
             }
         }
 
@@ -427,5 +479,6 @@ namespace Stamps.ManagementPortal.Services
         public List<string> Regions { get; set; } = new();
         public List<string> ResourceGroups { get; set; } = new();
         public Dictionary<string, int> ResourceTypeBreakdown { get; set; } = new();
+        public List<string> ErrorMessages { get; set; } = new();
     }
 }

@@ -33,6 +33,19 @@
     }
     else
     {
+        @if (errorMessages.Any())
+        {
+            <div class="alert alert-warning mb-4">
+                <h6><strong>⚠️ Discovery Issues</strong></h6>
+                <ul class="mb-0">
+                    @foreach (var error in errorMessages)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+                <small class="mt-2 d-block">The Container App may need Reader permissions on the target subscriptions.</small>
+            </div>
+        }
         <div class="infrastructure-overview">
             <div class="metrics-row">
                 <div class="metric-card">
@@ -439,6 +452,7 @@
     private Dictionary<string, int> resourceTypeBreakdown = new Dictionary<string, int>();
     private List<string> regions = new List<string>();
     private List<string> resourceGroups = new List<string>();
+    private List<string> errorMessages = new List<string>();
     
     protected override async Task OnInitializedAsync()
     {
@@ -485,6 +499,7 @@
             resourceTypeBreakdown = infrastructureData.ResourceTypeBreakdown;
             regions = infrastructureData.Regions;
             resourceGroups = infrastructureData.ResourceGroups;
+            errorMessages = infrastructureData.ErrorMessages;
             
             Logger.LogInformation($"Discovery completed: {discoveredResources.Count} resources found across {regions.Count} regions");
         }
@@ -498,6 +513,7 @@
             resourceTypeBreakdown = new Dictionary<string, int>();
             regions = new List<string> { "westus2", "westus3" }; // Expected regions
             resourceGroups = new List<string>();
+            errorMessages = new List<string> { $"Failed to discover Azure infrastructure: {ex.Message}" };
             
             // Optionally show error message to user
             await JSRuntime.InvokeVoidAsync("alert", $"Failed to discover Azure infrastructure: {ex.Message}");
