@@ -213,11 +213,13 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
   tags: tags
 }
 
-// Container Apps Environment
+// Container Apps Environment with Dapr enabled
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: containerAppsEnvironmentName
   location: location
   properties: {
+    daprAIInstrumentationKey: appInsights.properties.InstrumentationKey
+    daprAIConnectionString: appInsights.properties.ConnectionString
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
@@ -275,6 +277,13 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
+      dapr: {
+        enabled: true
+        appId: 'dab'
+        appProtocol: 'http'
+        appPort: 80
+        enableApiLogging: true
+      }
       ingress: {
         external: false
         targetPort: 80
@@ -374,6 +383,13 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
+      dapr: {
+        enabled: true
+        appId: 'portal'
+        appProtocol: 'http'
+        appPort: 8080
+        enableApiLogging: true
+      }
       ingress: {
         external: true
         targetPort: 8080

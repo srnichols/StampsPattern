@@ -1,0 +1,18 @@
+# Dapr component for state management using Redis
+# This provides caching capabilities for Azure discovery results
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: cache-store
+spec:
+  type: state.redis
+  version: v1
+  metadata:
+  - name: redisHost
+    value: "localhost:6379"
+  - name: redisPassword
+    value: ""
+  - name: enableTLS
+    value: "false"
+  - name: ttlInSeconds
+    value: "600" # Default 10 minute TTL

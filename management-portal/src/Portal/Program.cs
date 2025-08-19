@@ -80,6 +80,28 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["ApplicationInsights:Connec
     builder.Services.AddApplicationInsightsTelemetry();
 }
 
+// Configure Dapr client and services
+builder.Services.AddDapr(daprClientBuilder =>
+{
+    var daprHttpPort = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500";
+    var daprGrpcPort = Environment.GetEnvironmentVariable("DAPR_GRPC_PORT") ?? "50001";
+    daprClientBuilder.UseHttpEndpoint($"http://localhost:{daprHttpPort}")
+                    .UseGrpcEndpoint($"http://localhost:{daprGrpcPort}");
+});
+
+// Configure OpenTelemetry for distributed tracing
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracingBuilder => tracingBuilder
+        .AddAspNetCoreInstrumentation()
+        .AddSource("Dapr.Client")
+        .AddConsoleExporter() // For debugging
+        .AddAzureMonitorTraceExporter()) // For Azure Monitor
+    .WithMetrics(metricsBuilder => metricsBuilder
+        .AddAspNetCoreInstrumentation()
+        .AddMeter("Dapr.Client")
+        .AddConsoleExporter() // For debugging
+        .AddAzureMonitorMetricExporter()); // For Azure Monitor
+
 // Configure GraphQL client
 builder.Services.AddHttpClient("GraphQL", (sp, client) =>
 {
@@ -91,14 +113,24 @@ builder.Services.AddHttpClient("GraphQL", (sp, client) =>
     }
 });
 
-// Configure data service
+// Configure data service with Dapr capabilities
 var useGraphQL = !string.IsNullOrWhiteSpace(builder.Configuration["DAB_GRAPHQL_URL"]);
-if (useGraphQL)
+var useDapr = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DAPR_HTTP_PORT"));
+
+if (useGraphQL && useDapr)
 {
+    // Use Dapr-enabled data service for enhanced debugging and resilience
+    builder.Services.AddScoped<Stamps.ManagementPortal.Services.GraphQLDataService>();
+    builder.Services.AddScoped<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.DaprDataService>();
+}
+else if (useGraphQL)
+{
+    // Use direct GraphQL service
     builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.GraphQLDataService>();
 }
 else
 {
+    // Use in-memory service for development
     builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.InMemoryDataService>();
 }
 
