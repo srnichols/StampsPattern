@@ -18,9 +18,27 @@
     <button type="button" @onclick="NewAsync">New</button>
 </EditForm>
 
-@if (tenants is null)
+@if (loading)
 {
     <p>Loading...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-warning">
+        <strong>Data Service Unavailable:</strong> @errorMessage
+        <br />
+        <small>This feature requires the DAB (Data API Builder) service to be running and properly configured.</small>
+        <br />
+        <button class="btn btn-link" @onclick="RetryLoadAsync">Retry</button>
+    </div>
+}
+else if (tenants is null || !tenants.Any())
+{
+    <div class="alert alert-info">
+        <strong>No Tenants Found</strong>
+        <br />
+        <small>Create your first tenant using the form above.</small>
+    </div>
 }
 else
 {
@@ -50,6 +68,9 @@ else
 
 @code {
     private IReadOnlyList<Stamps.ManagementPortal.Models.Tenant>? tenants;
+    private bool loading = true;
+    private string? errorMessage;
+    
     class TenantEdit
     {
         public string Id { get; set; } = string.Empty;
@@ -61,40 +82,78 @@ else
     }
 
     private TenantEdit editModel = new();
+    
     protected override async Task OnInitializedAsync()
     {
-        tenants = await Data.GetTenantsAsync();
+        await LoadTenantsAsync();
+    }
+
+    async Task LoadTenantsAsync()
+    {
+        try
+        {
+            loading = true;
+            errorMessage = null;
+            tenants = await Data.GetTenantsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            tenants = new List<Stamps.ManagementPortal.Models.Tenant>();
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    async Task RetryLoadAsync()
+    {
+        await LoadTenantsAsync();
     }
 
     void Edit(Stamps.ManagementPortal.Models.Tenant t)
         => editModel = new TenantEdit { Id = t.Id, DisplayName = t.DisplayName, Domain = t.Domain, Tier = t.Tier, Status = t.Status, CellId = t.CellId };
+    
     Task NewAsync() { editModel = new TenantEdit(); return Task.CompletedTask; }
 
     async Task OnSaveAsync()
     {
-        var rec = new Stamps.ManagementPortal.Models.Tenant(editModel.Id, editModel.DisplayName, editModel.Domain, editModel.Tier, editModel.Status, editModel.CellId);
-        if (tenants?.Any(x => x.Id == rec.Id) == true)
-            await Data.UpdateTenantAsync(rec);
-        else
+        try
         {
-            // Reserve domain first to ensure global uniqueness
-            var reserved = await Data.ReserveDomainAsync(editModel.Domain, editModel.Id);
-            if (!reserved)
+            var rec = new Stamps.ManagementPortal.Models.Tenant(editModel.Id, editModel.DisplayName, editModel.Domain, editModel.Tier, editModel.Status, editModel.CellId);
+            if (tenants?.Any(x => x.Id == rec.Id) == true)
+                await Data.UpdateTenantAsync(rec);
+            else
             {
-                // Domain already reserved by another tenant; abort create
-                // A nicer UX would surface this inline; for now just reload and return
-                tenants = await Data.GetTenantsAsync();
-                return;
+                // Reserve domain first to ensure global uniqueness
+                var reserved = await Data.ReserveDomainAsync(editModel.Domain, editModel.Id);
+                if (!reserved)
+                {
+                    errorMessage = $"Domain '{editModel.Domain}' is already reserved by another tenant.";
+                    return;
+                }
+                await Data.CreateTenantAsync(rec);
             }
-            await Data.CreateTenantAsync(rec);
+            await LoadTenantsAsync();
         }
-        tenants = await Data.GetTenantsAsync();
+        catch (Exception ex)
+        {
+            errorMessage = $"Save failed: {ex.Message}";
+        }
     }
 
     async Task DeleteAsync(Stamps.ManagementPortal.Models.Tenant t)
     {
-        await Data.DeleteTenantAsync(t.Id, t.Id);
-    await Data.ReleaseDomainAsync(t.Domain);
-        tenants = await Data.GetTenantsAsync();
+        try
+        {
+            await Data.DeleteTenantAsync(t.Id, t.Id);
+            await Data.ReleaseDomainAsync(t.Domain);
+            await LoadTenantsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Delete failed: {ex.Message}";
+        }
     }
 }

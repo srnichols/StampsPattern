@@ -17,28 +17,28 @@
       "enabled": true, 
       "path": "/graphql"
     },
-    "authentication": { 
-      "provider": "StaticWebApps" 
+    "host": {
+      "cors": {
+        "origins": ["*"],
+        "allow-credentials": false
+      }
     }
   },
   "entities": {
     "Tenant": {
       "source": "tenants",
       "graphql": { "type": { "singular": "Tenant", "plural": "Tenants" } },
-      "primary-key": ["id", "tenantId"],
-      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+      "permissions": [ { "role": "anonymous", "actions": [ "*" ] } ]
     },
     "Cell": {
       "source": "cells",
       "graphql": { "type": { "singular": "Cell", "plural": "Cells" } },
-      "primary-key": ["id", "cellId"],
-      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+      "permissions": [ { "role": "anonymous", "actions": [ "*" ] } ]
     },
     "Operation": {
       "source": "operations",
       "graphql": { "type": { "singular": "Operation", "plural": "Operations" } },
-      "primary-key": ["id", "tenantId"],
-      "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
+      "permissions": [ { "role": "anonymous", "actions": [ "*" ] } ]
     }
   }
 }

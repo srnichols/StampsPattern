@@ -24,8 +24,8 @@ if (builder.Environment.IsProduction())
     });
 }
 
-// Add authentication for production
-if (builder.Environment.IsProduction())
+// Configure authentication conditionally - disable in production for testing
+if (builder.Environment.IsDevelopment())
 {
     // Configure authentication to use HTTPS URLs
     builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
@@ -71,6 +71,8 @@ if (builder.Environment.IsProduction())
 }
 else
 {
+    // Production: No authentication for testing Azure discovery features
+    builder.Services.AddAuthorization();
     builder.Services.AddRazorPages();
 }
 
@@ -133,8 +135,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Add authentication middleware for production
-if (app.Environment.IsProduction())
+// Add authentication middleware only in development
+if (app.Environment.IsDevelopment())
 {
     app.UseAuthentication();
     app.UseAuthorization();
@@ -143,8 +145,8 @@ if (app.Environment.IsProduction())
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-// Add authentication-related routes for production
-if (app.Environment.IsProduction())
+// Add authentication-related routes only in development
+if (app.Environment.IsDevelopment())
 {
     app.MapControllers();
     app.MapRazorPages();
