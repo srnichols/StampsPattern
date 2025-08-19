@@ -102,6 +102,12 @@ else
     builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.InMemoryDataService>();
 }
 
+// Configure Azure Infrastructure Service
+builder.Services.AddScoped<Stamps.ManagementPortal.Services.IAzureInfrastructureService, Stamps.ManagementPortal.Services.AzureInfrastructureService>();
+
+// Configure Cosmos Discovery Service for live data synchronization
+builder.Services.AddScoped<Stamps.ManagementPortal.Services.ICosmosDiscoveryService, Stamps.ManagementPortal.Services.CosmosDiscoveryService>();
+
 // Add health checks
 builder.Services.AddHealthChecks();
 
