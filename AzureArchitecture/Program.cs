@@ -75,6 +75,7 @@ namespace AzureStampsPattern
             services.AddScoped<TenantMigrationFunction>();
             services.AddScoped<GetTenantInfoFunction>();
             services.AddScoped<CachedGetTenantCellFunction>();
+            services.AddScoped<InfrastructureDiscoveryFunction>(); // Re-enabled - function restored
         }
     }
 

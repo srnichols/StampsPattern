@@ -277,4 +277,45 @@ namespace AzureStampsPattern.Models
             { ComplianceStandards.SOC2_TYPE2, 25m }  // +$25/month for SOC2
         };
     }
+
+    /// <summary>
+    /// Infrastructure resource discovered from Azure Resource Manager
+    /// </summary>
+    public class InfrastructureResource
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
+        public string ResourceGroup { get; set; } = string.Empty;
+        public string Subscription { get; set; } = string.Empty;
+        public Dictionary<string, string> Tags { get; set; } = new();
+        public string Status { get; set; } = "unknown";
+        public DateTime LastDiscovered { get; set; } = DateTime.UtcNow;
+        public Dictionary<string, object> Properties { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Extended Cell model with infrastructure discovery data
+    /// </summary>
+    public class Cell
+    {
+        public string Id { get; set; } = string.Empty;
+        public string CellId { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string AvailabilityZone { get; set; } = "1";
+        public string Status { get; set; } = "unknown";
+        public int CapacityTotal { get; set; } = 100;
+        public int CapacityUsed { get; set; } = 0;
+        public string? ResourceGroup { get; set; }
+        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
+        public List<string> ResourceTypes { get; set; } = new();
+        public Dictionary<string, string> Tags { get; set; } = new();
+        public bool IsDiscovered { get; set; } = false;
+        
+        // Computed properties
+        public double UtilizationPercentage => CapacityTotal > 0 ? (double)CapacityUsed / CapacityTotal * 100 : 0;
+        public bool IsHealthy => Status.Equals("healthy", StringComparison.OrdinalIgnoreCase);
+        public bool HasCapacity => CapacityUsed < CapacityTotal;
+    }
 }
