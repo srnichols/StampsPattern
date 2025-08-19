@@ -27,6 +27,12 @@ param logAnalyticsWorkspaceName string = ''
 @description('The name of the Application Insights component')
 param appInsightsName string = ''
 
+@description('Portal container image')
+param portalImage string
+
+@description('DAB container image')
+param dabImage string
+
 // Use generated names if not provided
 var actualCosmosAccountName = empty(cosmosAccountName) ? 'cosmos-${resourceToken}' : cosmosAccountName
 var actualContainerAppsEnvironmentName = empty(containerAppsEnvironmentName) ? 'cae-${resourceToken}' : containerAppsEnvironmentName
@@ -58,6 +64,8 @@ module managementPortal 'management-portal.bicep' = {
     containerRegistryName: actualContainerRegistryName
     logAnalyticsWorkspaceName: actualLogAnalyticsWorkspaceName
     appInsightsName: actualAppInsightsName
+    portalImage: portalImage
+    dabImage: dabImage
     tags: tags
   }
 }
