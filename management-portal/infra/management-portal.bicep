@@ -31,8 +31,11 @@ param useKeyVault bool = false
 @description('Key Vault name to read secrets from when useKeyVault = true')
 param keyVaultName string = ''
 
+@description('Portal container image')
+param portalImage string
 
-// Note: portalImage and dabImage parameters are kept for future use but currently use base images
+@description('DAB container image')
+param dabImage string
 
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   name: cosmosAccountName
@@ -322,7 +325,7 @@ resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       containers: [
         {
           // Use the built image for DAB which expects to be exposed on port 80
-          image: 'crxgjwtecm3g5pi.azurecr.io/stamps-dab:working-fix-3'
+          image: dabImage
           name: 'dab'
           // Let the container use its default entrypoint instead of overriding
           // command: [ 'dab', 'start', '--host', '0.0.0.0', '--config', '/App/dab-config.json' ]
@@ -442,7 +445,7 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          image: '${containerRegistry.properties.loginServer}/stamps-portal:ui-fixes-1'
+          image: portalImage
           name: 'portal'
           env: [
             {
