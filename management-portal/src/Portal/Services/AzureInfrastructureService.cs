@@ -36,9 +36,12 @@ namespace Stamps.ManagementPortal.Services
             _logger = logger;
             _configuration = configuration;
             
-            // Use DefaultAzureCredential for authentication
-            // This supports managed identity, Visual Studio, Azure CLI, etc.
-            var credential = new DefaultAzureCredential();
+            // For Container Apps with user-assigned managed identity, we need to specify the client ID
+            // Client ID for mi-stamps-mgmt: b1a030a7-2623-4c34-839f-9f37a9c4b303
+            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+            {
+                ManagedIdentityClientId = "b1a030a7-2623-4c34-839f-9f37a9c4b303"
+            });
             _armClient = new ArmClient(credential);
         }
 
