@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Portal.Services;
+using Stamps.ManagementPortal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,6 +103,12 @@ else
 {
     builder.Services.AddSingleton<Stamps.ManagementPortal.Services.IDataService, Stamps.ManagementPortal.Services.InMemoryDataService>();
 }
+
+// Add Azure Infrastructure Service for real resource discovery
+// Add custom services
+builder.Services.AddScoped<AzureInfrastructureService>();
+builder.Services.AddScoped<CosmosDiscoveryService>();
+builder.Services.AddScoped<AspireOrchestrationService>();
 
 // Add health checks
 builder.Services.AddHealthChecks();

@@ -1,0 +1,431 @@
+using Azure.Identity;
+using Azure.ResourceManager;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Compute;
+using Azure.ResourceManager.AppService;
+using Azure.ResourceManager.CosmosDB;
+using Azure.ResourceManager.Storage;
+using Azure.ResourceManager.ContainerInstance;
+using Azure.ResourceManager.Sql;
+using Stamps.ManagementPortal.Models;
+
+namespace Stamps.ManagementPortal.Services
+{
+    public class AzureInfrastructureService
+    {
+        private readonly ILogger<AzureInfrastructureService> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly ArmClient _armClient;
+        
+        // Target subscriptions for live data
+        private readonly List<string> _targetSubscriptions = new()
+        {
+            "2fb123ca-e419-4838-9b44-c2eb71a21769", // MCAPS-Hybrid-REQ-101203-2024-scnichol-Host
+            "480cb033-9a92-4912-9d30-c6b7bf795a87"  // MCAPS-Hybrid-REQ-103709-2024-scnichol-Hub
+        };
+        
+        // Expected regions for the stamps pattern
+        private readonly List<string> _targetRegions = new()
+        {
+            "westus2",
+            "westus3"
+        };
+
+        public AzureInfrastructureService(ILogger<AzureInfrastructureService> logger, IConfiguration configuration)
+        {
+            _logger = logger;
+            _configuration = configuration;
+            
+            // Use DefaultAzureCredential for authentication
+            // This supports managed identity, Visual Studio, Azure CLI, etc.
+            var credential = new DefaultAzureCredential();
+            _armClient = new ArmClient(credential);
+        }
+
+        public async Task<AzureInfrastructureData> DiscoverInfrastructureAsync()
+        {
+            _logger.LogInformation("Starting Azure infrastructure discovery for stamps pattern...");
+            
+            var result = new AzureInfrastructureData
+            {
+                DiscoveredAt = DateTime.UtcNow,
+                Cells = new List<DiscoveredCell>(),
+                Resources = new List<DiscoveredResource>(),
+                Regions = new List<string>(),
+                ResourceGroups = new List<string>(),
+                ResourceTypeBreakdown = new Dictionary<string, int>()
+            };
+
+            try
+            {
+                foreach (var subscriptionId in _targetSubscriptions)
+                {
+                    _logger.LogInformation($"Discovering resources in subscription: {subscriptionId}");
+                    await DiscoverSubscriptionResourcesAsync(subscriptionId, result);
+                }
+                
+                // Process discovered data to identify cells and patterns
+                ProcessStampsPattern(result);
+                
+                _logger.LogInformation($"Discovery completed. Found {result.Resources.Count} resources across {result.Regions.Count} regions");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to discover Azure infrastructure");
+                throw;
+            }
+        }
+
+        private async Task DiscoverSubscriptionResourcesAsync(string subscriptionId, AzureInfrastructureData result)
+        {
+            try
+            {
+                var subscription = _armClient.GetSubscriptionResource(new Azure.Core.ResourceIdentifier($"/subscriptions/{subscriptionId}"));
+                
+                // Get all resource groups in the subscription
+                await foreach (var resourceGroup in subscription.GetResourceGroups())
+                {
+                    var rgLocation = resourceGroup.Data.Location.Name;
+                    
+                    // Only process resources in our target regions
+                    if (_targetRegions.Contains(rgLocation))
+                    {
+                        _logger.LogInformation($"Discovering resources in resource group: {resourceGroup.Data.Name} ({rgLocation})");
+                        
+                        if (!result.Regions.Contains(rgLocation))
+                            result.Regions.Add(rgLocation);
+                        
+                        if (!result.ResourceGroups.Contains(resourceGroup.Data.Name))
+                            result.ResourceGroups.Add(resourceGroup.Data.Name);
+                        
+                        await DiscoverResourceGroupResourcesAsync(resourceGroup, result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover resources in subscription {subscriptionId}");
+            }
+        }
+
+        private async Task DiscoverResourceGroupResourcesAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                // Discover different types of Azure resources
+                await DiscoverWebAppsAsync(resourceGroup, result);
+                await DiscoverVirtualMachinesAsync(resourceGroup, result);
+                await DiscoverStorageAccountsAsync(resourceGroup, result);
+                await DiscoverCosmosDBAccountsAsync(resourceGroup, result);
+                await DiscoverSqlServersAsync(resourceGroup, result);
+                await DiscoverContainerInstancesAsync(resourceGroup, result);
+                
+                // Discover generic resources to get the complete picture
+                await DiscoverGenericResourcesAsync(resourceGroup, result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover resources in resource group {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverWebAppsAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                await foreach (var webApp in resourceGroup.GetWebSites())
+                {
+                    var resource = new DiscoveredResource
+                    {
+                        Id = webApp.Id,
+                        Name = webApp.Data.Name,
+                        Type = "Microsoft.Web/sites",
+                        Region = webApp.Data.Location.Name,
+                        Location = webApp.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = "Running", // Default - could check actual status
+                        Tags = webApp.Data.Tags.ToDictionary(t => t.Key, t => t.Value),
+                        Properties = new Dictionary<string, object>
+                        {
+                            ["Kind"] = webApp.Data.Kind ?? "app",
+                            ["DefaultHostName"] = webApp.Data.DefaultHostName,
+                            ["State"] = webApp.Data.State?.ToString() ?? "Unknown"
+                        }
+                    };
+                    
+                    result.Resources.Add(resource);
+                    UpdateResourceTypeCount(result, resource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover web apps in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverVirtualMachinesAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                await foreach (var vm in resourceGroup.GetVirtualMachines())
+                {
+                    var resource = new DiscoveredResource
+                    {
+                        Id = vm.Id,
+                        Name = vm.Data.Name,
+                        Type = "Microsoft.Compute/virtualMachines",
+                        Region = vm.Data.Location.Name,
+                        Location = vm.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = vm.Data.VmId != null ? "Running" : "Unknown",
+                        Tags = vm.Data.Tags.ToDictionary(t => t.Key, t => t.Value),
+                        Properties = new Dictionary<string, object>
+                        {
+                            ["VmSize"] = vm.Data.HardwareProfile?.VmSize?.ToString() ?? "Unknown",
+                            ["OsType"] = vm.Data.StorageProfile?.OSDisk?.OSType?.ToString() ?? "Unknown"
+                        }
+                    };
+                    
+                    result.Resources.Add(resource);
+                    UpdateResourceTypeCount(result, resource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover virtual machines in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverStorageAccountsAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                await foreach (var storageAccount in resourceGroup.GetStorageAccounts())
+                {
+                    var resource = new DiscoveredResource
+                    {
+                        Id = storageAccount.Id,
+                        Name = storageAccount.Data.Name,
+                        Type = "Microsoft.Storage/storageAccounts",
+                        Region = storageAccount.Data.Location.Name,
+                        Location = storageAccount.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = storageAccount.Data.StatusOfPrimary?.ToString() ?? "Unknown",
+                        Tags = storageAccount.Data.Tags.ToDictionary(t => t.Key, t => t.Value),
+                        Properties = new Dictionary<string, object>
+                        {
+                            ["Kind"] = storageAccount.Data.Kind?.ToString() ?? "Unknown",
+                            ["SkuName"] = storageAccount.Data.Sku?.Name.ToString() ?? "Unknown",
+                            ["AccessTier"] = storageAccount.Data.AccessTier?.ToString() ?? "Unknown"
+                        }
+                    };
+                    
+                    result.Resources.Add(resource);
+                    UpdateResourceTypeCount(result, resource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover storage accounts in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverCosmosDBAccountsAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                await foreach (var cosmosAccount in resourceGroup.GetCosmosDBAccounts())
+                {
+                    var resource = new DiscoveredResource
+                    {
+                        Id = cosmosAccount.Id,
+                        Name = cosmosAccount.Data.Name,
+                        Type = "Microsoft.DocumentDB/databaseAccounts",
+                        Region = cosmosAccount.Data.Location.Name,
+                        Location = cosmosAccount.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = "Available", // CosmosDB doesn't expose simple status
+                        Tags = cosmosAccount.Data.Tags.ToDictionary(t => t.Key, t => t.Value),
+                        Properties = new Dictionary<string, object>
+                        {
+                            ["Kind"] = cosmosAccount.Data.Kind?.ToString() ?? "GlobalDocumentDB",
+                            ["ConsistencyLevel"] = cosmosAccount.Data.ConsistencyPolicy?.DefaultConsistencyLevel.ToString() ?? "Unknown"
+                        }
+                    };
+                    
+                    result.Resources.Add(resource);
+                    UpdateResourceTypeCount(result, resource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover Cosmos DB accounts in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverSqlServersAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                await foreach (var sqlServer in resourceGroup.GetSqlServers())
+                {
+                    var resource = new DiscoveredResource
+                    {
+                        Id = sqlServer.Id,
+                        Name = sqlServer.Data.Name,
+                        Type = "Microsoft.Sql/servers",
+                        Region = sqlServer.Data.Location.Name,
+                        Location = sqlServer.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = sqlServer.Data.State?.ToString() ?? "Ready",
+                        Tags = sqlServer.Data.Tags.ToDictionary(t => t.Key, t => t.Value),
+                        Properties = new Dictionary<string, object>
+                        {
+                            ["Version"] = sqlServer.Data.Version ?? "Unknown",
+                            ["FullyQualifiedDomainName"] = sqlServer.Data.FullyQualifiedDomainName ?? "Unknown"
+                        }
+                    };
+                    
+                    result.Resources.Add(resource);
+                    UpdateResourceTypeCount(result, resource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover SQL servers in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverContainerInstancesAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                await foreach (var containerGroup in resourceGroup.GetContainerGroups())
+                {
+                    var resource = new DiscoveredResource
+                    {
+                        Id = containerGroup.Id,
+                        Name = containerGroup.Data.Name,
+                        Type = "Microsoft.ContainerInstance/containerGroups",
+                        Region = containerGroup.Data.Location.Name,
+                        Location = containerGroup.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = containerGroup.Data.ProvisioningState ?? "Unknown",
+                        Tags = containerGroup.Data.Tags.ToDictionary(t => t.Key, t => t.Value),
+                        Properties = new Dictionary<string, object>
+                        {
+                            ["OsType"] = containerGroup.Data.OSType.ToString() ?? "Unknown",
+                            ["RestartPolicy"] = containerGroup.Data.RestartPolicy?.ToString() ?? "Always"
+                        }
+                    };
+                    
+                    result.Resources.Add(resource);
+                    UpdateResourceTypeCount(result, resource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover container instances in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private async Task DiscoverGenericResourcesAsync(ResourceGroupResource resourceGroup, AzureInfrastructureData result)
+        {
+            try
+            {
+                foreach (var resource in resourceGroup.GetGenericResources())
+                {
+                    // Skip resources we've already discovered with specific methods
+                    var resourceType = resource.Data.ResourceType.ToString();
+                    if (IsAlreadyDiscovered(resourceType)) continue;
+                    
+                    var discoveredResource = new DiscoveredResource
+                    {
+                        Id = resource.Id,
+                        Name = resource.Data.Name,
+                        Type = resourceType,
+                        Region = resource.Data.Location.Name,
+                        Location = resource.Data.Location.Name,
+                        ResourceGroup = resourceGroup.Data.Name,
+                        Status = "Unknown",
+                        Tags = resource.Data.Tags?.ToDictionary(t => t.Key, t => t.Value) ?? new Dictionary<string, string>(),
+                        Properties = new Dictionary<string, object>()
+                    };
+                    
+                    result.Resources.Add(discoveredResource);
+                    UpdateResourceTypeCount(result, discoveredResource.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to discover generic resources in {resourceGroup.Data.Name}");
+            }
+        }
+
+        private bool IsAlreadyDiscovered(string resourceType)
+        {
+            var discoveredTypes = new[]
+            {
+                "Microsoft.Web/sites",
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.Storage/storageAccounts",
+                "Microsoft.DocumentDB/databaseAccounts",
+                "Microsoft.Sql/servers",
+                "Microsoft.ContainerInstance/containerGroups"
+            };
+            
+            return discoveredTypes.Contains(resourceType);
+        }
+
+        private void UpdateResourceTypeCount(AzureInfrastructureData result, string resourceType)
+        {
+            if (result.ResourceTypeBreakdown.ContainsKey(resourceType))
+                result.ResourceTypeBreakdown[resourceType]++;
+            else
+                result.ResourceTypeBreakdown[resourceType] = 1;
+        }
+
+        private void ProcessStampsPattern(AzureInfrastructureData result)
+        {
+            // Identify cells based on resource grouping and naming patterns
+            var cellGroups = result.Resources
+                .Where(r => _targetRegions.Contains(r.Region))
+                .GroupBy(r => new { r.Region, r.ResourceGroup })
+                .ToList();
+
+            foreach (var cellGroup in cellGroups)
+            {
+                var cell = new DiscoveredCell
+                {
+                    Name = $"{cellGroup.Key.Region}-{cellGroup.Key.ResourceGroup}",
+                    Region = cellGroup.Key.Region,
+                    ResourceGroup = cellGroup.Key.ResourceGroup,
+                    ResourceCount = cellGroup.Count(),
+                    IsHealthy = DetermineCellHealth(cellGroup.ToList()),
+                    Resources = cellGroup.ToList()
+                };
+                
+                result.Cells.Add(cell);
+            }
+        }
+
+        private bool DetermineCellHealth(List<DiscoveredResource> resources)
+        {
+            // Simple health check - could be more sophisticated
+            var healthyStatuses = new[] { "Running", "Ready", "Available", "Succeeded" };
+            var healthyCount = resources.Count(r => healthyStatuses.Contains(r.Status));
+            return healthyCount > resources.Count * 0.8; // 80% healthy threshold
+        }
+    }
+
+    public class AzureInfrastructureData
+    {
+        public DateTime DiscoveredAt { get; set; }
+        public List<DiscoveredCell> Cells { get; set; } = new();
+        public List<DiscoveredResource> Resources { get; set; } = new();
+        public List<string> Regions { get; set; } = new();
+        public List<string> ResourceGroups { get; set; } = new();
+        public Dictionary<string, int> ResourceTypeBreakdown { get; set; } = new();
+    }
+}

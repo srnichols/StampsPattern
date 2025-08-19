@@ -1,7 +1,10 @@
 @page "/infrastructure"
 @using Stamps.ManagementPortal.Models
+@using Stamps.ManagementPortal.Services
 @using Microsoft.JSInterop
 @inject Stamps.ManagementPortal.Services.IDataService Data
+@inject AzureInfrastructureService AzureInfrastructureService
+@inject ILogger<Infrastructure> Logger
 @inject IJSRuntime JSRuntime
 
 <div class="infrastructure-container">
@@ -469,55 +472,37 @@
     
     private async Task LoadRealDiscoveryData()
     {
-        // Call the actual infrastructure discovery function from your Azure Functions
-        // This should discover resources from your two subscriptions:
-        // MCAPS-Hybrid-REQ-101203-2024-scnichol-Host: 2fb123ca-e419-4838-9b44-c2eb71a21769
-        // MCAPS-Hybrid-REQ-103709-2024-scnichol-Hub: 480cb033-9a92-4912-9d30-c6b7bf795a87
-        // Expected regions: westus2, westus3
-        
-        using var httpClient = new HttpClient();
-        
-        try 
+        try
         {
-            // TODO: Replace with your actual Azure Function URL
-            var discoveryUrl = "https://your-azure-function-app.azurewebsites.net/api/DiscoverInfrastructure";
+            Logger.LogInformation("Starting real Azure infrastructure discovery...");
             
-            var response = await httpClient.GetAsync(discoveryUrl);
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonContent = await response.Content.ReadAsStringAsync();
-                // TODO: Parse the JSON response and populate discoveredCells and discoveredResources
-                // The response should contain resources from westus2 and westus3 regions
-                
-                // For now, set empty until we connect to real discovery function
-                discoveredCells = new List<DiscoveredCell>();
-                discoveredResources = new List<DiscoveredResource>();
-                resourceTypeBreakdown = new Dictionary<string, int>();
-                regions = new List<string> { "westus2", "westus3" }; // Your actual regions
-                resourceGroups = new List<string>();
-            }
-            else
-            {
-                Console.WriteLine($"Discovery API returned {response.StatusCode}");
-                // Return empty data - no fallback to seeded data
-                discoveredCells = new List<DiscoveredCell>();
-                discoveredResources = new List<DiscoveredResource>();
-                resourceTypeBreakdown = new Dictionary<string, int>();
-                regions = new List<string>();
-                resourceGroups = new List<string>();
-            }
+            // Use the Azure Infrastructure Service to discover real resources
+            var infrastructureData = await AzureInfrastructureService.DiscoverInfrastructureAsync();
+            
+            // Update the UI with real data
+            discoveredCells = infrastructureData.Cells;
+            discoveredResources = infrastructureData.Resources;
+            resourceTypeBreakdown = infrastructureData.ResourceTypeBreakdown;
+            regions = infrastructureData.Regions;
+            resourceGroups = infrastructureData.ResourceGroups;
+            
+            Logger.LogInformation($"Discovery completed: {discoveredResources.Count} resources found across {regions.Count} regions");
         }
         catch (Exception ex)
         {
-              Console.WriteLine($"Error calling discovery API: {ex.Message}");
-              // Return empty data - no fallback to seeded data
-              discoveredCells = new List<DiscoveredCell>();
-              discoveredResources = new List<DiscoveredResource>();
-              resourceTypeBreakdown = new Dictionary<string, int>();
-              regions = new List<string>();
-              resourceGroups = new List<string>();
-          }
-      }    private async Task RefreshInfrastructure()
+            Logger.LogError(ex, "Failed to discover Azure infrastructure");
+            
+            // Show error state but don't fall back to fake data
+            discoveredCells = new List<DiscoveredCell>();
+            discoveredResources = new List<DiscoveredResource>();
+            resourceTypeBreakdown = new Dictionary<string, int>();
+            regions = new List<string> { "westus2", "westus3" }; // Expected regions
+            resourceGroups = new List<string>();
+            
+            // Optionally show error message to user
+            await JSRuntime.InvokeVoidAsync("alert", $"Failed to discover Azure infrastructure: {ex.Message}");
+        }
+    }    private async Task RefreshInfrastructure()
     {
         loading = true;
         StateHasChanged();

@@ -1,0 +1,264 @@
+@page "/configuration"
+@using Portal.Services
+@inject CosmosDiscoveryService CosmosService
+@inject ILogger<Configuration> Logger
+@inject IJSRuntime JSRuntime
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-3">
+                <i class="fas fa-cogs"></i>
+                Data API Builder Configuration
+            </h1>
+            <p class="text-muted">Configure live Cosmos DB connections for the stamps pattern management portal.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-database"></i>
+                        Live Cosmos DB Discovery
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="mb-0">Discover Cosmos DB instances in target subscriptions and regions.</p>
+                        <button class="btn btn-primary" @onclick="DiscoverCosmosInstances" disabled="@isDiscovering">
+                            @if (isDiscovering)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Discovering...</span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-search me-2"></i>
+                                <span>Discover Cosmos DB</span>
+                            }
+                        </button>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(discoveryMessage))
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            @discoveryMessage
+                        </div>
+                    }
+                    
+                    @if (discoveryError != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Discovery Error:</strong> @discoveryError
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (cosmosInstances?.Any() == true)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-server"></i>
+                            Discovered Cosmos DB Instances (@cosmosInstances.Count)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var instance in cosmosInstances)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card border-start border-5 @(instance.IsStampsControlPlane ? "border-success" : "border-secondary")">
+                                        <div class="card-body">
+                                            <h6 class="card-title d-flex align-items-center">
+                                                <i class="fas fa-database me-2"></i>
+                                                @instance.AccountName
+                                                @if (instance.IsStampsControlPlane)
+                                                {
+                                                    <span class="badge bg-success ms-2">Control Plane</span>
+                                                }
+                                            </h6>
+                                            <p class="card-text small text-muted mb-2">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                @instance.ResourceGroup (@instance.Location)
+                                            </p>
+                                            <div class="mb-3">
+                                                <strong>Databases:</strong>
+                                                <ul class="list-unstyled ms-3 mt-1">
+                                                    @foreach (var db in instance.Databases)
+                                                    {
+                                                        <li class="small">
+                                                            <i class="fas fa-table me-1"></i>
+                                                            @db.Name
+                                                            @if (db.Containers.Any())
+                                                            {
+                                                                <span class="text-muted">(@db.Containers.Count containers)</span>
+                                                            }
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" 
+                                                        @onclick="() => GenerateDabConfig(instance)"
+                                                        disabled="@isGenerating">
+                                                    @if (isGenerating)
+                                                    {
+                                                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-code me-1"></i>
+                                                    }
+                                                    Generate DAB Config
+                                                </button>
+                                                <button class="btn btn-outline-secondary btn-sm" 
+                                                        @onclick="() => ViewConnectionString(instance)">
+                                                    <i class="fas fa-link me-1"></i>
+                                                    View Connection
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(generatedDabConfig))
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-file-code"></i>
+                            Generated DAB Configuration
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <p class="mb-0">Save this configuration to <code>dab-config.json</code></p>
+                            <button class="btn btn-outline-primary btn-sm" @onclick="CopyConfigToClipboard">
+                                <i class="fas fa-copy me-1"></i>
+                                Copy to Clipboard
+                            </button>
+                        </div>
+                        <pre class="bg-light p-3 rounded border"><code>@generatedDabConfig</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<CosmosDbInstance>? cosmosInstances;
+    private bool isDiscovering = false;
+    private bool isGenerating = false;
+    private string? discoveryMessage;
+    private string? discoveryError;
+    private string? generatedDabConfig;
+
+    private async Task DiscoverCosmosInstances()
+    {
+        isDiscovering = true;
+        discoveryError = null;
+        discoveryMessage = "Scanning Azure subscriptions for Cosmos DB instances...";
+        StateHasChanged();
+
+        try
+        {
+            cosmosInstances = await CosmosService.DiscoverCosmosInstancesAsync();
+            
+            if (cosmosInstances.Any())
+            {
+                discoveryMessage = $"Found {cosmosInstances.Count} Cosmos DB instances. " +
+                    $"{cosmosInstances.Count(i => i.IsStampsControlPlane)} have stamps-control-plane database.";
+            }
+            else
+            {
+                discoveryMessage = "No Cosmos DB instances found in target subscriptions and regions.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to discover Cosmos DB instances");
+            discoveryError = ex.Message;
+            discoveryMessage = null;
+        }
+        finally
+        {
+            isDiscovering = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GenerateDabConfig(CosmosDbInstance instance)
+    {
+        isGenerating = true;
+        StateHasChanged();
+
+        try
+        {
+            generatedDabConfig = await CosmosService.GenerateDabConfigAsync(instance);
+            Logger.LogInformation("Generated DAB configuration for Cosmos instance {AccountName}", instance.AccountName);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to generate DAB config for {AccountName}", instance.AccountName);
+            discoveryError = $"Failed to generate DAB config: {ex.Message}";
+        }
+        finally
+        {
+            isGenerating = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ViewConnectionString(CosmosDbInstance instance)
+    {
+        var maskedConnectionString = MaskConnectionString(instance.ConnectionString);
+        await JSRuntime.InvokeVoidAsync("alert", $"Connection String (masked):\n{maskedConnectionString}");
+    }
+
+    private async Task CopyConfigToClipboard()
+    {
+        if (!string.IsNullOrEmpty(generatedDabConfig))
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", generatedDabConfig);
+            await JSRuntime.InvokeVoidAsync("alert", "DAB configuration copied to clipboard!");
+        }
+    }
+
+    private string MaskConnectionString(string connectionString)
+    {
+        // Mask sensitive parts of the connection string for display
+        if (string.IsNullOrEmpty(connectionString)) return "N/A";
+        
+        var parts = connectionString.Split(';');
+        var maskedParts = parts.Select(part =>
+        {
+            if (part.StartsWith("AccountKey=", StringComparison.OrdinalIgnoreCase))
+            {
+                return "AccountKey=***MASKED***";
+            }
+            return part;
+        });
+        
+        return string.Join(';', maskedParts);
+    }
+}
