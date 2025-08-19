@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 @inject Stamps.ManagementPortal.Services.IDataService Data
+@inject Stamps.ManagementPortal.Services.AzureInfrastructureService AzureInfrastructureService
 @inject IJSRuntime JSRuntime
 
 <h1>🚀 New Tenant Onboarding</h1>
@@ -99,11 +100,26 @@
                 <label>Preferred Region</label>
                 <select @bind="onboardingModel.PreferredRegion" class="form-control">
                     <option value="">Select preferred region...</option>
-                    <option value="eastus">East US (Primary)</option>
-                    <option value="westus">West US</option>
-                    <option value="westeurope">West Europe</option>
-                    <option value="eastasia">East Asia</option>
+                    @if (discoveredRegions.Any())
+                    {
+                        @foreach (var region in discoveredRegions)
+                        {
+                            <option value="@region">@region.ToUpper() (@GetRegionDisplayName(region))</option>
+                        }
+                    }
+                    else
+                    {
+                        <option disabled>Loading regions... Click "Discover Infrastructure" first</option>
+                    }
                 </select>
+                @if (!discoveredRegions.Any())
+                {
+                    <small class="form-text text-muted">
+                        <button type="button" class="btn btn-link btn-sm p-0" @onclick="LoadDiscoveredRegions">
+                            🔄 Refresh Available Regions
+                        </button>
+                    </small>
+                }
             </div>
             
             <div class="form-group">
@@ -266,8 +282,50 @@
     private int deploymentProgress = 0;
     private string deploymentStatus = "";
     private string recommendedCell = "";
+    private List<string> discoveredRegions = new();
     
     private OnboardingModel onboardingModel = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDiscoveredRegions();
+    }
+    
+    private async Task LoadDiscoveredRegions()
+    {
+        try
+        {
+            var infrastructureData = await AzureInfrastructureService.DiscoverInfrastructureAsync();
+            discoveredRegions = infrastructureData.Regions;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Fallback to expected regions if discovery fails
+            discoveredRegions = new List<string> { "westus2", "westus3" };
+            Console.WriteLine($"Failed to load discovered regions: {ex.Message}");
+        }
+    }
+    
+    private string GetRegionDisplayName(string region)
+    {
+        return region switch
+        {
+            "westus2" => "West US 2",
+            "westus3" => "West US 3",
+            "eastus" => "East US",
+            "eastus2" => "East US 2",
+            "westus" => "West US",
+            "centralus" => "Central US",
+            "northcentralus" => "North Central US",
+            "southcentralus" => "South Central US",
+            "westeurope" => "West Europe",
+            "northeurope" => "North Europe",
+            "eastasia" => "East Asia",
+            "southeastasia" => "Southeast Asia",
+            _ => region.ToUpper()
+        };
+    }
     
     public class OnboardingModel
     {
@@ -323,12 +381,10 @@
             _ => "shared"
         };
         
-        var region = onboardingModel.PreferredRegion switch
-        {
-            "eastus" => "eastus",
-            "westus" => "westus",
-            _ => "eastus" // Default to eastus
-        };
+        // Use the selected region, or default to first discovered region
+        var region = !string.IsNullOrEmpty(onboardingModel.PreferredRegion) 
+            ? onboardingModel.PreferredRegion 
+            : discoveredRegions.FirstOrDefault() ?? "westus2";
         
         return $"{cellPrefix}-{region}-001";
     }
