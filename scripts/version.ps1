@@ -94,7 +94,6 @@ function Set-Version {
         "docs/DEVELOPER_QUICKSTART.md",
         "docs/DEVELOPER_SECURITY_GUIDE.md",
         "docs/DOCS.md",
-        "docs/DOCUMENTATION_IMPROVEMENTS.md",
         "docs/GLOSSARY.md",
         "docs/KNOWN_ISSUES.md",
         "docs/LANDING_ZONES_GUIDE.md",

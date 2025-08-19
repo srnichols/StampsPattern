@@ -107,7 +107,7 @@ namespace AzureArchitecture.Services
                     // This is a simplified approach - in production, implement proper key tracking
                     var field = typeof(MemoryCache).GetField("_coherentState", 
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    if (field?.GetValue(_memoryCache) is IDictionary coherentState)
+                    if (field?.GetValue(_memoryCache) is IDictionary<object, object> coherentState)
                     {
                         coherentState.Clear();
                     }
