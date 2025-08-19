@@ -62,14 +62,14 @@ public class AzureInfrastructureService : IAzureInfrastructureService
 
                                 // Get all resources in this resource group
                                 var rgResources = resourceGroup.GetGenericResources();
-                                await foreach (var resource in rgResources)
+                                foreach (var resource in rgResources)
                                 {
                                     var discoveredResource = new DiscoveredResource
                                     {
                                         Id = resource.Id.ToString(),
                                         Name = resource.Data.Name,
                                         Type = resource.Data.ResourceType.ToString(),
-                                        Location = resource.Data.Location?.Name ?? "unknown",
+                                        Location = resource.Data.Location.Name,
                                         ResourceGroup = resourceGroup.Data.Name
                                     };
                                     resources.Add(discoveredResource);
@@ -148,7 +148,7 @@ public class AzureInfrastructureService : IAzureInfrastructureService
             var resourceCount = 0;
 
             var resources = resourceGroup.GetGenericResources();
-            await foreach (var resource in resources)
+            foreach (var resource in resources)
             {
                 resourceCount++;
                 var resourceType = resource.Data.ResourceType.ToString();

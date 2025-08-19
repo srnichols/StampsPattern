@@ -2,6 +2,7 @@ using Stamps.ManagementPortal.Models;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
+using Azure.Core;
 
 namespace Stamps.ManagementPortal.Services;
 
@@ -17,6 +18,7 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
     private readonly ILogger<CosmosDiscoveryService> _logger;
     private readonly IConfiguration _configuration;
     private readonly IDataService _dataService;
+    private readonly ArmClient _armClient;
 
     public CosmosDiscoveryService(
         ILogger<CosmosDiscoveryService> logger, 
@@ -26,6 +28,7 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
         _logger = logger;
         _configuration = configuration;
         _dataService = dataService;
+        _armClient = new ArmClient(new DefaultAzureCredential());
     }
 
     public async Task<List<Tenant>> DiscoverTenantsAsync()
@@ -312,10 +315,11 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
     {
         // Look for related cell/stamp resource groups in the same region
         var location = resourceGroup.Data.Location.Name;
-        var subscription = resourceGroup.Parent;
+        var subscriptionId = resourceGroup.Id.SubscriptionId;
+        var subscription = _armClient.GetSubscriptionResource(new ResourceIdentifier($"/subscriptions/{subscriptionId}"));
         
         var resourceGroups = subscription.GetResourceGroups();
-        await foreach (var rg in resourceGroups)
+        foreach (var rg in resourceGroups)
         {
             if (IsCellResourceGroup(rg.Data.Name) && rg.Data.Location.Name == location)
             {
@@ -363,7 +367,7 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
             var resourceCount = 0;
             var criticalResourceCount = 0;
 
-            await foreach (var resource in resources)
+            foreach (var resource in resources)
             {
                 resourceCount++;
                 var resourceType = resource.Data.ResourceType.ToString();
@@ -396,7 +400,7 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
             var resources = resourceGroup.GetGenericResources();
             var resourceCount = 0;
 
-            await foreach (var resource in resources)
+            foreach (var resource in resources)
             {
                 resourceCount++;
             }
