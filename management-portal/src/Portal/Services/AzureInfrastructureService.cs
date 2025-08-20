@@ -1,4 +1,3 @@
-
 using Stamps.ManagementPortal.Models;
 using Azure.Identity;
 using Azure.ResourceManager;
@@ -11,7 +10,7 @@ namespace Stamps.ManagementPortal.Services
     public interface IAzureInfrastructureService
     {
         Task<InfrastructureDiscoveryResult> DiscoverInfrastructureAsync();
-    }
+    
 
     public class AzureInfrastructureService : IAzureInfrastructureService
     {
@@ -37,7 +36,35 @@ namespace Stamps.ManagementPortal.Services
             Timestamp = DateTime.UtcNow
         });
 
-            await foreach (var subscription in subscriptions)
+        // Initialize variables
+        var cells = new List<DiscoveredCell>();
+        var resources = new List<DiscoveredResource>();
+        var errorMessages = new List<string>();
+
+        // Use appropriate credential based on environment
+        Azure.Core.TokenCredential credential;
+        if (Environment.GetEnvironmentVariable("RUNNING_IN_PRODUCTION") == "true")
+        {
+            credential = new DefaultAzureCredential();
+        }
+        else
+        {
+            try
+            {
+                credential = new AzureCliCredential();
+                _logger.LogInformation("Using Azure CLI credential for local development");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Azure CLI credential failed, falling back to simulated discovery");
+                return CreateSimulatedDiscoveryResult();
+            }
+        }
+
+        var armClient = new ArmClient(credential);
+        var subscriptions = armClient.GetSubscriptions();
+
+        await foreach (var subscription in subscriptions)
             {
                 try
                 {
@@ -128,22 +155,6 @@ namespace Stamps.ManagementPortal.Services
                 ResourceGroups = resources.Select(r => r.ResourceGroup).Distinct().ToList(),
                 ResourceTypeBreakdown = resources.GroupBy(r => r.Type).ToDictionary(g => g.Key, g => g.Count()),
                 ErrorMessages = errorMessages
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to discover Azure infrastructure");
-            return new InfrastructureDiscoveryResult
-            {
-                Cells = new List<DiscoveredCell>(),
-                Resources = new List<DiscoveredResource>(),
-                DiscoveredAt = DateTime.UtcNow,
-                TotalCells = 0,
-                TotalResources = 0,
-                Regions = new List<string>(),
-                ResourceGroups = new List<string>(),
-                ResourceTypeBreakdown = new Dictionary<string, int>(),
-                ErrorMessages = new List<string> { $"Infrastructure discovery failed: {ex.Message}" }
             };
         }
     }
