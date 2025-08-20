@@ -26,32 +26,30 @@ namespace AzureArchitecture.Services
         /// <summary>
         /// Gets cached discovery result or returns null if not found or expired
         /// </summary>
-        public async Task<object?> GetCachedDiscoveryAsync(string mode, string cacheKey = null)
+    public Task<object?> GetCachedDiscoveryAsync(string mode, string? cacheKey = null)
         {
             try
             {
                 var key = cacheKey ?? $"discovery_result_{mode}";
-                
                 if (_memoryCache.TryGetValue(key, out var cachedResult))
                 {
                     _logger.LogInformation("Cache hit for discovery mode: {Mode}", mode);
-                    return cachedResult;
+                    return Task.FromResult(cachedResult);
                 }
-
                 _logger.LogInformation("Cache miss for discovery mode: {Mode}", mode);
-                return null;
+                return Task.FromResult<object?>(null);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Error retrieving cached discovery result for mode: {Mode}", mode);
-                return null;
+                return Task.FromResult<object?>(null);
             }
         }
 
         /// <summary>
         /// Caches discovery result with intelligent expiration and background refresh
         /// </summary>
-        public async Task SetCachedDiscoveryAsync(string mode, object result, string cacheKey = null, TimeSpan? duration = null)
+    public Task SetCachedDiscoveryAsync(string mode, object result, string? cacheKey = null, TimeSpan? duration = null)
         {
             try
             {
@@ -72,7 +70,7 @@ namespace AzureArchitecture.Services
                 _memoryCache.Set(key, result, cacheOptions);
 
                 // Schedule background refresh
-                _ = Task.Run(async () => await ScheduleBackgroundRefresh(key, mode));
+                _ = Task.Run(() => ScheduleBackgroundRefresh(key, mode));
 
                 _logger.LogInformation("Cached discovery result for mode: {Mode}, Duration: {Duration}", mode, cacheDuration);
             }
@@ -80,12 +78,13 @@ namespace AzureArchitecture.Services
             {
                 _logger.LogError(ex, "Error caching discovery result for mode: {Mode}", mode);
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Invalidates cached discovery results
         /// </summary>
-        public async Task InvalidateCacheAsync(string mode = null, string pattern = null)
+    public Task InvalidateCacheAsync(string? mode = null, string? pattern = null)
         {
             try
             {
@@ -118,39 +117,39 @@ namespace AzureArchitecture.Services
             {
                 _logger.LogError(ex, "Error invalidating cache");
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Gets cache statistics for monitoring
         /// </summary>
-        public async Task<CacheStatistics> GetCacheStatisticsAsync()
+    public Task<CacheStatistics> GetCacheStatisticsAsync()
         {
             try
             {
                 // Note: MemoryCache doesn't expose detailed statistics
                 // In production, implement custom metrics collection
-                return new CacheStatistics
+                return Task.FromResult(new CacheStatistics
                 {
                     TotalEntries = 0, // Would need custom tracking
                     HitRate = 0.0, // Would need custom tracking
                     MissRate = 0.0, // Would need custom tracking
                     TotalMemoryUsage = GC.GetTotalMemory(false),
                     LastUpdated = DateTime.UtcNow
-                };
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving cache statistics");
-                return new CacheStatistics();
+                return Task.FromResult(new CacheStatistics());
             }
         }
 
-        private async Task ScheduleBackgroundRefresh(string key, string mode)
+    private Task ScheduleBackgroundRefresh(string key, string mode)
         {
             try
             {
-                await Task.Delay(_backgroundRefreshInterval);
-                
+                Task.Delay(_backgroundRefreshInterval).Wait();
                 // Check if the cache entry still exists and is close to expiration
                 if (_memoryCache.TryGetValue(key, out _))
                 {
@@ -163,9 +162,10 @@ namespace AzureArchitecture.Services
             {
                 _logger.LogWarning(ex, "Error during background cache refresh for key: {Key}", key);
             }
+            return Task.CompletedTask;
         }
 
-        private void OnCacheEviction(object key, object value, EvictionReason reason, object state)
+    private void OnCacheEviction(object? key, object? value, EvictionReason reason, object? state)
         {
             _logger.LogInformation("Cache entry evicted - Key: {Key}, Reason: {Reason}", key, reason);
         }

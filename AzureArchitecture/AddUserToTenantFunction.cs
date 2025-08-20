@@ -11,7 +11,9 @@ public class AddUserToTenantFunction
 
     public AddUserToTenantFunction()
     {
-        string cosmosDbConnectionString = Environment.GetEnvironmentVariable("CosmosDbConnection");
+        string? cosmosDbConnectionString = Environment.GetEnvironmentVariable("CosmosDbConnection");
+        if (string.IsNullOrEmpty(cosmosDbConnectionString))
+            throw new InvalidOperationException("CosmosDbConnection environment variable is not set.");
         string databaseName = Environment.GetEnvironmentVariable("CosmosDbDatabaseName") ?? "globaldb";
         string containerName = Environment.GetEnvironmentVariable("CosmosDbUserContainerName") ?? "tenantUsers";
         _cosmosClient = new CosmosClient(cosmosDbConnectionString);
@@ -24,6 +26,12 @@ public class AddUserToTenantFunction
         string tenantId)
     {
         var user = await req.ReadFromJsonAsync<TenantUserInfo>();
+        if (user == null)
+        {
+            var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            await badResponse.WriteStringAsync("Invalid user payload.");
+            return badResponse;
+        }
         user.tenantId = tenantId;
         user.userId = Guid.NewGuid().ToString();
         await _container.CreateItemAsync(user, new PartitionKey(tenantId));
@@ -36,8 +44,8 @@ public class AddUserToTenantFunction
 
 public class TenantUserInfo
 {
-    public string tenantId { get; set; }
-    public string userId { get; set; }
-    public string email { get; set; }
-    public string role { get; set; }
+    public string tenantId { get; set; } = string.Empty;
+    public string userId { get; set; } = string.Empty;
+    public string email { get; set; } = string.Empty;
+    public string role { get; set; } = string.Empty;
 }

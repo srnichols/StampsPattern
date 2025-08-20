@@ -84,9 +84,7 @@ public class CellManagementFunction
         try
         {
             var provisionRequest = await req.ReadFromJsonAsync<CellProvisionRequest>();
-
-            // Validate request
-            if (string.IsNullOrEmpty(provisionRequest.Region))
+            if (provisionRequest == null || string.IsNullOrEmpty(provisionRequest.Region))
             {
                 var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
                 await errorResponse.WriteStringAsync("Region is required.");
@@ -206,7 +204,10 @@ public class CellManagementFunction
         }
 
         // Check for enterprise tenant backlog (would require additional logic to track requests)
-        await CheckEnterpriseBacklogAsync(regionReport.Region);
+            if (!string.IsNullOrEmpty(regionReport.Region))
+            {
+                await CheckEnterpriseBacklogAsync(regionReport.Region);
+            }
     }
 
     /// <summary>
@@ -290,7 +291,10 @@ public class CellManagementFunction
 
         var tenantDistribution = allTenants
             .GroupBy(t => t.tenantTier)
-            .ToDictionary(g => g.Key.ToString(), g => g.Count());
+            .ToDictionary(
+                g => g.Key?.ToString() ?? "Unknown",
+                g => g.Count()
+            );
 
         var regionAnalytics = allCells
             .GroupBy(c => c.region)
@@ -311,7 +315,7 @@ public class CellManagementFunction
             GeneratedAt = DateTime.UtcNow,
             TotalCells = allCells.Count,
             TotalTenants = allTenants.Count,
-            TenantDistribution = tenantDistribution,
+            TenantDistribution = new Dictionary<string, int>(tenantDistribution),
             GlobalCapacityUtilization = allCells.Average(c => c.maxTenantCount > 0 ? (double)c.currentTenantCount / c.maxTenantCount * 100 : 0),
             RegionAnalytics = regionAnalytics,
             RecommendedActions = GenerateRecommendations(allCells, allTenants)
@@ -458,10 +462,10 @@ public class CellManagementFunction
 /// </summary>
 public class CellProvisionRequest
 {
-    public string Region { get; set; }
+    public string? Region { get; set; }
     public CellType CellType { get; set; } = CellType.Shared;
-    public List<string> ComplianceFeatures { get; set; }
-    public string Reason { get; set; }
+    public List<string>? ComplianceFeatures { get; set; }
+    public string? Reason { get; set; }
 }
 
 /// <summary>
@@ -482,7 +486,7 @@ public class CapacityReport
 /// </summary>
 public class RegionCapacityReport
 {
-    public string Region { get; set; }
+    public string? Region { get; set; }
     public List<CellInfo> SharedCells { get; set; } = new List<CellInfo>();
     public List<CellInfo> DedicatedCells { get; set; } = new List<CellInfo>();
     public int TotalTenants { get; set; }
@@ -498,7 +502,7 @@ public class CellAnalyticsReport
     public DateTime GeneratedAt { get; set; }
     public int TotalCells { get; set; }
     public int TotalTenants { get; set; }
-    public Dictionary<string, int> TenantDistribution { get; set; }
+    public Dictionary<string, int>? TenantDistribution { get; set; }
     public double GlobalCapacityUtilization { get; set; }
     public List<RegionAnalytics> RegionAnalytics { get; set; } = new List<RegionAnalytics>();
     public List<string> RecommendedActions { get; set; } = new List<string>();
@@ -509,7 +513,7 @@ public class CellAnalyticsReport
 /// </summary>
 public class RegionAnalytics
 {
-    public string Region { get; set; }
+    public string? Region { get; set; }
     public int TotalCells { get; set; }
     public int SharedCells { get; set; }
     public int DedicatedCells { get; set; }

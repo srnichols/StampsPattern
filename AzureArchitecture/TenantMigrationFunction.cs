@@ -51,8 +51,7 @@ public class TenantMigrationFunction
     public async Task<HttpResponseData> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "tenant/{tenantId}/migrate")] HttpRequestData req)
     {
-        string tenantId = req.FunctionContext.BindingContext.BindingData["tenantId"]?.ToString();
-        
+        string? tenantId = req.FunctionContext.BindingContext.BindingData["tenantId"]?.ToString();
         if (string.IsNullOrEmpty(tenantId))
         {
             var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
@@ -61,6 +60,12 @@ public class TenantMigrationFunction
         }
 
         var migrationRequest = await req.ReadFromJsonAsync<TenantMigrationRequest>();
+        if (migrationRequest == null)
+        {
+            var errorResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            await errorResponse.WriteStringAsync("Migration request payload is required.");
+            return errorResponse;
+        }
 
         try
         {
@@ -143,9 +148,9 @@ public class TenantMigrationFunction
 
             var capacityInfo = cells.Select(c => new CellCapacityInfo
             {
-                CellName = c.cellName,
+                CellName = c.cellName ?? string.Empty,
                 CellType = c.cellType,
-                Region = c.region,
+                Region = c.region ?? string.Empty,
                 CurrentTenants = c.currentTenantCount,
                 MaxTenants = c.maxTenantCount,
                 CapacityPercentage = c.maxTenantCount > 0 ? (double)c.currentTenantCount / c.maxTenantCount * 100 : 0,
@@ -186,7 +191,7 @@ public class TenantMigrationFunction
         }
         catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            return null;
+            return null!; // Suppress warning, handled by caller
         }
     }
 
@@ -235,7 +240,7 @@ public class TenantMigrationFunction
         try
         {
             // Step 1: Find or provision target CELL
-            var targetCell = await FindOrProvisionTargetCellAsync(tenant.region, request.TargetTenantTier, request.RequiredCompliance);
+            var targetCell = await FindOrProvisionTargetCellAsync(tenant.region ?? string.Empty, request.TargetTenantTier, request.RequiredCompliance);
             
             if (targetCell == null)
             {
@@ -264,8 +269,8 @@ public class TenantMigrationFunction
             await _tenantsContainer.ReplaceItemAsync(tenant, tenant.tenantId, new PartitionKey(tenant.tenantId));
 
             // Step 4: Update CELL tenant counts
-            await UpdateCellTenantCountAsync(targetCell.cellId, 1); // Add to new CELL
-            await DecrementSourceCellCountAsync(oldCellName); // Remove from old CELL
+            await UpdateCellTenantCountAsync(targetCell.cellId ?? string.Empty, 1); // Add to new CELL
+            await DecrementSourceCellCountAsync(oldCellName ?? string.Empty); // Remove from old CELL
 
             // Step 5: TODO: Trigger data migration process
             // This would involve:
@@ -277,11 +282,11 @@ public class TenantMigrationFunction
             return new TenantMigrationResult
             {
                 Success = true,
-                SourceCell = oldCellName,
-                TargetCell = targetCell.cellName,
+                SourceCell = oldCellName ?? string.Empty,
+                TargetCell = targetCell.cellName ?? string.Empty,
                 MigrationStartTime = DateTime.UtcNow,
                 EstimatedCompletionTime = DateTime.UtcNow.AddHours(2), // Estimation
-                Message = $"Migration initiated from {oldCellName} to {targetCell.cellName}"
+                Message = $"Migration initiated from {oldCellName ?? string.Empty} to {targetCell.cellName ?? string.Empty}"
             };
         }
         catch (Exception ex)
@@ -337,7 +342,7 @@ public class TenantMigrationFunction
         }
 
         // Return CELL with lowest tenant count for load balancing
-        return cells.OrderBy(c => c.currentTenantCount).FirstOrDefault();
+    return cells.OrderBy(c => c.currentTenantCount).FirstOrDefault() ?? new CellInfo();
     }
 
     /// <summary>
@@ -413,7 +418,7 @@ public class TenantMigrationRequest
 {
     public TenantTier? TargetTenantTier { get; set; }
     public List<string> RequiredCompliance { get; set; } = new List<string>();
-    public string Reason { get; set; }
+    public string Reason { get; set; } = string.Empty;
     public bool ForceDataMigration { get; set; } = false;
 }
 
@@ -423,7 +428,7 @@ public class TenantMigrationRequest
 public class MigrationValidationResult
 {
     public bool IsValid { get; set; }
-    public string ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -432,12 +437,12 @@ public class MigrationValidationResult
 public class TenantMigrationResult
 {
     public bool Success { get; set; }
-    public string SourceCell { get; set; }
-    public string TargetCell { get; set; }
+    public string SourceCell { get; set; } = string.Empty;
+    public string TargetCell { get; set; } = string.Empty;
     public DateTime MigrationStartTime { get; set; }
     public DateTime EstimatedCompletionTime { get; set; }
-    public string Message { get; set; }
-    public string ErrorMessage { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -445,9 +450,9 @@ public class TenantMigrationResult
 /// </summary>
 public class CellCapacityInfo
 {
-    public string CellName { get; set; }
+    public string CellName { get; set; } = string.Empty;
     public CellType CellType { get; set; }
-    public string Region { get; set; }
+    public string Region { get; set; } = string.Empty;
     public int CurrentTenants { get; set; }
     public int MaxTenants { get; set; }
     public double CapacityPercentage { get; set; }

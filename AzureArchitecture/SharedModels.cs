@@ -13,11 +13,14 @@ namespace AzureStampsPattern.Models
     /// </summary>
     public class CachedTenantRouting
     {
-        public string TenantId { get; set; }
-        public string CellBackendPool { get; set; }
-        public string Region { get; set; }
-        public string Subdomain { get; set; }
-        public TenantTier TenantTier { get; set; } = TenantTier.Shared;
+    public string TenantId { get; set; } = string.Empty;
+    public string CellBackendPool { get; set; } = string.Empty;
+    public string CellName { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
+    public string AssignmentReason { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
+    public string Subdomain { get; set; } = string.Empty;
+    public TenantTier TenantTier { get; set; } = TenantTier.Shared;
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
         public TimeSpan CacheExpiry { get; set; } = TimeSpan.FromHours(1);
     }
@@ -27,22 +30,22 @@ namespace AzureStampsPattern.Models
     /// </summary>
     public class TenantInfo
     {
-        public string tenantId { get; set; }
-        public string subdomain { get; set; }
-        public string cellBackendPool { get; set; }
-        public string cellName { get; set; }
+    public string tenantId { get; set; } = string.Empty;
+    public string subdomain { get; set; } = string.Empty;
+    public string cellBackendPool { get; set; } = string.Empty;
+    public string cellName { get; set; } = string.Empty;
         public TenantTier? tenantTier { get; set; } = TenantTier.Shared;
-        public string region { get; set; } = "eastus";
+    public string region { get; set; } = "eastus";
         public List<string> complianceRequirements { get; set; } = new List<string>();
         public TenantStatus status { get; set; } = TenantStatus.Active;
         public DateTime createdDate { get; set; }
         public DateTime? lastModifiedDate { get; set; }
         public int estimatedMonthlyApiCalls { get; set; } = 10000;
-        public string contactEmail { get; set; }
-        public string organizationName { get; set; }
-        public string businessSegment { get; set; } // Startup, SMB, Enterprise, Government
+    public string contactEmail { get; set; } = string.Empty;
+    public string organizationName { get; set; } = string.Empty;
+    public string businessSegment { get; set; } = string.Empty; // Startup, SMB, Enterprise, Government
         public List<string> dataResidencyRequirements { get; set; } = new List<string>();
-        public string slaLevel { get; set; } = "Standard"; // Basic, Standard, Premium, Enterprise
+    public string slaLevel { get; set; } = "Standard"; // Basic, Standard, Premium, Enterprise
     }
 
     /// <summary>
@@ -50,11 +53,11 @@ namespace AzureStampsPattern.Models
     /// </summary>
     public class CellInfo
     {
-        public string cellId { get; set; }
-        public string cellName { get; set; }
+    public string cellId { get; set; } = string.Empty;
+    public string cellName { get; set; } = string.Empty;
         public CellType cellType { get; set; }
-        public string region { get; set; }
-        public string backendPool { get; set; }
+    public string region { get; set; } = string.Empty;
+    public string backendPool { get; set; } = string.Empty;
         public int maxTenantCount { get; set; }
         public int currentTenantCount { get; set; }
         public CellStatus status { get; set; }
@@ -75,7 +78,7 @@ namespace AzureStampsPattern.Models
         
         // Availability and SLA
         public double availabilityTarget { get; set; } = 99.9;
-        public string maintenanceWindow { get; set; }
+    public string maintenanceWindow { get; set; } = string.Empty;
         public bool autoScalingEnabled { get; set; } = true;
     }
 
@@ -84,13 +87,13 @@ namespace AzureStampsPattern.Models
     /// </summary>
     public class CellAssignmentResult
     {
-        public bool Success { get; set; }
-        public string CellBackendPool { get; set; }
-        public string CellName { get; set; }
-        public string ErrorMessage { get; set; }
-        public TenantTier AssignedTier { get; set; }
-        public string AssignmentReason { get; set; }
-        public DateTime AssignmentTimestamp { get; set; }
+    public bool Success { get; set; }
+    public string CellBackendPool { get; set; } = string.Empty;
+    public string CellName { get; set; } = string.Empty;
+    public string ErrorMessage { get; set; } = string.Empty;
+    public TenantTier AssignedTier { get; set; }
+    public string AssignmentReason { get; set; } = string.Empty;
+    public DateTime AssignmentTimestamp { get; set; }
     }
 
     /// <summary>
