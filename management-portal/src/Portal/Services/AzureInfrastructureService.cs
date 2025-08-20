@@ -1,69 +1,53 @@
+
 using Stamps.ManagementPortal.Models;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
+using Stamps.ManagementPortal.GraphQL;
+using HotChocolate.Subscriptions;
 
-namespace Stamps.ManagementPortal.Services;
-
-public interface IAzureInfrastructureService
+namespace Stamps.ManagementPortal.Services
 {
-    Task<InfrastructureDiscoveryResult> DiscoverInfrastructureAsync();
-}
-
-public class AzureInfrastructureService : IAzureInfrastructureService
-{
-    private readonly ILogger<AzureInfrastructureService> _logger;
-    private readonly IConfiguration _configuration;
-
-    public AzureInfrastructureService(ILogger<AzureInfrastructureService> logger, IConfiguration configuration)
+    public interface IAzureInfrastructureService
     {
-        _logger = logger;
-        _configuration = configuration;
+        Task<InfrastructureDiscoveryResult> DiscoverInfrastructureAsync();
     }
+
+    public class AzureInfrastructureService : IAzureInfrastructureService
+    {
+        private readonly ILogger<AzureInfrastructureService> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly ITaskEventPublisher _taskEventPublisher;
+
+        public AzureInfrastructureService(ILogger<AzureInfrastructureService> logger, IConfiguration configuration, ITaskEventPublisher taskEventPublisher)
+        {
+            _logger = logger;
+            _configuration = configuration;
+            _taskEventPublisher = taskEventPublisher;
+        }
 
     public async Task<InfrastructureDiscoveryResult> DiscoverInfrastructureAsync()
     {
         _logger.LogInformation("Starting live Azure infrastructure discovery");
 
-        try
-        {
-            // Use appropriate credential based on environment
-            Azure.Core.TokenCredential credential;
-            
-            if (Environment.GetEnvironmentVariable("RUNNING_IN_PRODUCTION") == "true")
-            {
-                // In production, use DefaultAzureCredential (supports managed identity)
-                credential = new DefaultAzureCredential();
-            }
-            else
-            {
-                // In development, try Azure CLI credential first, then fallback to interactive
-                try
-                {
-                    credential = new AzureCliCredential();
-                    _logger.LogInformation("Using Azure CLI credential for local development");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Azure CLI credential failed, falling back to simulated discovery");
-                    return CreateSimulatedDiscoveryResult();
-                }
-            }
-            
-            var armClient = new ArmClient(credential);
-
-            var cells = new List<DiscoveredCell>();
-            var resources = new List<DiscoveredResource>();
-            var errorMessages = new List<string>();
-
-            // Get all subscriptions the user has access to
-            var subscriptions = armClient.GetSubscriptions();
+        await _taskEventPublisher.PublishTaskEventAsync(new TaskEvent {
+            Id = Guid.NewGuid().ToString(),
+            Status = "Started",
+            Message = "Infrastructure discovery started",
+            Timestamp = DateTime.UtcNow
+        });
 
             await foreach (var subscription in subscriptions)
             {
                 try
                 {
                     _logger.LogInformation($"Discovering resources in subscription: {subscription.Data.DisplayName} ({subscription.Id})");
+                    await _taskEventPublisher.PublishTaskEventAsync(new TaskEvent {
+                        Id = Guid.NewGuid().ToString(),
+                        Status = "InProgress",
+                        Message = $"Discovering resources in subscription: {subscription.Data.DisplayName}",
+                        Timestamp = DateTime.UtcNow
+                    });
 
                     // Get all resource groups in this subscription
                     var resourceGroups = subscription.GetResourceGroups();
@@ -101,6 +85,13 @@ public class AzureInfrastructureService : IAzureInfrastructureService
                         {
                             _logger.LogError(ex, $"Error discovering resources in resource group {resourceGroup.Data.Name}");
                             errorMessages.Add($"Failed to discover resources in {resourceGroup.Data.Name}: {ex.Message}");
+                            // Publish error event
+                            await _taskEventPublisher.PublishTaskEventAsync(new TaskEvent {
+                                Id = Guid.NewGuid().ToString(),
+                                Status = "Error",
+                                Message = $"Failed to discover resources in {resourceGroup.Data.Name}: {ex.Message}",
+                                Timestamp = DateTime.UtcNow
+                            });
                         }
                     }
                 }
@@ -108,10 +99,23 @@ public class AzureInfrastructureService : IAzureInfrastructureService
                 {
                     _logger.LogError(ex, $"Error accessing subscription {subscription.Data.DisplayName}");
                     errorMessages.Add($"Failed to access subscription {subscription.Data.DisplayName}: {ex.Message}");
+                    // Publish error event
+                    await _taskEventPublisher.PublishTaskEventAsync(new TaskEvent {
+                        Id = Guid.NewGuid().ToString(),
+                        Status = "Error",
+                        Message = $"Failed to access subscription {subscription.Data.DisplayName}: {ex.Message}",
+                        Timestamp = DateTime.UtcNow
+                    });
                 }
             }
 
             _logger.LogInformation($"Discovered {cells.Count} cells with {resources.Count} total resources");
+            await _taskEventPublisher.PublishTaskEventAsync(new TaskEvent {
+                Id = Guid.NewGuid().ToString(),
+                Status = "Completed",
+                Message = $"Discovery completed: {cells.Count} cells, {resources.Count} resources.",
+                Timestamp = DateTime.UtcNow
+            });
 
             return new InfrastructureDiscoveryResult
             {

@@ -89,15 +89,6 @@
         return "vdev";
     }
     
-    private string GetDataSource()
-    {
-        var dabUrl = Configuration["DAB_GRAPHQL_URL"];
-        return string.IsNullOrWhiteSpace(dabUrl) ? "In-Memory Data" : "Live Data";
-    }
-    
-    private string GetDataSourceBadgeClass()
-    {
-        var dabUrl = Configuration["DAB_GRAPHQL_URL"];
-        return string.IsNullOrWhiteSpace(dabUrl) ? "bg-warning" : "bg-success";
-    }
+    private string GetDataSource() => "GraphQL";
+    private string GetDataSourceBadgeClass() => "bg-success";
 }

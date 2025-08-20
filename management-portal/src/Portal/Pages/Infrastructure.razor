@@ -2,12 +2,28 @@
 @using Stamps.ManagementPortal.Models
 @using Stamps.ManagementPortal.Services
 @using Microsoft.JSInterop
+@using Stamps.ManagementPortal.Models
+@using System.Net.WebSockets
+@using System.Text.Json
+@using System.Threading
+@using System.Threading.Tasks
+@using System.Collections.Concurrent
+@inject NavigationManager Navigation
 @inject Stamps.ManagementPortal.Services.IDataService Data
 @inject Stamps.ManagementPortal.Services.IAzureInfrastructureService AzureInfrastructureService
 @inject ILogger<Infrastructure> Logger
 @inject IJSRuntime JSRuntime
 
 <div class="infrastructure-container">
+    <div class="realtime-events mb-3">
+        <h6>🔔 Real-Time Task Events</h6>
+        <ul class="list-unstyled">
+            @foreach (var evt in taskEvents)
+            {
+                <li><span class="badge bg-info">@evt.Status</span> @evt.Message <small class="text-muted">@evt.Timestamp.ToLocalTime()</small></li>
+            }
+        </ul>
+    </div>
     <div class="page-header">
         <h1>🏗️ Infrastructure Discovery</h1>
         <p class="lead">Real-time view of your Azure Stamps infrastructure across all regions</p>
@@ -444,6 +460,78 @@
 </style>
 
 @code {
+    private List<TaskEventModel> taskEvents = new();
+    private ClientWebSocket? ws;
+    private CancellationTokenSource? wsCts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _ = ConnectToTaskEvents();
+    }
+
+    private async Task ConnectToTaskEvents()
+    {
+        try
+        {
+            wsCts = new CancellationTokenSource();
+            ws = new ClientWebSocket();
+            var wsUri = new Uri(Navigation.ToAbsoluteUri("/graphql").ToString().Replace("http","ws"));
+            await ws.ConnectAsync(wsUri, wsCts.Token);
+
+            // Send GraphQL subscription start message (Apollo protocol)
+            var payload = new
+            {
+                id = "1",
+                type = "start",
+                payload = new
+                {
+                    query = "subscription { taskEvents { id status message timestamp } }"
+                }
+            };
+            var json = JsonSerializer.Serialize(payload);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            await ws.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, wsCts.Token);
+
+            // Listen for messages
+            var buffer = new byte[4096];
+            while (ws.State == WebSocketState.Open)
+            {
+                var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), wsCts.Token);
+                if (result.MessageType == WebSocketMessageType.Close) break;
+                var msg = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
+                if (msg.Contains("taskEvents"))
+                {
+                    var doc = JsonDocument.Parse(msg);
+                    var evt = doc.RootElement
+                        .GetProperty("payload").GetProperty("data").GetProperty("taskEvents");
+                    var model = new TaskEventModel
+                    {
+                        Id = evt.GetProperty("id").GetString() ?? string.Empty,
+                        Status = evt.GetProperty("status").GetString() ?? string.Empty,
+                        Message = evt.GetProperty("message").GetString() ?? string.Empty,
+                        Timestamp = evt.GetProperty("timestamp").GetDateTime()
+                    };
+                    taskEvents.Insert(0, model);
+                    if (taskEvents.Count > 20) taskEvents.RemoveAt(taskEvents.Count - 1);
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "WebSocket subscription error");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (ws != null)
+        {
+            wsCts?.Cancel();
+            ws.Dispose();
+        }
+    }
     private bool loading = false;
     private DateTime lastUpdated = DateTime.Now;
     

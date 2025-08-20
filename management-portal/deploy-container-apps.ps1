@@ -215,24 +215,6 @@ finally {
     Pop-Location
 }
 
-# Build and push DAB image
-Write-Host "📦 Building DAB container image..." -ForegroundColor Yellow
-Push-Location "dab"
-try {
-    docker build -t $dabImage .
-    if ($LASTEXITCODE -ne 0) {
-        throw "DAB image build failed"
-    }
-    
-    Write-Host "📤 Pushing DAB image to registry..." -ForegroundColor Yellow
-    docker push $dabImage
-    if ($LASTEXITCODE -ne 0) {
-        throw "DAB image push failed"
-    }
-}
-finally {
-    Pop-Location
-}
 
 # Phase 3: Deploy Container Apps
 Write-Host "🏗️  Phase 3: Deploying Container Apps..." -ForegroundColor Yellow
@@ -256,34 +238,9 @@ $acrPassword = az acr credential show `
     --query "passwords[0].value" `
     --output tsv
 
-# Create DAB Container App
-Write-Host "🚀 Creating DAB Container App..." -ForegroundColor Yellow
-az containerapp create `
-    --name "ca-stamps-dab" `
-    --resource-group $ResourceGroupName `
-    --environment $containerAppsEnvironmentName `
-    --image $dabImage `
-    --target-port 80 `
-    --ingress external `
-    --registry-server $acrLoginServer `
-    --registry-username $containerRegistryName `
-    --registry-password $acrPassword `
-    --secrets "cosmos-connection-string=$cosmosConnectionString" "appinsights-connection-string=$appInsightsConnectionString" `
-    --env-vars "COSMOS_CONNECTION_STRING=secretref:cosmos-connection-string" "ASPNETCORE_ENVIRONMENT=Production" "APPLICATIONINSIGHTS_CONNECTION_STRING=secretref:appinsights-connection-string" `
-    --cpu 0.25 `
-    --memory 0.5Gi `
-    --min-replicas 1 `
-    --max-replicas 3 `
-    --output none
 
-# Get DAB URL
-$dabUrl = az containerapp show `
-    --name "ca-stamps-dab" `
-    --resource-group $ResourceGroupName `
-    --query "properties.configuration.ingress.fqdn" `
-    --output tsv
 
-# Create Portal Container App
+# Create Portal Container App (HotChocolate GraphQL only)
 Write-Host "🚀 Creating Portal Container App..." -ForegroundColor Yellow
 az containerapp create `
     --name "ca-stamps-portal" `
@@ -295,8 +252,8 @@ az containerapp create `
     --registry-server $acrLoginServer `
     --registry-username $containerRegistryName `
     --registry-password $acrPassword `
-    --secrets "dab-graphql-url=https://$dabUrl/graphql" "appinsights-connection-string=$appInsightsConnectionString" "azure-ad-client-id=e691193e-4e25-4a72-9185-1ce411aa2fd8" "azure-ad-tenant-id=16b3c013-d300-468d-ac64-7eda0820b6d3" `
-    --env-vars "DAB_GRAPHQL_URL=secretref:dab-graphql-url" "ASPNETCORE_ENVIRONMENT=Production" "APPLICATIONINSIGHTS_CONNECTION_STRING=secretref:appinsights-connection-string" "ASPNETCORE_URLS=http://+:8080" "AzureAd__ClientId=secretref:azure-ad-client-id" "AzureAd__TenantId=secretref:azure-ad-tenant-id" "AzureAd__Instance=https://login.microsoftonline.com/" "AzureAd__CallbackPath=/signin-oidc" "AzureAd__SignedOutCallbackPath=/signout-callback-oidc" "RUNNING_IN_PRODUCTION=true" `
+    --secrets "appinsights-connection-string=$appInsightsConnectionString" "azure-ad-client-id=e691193e-4e25-4a72-9185-1ce411aa2fd8" "azure-ad-tenant-id=16b3c013-d300-468d-ac64-7eda0820b6d3" `
+    --env-vars "ASPNETCORE_ENVIRONMENT=Production" "APPLICATIONINSIGHTS_CONNECTION_STRING=secretref:appinsights-connection-string" "ASPNETCORE_URLS=http://+:8080" "AzureAd__ClientId=secretref:azure-ad-client-id" "AzureAd__TenantId=secretref:azure-ad-tenant-id" "AzureAd__Instance=https://login.microsoftonline.com/" "AzureAd__CallbackPath=/signin-oidc" "AzureAd__SignedOutCallbackPath=/signout-callback-oidc" "RUNNING_IN_PRODUCTION=true" `
     --cpu 0.5 `
     --memory 1Gi `
     --min-replicas 1 `
@@ -319,7 +276,6 @@ Write-Host "  Container Registry: $containerRegistryName" -ForegroundColor White
 Write-Host ""
 Write-Host "🌐 Application URLs:" -ForegroundColor Cyan
 Write-Host "  Portal: https://$portalUrl" -ForegroundColor White
-Write-Host "  Data API Builder: https://$dabUrl" -ForegroundColor White
 Write-Host ""
 Write-Host "📊 Monitoring:" -ForegroundColor Cyan
 Write-Host "  Application Insights: $appInsightsName" -ForegroundColor White
