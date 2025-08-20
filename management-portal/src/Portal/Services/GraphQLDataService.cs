@@ -2,13 +2,15 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Stamps.ManagementPortal.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Stamps.ManagementPortal.Services;
 
-public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfiguration config) : IDataService
+public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfiguration config, ILogger<GraphQLDataService> logger) : IDataService
 {
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly IConfiguration _config = config;
+    private readonly ILogger<GraphQLDataService> _logger = logger;
 
     private HttpClient Client => _httpClientFactory.CreateClient("GraphQL");
 
@@ -110,49 +112,71 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
 
     private async Task<IReadOnlyList<T>> QueryAsync<T>(string query, string rootField, CancellationToken ct)
     {
+        _logger.LogInformation("Executing GraphQL query: {Query}", query);
         var payload = new { query };
         using var req = new HttpRequestMessage(HttpMethod.Post, "")
         {
             Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
         };
-        using var res = await Client.SendAsync(req, ct);
-        res.EnsureSuccessStatusCode();
-        using var stream = await res.Content.ReadAsStreamAsync(ct);
-        using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
-        // If GraphQL returned errors, surface them clearly
-        if (doc.RootElement.TryGetProperty("errors", out var errs) && errs.ValueKind == JsonValueKind.Array && errs.GetArrayLength() > 0)
+        try
         {
-            throw new HttpRequestException($"GraphQL errors: {errs}");
+            using var res = await Client.SendAsync(req, ct);
+            res.EnsureSuccessStatusCode();
+            var responseContent = await res.Content.ReadAsStringAsync(ct);
+            _logger.LogDebug("GraphQL response: {Response}", responseContent);
+            using var doc = JsonDocument.Parse(responseContent);
+            // If GraphQL returned errors, surface them clearly
+            if (doc.RootElement.TryGetProperty("errors", out var errs) && errs.ValueKind == JsonValueKind.Array && errs.GetArrayLength() > 0)
+            {
+                _logger.LogError("GraphQL errors: {Errors}", errs.ToString());
+                throw new HttpRequestException($"GraphQL errors: {errs}");
+            }
+            var data = doc.RootElement.GetProperty("data").GetProperty(rootField);
+            var list = new List<T>();
+            foreach (var el in data.EnumerateArray())
+            {
+                var obj = el.Deserialize<T>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (obj is not null) list.Add(obj);
+            }
+            return list;
         }
-        var data = doc.RootElement.GetProperty("data").GetProperty(rootField);
-        var list = new List<T>();
-        foreach (var el in data.EnumerateArray())
+        catch (Exception ex)
         {
-            var obj = el.Deserialize<T>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (obj is not null) list.Add(obj);
+            _logger.LogError(ex, "Error executing GraphQL query: {Query}", query);
+            throw;
         }
-        return list;
     }
 
     private async Task<T> MutationAsync<T>(string query, object variables, string rootField, CancellationToken ct)
     {
+        _logger.LogInformation("Executing GraphQL mutation: {Query} with variables {Variables}", query, JsonSerializer.Serialize(variables));
         var payload = new { query, variables };
         using var req = new HttpRequestMessage(HttpMethod.Post, "")
         {
             Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
         };
-        using var res = await Client.SendAsync(req, ct);
-        res.EnsureSuccessStatusCode();
-        using var stream = await res.Content.ReadAsStreamAsync(ct);
-        using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
-        if (doc.RootElement.TryGetProperty("errors", out var errs) && errs.ValueKind == JsonValueKind.Array && errs.GetArrayLength() > 0)
+        try
         {
-            throw new HttpRequestException($"GraphQL errors: {errs}");
+            using var res = await Client.SendAsync(req, ct);
+            res.EnsureSuccessStatusCode();
+            var responseContent = await res.Content.ReadAsStringAsync(ct);
+            _logger.LogDebug("GraphQL mutation response: {Response}", responseContent);
+            using var doc = JsonDocument.Parse(responseContent);
+            if (doc.RootElement.TryGetProperty("errors", out var errs) && errs.ValueKind == JsonValueKind.Array && errs.GetArrayLength() > 0)
+            {
+                _logger.LogError("GraphQL mutation errors: {Errors}", errs.ToString());
+                throw new HttpRequestException($"GraphQL errors: {errs}");
+            }
+            var data = doc.RootElement.GetProperty("data").GetProperty(rootField);
+            if (typeof(T) == typeof(object)) return default!;
+            var result = data.Deserialize<T>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return result!;
         }
-        var data = doc.RootElement.GetProperty("data").GetProperty(rootField);
-        if (typeof(T) == typeof(object)) return default!;
-        var result = data.Deserialize<T>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        return result!;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error executing GraphQL mutation: {Query}", query);
+            throw;
+        }
     }
 
     public async Task<bool> ReserveDomainAsync(string domain, string ownerTenantId, CancellationToken ct = default)
