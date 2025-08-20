@@ -2,11 +2,11 @@
   "$schema": "https://dataapibuilder.azureedge.net/schemas/latest/dab.draft.schema.json",
   "data-source": {
     "database-type": "cosmosdb_nosql",
+    "connection-string": "@env('COSMOS_CONNECTION_STRING')",
     "options": {
       "database": "stamps-control-plane",
       "schema": "schema.graphql"
-    },
-    "connection-string": "@env('COSMOS_CONNECTION_STRING')"
+    }
   },
   "runtime": {
     "rest": { 
@@ -17,27 +17,27 @@
       "enabled": true, 
       "path": "/graphql"
     },
-    "authentication": { 
-      "provider": "StaticWebApps" 
+    "host": {
+      "cors": {
+        "origins": ["*"],
+        "allow-credentials": false
+      }
     }
   },
   "entities": {
     "Tenant": {
       "source": "tenants",
       "graphql": { "type": { "singular": "Tenant", "plural": "Tenants" } },
-      "primary-key": ["id", "tenantId"],
       "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
     },
     "Cell": {
-      "source": "cells",
+      "source": "cells", 
       "graphql": { "type": { "singular": "Cell", "plural": "Cells" } },
-      "primary-key": ["id", "cellId"],
       "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
     },
     "Operation": {
       "source": "operations",
       "graphql": { "type": { "singular": "Operation", "plural": "Operations" } },
-      "primary-key": ["id", "tenantId"],
       "permissions": [ { "role": "anonymous", "actions": [ "read" ] } ]
     }
   }
