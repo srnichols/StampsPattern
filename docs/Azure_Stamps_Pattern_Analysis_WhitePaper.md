@@ -246,7 +246,7 @@ Related docs: <a href="./PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopene
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.5.0
-- **Last Updated**: 2025-08-21 13:02:57 UTC  
+- **Version**: 1.5.2
+- **Last Updated**: 2025-08-21 14:41:41 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

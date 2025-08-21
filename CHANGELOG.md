@@ -1,3 +1,8 @@
+# [1.5.2] - 2025-08-21
+
+### Changed
+- Enforce descriptive Azure Container Registry naming conventions in Bicep files (management-portal, traffic-routing)
+
 # Changelog
 
 All notable changes to the Azure Stamps Pattern project will be documented in this file.
@@ -9,6 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
+
+## [1.5.2] - 2025-08-21
+
+### Added
+- Enforce descriptive ACR naming conventions in Bicep files (management-portal, traffic-routing)
 ## [1.5.0] - 2025-08-21
 
 ### Added
@@ -153,6 +163,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Multi-tenant architecture patterns
 - Security and compliance frameworks
 - Documentation and deployment guides
+
 
 
 
