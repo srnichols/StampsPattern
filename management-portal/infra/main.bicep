@@ -30,8 +30,7 @@ param appInsightsName string = ''
 @description('Portal container image')
 param portalImage string
 
-@description('DAB container image')
-param dabImage string
+// DAB removed: no longer needed
 
 // Use generated names if not provided
 var actualCosmosAccountName = empty(cosmosAccountName) ? 'cosmos-${resourceToken}' : cosmosAccountName
@@ -65,7 +64,7 @@ module managementPortal 'management-portal.bicep' = {
     logAnalyticsWorkspaceName: actualLogAnalyticsWorkspaceName
     appInsightsName: actualAppInsightsName
     portalImage: portalImage
-    dabImage: dabImage
+  // dabImage removed
     tags: tags
   }
 }
@@ -87,6 +86,6 @@ output AZURE_SUBSCRIPTION_ID string = subscription().subscriptionId
 output AZURE_RESOURCE_GROUP string = resourceGroup.name
 output RESOURCE_GROUP_ID string = resourceGroup.id
 output AZURE_PORTAL_URL string = managementPortal.outputs.portalUrl
-output AZURE_DAB_URL string = managementPortal.outputs.dabUrl
+// output AZURE_DAB_URL removed
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = managementPortal.outputs.containerRegistryLoginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = managementPortal.outputs.containerRegistryName

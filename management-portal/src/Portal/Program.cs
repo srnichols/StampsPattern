@@ -92,6 +92,7 @@ if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("APPLICATIONIN
 // Configure HotChocolate GraphQL server
 builder.Services.AddGraphQLServer()
     .AddQueryType<Stamps.ManagementPortal.GraphQL.Query>()
+    .AddMutationType<Stamps.ManagementPortal.GraphQL.Mutation>()
     .AddSubscriptionType<Stamps.ManagementPortal.GraphQL.Subscription>()
     .AddInMemorySubscriptions();
 

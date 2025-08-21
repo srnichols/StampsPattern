@@ -34,8 +34,7 @@ param keyVaultName string = ''
 @description('Portal container image')
 param portalImage string
 
-@description('DAB container image')
-param dabImage string
+// DAB removed: no longer needed
 
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   name: cosmosAccountName
@@ -264,111 +263,6 @@ resource cosmosContributorRoleAssignment 'Microsoft.Authorization/roleAssignment
 }
 
 // Data API Builder Container App
-resource dabContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
-  name: 'ca-stamps-dab'
-  location: location
-  dependsOn: [
-    acrPullRoleAssignment
-    cosmosContributorRoleAssignment
-  ]
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${managedIdentity.id}': {}
-    }
-  }
-  properties: {
-    managedEnvironmentId: containerAppsEnvironment.id
-    configuration: {
-      dapr: {
-        enabled: true
-        appId: 'dab'
-        appProtocol: 'http'
-        appPort: 80
-        enableApiLogging: true
-      }
-      ingress: {
-        external: true
-        targetPort: 80
-        allowInsecure: false
-        corsPolicy: {
-          allowedOrigins: ['*']
-          allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-          allowedHeaders: ['*']
-          allowCredentials: false
-        }
-        traffic: [
-          {
-            weight: 100
-            latestRevision: true
-          }
-        ]
-      }
-  registries: [
-        {
-          server: containerRegistry.properties.loginServer
-          identity: managedIdentity.id
-        }
-      ]
-      secrets: [
-        {
-          name: 'cosmos-connection-string'
-          value: cosmos.listConnectionStrings().connectionStrings[0].connectionString
-        }
-        {
-          name: 'appinsights-connection-string'
-          value: appInsights.properties.ConnectionString
-        }
-      ]
-    }
-    template: {
-      containers: [
-        {
-          // Use the built image for DAB which expects to be exposed on port 80
-          image: dabImage
-          name: 'dab'
-          // Let the container use its default entrypoint instead of overriding
-          // command: [ 'dab', 'start', '--host', '0.0.0.0', '--config', '/App/dab-config.json' ]
-          env: [
-            {
-              name: 'COSMOS_CONNECTION_STRING'
-              secretRef: 'cosmos-connection-string'
-            }
-            {
-              name: 'ASPNETCORE_ENVIRONMENT'
-              value: 'Production'
-            }
-            {
-              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-              secretRef: 'appinsights-connection-string'
-            }
-          ]
-          resources: {
-            cpu: json('0.25')
-            memory: '0.5Gi'
-          }
-        }
-      ]
-      scale: {
-        minReplicas: 1
-        maxReplicas: 3
-        rules: [
-          {
-            name: 'http-scaling'
-            http: {
-              metadata: {
-                concurrentRequests: '30'
-              }
-            }
-          }
-        ]
-      }
-    }
-  }
-  tags: union(tags, {
-    'azd-service-name': 'dab'
-  })
-}
 
 // Management Portal Container App
 resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {

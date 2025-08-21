@@ -116,7 +116,8 @@ See also: Known Issues → Functions host exits on startup or endpoints not reac
 
 ## 🎯 Minimal Happy Path (Live Data)
 
-This section shows the recommended end-to-end steps to deploy a minimal cloud lab, seed representative data using the seeder, and verify the Management Portal shows live data through the DAB GraphQL endpoint. We place this after local setup and verification because it assumes your development environment and credentials are configured.
+
+This section shows the recommended end-to-end steps to deploy a minimal cloud lab, seed representative data using the seeder, and verify the Management Portal shows live data through the integrated Hot Chocolate GraphQL API. We place this after local setup and verification because it assumes your development environment and credentials are configured.
 
 Prerequisites (cloud): Azure CLI, PowerShell 7+, Bicep CLI, and an Azure subscription with Contributor access for the target resource group.
 
@@ -135,18 +136,18 @@ az group create -n rg-stamps-smoke -l eastus
 az deployment group create -g rg-stamps-smoke -f traffic-routing.bicep --parameters @AzureArchitecture/examples/main.sample.smoke.json
 ```
 
-1. Wait for deployment to finish; note the Management Portal URL and the DAB Container App outputs from the deployment.
+1. Wait for deployment to finish; note the Management Portal URL and the GraphQL API endpoint outputs from the deployment.
 
 1. Seed baseline data: run the seeder in `AzureArchitecture/Seeder`. The seeder uses `DefaultAzureCredential` so your signing principal must have the Cosmos DB Data Contributor role on the target account. See `AzureArchitecture/README.md` or `docs/LIVE_DATA_PATH.md` for seeder options.
 
-1. Verify DAB GraphQL is healthy: POST a simple GraphQL query to the DAB endpoint; see `docs/LIVE_DATA_PATH.md` for the exact query and examples.
+1. Verify the Hot Chocolate GraphQL API is healthy: POST a simple GraphQL query to the endpoint (e.g., <http://localhost:8082/graphql> or the deployed URL). You can use Banana Cake Pop, Insomnia, Postman, or curl. See `docs/LIVE_DATA_PATH.md` for the exact query and examples.
 
 1. Open the Management Portal URL and sign in; confirm Tenants and Cells are visible and resolve through the portal UI.
 
 1. If you see no data, check the following:
 
-- Container App logs for the DAB (`ca-stamps-dab`) and Portal (`ca-stamps-portal`).
-- Confirm DAB GraphQL responds directly with a simple query.
+- Container App logs for the Portal (`ca-stamps-portal`).
+- Confirm the GraphQL API responds directly with a simple query.
 - Ensure the seeder principal has the correct RBAC role on Cosmos (Cosmos DB Data Contributor).
 
 1. For auth or CI/OIDC troubleshooting, see `docs/AUTH_CI_STRATEGY.md`.

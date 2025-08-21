@@ -1,12 +1,13 @@
 # Management Portal
 
-Run locally with one command or via the AppHost. Defaults to in-memory data; set DAB_GRAPHQL_URL to point to your Data API Builder GraphQL endpoint to use real data.
+
+Run locally with one command or via the AppHost. By default, the portal uses in-memory data. For live data, it connects to the built-in Hot Chocolate GraphQL endpoint, which provides full CRUD for Cosmos DB entities.
 
 ## Auth and roles (production)
 
-- **Hosting**: Azure Container Apps (ACA) for the portal and DAB API; Azure Functions for command handlers
-- **Authentication**: Azure Entra ID with OpenID Connect for administrative access
-- **Authorization**: DAB auth provider uses AppService-compatible headers from Container Apps authentication
+**Hosting**: Azure Container Apps (ACA) for the portal and Hot Chocolate GraphQL API; Azure Functions for command handlers
+**Authentication**: Azure Entra ID with OpenID Connect for administrative access
+**Authorization**: Uses AppService-compatible headers from Container Apps authentication
 - **Portal Roles**:
   - `authenticated` (read access to tenant data)
   - `platform.admin` (full CRUD access)
@@ -49,22 +50,33 @@ Troubleshooting
 
 ## Config
 
-- DAB_GRAPHQL_URL: e.g. <http://localhost:8082/graphql>
+
+## GraphQL Endpoint
+
+- Hot Chocolate GraphQL endpoint: <http://localhost:8082/graphql>
 
 ## Switch Data Source
 
-- Leave DAB_GRAPHQL_URL empty to use in-memory data
-- Set DAB_GRAPHQL_URL to use GraphQL
+
+By default, the portal uses in-memory data. When running in production or with Cosmos DB, the portal uses the built-in Hot Chocolate GraphQL API for all data operations.
 
 ## CRUD
 
-- Tenants, Cells, and Operations pages support create/update/delete when GraphQL is enabled (DAB provides mutations).
-- For in-memory mode, operations affect only the running process.
+
+Tenants, Cells, and Operations pages support create/update/delete via the Hot Chocolate GraphQL API. In in-memory mode, operations affect only the running process.
 
 ## Smoke test (GraphQL)
 
-After starting the local stack, run a minimal CRUD test against DAB:
 
-- pwsh -File .\scripts\graphql-smoke-test.ps1 -AsAdmin
+After starting the local stack, you can run a minimal CRUD test against the Hot Chocolate GraphQL endpoint using your favorite GraphQL client (e.g., Banana Cake Pop, Insomnia, Postman, or curl). Example mutation:
 
-The script lists tenants, creates a temporary tenant, and deletes it (using partitionKeyValue = tenantId). Use -AsAdmin to simulate the `platform.admin` role via X-MS-CLIENT-PRINCIPAL.
+```
+mutation {
+  createTenant(input: { id: "t1", displayName: "Test Tenant", domain: "test.com", tier: "Standard", status: "Active", cellId: "cell1", contactName: "Jane Doe", contactEmail: "jane@example.com" }) {
+    id
+    displayName
+  }
+}
+```
+
+You can also use the built-in Banana Cake Pop GraphQL IDE at <http://localhost:8082/graphql> for interactive queries and mutations.

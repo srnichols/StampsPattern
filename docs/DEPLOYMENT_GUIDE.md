@@ -137,11 +137,12 @@ Prerequisites:
 
 Steps:
 
-1) Start local data stack (Cosmos Emulator, DAB, Portal) [optional]
 
-- PowerShell (Windows):
-  - pwsh -File ./scripts/run-local.ps1
-- Default ports: Cosmos Emulator 8085, DAB 8082, Portal 8081
+1) Start local data stack (Cosmos Emulator, Portal, GraphQL API) [optional]
+
+  - PowerShell (Windows):
+    - pwsh -File ./scripts/run-local.ps1
+  - Default ports: Cosmos Emulator 8085, Portal 8081, GraphQL API 8082
 
 2) Ensure local.settings.json
 
