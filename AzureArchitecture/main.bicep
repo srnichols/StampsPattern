@@ -346,13 +346,13 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
     scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${environment}')
     params: {
       location: cell.regionName
-      sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-      sqlAdminUsername: sqlAdminUsername
-      sqlAdminPassword: sqlAdminPassword
-      sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-      storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, cell.cellName)}')
-      keyVaultName: toLower('kv${uniqueString(subscription().id, 'kv', cell.regionName, cell.cellName)}')
-      cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+  sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}-z${string(length(cell.availabilityZones))}'
+  sqlAdminUsername: sqlAdminUsername
+  sqlAdminPassword: sqlAdminPassword
+  sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}-z${string(length(cell.availabilityZones))}'
+  storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, cell.cellName)}z${string(length(cell.availabilityZones))}')
+  keyVaultName: toLower('kv${uniqueString(subscription().id, 'kv', cell.regionName, cell.cellName)}z${string(length(cell.availabilityZones))}')
+  cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}-z${string(length(cell.availabilityZones))}'
       tags: union(baseTags, {
         geo: cell.geoName
         region: cell.regionName
