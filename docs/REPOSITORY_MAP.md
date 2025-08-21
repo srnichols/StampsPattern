@@ -35,7 +35,7 @@ If you can't find a file, use `git grep <term>` or open the `docs/DOCS.md` sitem
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.4.0
-- **Last Updated**: 2025-08-18 01:28:00 UTC  
+- **Version**: 1.5.0
+- **Last Updated**: 2025-08-21 13:02:57 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

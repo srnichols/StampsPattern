@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
+
+## [1.5.0] - 2025-08-21
+
+### Added
+- Rebaseline: Hot Chocolate GraphQL, DAB removal, doc and infra cleanup
 ## [1.4.0] - 2025-08-18
 
 ### Added
@@ -148,6 +153,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Multi-tenant architecture patterns
 - Security and compliance frameworks
 - Documentation and deployment guides
+
 
 
 
