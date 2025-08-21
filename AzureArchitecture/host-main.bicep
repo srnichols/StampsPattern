@@ -1,8 +1,35 @@
+
 // Orchestrator for regional networking and CELL deployments in the Host subscription
 // Consumes a central Log Analytics workspace resource ID from the Hub deployment
 
+// 📚 Documentation:
+// - Architecture Overview: ../docs/ARCHITECTURE_GUIDE.md
+// - Deployment Guide: ../docs/DEPLOYMENT_ARCHITECTURE_GUIDE.md
+// - Developer Quickstart: ../docs/DEVELOPER_QUICKSTART.md
+//
+// 📝 Notes for Developers:
+// - This file is the main entry point for deploying all Host-side resources (regional and CELL layers).
+// - Naming conventions for RGs, assets, and zones are enforced for consistency and automation. See docs for rationale.
+// - The deployment expects a central Log Analytics Workspace (from the Hub) to be provisioned first.
+// - You must provide valid values for all parameters in host-main.parameters.json before deployment.
+// - For local development or testing, see the Developer Quickstart for emulator and tool setup.
+//
+// ⚠️ Prerequisites:
+// - Ensure the Hub deployment is complete and the Log Analytics Workspace resource ID is available.
+// - The StampsManagementClient app registration must exist in Entra ID; pass its IDs as parameters.
+// - Review and update the regions/cells arrays to match your intended topology.
+//
+// For more, see the docs above or ask in the project discussions.
+
 targetScope = 'subscription'
 
+
+
+// Management Portal App Registration
+@description('Application (client) ID for the StampsManagementClient enterprise app registration')
+param managementClientAppId string
+@description('Entra ID Tenant ID for the StampsManagementClient enterprise app registration')
+param managementClientTenantId string
 
 @description('Tags to apply to all resources')
 param tags object = {}
@@ -34,6 +61,7 @@ param sslCertSecretIdOverrides array = []
 
 var isSmoke = smoke
 
+// Short names for Azure regions, used in resource naming for brevity and uniqueness.
 var regionShortNames = {
   eastus: 'eus'
   eastus2: 'eus2'
@@ -44,12 +72,14 @@ var regionShortNames = {
   westeurope: 'weu'
 }
 
+// Short names for geographies, used in resource naming.
 var geoShortNames = {
   northamerica: 'us'
   europe: 'eu'
   asia: 'apac'
 }
 
+// Maps environment names to short codes for resource naming.
 var envMap = {
   development: 'dev'
   dev: 'dev'
@@ -60,11 +90,13 @@ var envMap = {
   production: 'prd'
 }
 
+// Derive the environment short code from tags or default to 'dev'.
 var environmentRaw = string(tags.?environment ?? 'dev')
 var envShort = (envMap[?toLower(environmentRaw)] ?? substring(toLower(environmentRaw), 0, 3))
 
 
 // Create a resource group for global assets
+// Note: The first region in the regions array is used for global RG location.
 resource globalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-stamps-global-${envShort}'
   location: regions[0].regionName
@@ -72,6 +104,7 @@ resource globalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 // Create a resource group for each region
+// Each region gets its own RG for isolation and quota management.
 resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for region in regions: {
   name: 'rg-stamps-region-${region.geoName}-${region.regionName}-${envShort}'
   location: region.regionName
@@ -79,6 +112,7 @@ resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = 
 }]
 
 // Create a resource group for each CELL
+// CELLs are the core isolation boundary for tenants; each gets its own RG.
 resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for cell in cells: {
   name: 'rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${envShort}'
   location: cell.regionName

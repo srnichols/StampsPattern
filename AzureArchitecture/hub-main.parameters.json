@@ -2,7 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dnsZoneName": { "value": "stamps.azurestamparch.onmicrosoft.com" },
+  "managementClientAppId": { "value": "d8f3024a-0c6a-4cea-af8b-7a7cd985354f" },
+  "managementClientTenantId": { "value": "30dd575a-bca7-491b-adf6-41d5f39275d4" },
+  "dnsZoneName": { "value": "stamps.azurestamparch.onmicrosoft.com" },
     "trafficManagerName": { "value": "tm-stamps-global" },
     "frontDoorName": { "value": "fd-stamps-global" },
     "functionAppNamePrefix": { "value": "fa-stamps" },

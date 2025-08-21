@@ -1,5 +1,23 @@
+
 // Azure Stamps Pattern - Main Orchestration Template
-// This file works with the existing module parameter schemas
+//
+// 📚 Documentation:
+// - Architecture Overview: ../docs/ARCHITECTURE_GUIDE.md
+// - Deployment Guide: ../docs/DEPLOYMENT_ARCHITECTURE_GUIDE.md
+// - Developer Quickstart: ../docs/DEVELOPER_QUICKSTART.md
+//
+// 📝 Notes for Developers:
+// - This is the top-level entry point for orchestrating all resource groups and modules in a Stamps Pattern deployment.
+// - Naming conventions for RGs, assets, and zones are enforced for automation and compliance. See docs for rationale.
+// - The deployment expects all required parameters to be set in main.parameters.json.
+// - For local development or testing, see the Developer Quickstart for emulator and tool setup.
+//
+// ⚠️ Prerequisites:
+// - Review and update the regions/cells arrays to match your intended topology.
+// - Ensure you have the correct app registration IDs for managementClientAppId and managementClientTenantId.
+// - Some modules (e.g., globalLayer, regionalLayer) have their own parameter requirements—see their files for details.
+//
+// For more, see the docs above or ask in the project discussions.
 
 targetScope = 'subscription'
 // Create a resource group for global assets
@@ -31,6 +49,12 @@ resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [f
 }]
 
 // ============ PARAMETERS ============
+// Management Portal App Registration
+@description('Application (client) ID for the StampsManagementClient enterprise app registration')
+param managementClientAppId string
+@description('Entra ID Tenant ID for the StampsManagementClient enterprise app registration')
+param managementClientTenantId string
+
 // Organization Parameters
 @description('The organization domain (e.g., contoso.com)')
 param organizationDomain string = 'contoso.com'
