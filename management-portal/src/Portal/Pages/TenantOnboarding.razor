@@ -30,6 +30,11 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>Primary Contact Name</label>
+                    <InputText @bind-Value="onboardingModel.ContactName" class="form-control" placeholder="e.g. Alice Smith" />
+                    <ValidationMessage For="@(() => onboardingModel.ContactName)" />
+                </div>
+                <div class="form-group">
                     <label>Primary Contact Email</label>
                     <InputText @bind-Value="onboardingModel.ContactEmail" class="form-control" placeholder="admin@contoso.com" />
                     <ValidationMessage For="@(() => onboardingModel.ContactEmail)" />
@@ -272,7 +277,9 @@
     public class OnboardingModel
     {
         [Required]
-        public string OrganizationName { get; set; } = "";
+    public string OrganizationName { get; set; } = "";
+    [Required]
+    public string ContactName { get; set; } = "";
         
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.[a-zA-Z]{2,}$", 
@@ -366,7 +373,9 @@
             onboardingModel.Domain,
             onboardingModel.SelectedTier, 
             "provisioning", 
-            recommendedCell
+            recommendedCell,
+            onboardingModel.ContactName,
+            onboardingModel.ContactEmail
         );
         
         try

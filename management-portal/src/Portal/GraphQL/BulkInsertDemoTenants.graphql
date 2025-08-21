@@ -1,0 +1,32 @@
+# Bulk GraphQL Insert for Classic Microsoft Demo Companies
+# This file contains a GraphQL mutation for seeding the Tenants table with classic Microsoft demo companies.
+# Use this mutation in your GraphQL playground or API to insert all demo tenants at once.
+
+mutation BulkInsertDemoTenants {
+  createTenants(input: [
+    { id: "contoso", displayName: "Contoso Ltd.", domain: "contoso.com", tier: "enterprise", status: "active", cellId: "cell-eastus-1", contactName: "Alice Contoso", contactEmail: "admin@contoso.com" },
+    { id: "fabrikam", displayName: "Fabrikam, Inc.", domain: "fabrikam.com", tier: "smb", status: "active", cellId: "cell-westus-1", contactName: "Bob Fabrikam", contactEmail: "admin@fabrikam.com" },
+    { id: "adventureworks", displayName: "Adventure Works", domain: "adventure-works.com", tier: "premium", status: "active", cellId: "cell-eastus-2", contactName: "Cathy Adventure", contactEmail: "admin@adventure-works.com" },
+    { id: "northwind", displayName: "Northwind Traders", domain: "northwindtraders.com", tier: "standard", status: "active", cellId: "cell-westus-2", contactName: "Nick Northwind", contactEmail: "admin@northwindtraders.com" },
+    { id: "tailspintoys", displayName: "Tailspin Toys", domain: "tailspintoys.com", tier: "standard", status: "active", cellId: "cell-centralus-1", contactName: "Tina Tailspin", contactEmail: "admin@tailspintoys.com" },
+    { id: "wingtiptoys", displayName: "Wingtip Toys", domain: "wingtiptoys.com", tier: "standard", status: "active", cellId: "cell-centralus-2", contactName: "Will Wingtip", contactEmail: "admin@wingtiptoys.com" },
+    { id: "litware", displayName: "Litware, Inc.", domain: "litware.com", tier: "premium", status: "active", cellId: "cell-eastus-3", contactName: "Liam Litware", contactEmail: "admin@litware.com" },
+    { id: "woodgrove", displayName: "Woodgrove Bank", domain: "woodgrovebank.com", tier: "standard", status: "active", cellId: "cell-westus-3", contactName: "Wendy Woodgrove", contactEmail: "admin@woodgrovebank.com" },
+    { id: "blueyonder", displayName: "Blue Yonder Airlines", domain: "blueyonderairlines.com", tier: "standard", status: "active", cellId: "cell-northcentralus-1", contactName: "Ben Blueyonder", contactEmail: "admin@blueyonderairlines.com" },
+    { id: "proseware", displayName: "Proseware, Inc.", domain: "proseware.com", tier: "standard", status: "active", cellId: "cell-northcentralus-2", contactName: "Paula Proseware", contactEmail: "admin@proseware.com" },
+    { id: "gdi", displayName: "Graphic Design Institute", domain: "gdi.edu", tier: "standard", status: "active", cellId: "cell-southcentralus-1", contactName: "Gina GDI", contactEmail: "admin@gdi.edu" },
+    { id: "vanarsdel", displayName: "VanArsdel Ltd.", domain: "vanarsdel.com", tier: "standard", status: "active", cellId: "cell-southcentralus-2", contactName: "Victor VanArsdel", contactEmail: "admin@vanarsdel.com" },
+    { id: "fourthcoffee", displayName: "Fourth Coffee", domain: "fourthcoffee.com", tier: "standard", status: "active", cellId: "cell-eastus-4", contactName: "Fiona Fourth", contactEmail: "admin@fourthcoffee.com" },
+    { id: "consolidated", displayName: "Consolidated Messenger", domain: "consolidatedmessenger.com", tier: "standard", status: "active", cellId: "cell-westus-4", contactName: "Connie Consolidated", contactEmail: "admin@consolidatedmessenger.com" },
+    { id: "wideworld", displayName: "Wide World Importers", domain: "wideworldimporters.com", tier: "premium", status: "active", cellId: "cell-eastus-5", contactName: "Walt Wideworld", contactEmail: "admin@wideworldimporters.com" }
+  ]) {
+    id
+    displayName
+    domain
+    tier
+    status
+    cellId
+    contactName
+    contactEmail
+  }
+}

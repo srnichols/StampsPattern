@@ -15,7 +15,7 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
     private HttpClient Client => _httpClientFactory.CreateClient("GraphQL");
 
     public async Task<IReadOnlyList<Tenant>> GetTenantsAsync(CancellationToken ct = default)
-        => await QueryAsync<Tenant>("query { tenants { id displayName domain tier status cellId } }", "tenants", ct);
+        => await QueryAsync<Tenant>("query { tenants { id displayName domain tier status cellId contactName contactEmail } }", "tenants", ct);
 
     public async Task<IReadOnlyList<Cell>> GetCellsAsync(CancellationToken ct = default)
         => await QueryAsync<Cell>("query { cells { id region availabilityZone status capacityUsed capacityTotal } }", "cells", ct);
@@ -25,7 +25,7 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
 
     public async Task<Tenant> CreateTenantAsync(Tenant tenant, CancellationToken ct = default)
     {
-        var mutation = @"mutation CreateTenant($t: Tenant_input!) { createTenant(item: $t) { id displayName domain tier status cellId } }";
+        var mutation = @"mutation CreateTenant($t: Tenant_input!) { createTenant(item: $t) { id displayName domain tier status cellId contactName contactEmail } }";
         var variables = new
         {
             t = new
@@ -36,7 +36,9 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
                 domain = tenant.Domain,
                 tier = tenant.Tier,
                 status = tenant.Status,
-                cellId = tenant.CellId
+                cellId = tenant.CellId,
+                contactName = tenant.ContactName,
+                contactEmail = tenant.ContactEmail
             }
         };
         return await MutationAsync<Tenant>(mutation, variables, "createTenant", ct);
@@ -44,7 +46,7 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
 
     public async Task<Tenant> UpdateTenantAsync(Tenant tenant, CancellationToken ct = default)
     {
-        var mutation = @"mutation UpdateTenant($id: ID!, $input: Tenant_input!) { updateTenant(id: $id, item: $input) { id displayName domain tier status cellId } }";
+        var mutation = @"mutation UpdateTenant($id: ID!, $input: Tenant_input!) { updateTenant(id: $id, item: $input) { id displayName domain tier status cellId contactName contactEmail } }";
         var variables = new
         {
             id = tenant.Id,
@@ -55,7 +57,9 @@ public class GraphQLDataService(IHttpClientFactory httpClientFactory, IConfigura
                 domain = tenant.Domain,
                 tier = tenant.Tier,
                 status = tenant.Status,
-                cellId = tenant.CellId
+                cellId = tenant.CellId,
+                contactName = tenant.ContactName,
+                contactEmail = tenant.ContactEmail
             }
         };
         return await MutationAsync<Tenant>(mutation, variables, "updateTenant", ct);

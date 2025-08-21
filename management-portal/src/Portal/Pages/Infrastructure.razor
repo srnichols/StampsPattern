@@ -516,11 +516,7 @@
     private ClientWebSocket? ws;
     private CancellationTokenSource? wsCts;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        _ = ConnectToTaskEvents();
-    }
+    // ...existing code...
 
     private async Task ConnectToTaskEvents()
     {

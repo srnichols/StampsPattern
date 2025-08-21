@@ -6,8 +6,21 @@ public class InMemoryDataService : IDataService
 {
     private static readonly List<Tenant> Tenants = new()
     {
-        new("contoso","Contoso","contoso.com","enterprise","active","cell-eastus-1"),
-        new("fabrikam","Fabrikam","fabrikam.io","smb","active","cell-westus-1")
+        new("contoso", "Contoso Ltd.", "contoso.com", "enterprise", "active", "cell-eastus-1", "Alice Contoso", "admin@contoso.com"),
+        new("fabrikam", "Fabrikam, Inc.", "fabrikam.com", "smb", "active", "cell-westus-1", "Bob Fabrikam", "admin@fabrikam.com"),
+        new("adventureworks", "Adventure Works", "adventure-works.com", "premium", "active", "cell-eastus-2", "Cathy Adventure", "admin@adventure-works.com"),
+        new("northwind", "Northwind Traders", "northwindtraders.com", "standard", "active", "cell-westus-2", "Nick Northwind", "admin@northwindtraders.com"),
+        new("tailspintoys", "Tailspin Toys", "tailspintoys.com", "standard", "active", "cell-centralus-1", "Tina Tailspin", "admin@tailspintoys.com"),
+        new("wingtiptoys", "Wingtip Toys", "wingtiptoys.com", "standard", "active", "cell-centralus-2", "Will Wingtip", "admin@wingtiptoys.com"),
+        new("litware", "Litware, Inc.", "litware.com", "premium", "active", "cell-eastus-3", "Liam Litware", "admin@litware.com"),
+        new("woodgrove", "Woodgrove Bank", "woodgrovebank.com", "standard", "active", "cell-westus-3", "Wendy Woodgrove", "admin@woodgrovebank.com"),
+        new("blueyonder", "Blue Yonder Airlines", "blueyonderairlines.com", "standard", "active", "cell-northcentralus-1", "Ben Blueyonder", "admin@blueyonderairlines.com"),
+        new("proseware", "Proseware, Inc.", "proseware.com", "standard", "active", "cell-northcentralus-2", "Paula Proseware", "admin@proseware.com"),
+        new("gdi", "Graphic Design Institute", "gdi.edu", "standard", "active", "cell-southcentralus-1", "Gina GDI", "admin@gdi.edu"),
+        new("vanarsdel", "VanArsdel Ltd.", "vanarsdel.com", "standard", "active", "cell-southcentralus-2", "Victor VanArsdel", "admin@vanarsdel.com"),
+        new("fourthcoffee", "Fourth Coffee", "fourthcoffee.com", "standard", "active", "cell-eastus-4", "Fiona Fourth", "admin@fourthcoffee.com"),
+        new("consolidated", "Consolidated Messenger", "consolidatedmessenger.com", "standard", "active", "cell-westus-4", "Connie Consolidated", "admin@consolidatedmessenger.com"),
+        new("wideworld", "Wide World Importers", "wideworldimporters.com", "premium", "active", "cell-eastus-5", "Walt Wideworld", "admin@wideworldimporters.com")
     };
     private static readonly List<Cell> Cells = new()
     {

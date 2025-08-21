@@ -92,10 +92,8 @@ if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("APPLICATIONIN
 // Configure HotChocolate GraphQL server
 builder.Services.AddGraphQLServer()
     .AddQueryType<Stamps.ManagementPortal.GraphQL.Query>()
-    .AddSubscriptionType<Stamps.ManagementPortal.GraphQL.Subscription>();
-
-// Add HotChocolate in-memory subscription support
-builder.Services.AddInMemorySubscriptions();
+    .AddSubscriptionType<Stamps.ManagementPortal.GraphQL.Subscription>()
+    .AddInMemorySubscriptions();
 
 // Register TaskEventPublisher
 builder.Services.AddSingleton<Stamps.ManagementPortal.Services.ITaskEventPublisher, Stamps.ManagementPortal.Services.TaskEventPublisher>();

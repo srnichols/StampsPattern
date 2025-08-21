@@ -77,6 +77,16 @@
                             <small class="form-text text-muted">Leave empty for intelligent assignment</small>
                             <ValidationMessage For="@(() => editModel.CellId)" class="text-danger" />
                         </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Contact Name</label>
+                            <InputText @bind-Value="editModel.ContactName" class="form-control" placeholder="e.g. Alice Smith" />
+                            <ValidationMessage For="@(() => editModel.ContactName)" class="text-danger" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Contact Email</label>
+                            <InputText @bind-Value="editModel.ContactEmail" class="form-control" placeholder="admin@contoso.com" />
+                            <ValidationMessage For="@(() => editModel.ContactEmail)" class="text-danger" />
+                        </div>
                         
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
@@ -149,6 +159,8 @@
                                         <th>Tier</th>
                                         <th>Status</th>
                                         <th>Cell</th>
+                                        <th>Contact Name</th>
+                                        <th>Contact Email</th>
                                         <th width="120">Actions</th>
                                     </tr>
                                 </thead>
@@ -184,6 +196,8 @@
                                         <td>
                                             <code class="small">@tenant.CellId</code>
                                         </td>
+                                        <td>@tenant.ContactName</td>
+                                        <td>@tenant.ContactEmail</td>
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <button class="btn btn-outline-primary" @onclick="() => Edit(tenant)" title="Edit">
@@ -326,6 +340,11 @@
         public string Status { get; set; } = string.Empty;
         
         public string CellId { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Contact name is required")]
+    public string ContactName { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Contact email is required")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+    public string ContactEmail { get; set; } = string.Empty;
     }
 
     protected override async Task OnInitializedAsync()
