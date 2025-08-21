@@ -63,6 +63,58 @@
             </div>
         }
         <div class="infrastructure-overview">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Resource Groups by Type</h5>
+                </div>
+                <div class="card-body">
+                    @if (discoveredResourceGroups.Any())
+                    {
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>CELL RGs</h6>
+                                <ul>
+                                @foreach (var rg in discoveredResourceGroups.Where(r => r.Type == ResourceGroupType.Cell))
+                                {
+                                    <li>@rg.Name</li>
+                                }
+                                </ul>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Regional RGs</h6>
+                                <ul>
+                                @foreach (var rg in discoveredResourceGroups.Where(r => r.Type == ResourceGroupType.Regional))
+                                {
+                                    <li>@rg.Name</li>
+                                }
+                                </ul>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Global RGs</h6>
+                                <ul>
+                                @foreach (var rg in discoveredResourceGroups.Where(r => r.Type == ResourceGroupType.Global))
+                                {
+                                    <li>@rg.Name</li>
+                                }
+                                </ul>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>Other RGs</h6>
+                                <ul>
+                                @foreach (var rg in discoveredResourceGroups.Where(r => r.Type == ResourceGroupType.Other))
+                                {
+                                    <li>@rg.Name</li>
+                                }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No resource groups discovered yet.</p>
+                    }
+                </div>
+            </div>
             <div class="metrics-row">
                 <div class="metric-card">
                     <div class="metric-icon">🌍</div>
@@ -540,6 +592,7 @@
     private Dictionary<string, int> resourceTypeBreakdown = new Dictionary<string, int>();
     private List<string> regions = new List<string>();
     private List<string> resourceGroups = new List<string>();
+    private List<DiscoveredResourceGroup> discoveredResourceGroups = new List<DiscoveredResourceGroup>();
     private List<string> errorMessages = new List<string>();
     
     protected override async Task OnInitializedAsync()
@@ -587,6 +640,7 @@
             resourceTypeBreakdown = infrastructureData.ResourceTypeBreakdown;
             regions = infrastructureData.Regions;
             resourceGroups = infrastructureData.ResourceGroups;
+            discoveredResourceGroups = infrastructureData.DiscoveredResourceGroups ?? new List<DiscoveredResourceGroup>();
             errorMessages = infrastructureData.ErrorMessages;
             
             Logger.LogInformation($"Discovery completed: {discoveredResources.Count} resources found across {regions.Count} regions");
