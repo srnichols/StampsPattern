@@ -1,7 +1,34 @@
 // Azure Stamps Pattern - Main Orchestration Template
 // This file works with the existing module parameter schemas
 
-targetScope = 'resourceGroup'
+targetScope = 'subscription'
+// Create a resource group for global assets
+resource globalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-global-${environment}'
+  location: primaryLocation
+  tags: union(baseTags, { scope: 'global' })
+}
+
+// Create a resource group for each region
+resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for region in regions: {
+  name: 'rg-region-${region.geoName}-${region.regionName}'
+  location: region.regionName
+  tags: union(baseTags, { geo: region.geoName, region: region.regionName, scope: 'region' })
+}]
+
+// Create a resource group for each CELL
+resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for cell in cells: {
+  name: 'rg-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+  location: cell.regionName
+  tags: union(baseTags, {
+    geo: cell.geoName
+    region: cell.regionName
+    cell: cell.cellName
+    tenancyModel: toLower(cell.cellType)
+    maxTenantCount: string(cell.maxTenantCount)
+    scope: 'cell'
+  })
+}]
 
 // ============ PARAMETERS ============
 // Organization Parameters
@@ -209,23 +236,23 @@ var tenantValidation = [for cell in cells: {
 // ============ GLOBAL LAYER ============
 module globalLayer './globalLayer.bicep' = {
   name: 'globalLayer'
+  scope: resourceGroup('rg-global-${environment}')
   params: {
     dnsZoneName: dnsZoneName
     trafficManagerName: trafficManagerName
     frontDoorName: frontDoorName
     frontDoorSku: frontDoorSku
-  // Use first regional monitoring workspace as the global diagnostics sink
-  globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+    globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
     functionAppNamePrefix: functionAppNamePrefix
     functionStorageNamePrefix: functionStorageNamePrefix
     tags: baseTags
     functionAppRegions: functionAppRegions
     globalControlCosmosDbName: globalControlCosmosDbName
     primaryLocation: primaryLocation
-  additionalLocations: additionalLocations
-  cosmosZoneRedundant: !isSmoke // disable zones in lab if constrained
-  enableGlobalFunctions: !isSmoke // skip Functions in smoke to avoid quota
-  enableGlobalCosmos: !isSmoke // skip global Cosmos in smoke to avoid regional capacity
+    additionalLocations: additionalLocations
+    cosmosZoneRedundant: !isSmoke
+    enableGlobalFunctions: !isSmoke
+    enableGlobalCosmos: !isSmoke
   }
 }
 
@@ -233,6 +260,7 @@ module globalLayer './globalLayer.bicep' = {
 module keyVaults './keyvault.bicep' = [
   for (region, index) in regions: {
     name: 'keyVault-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       name: region.keyVaultName
       location: region.regionName
@@ -249,6 +277,7 @@ module keyVaults './keyvault.bicep' = [
 module regionalLayers './regionalLayer.bicep' = [
   for (region, index) in regions: {
     name: 'regionalLayer-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       location: region.regionName
       appGatewayName: 'agw-${region.geoName}-${region.regionName}'
@@ -277,6 +306,7 @@ module regionalLayers './regionalLayer.bicep' = [
 module regionalNetworks './regionalNetwork.bicep' = [
   for (region, index) in regions: {
     name: 'regionalNetwork-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       location: region.regionName
       geoName: region.geoName
@@ -296,6 +326,7 @@ module regionalNetworks './regionalNetwork.bicep' = [
 module monitoringLayers './monitoringLayer.bicep' = [
   for (region, index) in regions: {
     name: 'monitoringLayer-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       location: region.regionName
       logAnalyticsWorkspaceName: region.logAnalyticsWorkspaceName
@@ -312,44 +343,42 @@ module monitoringLayers './monitoringLayer.bicep' = [
 module deploymentStampLayers './deploymentStampLayer.bicep' = [
   for (cell, index) in cells: {
     name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+    scope: resourceGroup('rg-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}')
     params: {
       location: cell.regionName
-  sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+      sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       sqlAdminUsername: sqlAdminUsername
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-  // Storage account names must be 3-24 chars, lowercase letters and numbers only
-  storageAccountName: toLower('st${uniqueString(resourceGroup().id, cell.regionName, cell.cellName)}')
-  // Key Vault names must be 3-24 alphanumeric only (no hyphens)
-  keyVaultName: toLower('kv${uniqueString(resourceGroup().id, 'kv', cell.regionName, cell.cellName)}')
+      storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, cell.cellName)}')
+      keyVaultName: toLower('kv${uniqueString(subscription().id, 'kv', cell.regionName, cell.cellName)}')
       cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}'
       tags: union(baseTags, {
         geo: cell.geoName
         region: cell.regionName
         cell: cell.cellName
-        availabilityZones: string(length(cell.availabilityZones))  // Convert zone count to string
-        tenancyModel: toLower(cell.cellType)   // 'Shared' -> 'shared', 'Dedicated' -> 'dedicated'
+        availabilityZones: string(length(cell.availabilityZones))
+        tenancyModel: toLower(cell.cellType)
         maxTenantCount: string(cell.maxTenantCount)
         workload: 'stamps-pattern'
         costCenter: 'IT-Infrastructure'
       })
-  containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
-  enableContainerRegistry: false
+      containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
+      enableContainerRegistry: false
       containerAppName: cell.cellName
       baseDomain: cell.baseDomain
-  globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-  // Optional HA/DR knobs
-  cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
-  cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
-  cosmosZoneRedundant: !isSmoke
-  storageSkuName: (cell.?storageSkuName ?? storageSkuName)
-  createStorageAccount: false
-  enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
-  storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
-  enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
-  sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
-  enableCellTrafficManager: false
-  diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
+      globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+      cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
+      cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
+      cosmosZoneRedundant: !isSmoke
+      storageSkuName: (cell.?storageSkuName ?? storageSkuName)
+      createStorageAccount: false
+      enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
+      storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
+      enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
+      sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
+      enableCellTrafficManager: false
+      diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
     }
     dependsOn: [
       regionalLayers
