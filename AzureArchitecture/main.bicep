@@ -4,21 +4,21 @@
 targetScope = 'subscription'
 // Create a resource group for global assets
 resource globalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'rg-global-${environment}'
+  name: 'rg-stamps-global-${environment}'
   location: primaryLocation
   tags: union(baseTags, { scope: 'global' })
 }
 
 // Create a resource group for each region
 resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for region in regions: {
-  name: 'rg-region-${region.geoName}-${region.regionName}'
+  name: 'rg-stamps-region-${region.geoName}-${region.regionName}-${environment}'
   location: region.regionName
   tags: union(baseTags, { geo: region.geoName, region: region.regionName, scope: 'region' })
 }]
 
 // Create a resource group for each CELL
 resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for cell in cells: {
-  name: 'rg-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+  name: 'rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${environment}'
   location: cell.regionName
   tags: union(baseTags, {
     geo: cell.geoName
@@ -236,7 +236,7 @@ var tenantValidation = [for cell in cells: {
 // ============ GLOBAL LAYER ============
 module globalLayer './globalLayer.bicep' = {
   name: 'globalLayer'
-  scope: resourceGroup('rg-global-${environment}')
+  scope: resourceGroup('rg-stamps-global-${environment}')
   params: {
     dnsZoneName: dnsZoneName
     trafficManagerName: trafficManagerName
@@ -260,7 +260,7 @@ module globalLayer './globalLayer.bicep' = {
 module keyVaults './keyvault.bicep' = [
   for (region, index) in regions: {
     name: 'keyVault-${region.geoName}-${region.regionName}'
-    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
     params: {
       name: region.keyVaultName
       location: region.regionName
@@ -343,7 +343,7 @@ module monitoringLayers './monitoringLayer.bicep' = [
 module deploymentStampLayers './deploymentStampLayer.bicep' = [
   for (cell, index) in cells: {
     name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-    scope: resourceGroup('rg-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}')
+    scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${environment}')
     params: {
       location: cell.regionName
       sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}'

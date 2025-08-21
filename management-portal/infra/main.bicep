@@ -7,7 +7,7 @@ param location string = 'westus2'
 param environmentName string
 
 @description('The resource group name')
-param resourceGroupName string = 'rg-${environmentName}'
+param resourceGroupName string = 'rg-stamps-mgmt-${environmentName}'
 
 // Generate resource token for unique naming
 var resourceToken = uniqueString(subscription().id, location, environmentName)

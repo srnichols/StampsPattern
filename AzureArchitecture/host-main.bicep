@@ -66,21 +66,21 @@ var envShort = (envMap[?toLower(environmentRaw)] ?? substring(toLower(environmen
 
 // Create a resource group for global assets
 resource globalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'rg-global-${envShort}'
+  name: 'rg-stamps-global-${envShort}'
   location: regions[0].regionName
   tags: union(tags, { scope: 'global' })
 }
 
 // Create a resource group for each region
 resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for region in regions: {
-  name: 'rg-region-${region.geoName}-${region.regionName}'
+  name: 'rg-stamps-region-${region.geoName}-${region.regionName}-${envShort}'
   location: region.regionName
   tags: union(tags, { geo: region.geoName, region: region.regionName, scope: 'region' })
 }]
 
 // Create a resource group for each CELL
 resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for cell in cells: {
-  name: 'rg-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}'
+  name: 'rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${envShort}'
   location: cell.regionName
   tags: union(tags, {
     geo: cell.geoName
@@ -102,7 +102,7 @@ resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [f
 // Deploy regional modules into their region RGs
 module regionalNetworks './regionalNetwork.bicep' = [for (region, idx) in regions: {
   name: 'regionalNetwork-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${envShort}')
   params: {
     location: region.regionName
     geoName: region.geoName
@@ -150,7 +150,7 @@ module regionalLayers './regionalLayer.bicep' = [for (region, idx) in regions: {
 // Deploy the CELL module into each dedicated RG
 module deploymentStampLayers './deploymentStampLayer.bicep' = [for (cell, idx) in cells: {
   name: 'cell-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-  scope: resourceGroup('rg-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}')
+  scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${envShort}')
   params: {
     location: cell.regionName
     sqlServerName: toLower('sql-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}-${envShort}')
