@@ -12,19 +12,11 @@ services:
     docker:
       path: ./Dockerfile
       context: .
-  dab:
-    project: ./management-portal/dab
-    language: docker
-    host: containerapp
-    docker:
-      path: ./Dockerfile
-      context: .
 
 infra:
   path: ./management-portal/infra
   parameters:
     portalImage: "${AZURE_CONTAINER_REGISTRY_ENDPOINT}/stamps-portal:latest"
-    dabImage: "${AZURE_CONTAINER_REGISTRY_ENDPOINT}/stamps-dab:latest"
 
 hooks:
   postdeploy:
@@ -32,7 +24,6 @@ hooks:
     run: |
       Write-Host "🎉 Management Portal deployed successfully!"
       Write-Host "Portal URL: $($env:AZURE_PORTAL_URL)"
-      Write-Host "DAB URL: $($env:AZURE_DAB_URL)"
       Write-Host ""
       Write-Host "Next steps:"
       Write-Host "1. Configure Azure Entra ID authentication"

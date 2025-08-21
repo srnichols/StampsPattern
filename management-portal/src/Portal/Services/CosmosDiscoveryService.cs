@@ -1,3 +1,4 @@
+// removed stray closing brace at the top
 using Stamps.ManagementPortal.Models;
 using Azure.Identity;
 using Azure.ResourceManager;
@@ -11,6 +12,14 @@ public interface ICosmosDiscoveryService
     Task<List<Tenant>> DiscoverTenantsAsync();
     Task<List<Cell>> DiscoverCellsAsync();
     Task SynchronizeDataAsync();
+
+    // CRUD methods for GraphQL
+    Task<Tenant> CreateTenantAsync(Tenant input);
+    Task<Tenant> UpdateTenantAsync(string id, Tenant input);
+    Task<bool> DeleteTenantAsync(string id);
+    Task<Cell> CreateCellAsync(Cell input);
+    Task<Cell> UpdateCellAsync(string id, Cell input);
+    Task<bool> DeleteCellAsync(string id);
 }
 
 public class CosmosDiscoveryService : ICosmosDiscoveryService
@@ -31,16 +40,53 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
         _armClient = new ArmClient(new DefaultAzureCredential());
     }
 
+    // CRUD implementations for GraphQL
+    public async Task<Tenant> CreateTenantAsync(Tenant input)
+    {
+        return await _dataService.CreateTenantAsync(input);
+    }
+
+    public async Task<Tenant> UpdateTenantAsync(string id, Tenant input)
+    {
+        // Ensure the input has the correct id
+        var updated = input with { Id = id };
+        return await _dataService.UpdateTenantAsync(updated);
+    }
+
+    public async Task<bool> DeleteTenantAsync(string id)
+    {
+        // PartitionKey is assumed to be id for now
+        await _dataService.DeleteTenantAsync(id, id);
+        return true;
+    }
+
+
+    public async Task<Cell> CreateCellAsync(Cell input)
+    {
+        return await _dataService.CreateCellAsync(input);
+    }
+
+    public async Task<Cell> UpdateCellAsync(string id, Cell input)
+    {
+        var updated = input with { Id = id };
+        return await _dataService.UpdateCellAsync(updated);
+    }
+
+    public async Task<bool> DeleteCellAsync(string id)
+    {
+        // PartitionKey is assumed to be id for now
+        await _dataService.DeleteCellAsync(id, id);
+        return true;
+    }
+    // Discovery and synchronization methods
     public async Task<List<Tenant>> DiscoverTenantsAsync()
     {
         _logger.LogInformation("Discovering live tenants from Azure infrastructure");
-
         try
         {
             var credential = new DefaultAzureCredential();
             var armClient = new ArmClient(credential);
             var tenants = new List<Tenant>();
-
             var subscriptions = armClient.GetSubscriptions();
             await foreach (var subscription in subscriptions)
             {
@@ -65,7 +111,6 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
                     _logger.LogError(ex, $"Error discovering tenants in subscription {subscription.Data.DisplayName}");
                 }
             }
-
             _logger.LogInformation($"Discovered {tenants.Count} live tenants");
             return tenants;
         }
@@ -79,13 +124,11 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
     public async Task<List<Cell>> DiscoverCellsAsync()
     {
         _logger.LogInformation("Discovering live cells from Azure infrastructure");
-
         try
         {
             var credential = new DefaultAzureCredential();
             var armClient = new ArmClient(credential);
             var cells = new List<Cell>();
-
             var subscriptions = armClient.GetSubscriptions();
             await foreach (var subscription in subscriptions)
             {
@@ -110,7 +153,6 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
                     _logger.LogError(ex, $"Error discovering cells in subscription {subscription.Data.DisplayName}");
                 }
             }
-
             _logger.LogInformation($"Discovered {cells.Count} live cells");
             return cells;
         }
@@ -212,7 +254,9 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
                 Domain: domain,
                 Tier: tier,
                 Status: "active",
-                CellId: cellId
+                CellId: cellId,
+                ContactName: tags?.TryGetValue("contactName", out var contactName) == true ? contactName : "",
+                ContactEmail: tags?.TryGetValue("contactEmail", out var contactEmail) == true ? contactEmail : ""
             );
         }
         catch (Exception ex)
@@ -463,4 +507,6 @@ public class CosmosDiscoveryService : ICosmosDiscoveryService
                existing.CapacityUsed == discovered.CapacityUsed &&
                existing.CapacityTotal == discovered.CapacityTotal;
     }
+
+// ...existing code...
 }

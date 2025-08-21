@@ -1,3 +1,10 @@
+@secure()
+@description('Azure AD Application (client) ID for authentication')
+param azureAdClientId string
+
+@secure()
+@description('Azure AD Tenant ID for authentication')
+param azureAdTenantId string
 @description('Location for resources')
 param location string = resourceGroup().location
 
@@ -19,19 +26,9 @@ param appInsightsName string = 'ai-stamps-mgmt'
 @description('Common tags for resources')
 param tags object = {}
 
-@description('Azure Entra ID Client ID for authentication')
-param azureClientId string = 'e691193e-4e25-4a72-9185-1ce411aa2fd8'
 
-@description('Azure Entra ID Tenant ID for authentication')
-param azureTenantId string = '16b3c013-d300-468d-ac64-7eda0820b6d3'
 
-@description('Enable using Key Vault for secrets instead of inline/container-app secrets')
-param useKeyVault bool = false
 
-@description('Key Vault name to read secrets from when useKeyVault = true')
-param keyVaultName string = ''
-
-@description('Portal container image')
 param portalImage string
 
 // DAB removed: no longer needed
@@ -319,20 +316,16 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       // for quick deployments.
       secrets: [
         {
-          name: 'dab-graphql-url'
-          value: 'https://${dabContainerApp.properties.configuration.ingress.fqdn}/graphql'
-        }
-        {
           name: 'appinsights-connection-string'
           value: appInsights.properties.ConnectionString
         }
         {
           name: 'azure-ad-client-id'
-          value: azureClientId
+          value: azureAdClientId
         }
         {
           name: 'azure-ad-tenant-id'
-          value: azureTenantId
+          value: azureAdTenantId
         }
       ]
     }
@@ -342,10 +335,7 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
           image: portalImage
           name: 'portal'
           env: [
-            {
-              name: 'DAB_GRAPHQL_URL'
-              secretRef: 'dab-graphql-url'
-            }
+            // DAB_GRAPHQL_URL removed
             {
               name: 'ASPNETCORE_ENVIRONMENT'
               value: 'Production'
@@ -413,7 +403,7 @@ resource portalContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
 // Outputs
 output cosmosEndpoint string = cosmos.properties.documentEndpoint
 output portalUrl string = 'https://${portalContainerApp.properties.configuration.ingress.fqdn}'
-output dabUrl string = 'https://${dabContainerApp.properties.configuration.ingress.fqdn}'
+
 output containerRegistryName string = containerRegistry.name
 output containerRegistryLoginServer string = containerRegistry.properties.loginServer
 output managedIdentityPrincipalId string = managedIdentity.properties.principalId

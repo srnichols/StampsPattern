@@ -1,3 +1,10 @@
+@secure()
+@description('Azure AD Application (client) ID for authentication')
+param azureAdClientId string
+
+@secure()
+@description('Azure AD Tenant ID for authentication')
+param azureAdTenantId string
 targetScope = 'subscription'
 
 @description('The Azure region where all resources will be deployed')
@@ -35,7 +42,7 @@ param portalImage string
 // Use generated names if not provided
 var actualCosmosAccountName = empty(cosmosAccountName) ? 'cosmos-${resourceToken}' : cosmosAccountName
 var actualContainerAppsEnvironmentName = empty(containerAppsEnvironmentName) ? 'cae-${resourceToken}' : containerAppsEnvironmentName
-var actualContainerRegistryName = empty(containerRegistryName) ? 'cr${resourceToken}' : containerRegistryName
+var actualContainerRegistryName = empty(containerRegistryName) ? toLower('acr${location}${environmentName}mgmt') : containerRegistryName
 var actualLogAnalyticsWorkspaceName = empty(logAnalyticsWorkspaceName) ? 'law-${resourceToken}' : logAnalyticsWorkspaceName
 var actualAppInsightsName = empty(appInsightsName) ? 'ai-${resourceToken}' : appInsightsName
 
@@ -64,7 +71,8 @@ module managementPortal 'management-portal.bicep' = {
     logAnalyticsWorkspaceName: actualLogAnalyticsWorkspaceName
     appInsightsName: actualAppInsightsName
     portalImage: portalImage
-  // dabImage removed
+    azureAdClientId: azureAdClientId
+    azureAdTenantId: azureAdTenantId
     tags: tags
   }
 }

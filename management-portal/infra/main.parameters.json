@@ -16,6 +16,12 @@
     },
     "dabImage": {
       "value": "${SERVICE_DAB_IMAGE_NAME}"
+    },
+    "azureAdClientId": {
+      "value": "d8f3024a-0c6a-4cea-af8b-7a7cd985354f"
+    },
+    "azureAdTenantId": {
+      "value": "30dd575a-bca7-491b-adf6-41d5f39275d4"
     }
   }
 }

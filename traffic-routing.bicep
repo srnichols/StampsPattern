@@ -269,7 +269,7 @@ module deploymentStamp1 './AzureArchitecture/deploymentStampLayer.bicep' = {
     sqlDbName: '${resourcePrefix}-db-stamp1-${environment}'
     storageAccountName: '${resourcePrefix}stg${regionShort}1${environment}'
     cosmosDbStampName: '${resourcePrefix}-cosmos-stamp1-${environment}'
-    containerRegistryName: '${resourcePrefix}cr1${environment}'
+  containerRegistryName: toLower('acr${location}${environment}stamp1')
     containerAppName: '${resourcePrefix}-app-stamp1-${environment}'
     baseDomain: baseDomain
     globalLogAnalyticsWorkspaceId: logAnalyticsWorkspaceId
@@ -290,7 +290,7 @@ module deploymentStamp2 './AzureArchitecture/deploymentStampLayer.bicep' = {
     sqlDbName: '${resourcePrefix}-db-stamp2-${environment}'
     storageAccountName: '${resourcePrefix}stg${regionShort}2${environment}'
     cosmosDbStampName: '${resourcePrefix}-cosmos-stamp2-${environment}'
-    containerRegistryName: '${resourcePrefix}cr2${environment}'
+  containerRegistryName: toLower('acr${location}${environment}stamp2')
     containerAppName: '${resourcePrefix}-app-stamp2-${environment}'
     baseDomain: baseDomain
     globalLogAnalyticsWorkspaceId: logAnalyticsWorkspaceId
