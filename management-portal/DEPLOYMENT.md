@@ -4,10 +4,9 @@ This guide covers deploying the Azure Stamps Pattern Management Portal to produc
 
 ## Overview
 
-The management portal consists of two main components:
+The management portal consists of a single main component:
 
-- **Portal Application**: Blazor Server app with advanced SaaS features
-- **Data API Builder (DAB)**: GraphQL/REST API over Cosmos DB
+- **Portal Application**: Blazor Server app with advanced SaaS features and integrated Hot Chocolate GraphQL API for all data access
 
 ## Prerequisites
 
@@ -24,17 +23,14 @@ The management portal consists of two main components:
 │      Door      │───▶│   Environment    │───▶│   (Control      │
 │                │    │                  │    │    Plane)       │
 └─────────────────┘    │  ┌─────────────┐ │    └─────────────────┘
-                       │  │   Portal    │ │
-                       │  │   App       │ │    ┌─────────────────┐
-                       │  └─────────────┘ │    │  Application    │
-                       │         │        │    │   Insights      │
-                       │  ┌─────────────┐ │───▶│                 │
-                       │  │     DAB     │ │    └─────────────────┘
-                       │  │ (GraphQL)   │ │
-                       │  └─────────────┘ │    ┌─────────────────┐
-                       └──────────────────┘    │ Container       │
-                                               │ Registry        │
-                                               └─────────────────┘
+                      │  │   Portal    │ │    ┌─────────────────┐
+                      │  │   App       │ │───▶│  Application    │
+                      │  │ (Blazor +   │ │    │   Insights      │
+                      │  │  HotChoco)  │ │    └─────────────────┘
+                      │  └─────────────┘ │    ┌─────────────────┐
+                      └──────────────────┘    │ Container       │
+                                              │ Registry        │
+                                              └─────────────────┘
 ```
 
 ## Step 1: Azure Entra ID Setup
@@ -76,7 +72,7 @@ The management portal consists of two main components:
 Run the deployment script:
 
 ```powershell
-./deploy-container-apps.ps1 -ResourceGroupName "rg-stamps-mgmt-prod" -SubscriptionId "YOUR-SUBSCRIPTION-ID" -Location "westus2"
+./deploy-management-portal-container-apps.ps1 -ResourceGroupName "rg-stamps-mgmt-prod" -SubscriptionId "YOUR-SUBSCRIPTION-ID" -Location "westus2"
 ```
 
 This script will:
@@ -84,7 +80,7 @@ This script will:
 1. Create/update resource group
 2. Deploy Azure infrastructure (Cosmos DB, Container Apps, etc.)
 3. Build and push container images
-4. Deploy applications to Container Apps
+4. Deploy the portal application to Container Apps
 
 ## Step 3: Configure Authentication
 
@@ -116,7 +112,7 @@ az containerapp update \
 3. **Verify GraphQL API**:
 
    ```bash
-   curl https://[DAB-URL]/graphql \
+   curl https://[PORTAL-URL]/graphql \
      -H "Content-Type: application/json" \
      -d '{"query": "{ __schema { types { name } } }"}'
    ```
@@ -126,7 +122,7 @@ az containerapp update \
 | Component | Purpose | SKU/Configuration |
 |-----------|---------|-------------------|
 | **Container Apps Environment** | Hosting platform | Log Analytics integration |
-| **Container Apps** | Portal + DAB hosting | Auto-scaling (1-5 replicas) |
+| **Container Apps** | Portal hosting (Blazor + Hot Chocolate GraphQL) | Auto-scaling (1-5 replicas) |
 | **Cosmos DB** | Control plane database | Serverless, multi-region |
 | **Container Registry** | Image storage | Basic SKU |
 | **Application Insights** | Monitoring & telemetry | Standard |
@@ -138,7 +134,7 @@ az containerapp update \
 - **Azure Entra ID Integration**: Enterprise authentication
 - **Role-Based Access Control**: Platform admin and authenticated user roles
 - **Container Security**: Non-root user execution
-- **Network Security**: Internal DAB communication
+- **Network Security**: Internal communication
 - **Managed Identity**: Secure Azure resource access
 
 ## Monitoring & Operations
@@ -167,7 +163,7 @@ Logs are centralized in Log Analytics workspace:
 ```kql
 // Application logs
 ContainerAppConsoleLogs_CL
-| where ContainerName_s in ("portal", "dab")
+| where ContainerName_s == "portal"
 | order by TimeGenerated desc
 
 // Performance metrics
@@ -184,13 +180,6 @@ ContainerAppSystemLogs_CL
 - **Max Replicas**: 5
 - **Scale Rule**: HTTP requests (50 concurrent)
 - **Resources**: 0.5 CPU, 1GB RAM
-
-### Data API Builder
-
-- **Min Replicas**: 1
-- **Max Replicas**: 3
-- **Scale Rule**: HTTP requests (30 concurrent)
-- **Resources**: 0.25 CPU, 0.5GB RAM
 
 ## Troubleshooting
 

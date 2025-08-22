@@ -35,8 +35,8 @@ resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = 
 }]
 
 // Create a resource group for each CELL
-resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for cell in cells: {
-  name: 'rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${environment}'
+resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for (cell, index) in cells: {
+  name: 'rg-stamps-cell-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-${environment}'
   location: cell.regionName
   tags: union(baseTags, {
     geo: cell.geoName
@@ -47,6 +47,7 @@ resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [f
     scope: 'cell'
   })
 }]
+  // Create a resource group for each CELL
 
 // ============ PARAMETERS ============
 // Management Portal App Registration
@@ -81,7 +82,7 @@ param baseDnsZoneName string = 'stamps'
 // Deployment Parameters
 @description('Environment name for deployment')
 @allowed(['dev', 'test', 'staging', 'prod'])
-param environment string = 'dev'
+param environment string = 'prod'
 
 @description('High-level environment profile to drive safe defaults (smoke/dev/prod). Smoke keeps footprint minimal and disables optional features; dev/prod enable full features.')
 @allowed(['smoke','dev','prod'])
@@ -284,7 +285,7 @@ module globalLayer './globalLayer.bicep' = {
 module keyVaults './keyvault.bicep' = [
   for (region, index) in regions: {
     name: 'keyVault-${region.geoName}-${region.regionName}'
-    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
+  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
     params: {
       name: region.keyVaultName
       location: region.regionName
@@ -301,7 +302,7 @@ module keyVaults './keyvault.bicep' = [
 module regionalLayers './regionalLayer.bicep' = [
   for (region, index) in regions: {
     name: 'regionalLayer-${region.geoName}-${region.regionName}'
-    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       location: region.regionName
       appGatewayName: 'agw-${region.geoName}-${region.regionName}'
@@ -330,7 +331,7 @@ module regionalLayers './regionalLayer.bicep' = [
 module regionalNetworks './regionalNetwork.bicep' = [
   for (region, index) in regions: {
     name: 'regionalNetwork-${region.geoName}-${region.regionName}'
-    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       location: region.regionName
       geoName: region.geoName
@@ -350,7 +351,7 @@ module regionalNetworks './regionalNetwork.bicep' = [
 module monitoringLayers './monitoringLayer.bicep' = [
   for (region, index) in regions: {
     name: 'monitoringLayer-${region.geoName}-${region.regionName}'
-    scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
     params: {
       location: region.regionName
       logAnalyticsWorkspaceName: region.logAnalyticsWorkspaceName
@@ -366,30 +367,30 @@ module monitoringLayers './monitoringLayer.bicep' = [
 // ============ DEPLOYMENT STAMP LAYER (CELLS) ============
 module deploymentStampLayers './deploymentStampLayer.bicep' = [
   for (cell, index) in cells: {
-    name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-    scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${environment}')
+    name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}'
+    scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-${environment}')
     params: {
       location: cell.regionName
-  sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-${cell.cellName}-z${string(length(cell.availabilityZones))}'
-  sqlAdminUsername: sqlAdminUsername
-  sqlAdminPassword: sqlAdminPassword
-  sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-${cell.cellName}-z${string(length(cell.availabilityZones))}'
-  storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, cell.cellName)}z${string(length(cell.availabilityZones))}')
-  keyVaultName: toLower('kv${uniqueString(subscription().id, 'kv', cell.regionName, cell.cellName)}z${string(length(cell.availabilityZones))}')
-  cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-${cell.cellName}-z${string(length(cell.availabilityZones))}'
+      sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
+      sqlAdminUsername: sqlAdminUsername
+      sqlAdminPassword: sqlAdminPassword
+      sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
+      storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
+      keyVaultName: toLower('kv${uniqueString(subscription().id, 'kv', cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
+      cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
       tags: union(baseTags, {
         geo: cell.geoName
         region: cell.regionName
-        cell: cell.cellName
+        cell: 'CELL-${padLeft(string(index + 1), 2, '0')}'
         availabilityZones: string(length(cell.availabilityZones))
         tenancyModel: toLower(cell.cellType)
         maxTenantCount: string(cell.maxTenantCount)
         workload: 'stamps-pattern'
         costCenter: 'IT-Infrastructure'
       })
-      containerRegistryName: 'acr${cell.geoName}${cell.regionName}${cell.cellName}'
+      containerRegistryName: 'acr${cell.geoName}${cell.regionName}CELL${padLeft(string(index + 1), 2, '0')}'
       enableContainerRegistry: false
-      containerAppName: cell.cellName
+      containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
       baseDomain: cell.baseDomain
       globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
       cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
@@ -410,6 +411,22 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
     ]
   }
 ]
+
+
+
+
+
+
+// ============ MANAGEMENT PORTAL RESOURCE GROUP ============
+resource managementPortalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: 'rg-stamps-management-portal-${environment}'
+  location: primaryLocation
+  tags: union(baseTags, {
+    scope: 'management-portal'
+    managementClientAppId: managementClientAppId
+    managementClientTenantId: managementClientTenantId
+  })
+}
 
 // ============ OUTPUTS ============
 output globalLayerOutputs object = globalLayer.outputs
@@ -443,10 +460,19 @@ output deploymentStampOutputs array = [
   for (cell, index) in cells: {
     geoName: cell.geoName
     regionName: cell.regionName
-    cellName: cell.cellName
+    cellName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
     keyVaultId: deploymentStampLayers[index].outputs.keyVaultId
     keyVaultUri: deploymentStampLayers[index].outputs.keyVaultUri
     sqlServerSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.sqlServerSystemAssignedPrincipalId
     storageAccountSystemAssignedPrincipalId: deploymentStampLayers[index].outputs.storageAccountSystemAssignedPrincipalId
   }
 ]
+
+output managementPortalDeploymentParams object = {
+  resourceGroupName: managementPortalResourceGroup.name
+  location: managementPortalResourceGroup.location
+  environment: environment
+  managementClientAppId: managementClientAppId
+  managementClientTenantId: managementClientTenantId
+  subscriptionId: subscription().subscriptionId
+}
