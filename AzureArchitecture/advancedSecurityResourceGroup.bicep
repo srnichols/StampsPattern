@@ -11,7 +11,7 @@ param environment string = 'dev'
 param resourceToken string = take(uniqueString(resourceGroup().id), 6)
 
 @description('Security contact email for alerts')
-param securityContactEmail string = 'security@contoso.com'
+param securityContactEmail string = 'security@sdp-saas.com'
 
 @description('Enable advanced threat protection features')
 param enableAdvancedThreatProtection bool = true

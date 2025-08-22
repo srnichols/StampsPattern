@@ -11,7 +11,7 @@ param enableAzureDefender bool = true
 param enableAdvancedThreatProtection bool = true
 
 @description('Security contact email for alerts')
-param securityContactEmail string = 'security@contoso.com'
+param securityContactEmail string = 'security@sdp-saas.com'
 
 @description('Resource group name for resource-scoped resources')
 param resourceGroupName string = 'rg-stamps-dev'

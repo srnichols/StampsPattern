@@ -9,7 +9,7 @@ param location string = resourceGroup().location
 param resourcePrefix string = 'stamps'
 
 @description('Publisher email for API Management')
-param publisherEmail string = 'admin@contoso.com'
+param publisherEmail string = 'admin@sdp-saas.com'
 
 @description('Publisher name for API Management')
 param publisherName string = 'Contoso'
@@ -28,7 +28,7 @@ param sqlAdminUsername string = 'sqladmin'
 param sqlAdminPassword string
 
 @description('Base domain for the stamps')
-param baseDomain string = 'contoso.com'
+param baseDomain string = 'sdp-saas.com'
 
 @description('Log Analytics Workspace ID for monitoring')
 param logAnalyticsWorkspaceId string = '/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/myLogAnalyticsWorkspace'
@@ -95,7 +95,7 @@ resource trafficManager 'Microsoft.Network/trafficmanagerprofiles@2022-04-01' = 
         name: 'endpoint1'
         type: 'Microsoft.Network/trafficmanagerprofiles/externalEndpoints'
         properties: {
-          target: 'endpoint1.contoso.com'
+          target: 'endpoint1.sdp-saas.com'
           endpointStatus: 'Enabled'
           weight: 1
           priority: 1
@@ -106,7 +106,7 @@ resource trafficManager 'Microsoft.Network/trafficmanagerprofiles@2022-04-01' = 
         name: 'endpoint2'
         type: 'Microsoft.Network/trafficmanagerprofiles/externalEndpoints'
         properties: {
-          target: 'endpoint2.contoso.com'
+          target: 'endpoint2.sdp-saas.com'
           endpointStatus: 'Enabled'
           weight: 1
           priority: 2
@@ -207,7 +207,7 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-05-01' = {
         properties: {
           backendAddresses: [
             {
-              fqdn: 'backend1.contoso.com'
+              fqdn: 'backend1.sdp-saas.com'
             }
           ]
         }

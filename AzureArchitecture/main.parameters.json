@@ -9,7 +9,7 @@
       "value": "30dd575a-bca7-491b-adf6-41d5f39275d4"
     },
     "dnsZoneName": {
-      "value": "stamps.contoso.com"
+  "value": "stamps.sdp-saas.com"
     },
     "trafficManagerName": {
       "value": "tm-stamps-global"
@@ -50,7 +50,7 @@
           "geoName": "northamerica",
           "regionName": "eastus",
           "cells": ["cell1", "cell2"],
-          "baseDomain": "eastus.stamps.contoso.com",
+          "baseDomain": "eastus.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-eus",
           "logAnalyticsWorkspaceName": "law-stamps-na-eus"
         },
@@ -58,7 +58,7 @@
           "geoName": "northamerica",
           "regionName": "westus2",
           "cells": ["cell1", "cell2"],
-          "baseDomain": "westus2.stamps.contoso.com",
+          "baseDomain": "westus2.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-wus2",
           "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
         },
@@ -66,7 +66,7 @@
           "geoName": "europe",
           "regionName": "westeurope",
           "cells": ["cell1"],
-          "baseDomain": "westeurope.stamps.contoso.com",
+          "baseDomain": "westeurope.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-eu-weu",
           "logAnalyticsWorkspaceName": "law-stamps-eu-weu"
         }
@@ -81,7 +81,7 @@
           "cellType": "Shared",
           "availabilityZones": ["1", "2"],
           "maxTenantCount": 100,
-          "baseDomain": "eastus.stamps.contoso.com",
+          "baseDomain": "eastus.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-eus",
           "logAnalyticsWorkspaceName": "law-stamps-na-eus"
         },
@@ -92,7 +92,7 @@
           "cellType": "Dedicated",
           "availabilityZones": ["1", "2", "3"],
           "maxTenantCount": 1,
-          "baseDomain": "eastus.stamps.contoso.com",
+          "baseDomain": "eastus.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-eus",
           "logAnalyticsWorkspaceName": "law-stamps-na-eus"
         },
@@ -103,7 +103,7 @@
           "cellType": "Shared",
           "availabilityZones": ["1", "2"],
           "maxTenantCount": 50,
-          "baseDomain": "westus2.stamps.contoso.com",
+          "baseDomain": "westus2.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-wus2",
           "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
         },
@@ -114,7 +114,7 @@
           "cellType": "Dedicated",
           "availabilityZones": ["1", "2", "3"],
           "maxTenantCount": 1,
-          "baseDomain": "westus2.stamps.contoso.com",
+          "baseDomain": "westus2.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-wus2",
           "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
         },
@@ -125,7 +125,7 @@
           "cellType": "Shared",
           "availabilityZones": ["1", "2"],
           "maxTenantCount": 100,
-          "baseDomain": "westeurope.stamps.contoso.com",
+          "baseDomain": "westeurope.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-eu-weu",
           "logAnalyticsWorkspaceName": "law-stamps-eu-weu"
         }

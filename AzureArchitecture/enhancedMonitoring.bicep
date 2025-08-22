@@ -26,7 +26,7 @@ param functionAppId string
 param cosmosDbId string
 
 @description('Alert notification email')
-param alertEmail string = 'ops@contoso.com'
+param alertEmail string = 'ops@sdp-saas.com'
 
 // ============ ACTION GROUPS ============
 

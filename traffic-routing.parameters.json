@@ -12,10 +12,10 @@
       "value": "stamps"
     },
     "publisherEmail": {
-      "value": "admin@contoso.com"
+  "value": "admin@sdp-saas.com"
     },
     "publisherName": {
-      "value": "Contoso"
+  "value": "SdpSaas"
     },
     "sqlAdminUsername": {
       "value": "sqladmin"
@@ -24,7 +24,7 @@
       "value": "ChangeThisPassword123!"
     },
     "baseDomain": {
-      "value": "contoso.com"
+  "value": "sdp-saas.com"
     }
   }
 }

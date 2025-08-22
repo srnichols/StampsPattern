@@ -20,7 +20,7 @@ param apimPublisherName string
 @description('Additional regions for APIM multi-region deployment')
 param apimAdditionalRegions array = []
 
-@description('Custom domain for APIM (e.g., api.contoso.com)')
+@description('Custom domain for APIM (e.g., api.sdp-saas.com)')
 param customDomain string = ''
 
 @description('Tags for resource management')

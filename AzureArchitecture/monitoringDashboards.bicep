@@ -25,7 +25,7 @@ param environment string = 'prod'
 param tags object = {}
 
 @description('Alert email recipients')
-param alertEmailRecipients array = ['devops@contoso.com']
+param alertEmailRecipients array = ['devops@sdp-saas.com']
 
 // ============ ACTION GROUP FOR ALERTS ============
 

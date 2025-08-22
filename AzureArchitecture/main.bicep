@@ -56,8 +56,8 @@ param managementClientAppId string
 param managementClientTenantId string
 
 // Organization Parameters
-@description('The organization domain (e.g., contoso.com)')
-param organizationDomain string = 'contoso.com'
+@description('The organization domain (e.g., sdp-saas.com)')
+param organizationDomain string = 'sdp-saas.com'
 
 @description('The department responsible for the deployment')
 param department string = 'IT'
@@ -69,7 +69,7 @@ param projectName string = 'StampsPattern'
 param workloadName string = 'stamps-pattern'
 
 @description('The owner email for resource tagging')
-param ownerEmail string = 'platform-team@contoso.com'
+param ownerEmail string = 'platform-team@sdp-saas.com'
 
 // Geography Parameters
 @description('The geography name (e.g., northamerica, europe, asia)')
