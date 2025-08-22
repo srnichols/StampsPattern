@@ -1,3 +1,11 @@
+// Filter out regional endpoints with empty FQDNs for Traffic Manager
+var filteredRegionalEndpoints = [
+  for (region, index) in regions: {
+    fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
+    location: region.regionName
+  }
+  if !empty(regionalLayers[index].outputs.regionalEndpointFqdn)
+]
 
 // Azure Stamps Pattern - Main Orchestration Template
 //
@@ -354,11 +362,16 @@ module globalLayer './globalLayer.bicep' = {
     enableGlobalCosmos: !isSmoke
     // Pass APIM gateway URL for Front Door configuration
     apimGatewayUrl: geodesLayer.outputs.apimGatewayUrl
-    // Pass regional Application Gateway endpoints for Traffic Manager
+    // Pass regional Application Gateway endpoints for Traffic Manager, filtering out empty FQDNs
     regionalEndpoints: [for (region, index) in regions: {
       fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
       location: region.regionName
-    }]
+    } if !empty(regionalLayers[index].outputs.regionalEndpointFqdn)]
+// Filter out regional endpoints with empty FQDNs for Traffic Manager
+var filteredRegionalEndpoints = [for (region, index) in regions: {
+  fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
+  location: region.regionName
+} if (!empty(regionalLayers[index].outputs.regionalEndpointFqdn))]
   }
   dependsOn: [
     geodesLayer

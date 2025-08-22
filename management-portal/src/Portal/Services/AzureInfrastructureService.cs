@@ -32,12 +32,26 @@ namespace Stamps.ManagementPortal.Services
         {
             if (string.IsNullOrWhiteSpace(rgName)) return ResourceGroupType.Other;
             var name = rgName.ToLowerInvariant();
-            if (System.Text.RegularExpressions.Regex.IsMatch(name, @"^rg-.*cell.*", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            
+            // Specific stamps pattern filtering rules
+            // CELL RGs = only show RGs that contain "stamps-cell" in name
+            if (name.Contains("stamps-cell"))
+            {
                 return ResourceGroupType.Cell;
-            if (System.Text.RegularExpressions.Regex.IsMatch(name, @"^rg-.*region.*", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            }
+            
+            // Regional RGs = only show RGs that contain "stamps-region" in name
+            if (name.Contains("stamps-region"))
+            {
                 return ResourceGroupType.Regional;
-            if (System.Text.RegularExpressions.Regex.IsMatch(name, @"^rg-.*global.*", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+            }
+            
+            // Global RGs = only show RGs that contain "stamps-management" or "stamps-global" in name
+            if (name.Contains("stamps-management") || name.Contains("stamps-global"))
+            {
                 return ResourceGroupType.Global;
+            }
+            
             return ResourceGroupType.Other;
         }
     }

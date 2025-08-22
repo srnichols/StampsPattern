@@ -323,7 +323,9 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2022-05-01' existing = {
 output regionalEndpointIpAddress string = publicIp.properties.ipAddress
 
 // Output the regional public IP FQDN for use in Front Door origins and Traffic Manager endpoints
-output regionalEndpointFqdn string = publicIp.properties.dnsSettings.fqdn
+// Output the regional public IP FQDN for use in Front Door origins and Traffic Manager endpoints
+// If dnsSettings is missing, output an empty string
+output regionalEndpointFqdn string = contains(publicIp.properties, 'dnsSettings') && contains(publicIp.properties.dnsSettings, 'fqdn') ? publicIp.properties.dnsSettings.fqdn : ''
 
 // Output the Automation Account resource ID for integration or runbook assignment
 output automationAccountId string = enableAutomation ? automationAccount.id : ''
