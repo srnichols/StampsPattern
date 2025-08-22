@@ -338,12 +338,6 @@ At a glance: You’ll run a parameterized deployment that creates global, region
 
 ## 🚀 Enhanced Deployment Options
 
-Choose your deployment path based on your tenancy requirements:
-
-### Option A: PowerShell Deployment (Recommended) 🌟
-
-```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
     A[Choose Tenancy Model] --> B{Business Requirements}
     B -->|Cost-Optimized SMB| C[Shared Tenancy]
@@ -359,83 +353,59 @@ flowchart TD
     H --> K[Dynamic Assignment<br/>Cost + Security Optimized]
 ```
 
-_Figure: Choosing shared, dedicated, or hybrid determines script flags and expected cost/SLA._
+Choose your deployment path based on your tenancy requirements:
 
-#### **Shared Tenancy Deployment**
+### Option A: PowerShell Deployment (Recommended) 🌟
 
-```powershell
-# Cost-optimized for SMBs (multiple tenants per CELL) with basic HA
-../scripts/deploy-stamps.ps1 -TenancyModel shared -Location eastus -Environment prod -AvailabilityZones 2
+...existing code...
 
-# Example with custom organization parameters:
-../scripts/deploy-stamps.ps1 `
-  -TenancyModel shared `
-  -Location eastus `
-  -Environment prod `
-  -AvailabilityZones 2 `
-  -OrganizationDomain "fabrikam.com" `
-  -OrganizationName "fabrikam" `
-  -OwnerEmail "platform@fabrikam.com" `
-  -Department "Engineering" `
-  -ProjectName "MicroservicesPlatform"
+---
 
-# Expected costs: $8-16 per tenant per month (+20% for zone redundancy)
-# SLA: 99.95% availability
-# Best for: Development, testing, cost-sensitive workloads with basic HA
-```
+### Option B: Direct Bicep Deployment (Single- or Multi-Subscription)
 
-_Caption: Use shared CELLs to minimize per-tenant cost; enforce isolation at the application and data schema level._
+You can deploy the architecture directly using the Bicep templates and Azure CLI, bypassing the PowerShell script. This is useful for automation, CI/CD, or advanced scenarios.
 
-#### **Dedicated Tenancy Deployment**
+**Single-Subscription Example:**
 
 ```powershell
-# Enterprise-grade isolation (one tenant per CELL) with maximum resilience
-../scripts/deploy-stamps.ps1 -TenancyModel dedicated -Location eastus -Environment prod -AvailabilityZones 3
-
-# Example with custom organization parameters:
-../scripts/deploy-stamps.ps1 `
-  -TenancyModel dedicated `
-  -Location eastus `
-  -Environment prod `
-  -AvailabilityZones 3 `
-  -OrganizationDomain "healthcare.org" `
-  -GeoName "northamerica" `
-  -BaseDnsZoneName "portal" `
-  -OwnerEmail "devops@healthcare.org" `
-  -Department "IT-Security"
-
-# Expected costs: $3200+ per tenant per month (+40% for 3-zone redundancy)
-# SLA: 99.99% availability  
-# Best for: Compliance, security-sensitive, high-performance workloads
+# Deploy main.bicep to a single subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/main.bicep \
+  --parameters @AzureArchitecture/main.parameters.json \
+  --subscription <your-subscription-id>
 ```
 
-_Caption: Dedicated CELLs maximize isolation and compliance at higher cost; ideal for regulated or high-throughput tenants._
+**Notes:**
+- This method gives you full control over parameters and is ideal for advanced users or automation pipelines.
+- Make sure to update `main.parameters.json` as needed for your environment.
+- For resource group-scoped deployments, use `az deployment group create` instead.
 
-#### **Mixed Tenancy Deployment**
+**Multi-Subscription (Hub/Host) Example:**
+
+For large-scale or regulated environments, you can deploy the hub and host layers to separate subscriptions for maximum isolation and compliance. Deploy each Bicep file to its target subscription:
 
 ```powershell
-# Intelligent assignment based on tenant requirements with maximum resilience
-# Alternative: PowerShell approach
-..\scripts\deploy-stamps.ps1 -Environment "dev" -Region "eastus" -TenantId "contoso" -StampName "stamp1"
+# Deploy hub-main.bicep to the hub subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/hub-main.bicep \
+  --parameters @AzureArchitecture/hub-main.parameters.json \
+  --subscription <your-hub-subscription-id>
 
-# Example with European deployment:
-../scripts/deploy-stamps.ps1 `
-  -TenancyModel mixed `
-  -Location northeurope `
-  -Environment prod `
-  -AvailabilityZones 3 `
-  -OrganizationDomain "eurobank.eu" `
-  -GeoName "europe" `
-  -BaseDnsZoneName "banking" `
-  -OwnerEmail "platform@eurobank.eu" `
-  -Department "Digital-Platform"
-
-# Dynamic cost optimization with automatic tenant placement
-# SLA: 99.99% availability for all CELLs
-# Best for: Multi-tier platforms with diverse tenant needs and high availability requirements
+# Deploy host-main.bicep to the host (workload) subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/host-main.bicep \
+  --parameters @AzureArchitecture/host-main.parameters.json \
+  --subscription <your-host-subscription-id>
 ```
 
-_Caption: Hybrid deployments let you start tenants in shared CELLs and promote to dedicated when requirements change._
+**Notes:**
+- This model is recommended for enterprises needing strict separation of platform (hub) and workload (host) resources.
+- Parameter files should be customized for each environment and subscription.
+
+---
 
 ### 🏢 **Organization Parameters**
 

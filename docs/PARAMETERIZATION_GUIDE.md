@@ -266,6 +266,40 @@ _Change: Domain construction switches to parameterized composition for consisten
   -OwnerEmail "devops-team@fabrikam.com"
 ```
 
+### **Direct Bicep Deployment Examples**
+
+You can use parameter files for both single-subscription and multi-subscription direct Bicep deployments:
+
+**Single-Subscription Example:**
+
+```powershell
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/main.bicep \
+  --parameters @AzureArchitecture/main.parameters.json \
+  --subscription <your-subscription-id>
+```
+
+**Multi-Subscription (Hub/Host) Example:**
+
+```powershell
+# Deploy hub-main.bicep to the hub subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/hub-main.bicep \
+  --parameters @AzureArchitecture/hub-main.parameters.json \
+  --subscription <your-hub-subscription-id>
+
+# Deploy host-main.bicep to the host (workload) subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/host-main.bicep \
+  --parameters @AzureArchitecture/host-main.parameters.json \
+  --subscription <your-host-subscription-id>
+```
+
+Update the relevant parameter files for each environment and subscription as needed.
+
 ### **Example 2: European Geography**
 
 ```powershell

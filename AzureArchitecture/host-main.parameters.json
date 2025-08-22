@@ -14,7 +14,7 @@
         {
           "geoName": "northamerica",
           "regionName": "westus2",
-          "cells": ["cell-001", "cell-002", "cell-003"],
+          "cells": ["cell-01", "cell-02", "cell-03"],
           "baseDomain": "westus2.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-wus2",
           "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
@@ -22,7 +22,7 @@
         {
           "geoName": "northamerica",
           "regionName": "westus3",
-          "cells": ["cell-001", "cell-002", "cell-003"],
+          "cells": ["cell-01", "cell-02", "cell-03"],
           "baseDomain": "westus3.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-wus3",
           "logAnalyticsWorkspaceName": "law-stamps-na-wus3"

@@ -235,6 +235,55 @@ cd StampsPattern
   -Environment "prod"
 ```
 
+---
+
+
+#### 🚀 Alternative: Direct Bicep Deployment (Single- or Multi-Subscription)
+
+You can deploy the architecture directly using the Bicep templates and Azure CLI, bypassing the PowerShell script. This is useful for automation, CI/CD, or advanced scenarios.
+
+**Single-Subscription Example:**
+
+```powershell
+# Deploy main.bicep to a single subscription
+az deployment sub create \
+    --location eastus \
+    --template-file AzureArchitecture/main.bicep \
+    --parameters @AzureArchitecture/main.parameters.json \
+    --subscription <your-subscription-id>
+```
+
+**Notes:**
+- This method gives you full control over parameters and is ideal for advanced users or automation pipelines.
+- Make sure to update `main.parameters.json` as needed for your environment.
+- For resource group-scoped deployments, use `az deployment group create` instead.
+
+**Multi-Subscription (Hub/Host) Example:**
+
+For large-scale or regulated environments, you can deploy the hub and host layers to separate subscriptions for maximum isolation and compliance. Deploy each Bicep file to its target subscription:
+
+```powershell
+# Deploy hub-main.bicep to the hub subscription
+az deployment sub create \
+    --location eastus \
+    --template-file AzureArchitecture/hub-main.bicep \
+    --parameters @AzureArchitecture/hub-main.parameters.json \
+    --subscription <your-hub-subscription-id>
+
+# Deploy host-main.bicep to the host (workload) subscription
+az deployment sub create \
+    --location eastus \
+    --template-file AzureArchitecture/host-main.bicep \
+    --parameters @AzureArchitecture/host-main.parameters.json \
+    --subscription <your-host-subscription-id>
+```
+
+**Notes:**
+- This model is recommended for enterprises needing strict separation of platform (hub) and workload (host) resources.
+- Parameter files should be customized for each environment and subscription.
+
+---
+
 **⏱️ Deployment time**: ~45 minutes  
 **💰 Monthly cost**: $8-3,200 per tenant (tier-based)  
 **🎯 Use case**: Full SaaS platform, all business sizes

@@ -610,7 +610,42 @@ _Table: Typical latency by layer; use for SLO planning and performance baselinin
 
 ## 🏗️ Deployment Architecture
 
+
 This section connects the conceptual layers to the actual deployment templates. Start with the orchestrator, understand the dependency chain, then apply the parameterization strategy.
+
+### 🚀 Direct Bicep Deployment Methods
+
+You can deploy the architecture using Bicep templates directly with the Azure CLI, supporting both single-subscription and multi-subscription (hub/host) models:
+
+**Single-Subscription Example:**
+
+```powershell
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/main.bicep \
+  --parameters @AzureArchitecture/main.parameters.json \
+  --subscription <your-subscription-id>
+```
+
+**Multi-Subscription (Hub/Host) Example:**
+
+```powershell
+# Deploy hub-main.bicep to the hub subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/hub-main.bicep \
+  --parameters @AzureArchitecture/hub-main.parameters.json \
+  --subscription <your-hub-subscription-id>
+
+# Deploy host-main.bicep to the host (workload) subscription
+az deployment sub create \
+  --location eastus \
+  --template-file AzureArchitecture/host-main.bicep \
+  --parameters @AzureArchitecture/host-main.parameters.json \
+  --subscription <your-host-subscription-id>
+```
+
+Use the single-subscription approach for most scenarios, or the multi-subscription model for strict separation of platform and workload resources.
 
 ### 📂 Template Orchestration
 

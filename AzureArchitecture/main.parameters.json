@@ -9,7 +9,7 @@
       "value": "30dd575a-bca7-491b-adf6-41d5f39275d4"
     },
     "dnsZoneName": {
-  "value": "stamps.sdp-saas.com"
+      "value": "stamps.sdp-saas.com"
     },
     "trafficManagerName": {
       "value": "tm-stamps-global"
@@ -21,22 +21,22 @@
       "value": "Standard_AzureFrontDoor"
     },
     "functionAppNamePrefix": {
-      "value": "fa-stamps"
+      "value": "fa-stamps-global"
     },
     "functionStorageNamePrefix": {
-      "value": "stfastamps"
+      "value": "stfastampsglobal"
     },
     "globalControlCosmosDbName": {
-      "value": "cosmos-stamps-control"
+      "value": "global-cosmos-stamps-control"
     },
     "primaryLocation": {
-      "value": "eastus"
+      "value": "westus2"
     },
     "additionalLocations": {
-      "value": ["westus2", "eastus2"]
+      "value": ["westus3"]
     },
     "functionAppRegions": {
-      "value": ["eastus", "westus2", "eastus2"]
+      "value": ["westus2", "westus3"]
     },
     "sqlAdminUsername": {
       "value": "sqladmin"
@@ -48,87 +48,30 @@
       "value": [
         {
           "geoName": "northamerica",
-          "regionName": "eastus",
-          "cells": ["cell1", "cell2"],
-          "baseDomain": "eastus.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-eus",
-          "logAnalyticsWorkspaceName": "law-stamps-na-eus"
+          "regionName": "westus2",
+          "cells": ["cell-01", "cell-02", "cell-03"],
+          "baseDomain": "westus2.stamps.sdp-saas.com",
+          "keyVaultName": "kv-stamps-na-wus2",
+          "logAnalyticsWorkspaceName": "law-stamps-hub"
         },
         {
           "geoName": "northamerica",
-          "regionName": "westus2",
-          "cells": ["cell1", "cell2"],
-          "baseDomain": "westus2.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-wus2",
-          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
-        },
-        {
-          "geoName": "europe",
-          "regionName": "westeurope",
-          "cells": ["cell1"],
-          "baseDomain": "westeurope.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-eu-weu",
-          "logAnalyticsWorkspaceName": "law-stamps-eu-weu"
+          "regionName": "westus3",
+          "cells": ["cell-01", "cell-02", "cell-03"],
+          "baseDomain": "westus3.stamps.sdp-saas.com",
+          "keyVaultName": "kv-stamps-na-wus3",
+          "logAnalyticsWorkspaceName": "law-stamps-hub"
         }
       ]
     },
     "cells": {
       "value": [
-        {
-          "geoName": "northamerica",
-          "regionName": "eastus",
-          "cellName": "cell1",
-          "cellType": "Shared",
-          "availabilityZones": ["1", "2"],
-          "maxTenantCount": 100,
-          "baseDomain": "eastus.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-eus",
-          "logAnalyticsWorkspaceName": "law-stamps-na-eus"
-        },
-        {
-          "geoName": "northamerica",
-          "regionName": "eastus",
-          "cellName": "cell2",
-          "cellType": "Dedicated",
-          "availabilityZones": ["1", "2", "3"],
-          "maxTenantCount": 1,
-          "baseDomain": "eastus.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-eus",
-          "logAnalyticsWorkspaceName": "law-stamps-na-eus"
-        },
-        {
-          "geoName": "northamerica",
-          "regionName": "westus2",
-          "cellName": "cell1",
-          "cellType": "Shared",
-          "availabilityZones": ["1", "2"],
-          "maxTenantCount": 50,
-          "baseDomain": "westus2.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-wus2",
-          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
-        },
-        {
-          "geoName": "northamerica",
-          "regionName": "westus2",
-          "cellName": "cell2",
-          "cellType": "Dedicated",
-          "availabilityZones": ["1", "2", "3"],
-          "maxTenantCount": 1,
-          "baseDomain": "westus2.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-wus2",
-          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
-        },
-        {
-          "geoName": "europe",
-          "regionName": "westeurope",
-          "cellName": "cell1",
-          "cellType": "Shared",
-          "availabilityZones": ["1", "2"],
-          "maxTenantCount": 100,
-          "baseDomain": "westeurope.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-eu-weu",
-          "logAnalyticsWorkspaceName": "law-stamps-eu-weu"
-        }
+        { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-001", "cellType": "Shared",    "availabilityZones": [],              "maxTenantCount": 100, "baseDomain": "westus2.stamps.sdp-saas.com", "keyVaultName": "kv-stamps-na-wus2", "logAnalyticsWorkspaceName": "law-stamps-hub" },
+        { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-002", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus2.stamps.sdp-saas.com", "keyVaultName": "kv-stamps-na-wus2", "logAnalyticsWorkspaceName": "law-stamps-hub" },
+        { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-003", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus2.stamps.sdp-saas.com", "keyVaultName": "kv-stamps-na-wus2", "logAnalyticsWorkspaceName": "law-stamps-hub" },
+        { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-001", "cellType": "Dedicated", "availabilityZones": [],              "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com", "keyVaultName": "kv-stamps-na-wus3", "logAnalyticsWorkspaceName": "law-stamps-hub" },
+        { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-002", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "keyVaultName": "kv-stamps-na-wus3", "logAnalyticsWorkspaceName": "law-stamps-hub" },
+        { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-003", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com", "keyVaultName": "kv-stamps-na-wus3", "logAnalyticsWorkspaceName": "law-stamps-hub" }
       ]
     }
   }

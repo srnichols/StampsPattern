@@ -7,9 +7,9 @@
   "dnsZoneName": { "value": "stamps.azurestamparch.onmicrosoft.com" },
     "trafficManagerName": { "value": "tm-stamps-global" },
     "frontDoorName": { "value": "fd-stamps-global" },
-    "functionAppNamePrefix": { "value": "fa-stamps" },
-    "functionStorageNamePrefix": { "value": "stfastamps" },
-    "globalControlCosmosDbName": { "value": "cosmos-stamps-control" },
+    "functionAppNamePrefix": { "value": "fa-stamps-global" },
+    "functionStorageNamePrefix": { "value": "stfastampsglobal" },
+    "globalControlCosmosDbName": { "value": "global-cosmos-stamps-control" },
     "primaryLocation": { "value": "westus2" },
     "additionalLocations": { "value": ["westus3"] },
     "functionAppRegions": { "value": ["westus2", "westus3"] },
@@ -17,6 +17,6 @@
     "logAnalyticsWorkspaceLocation": { "value": "westus2" },
     "enableGlobalFunctions": { "value": true },
     "enableGlobalCosmos": { "value": true },
-  "tags": { "value": { "environment": "tst", "project": "StampsPattern" } }
+  "tags": { "value": { "environment": "prod", "project": "StampsPattern" } }
   }
 }

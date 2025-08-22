@@ -19,11 +19,11 @@
     "regionalEndpoints": {
       "value": [
         {
-          "fqdn": "agw-wus2-tst-rfu3.westus2.cloudapp.azure.com",
+          "fqdn": "agw-wus2-prod-rfu3.westus2.cloudapp.azure.com",
           "location": "westus2"
         },
         {
-          "fqdn": "agw-wus3-tst-vrlu.westus3.cloudapp.azure.com",
+          "fqdn": "agw-wus3-prod-vrlu.westus3.cloudapp.azure.com",
           "location": "westus3"
         }
       ]
