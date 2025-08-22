@@ -189,7 +189,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 #### Traffic Flow
 
 ```
-User → Front Door → Traffic Manager → APIM Gateway → App Gateway → CELL (Shared/Dedicated) → SQL/Storage
+User → Front Door → Traffic Manager → APIM Gateway → Application Gateway → CELL (Shared/Dedicated) → SQL/Storage
 ```
 
 #### Tenancy Models

@@ -741,6 +741,7 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   identity: {
     type: 'SystemAssigned'
   }
+  // Note: Only SQL admin login is configured. AAD-only authentication is NOT enabled by default.
   properties: {
     administratorLogin: sqlAdminUsername
     administratorLoginPassword: sqlAdminPassword

@@ -266,6 +266,29 @@ _Change: Domain construction switches to parameterized composition for consisten
   -OwnerEmail "devops-team@fabrikam.com"
 ```
 
+### **Example 2: European Geography**
+
+```powershell
+.\deploy-stamps.ps1 `
+  -ResourceGroupName "rg-stamps-eu-prod" `
+  -Location "westeurope" `
+  -GeoName "europe" `
+  -OrganizationDomain "company.eu" `
+  -BaseDnsZoneName "microservices"
+```
+
+### **Example 3: Using Parameters File**
+
+```json
+{
+  "organizationDomain": { "value": "healthcare.org" },
+  "organizationName": { "value": "healthcorp" },
+  "department": { "value": "IT-Healthcare" },
+  "projectName": { "value": "PatientPortal" },
+  "geoName": { "value": "northamerica" },
+  "baseDnsZoneName": { "value": "portal" }
+}
+```
 ### **Direct Bicep Deployment Examples**
 
 You can use parameter files for both single-subscription and multi-subscription direct Bicep deployments:
@@ -299,29 +322,6 @@ az deployment sub create \
 ```
 
 Update the relevant parameter files for each environment and subscription as needed.
-
-### **Example 2: European Geography**
-
-```powershell
-.\deploy-stamps.ps1 `
-  -ResourceGroupName "rg-stamps-eu-prod" `
-  -Location "westeurope" `
-  -GeoName "europe" `
-  -OrganizationDomain "company.eu" `
-  -BaseDnsZoneName "microservices"
-```
-
-### **Example 3: Using Parameters File**
-
-```json
-{
-  "organizationDomain": { "value": "healthcare.org" },
-  "organizationName": { "value": "healthcorp" },
-  "department": { "value": "IT-Healthcare" },
-  "projectName": { "value": "PatientPortal" },
-  "geoName": { "value": "northamerica" },
-  "baseDnsZoneName": { "value": "portal" }
-}
 ```
 
 ## ✅ Benefits Achieved

@@ -519,46 +519,46 @@ flowchart TD
     FD --> User
 ```
 
-    ### 🔁 End-to-end runtime diagram (operator view)
+### 🔁 End-to-end runtime diagram (operator view)
 
-    The diagram below is a compact operator-focused runtime view you can use during incidents to quickly identify which component to check next (network, auth, app, or data).
+The diagram below is a compact operator-focused runtime view you can use during incidents to quickly identify which component to check next (network, auth, app, or data).
 
-    ```mermaid
-    %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
-    sequenceDiagram
-      autonumber
-      participant User as User
-      participant FD as FrontDoor
-      participant TM as TrafficManager
-      participant APIM as APIM
-      participant GFunc as GetTenantFunc
-      participant GDB as GlobalCosmosDB
-      participant AG as AppGateway
-      participant CA as ContainerApp(CELL)
-      participant DAB as DAB(ContainerApp)
-      participant COS as CosmosDB
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+sequenceDiagram
+  autonumber
+  participant User as User
+  participant FD as FrontDoor
+  participant TM as TrafficManager
+  participant APIM as APIM
+  participant GFunc as GetTenantFunc
+  participant GDB as GlobalCosmosDB
+  participant AG as AppGateway
+  participant CA as ContainerApp(CELL)
+  participant DAB as DAB(ContainerApp)
+  participant COS as CosmosDB
 
-      User->>FD: HTTPS request (edge)
-      FD->>TM: Route to nearest region
-      TM->>APIM: Forward request
-      APIM->>GFunc: Tenant lookup call
-      GFunc->>GDB: Query tenant routing
-      GDB-->>GFunc: Tenant cell info
-      GFunc-->>APIM: Return cell info
-      APIM->>AG: Route to regional backend
-      AG->>CA: Forward to CELL app instance
-      CA->>COS: App queries tenant data
-      CA-->>AG: Response
-      AG-->>APIM: Response
-      APIM-->>TM: Response path back
-      TM-->>FD: Response
-      FD-->>User: Final response
+  User->>FD: HTTPS request (edge)
+  FD->>TM: Route to nearest region
+  TM->>APIM: Forward request
+  APIM->>GFunc: Tenant lookup call
+  GFunc->>GDB: Query tenant routing
+  GDB-->>GFunc: Tenant cell info
+  GFunc-->>APIM: Return cell info
+  APIM->>AG: Route to regional backend
+  AG->>CA: Forward to CELL app instance
+  CA->>COS: App queries tenant data
+  CA-->>AG: Response
+  AG-->>APIM: Response
+  APIM-->>TM: Response path back
+  TM-->>FD: Response
+  FD-->>User: Final response
 
-      Note over DAB,COS: DAB serves GraphQL for management portal and reads/writes to Cosmos
-      DAB->>COS: GraphQL queries/mutations
-      DAB-->>APIM: DAB may be behind APIM in some deployments
+  Note over DAB,COS: DAB serves GraphQL for management portal and reads/writes to Cosmos
+  DAB->>COS: GraphQL queries/mutations
+  DAB-->>APIM: DAB may be behind APIM in some deployments
 
-    ```
+```
 
 _Figure: End-to-end request path with tenant resolution. Note how APIM consults the global directory to select a CELL before regional routing occurs._
 

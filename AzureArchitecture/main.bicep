@@ -146,7 +146,7 @@ param regions array = [
     regionName: 'eastus'
     cells: ['cell1', 'cell2']
     baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-    keyVaultName: 'kv-stamps-na-eus'
+  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
@@ -154,7 +154,7 @@ param regions array = [
     regionName: 'westus2'
     cells: ['cell1', 'cell2']
     baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-    keyVaultName: 'kv-stamps-na-wus2'
+  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
 ]
@@ -171,7 +171,7 @@ param cells array = [
     availabilityZones: ['1', '2']
     maxTenantCount: 100
     baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-    keyVaultName: 'kv-stamps-na-eus'
+  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
@@ -193,7 +193,7 @@ param cells array = [
     availabilityZones: ['1', '2']
     maxTenantCount: 50
     baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-    keyVaultName: 'kv-stamps-na-wus2'
+  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
   {
@@ -258,7 +258,81 @@ var tenantValidation = [for cell in cells: {
   tenantCount: cell.maxTenantCount
 }]
 
+// ============ GEODES LAYER (APIM & Global Control Plane) ============
+// Deploy this first as it's needed for global layer configuration
+module geodesLayer './geodesLayer.bicep' = {
+  name: 'geodesLayer'
+  scope: resourceGroup('rg-stamps-global-${environment}')
+  params: {
+    location: primaryLocation
+    apimName: 'apim-stamps-global-${environment}'
+    apimPublisherEmail: ownerEmail
+    apimPublisherName: department
+    apimAdditionalRegions: additionalLocations
+    customDomain: '' // Set if you want a custom APIM domain
+    tags: baseTags
+    globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+    globalControlCosmosDbName: globalControlCosmosDbName
+    primaryLocation: primaryLocation
+    additionalLocations: additionalLocations
+    cosmosZoneRedundant: false
+    entraTenantId: managementClientTenantId
+  }
+  dependsOn: [
+    monitoringLayers
+  ]
+}
+
+// ============ KEY VAULTS ============
+module keyVaults './keyvault.bicep' = [
+  for (region, index) in regions: {
+    name: 'keyVault-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
+    params: {
+  // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
+  // Example: kvs-na-wus2-p-abc123def456
+  name: 'kvs${take(region.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, region.regionName, environment), 0, 8)}'
+      location: region.regionName
+      skuName: 'standard'
+      tags: union(baseTags, {
+        geo: region.geoName
+        region: region.regionName
+      })
+    }
+  }
+]
+
+// ============ REGIONAL LAYER ============
+module regionalLayers './regionalLayer.bicep' = [
+  for (region, index) in regions: {
+    name: 'regionalLayer-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
+    params: {
+      location: region.regionName
+      appGatewayName: 'agw-${region.geoName}-${region.regionName}'
+      subnetId: regionalNetworks[index].outputs.subnetId
+      publicIpId: regionalNetworks[index].outputs.publicIpId
+      sslCertSecretId: 'https://kvs${take(region.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, region.regionName, environment), 0, 8)}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
+      cellCount: length(region.cells)
+      cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
+      demoBackendFqdn: 'fa-stamps-${region.regionName}.azurewebsites.net'
+      enableHttps: !isSmoke
+      tags: union(baseTags, {
+        geo: region.geoName
+        region: region.regionName
+      })
+      healthProbePath: '/api/health'
+      automationAccountName: 'auto-${region.geoName}-${region.regionName}'
+    }
+    dependsOn: [
+      keyVaults
+      regionalNetworks
+    ]
+  }
+]
+
 // ============ GLOBAL LAYER ============
+// Deploy this after APIM and regional layers to configure traffic routing
 module globalLayer './globalLayer.bicep' = {
   name: 'globalLayer'
   scope: resourceGroup('rg-stamps-global-${environment}')
@@ -278,60 +352,26 @@ module globalLayer './globalLayer.bicep' = {
     cosmosZoneRedundant: !isSmoke
     enableGlobalFunctions: !isSmoke
     enableGlobalCosmos: !isSmoke
+    // Pass APIM gateway URL for Front Door configuration
+    apimGatewayUrl: geodesLayer.outputs.apimGatewayUrl
+    // Pass regional Application Gateway endpoints for Traffic Manager
+    regionalEndpoints: [for (region, index) in regions: {
+      fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
+      location: region.regionName
+    }]
   }
+  dependsOn: [
+    geodesLayer
+    regionalLayers
+    monitoringLayers
+  ]
 }
-
-// ============ KEY VAULTS ============
-module keyVaults './keyvault.bicep' = [
-  for (region, index) in regions: {
-    name: 'keyVault-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
-    params: {
-      name: region.keyVaultName
-      location: region.regionName
-      skuName: 'standard'
-      tags: union(baseTags, {
-        geo: region.geoName
-        region: region.regionName
-      })
-    }
-  }
-]
-
-// ============ REGIONAL LAYER ============
-module regionalLayers './regionalLayer.bicep' = [
-  for (region, index) in regions: {
-    name: 'regionalLayer-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
-    params: {
-      location: region.regionName
-      appGatewayName: 'agw-${region.geoName}-${region.regionName}'
-      subnetId: regionalNetworks[index].outputs.subnetId
-      publicIpId: regionalNetworks[index].outputs.publicIpId
-      sslCertSecretId: 'https://${region.keyVaultName}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
-      cellCount: length(region.cells)
-      cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
-      demoBackendFqdn: 'fa-stamps-${region.regionName}.azurewebsites.net'
-      enableHttps: !isSmoke
-      tags: union(baseTags, {
-        geo: region.geoName
-        region: region.regionName
-      })
-      healthProbePath: '/api/health'
-      automationAccountName: 'auto-${region.geoName}-${region.regionName}'
-    }
-    dependsOn: [
-      keyVaults
-      regionalNetworks
-    ]
-  }
-]
 
 // ============ REGIONAL NETWORK PREREQS ============
 module regionalNetworks './regionalNetwork.bicep' = [
   for (region, index) in regions: {
     name: 'regionalNetwork-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
     params: {
       location: region.regionName
       geoName: region.geoName
@@ -351,7 +391,7 @@ module regionalNetworks './regionalNetwork.bicep' = [
 module monitoringLayers './monitoringLayer.bicep' = [
   for (region, index) in regions: {
     name: 'monitoringLayer-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
     params: {
       location: region.regionName
       logAnalyticsWorkspaceName: region.logAnalyticsWorkspaceName
@@ -376,8 +416,11 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
-      keyVaultName: toLower('kv${uniqueString(subscription().id, 'kv', cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
-      cosmosDbStampName: 'cosmos-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
+  // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
+  // Example: kvs-wus2-p-abc123de
+  keyVaultName: toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}')
+  // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
+  cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
       tags: union(baseTags, {
         geo: cell.geoName
         region: cell.regionName
@@ -397,7 +440,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
       cosmosZoneRedundant: !isSmoke
       storageSkuName: (cell.?storageSkuName ?? storageSkuName)
-      createStorageAccount: false
+  createStorageAccount: true
       enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
       storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
       enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)

@@ -53,6 +53,9 @@ param enableGlobalCosmos bool = true
 @description('Array of regional endpoint FQDNs for Traffic Manager (e.g., Application Gateway FQDNs)')
 param regionalEndpoints array = []
 
+@description('APIM Gateway URL for Front Door origin configuration')
+param apimGatewayUrl string = ''
+
 @description('Azure Front Door SKU - Standard_AzureFrontDoor (minimum) or Premium_AzureFrontDoor (for Private Link)')
 @allowed(['Standard_AzureFrontDoor', 'Premium_AzureFrontDoor'])
 param frontDoorSku string = 'Standard_AzureFrontDoor'
@@ -120,8 +123,65 @@ resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2023-05-01' = {
   }
 }
 
-// Origin Group for regional Application Gateways
-resource originGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (length(regionalEndpoints) > 0) {
+// Origin Group for APIM Global Gateway (primary routing strategy)
+resource apimOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (!empty(apimGatewayUrl)) {
+  name: 'apim-global-origins'
+  parent: frontDoor
+  properties: {
+    loadBalancingSettings: {
+      sampleSize: 4
+      successfulSamplesRequired: 3
+      additionalLatencyInMilliseconds: 50
+    }
+    healthProbeSettings: {
+      probePath: '/status-0123456789abcdef'  // APIM default health endpoint
+      probeRequestType: 'GET'
+      probeProtocol: 'Https'
+      probeIntervalInSeconds: 100
+    }
+  }
+}
+
+// Origin for APIM Global Gateway
+resource apimOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = if (!empty(apimGatewayUrl)) {
+  name: 'apim-global-origin'
+  parent: apimOriginGroup
+  properties: {
+    hostName: replace(apimGatewayUrl, 'https://', '')
+    httpPort: 80
+    httpsPort: 443
+    originHostHeader: replace(apimGatewayUrl, 'https://', '')
+    priority: 1
+    weight: 1000
+    enabledState: 'Enabled'
+    enforceCertificateNameCheck: true
+  }
+}
+
+// Primary Route to forward traffic to APIM (main traffic flow)
+resource apimRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (!empty(apimGatewayUrl)) {
+  name: 'apim-global-route'
+  parent: frontDoorEndpoint
+  properties: {
+    customDomains: []
+    originGroup: {
+      id: apimOriginGroup.id
+    }
+    originPath: null
+    ruleSets: []
+    supportedProtocols: ['Http', 'Https']
+    patternsToMatch: ['/*']
+    forwardingProtocol: 'HttpsOnly'
+    linkToDefaultDomain: 'Enabled'
+    httpsRedirect: 'Enabled'
+  }
+  dependsOn: [
+    apimOrigin
+  ]
+}
+
+// Secondary Origin Group for regional Application Gateways (fallback/direct routing)
+resource regionalOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (length(regionalEndpoints) > 0) {
   name: 'regional-agw-origins'
   parent: frontDoor
   properties: {
@@ -131,7 +191,7 @@ resource originGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (leng
       additionalLatencyInMilliseconds: 50
     }
     healthProbeSettings: {
-      probePath: '/'
+      probePath: '/health'
       probeRequestType: 'GET'
       probeProtocol: 'Https'
       probeIntervalInSeconds: 100
@@ -139,10 +199,10 @@ resource originGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (leng
   }
 }
 
-// Origins for each regional Application Gateway
-resource origins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (endpoint, i) in regionalEndpoints: if (length(regionalEndpoints) > 0) {
+// Origins for each regional Application Gateway (fallback routing)
+resource regionalOrigins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (endpoint, i) in regionalEndpoints: if (length(regionalEndpoints) > 0) {
   name: 'agw-${endpoint.location}-origin'
-  parent: originGroup
+  parent: regionalOriginGroup
   properties: {
     hostName: endpoint.fqdn
     httpPort: 80
@@ -155,25 +215,25 @@ resource origins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for
   }
 }]
 
-// Route to forward traffic to regional Application Gateways
-resource route 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (length(regionalEndpoints) > 0) {
-  name: 'regional-route'
+// Fallback Route for direct regional access (bypassing APIM)
+resource regionalRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (length(regionalEndpoints) > 0) {
+  name: 'regional-fallback-route'
   parent: frontDoorEndpoint
   properties: {
     customDomains: []
     originGroup: {
-      id: originGroup.id
+      id: regionalOriginGroup.id
     }
     originPath: null
     ruleSets: []
     supportedProtocols: ['Http', 'Https']
-    patternsToMatch: ['/*']
+    patternsToMatch: ['/direct/*', '/regional/*']  // Specific patterns for direct regional access
     forwardingProtocol: 'HttpsOnly'
     linkToDefaultDomain: 'Enabled'
     httpsRedirect: 'Enabled'
   }
   dependsOn: [
-    origins
+    regionalOrigins
   ]
 }
 

@@ -1,3 +1,9 @@
+// APIM global policy XML with parameterized tenant ID (EventHub logging removed temporarily)
+var apimGlobalPolicyXml = '<policies>\n  <inbound>\n    <!-- Global security headers -->\n    <set-header name="X-Frame-Options" exists-action="override">\n      <value>DENY</value>\n    </set-header>\n    <set-header name="X-Content-Type-Options" exists-action="override">\n      <value>nosniff</value>\n    </set-header>\n    <set-header name="Strict-Transport-Security" exists-action="override">\n      <value>max-age=31536000; includeSubDomains</value>\n    </set-header>\n    <!-- Rate limiting by tenant -->\n    <rate-limit-by-key calls="1000" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault(&quot;X-Tenant-ID&quot;,&quot;anonymous&quot;))" />\n    <!-- Tenant validation -->\n    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">\n      <openid-config url="https://login.microsoftonline.com/${entraTenantId}/v2.0/.well-known/openid-configuration" />\n      <required-claims>\n        <claim name="aud">\n          <value>api://stamps-pattern</value>\n        </claim>\n      </required-claims>\n    </validate-jwt>\n  </inbound>\n  <backend>\n    <forward-request />\n  </backend>\n  <outbound>\n    <!-- Remove sensitive headers -->\n    <set-header name="Server" exists-action="delete" />\n    <set-header name="X-Powered-By" exists-action="delete" />\n  </outbound>\n  <on-error>\n    <!-- Error logging to Log Analytics -->\n    <trace source="@(context.RequestId)" severity="error">\n      @{\n        return new JObject(\n          new JProperty("timestamp", DateTime.UtcNow),\n          new JProperty("error", context.LastError.Message),\n          new JProperty("requestId", context.RequestId)\n        ).ToString();\n      }\n    </trace>\n  </on-error>\n</policies>'
+@description('Entra ID Tenant ID for APIM OpenID configuration')
+param entraTenantId string
+@description('Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal)')
+param cosmosZoneRedundant bool = true
 // --------------------------------------------------------------------------------------
 // Module: geodesLayer
 // Purpose: Provisions Enterprise-grade API Management (APIM) and the Global Control Plane Cosmos DB account.
@@ -45,12 +51,12 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
     publisherName: apimPublisherName
     virtualNetworkType: 'None'
     additionalLocations: [for region in apimAdditionalRegions: {
-      location: region.location
+      location: string(region)
       sku: {
         name: 'Premium'
-        capacity: region.capacity ?? 1
+        capacity: 1
       }
-      zones: region.zones ?? []
+      zones: []
     }]
     customProperties: {
       'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10': 'False'
@@ -84,67 +90,7 @@ resource apimGlobalPolicy 'Microsoft.ApiManagement/service/policies@2023-05-01-p
   name: 'policy'
   parent: apim
   properties: {
-    value: '''
-    <policies>
-      <inbound>
-        <!-- Global security headers -->
-        <set-header name="X-Frame-Options" exists-action="override">
-          <value>DENY</value>
-        </set-header>
-        <set-header name="X-Content-Type-Options" exists-action="override">
-          <value>nosniff</value>
-        </set-header>
-        <set-header name="Strict-Transport-Security" exists-action="override">
-          <value>max-age=31536000; includeSubDomains</value>
-        </set-header>
-        
-        <!-- Rate limiting by tenant -->
-        <rate-limit-by-key calls="1000" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault("X-Tenant-ID","anonymous"))" />
-        
-        <!-- Tenant validation -->
-        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">
-          <openid-config url="${environment().authentication.loginEndpoint}common/v2.0/.well-known/openid_configuration" />
-          <required-claims>
-            <claim name="aud">
-              <value>api://stamps-pattern</value>
-            </claim>
-          </required-claims>
-        </validate-jwt>
-        
-        <!-- Log tenant access for analytics -->
-        <log-to-eventhub logger-id="tenant-analytics">
-          @{
-            return new JObject(
-              new JProperty("timestamp", DateTime.UtcNow),
-              new JProperty("tenantId", context.Request.Headers.GetValueOrDefault("X-Tenant-ID","")),
-              new JProperty("operation", context.Operation.Name),
-              new JProperty("requestId", context.RequestId)
-            ).ToString();
-          }
-        </log-to-eventhub>
-      </inbound>
-      <backend>
-        <forward-request />
-      </backend>
-      <outbound>
-        <!-- Remove sensitive headers -->
-        <set-header name="Server" exists-action="delete" />
-        <set-header name="X-Powered-By" exists-action="delete" />
-      </outbound>
-      <on-error>
-        <!-- Error logging -->
-        <log-to-eventhub logger-id="error-analytics">
-          @{
-            return new JObject(
-              new JProperty("timestamp", DateTime.UtcNow),
-              new JProperty("error", context.LastError.Message),
-              new JProperty("requestId", context.RequestId)
-            ).ToString();
-          }
-        </log-to-eventhub>
-      </on-error>
-    </policies>
-    '''
+    value: apimGlobalPolicyXml
     format: 'xml'
   }
 }
@@ -212,7 +158,7 @@ resource basicTierPolicy 'Microsoft.ApiManagement/service/products/policies@2023
     value: '''
     <policies>
       <inbound>
-        <rate-limit calls="10000" renewal-period="3600" />
+        <rate-limit calls="10000" renewal-period="300" />
         <quota calls="100000" renewal-period="86400" />
       </inbound>
       <backend>
@@ -234,7 +180,7 @@ resource premiumTierPolicy 'Microsoft.ApiManagement/service/products/policies@20
     value: '''
     <policies>
       <inbound>
-        <rate-limit calls="50000" renewal-period="3600" />
+        <rate-limit calls="50000" renewal-period="300" />
         <quota calls="1000000" renewal-period="86400" />
       </inbound>
       <backend>
@@ -258,20 +204,12 @@ resource apimDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
       {
         categoryGroup: 'allLogs'
         enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 90
-        }
       }
     ]
     metrics: [
       {
         category: 'AllMetrics'
         enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 90
-        }
       }
     ]
   }
@@ -295,7 +233,7 @@ param additionalLocations array
 var additionalCosmosDbLocations = [for (loc, idx) in additionalLocations: {
   locationName: string(loc)
   failoverPriority: idx + 1
-  isZoneRedundant: true
+  isZoneRedundant: false
 }]
 
 var cosmosDbLocations = concat(
@@ -303,7 +241,7 @@ var cosmosDbLocations = concat(
     {
       locationName: primaryLocation
       failoverPriority: 0
-      isZoneRedundant: true
+      isZoneRedundant: cosmosZoneRedundant
     }
   ],
   additionalCosmosDbLocations

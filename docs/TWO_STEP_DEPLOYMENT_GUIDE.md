@@ -7,13 +7,13 @@ This guide outlines the recommended two-step process for deploying the Stamps Pa
 ## Step 1: Deploy Core Infrastructure
 
 1. **Automated Step 1: Deploy and Extract Outputs**
-   - Use the provided PowerShell script to deploy `AzureArchitecture/main.bicep` and automatically extract the outputs needed for the management portal deployment.
-   - This script provisions all resource groups, core assets, and the management portal resource group, then writes the required outputs to `management-portal.parameters.json`.
-   - Example usage:
-     ```pwsh
-     cd AzureArchitecture
-     pwsh ./single-sub-deployment-step1.ps1
-     ```
+    - Run the `single-sub-deployment-step1.ps1` PowerShell script located in the `AzureArchitecture` folder to deploy `AzureArchitecture/main.bicep` and automatically extract the outputs needed for the management portal deployment.
+    - This script provisions all resource groups, core assets, and the management portal resource group, then writes the required outputs to `management-portal.parameters.json`.
+    - Example usage:
+       ```pwsh
+       cd AzureArchitecture
+       pwsh ./single-sub-deployment-step1.ps1
+       ```
 
    - The script will:
      - Deploy the Bicep template using `main.parameters.json`.

@@ -224,8 +224,8 @@ _Figure: End-to-end deployment decision tree from prerequisites through tenancy 
 
 ### **What Gets Deployed**
 
-- **Global Layer**: DNS routing, Azure Front Door Standard, Traffic Manager, global tenant directory
-- **Regional Layer**: Security gateways, monitoring, regional services  
+- **Global Layer**: DNS routing, Azure Front Door Standard, Traffic Manager, API Management (APIM), global tenant directory
+- **Regional Layer**: Security gateways, monitoring, regional services
 - **CELL Layer**: Your actual applications and databases (shared or dedicated)
 
 ---
@@ -338,6 +338,8 @@ At a glance: You’ll run a parameterized deployment that creates global, region
 
 ## 🚀 Enhanced Deployment Options
 
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TD
     A[Choose Tenancy Model] --> B{Business Requirements}
     B -->|Cost-Optimized SMB| C[Shared Tenancy]
