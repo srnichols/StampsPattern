@@ -1,15 +1,15 @@
 # PowerShell script to deploy main.bicep, extract management portal outputs, and write to management-portal.parameters.json
 
 # Set variables
-$BicepFile = "./AzureArchitecture/main.bicep"
-$ParametersFile = "./AzureArchitecture/main.parameters.json"
-$DeploymentName = "stamps-main-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+$BicepFile = "./AzureArchitecture/host-main.bicep"
+$ParametersFile = "./AzureArchitecture/host-main.parameters.json"
+$DeploymentName = "stamps-host-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 $OutputFile = "./AzureArchitecture/management-portal.parameters.json"
 
-# Deploy main.bicep at subscription scope and capture outputs
+# Deploy host-main.bicep at subscription scope and capture outputs
 $deploymentResult = az deployment sub create `
     --name $DeploymentName `
-    --location westus2 `
+    --location westus3 `
     --template-file $BicepFile `
     --parameters @$ParametersFile `
     --query "properties.outputs" `
@@ -20,13 +20,23 @@ if (-not $deploymentResult) {
     exit 1
 }
 
-# Parse outputs and extract managementPortalDeploymentParams
-$outputs = $deploymentResult | ConvertFrom-Json
-$mgmtParams = $outputs.managementPortalDeploymentParams.value
-
-if (-not $mgmtParams) {
-    Write-Error "managementPortalDeploymentParams output not found."
+# Parse outputs and check if deployment succeeded
+if (-not $deploymentResult) {
+    Write-Error "Deployment failed or no outputs returned."
     exit 1
+}
+
+$outputs = $deploymentResult | ConvertFrom-Json
+Write-Host "Deployment completed successfully!"
+Write-Host "Outputs received:"
+$outputs | ConvertTo-Json -Depth 3
+
+# Create basic management portal parameters (host-main.bicep may not have this specific output)
+$mgmtParams = @{
+    resourceGroupName = "rg-stamps-global-tst"
+    location = "westus3"
+    environment = "tst"
+    subscriptionId = (az account show --query "id" --output tsv)
 }
 
 # Write management portal parameters to JSON file

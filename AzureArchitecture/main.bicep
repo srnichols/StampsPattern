@@ -1,11 +1,15 @@
+// Requires Bicep CLI v0.20.0 or later for array filtering with ternary operator
+@description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
+param enableGlobalFunctions bool = true
+// APIM and Cosmos DB outputs from geodesLayer
+output apimGatewayUrl string = geodesLayer.outputs.apimGatewayUrl
+output apimDeveloperPortalUrl string = geodesLayer.outputs.apimDeveloperPortalUrl
+output apimManagementApiUrl string = geodesLayer.outputs.apimManagementApiUrl
+output apimResourceId string = geodesLayer.outputs.apimResourceId
+output globalControlCosmosDbEndpoint string = geodesLayer.outputs.globalControlCosmosDbEndpoint
+output globalControlCosmosDbId string = geodesLayer.outputs.globalControlCosmosDbId
 // Filter out regional endpoints with empty FQDNs for Traffic Manager
-var filteredRegionalEndpoints = [
-  for (region, index) in regions: {
-    fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
-    location: region.regionName
-  }
-  if !empty(regionalLayers[index].outputs.regionalEndpointFqdn)
-]
+// The filteredRegionalEndpoints variable has been removed as part of the patch.
 
 // Azure Stamps Pattern - Main Orchestration Template
 //
@@ -340,6 +344,8 @@ module regionalLayers './regionalLayer.bicep' = [
 ]
 
 // ============ GLOBAL LAYER ============
+
+
 // Deploy this after APIM and regional layers to configure traffic routing
 module globalLayer './globalLayer.bicep' = {
   name: 'globalLayer'
@@ -358,23 +364,19 @@ module globalLayer './globalLayer.bicep' = {
     primaryLocation: primaryLocation
     additionalLocations: additionalLocations
     cosmosZoneRedundant: !isSmoke
-    enableGlobalFunctions: !isSmoke
+    enableGlobalFunctions: enableGlobalFunctions
     enableGlobalCosmos: !isSmoke
     // Pass APIM gateway URL for Front Door configuration
     apimGatewayUrl: geodesLayer.outputs.apimGatewayUrl
-    // Pass regional Application Gateway endpoints for Traffic Manager, filtering out empty FQDNs
-    regionalEndpoints: [for (region, index) in regions: {
-      fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
-      location: region.regionName
-    } if !empty(regionalLayers[index].outputs.regionalEndpointFqdn)]
-// Filter out regional endpoints with empty FQDNs for Traffic Manager
-var filteredRegionalEndpoints = [for (region, index) in regions: {
-  fqdn: regionalLayers[index].outputs.regionalEndpointFqdn
-  location: region.regionName
-} if (!empty(regionalLayers[index].outputs.regionalEndpointFqdn))]
+    // Pass all regional Application Gateway endpoints for Traffic Manager (filtering will be done in globalLayer.bicep)
+    regionalEndpoints: [
+      for (region, i) in regions: !empty(regionalLayers[i].outputs.regionalEndpointFqdn) ? {
+        fqdn: regionalLayers[i].outputs.regionalEndpointFqdn
+        location: region.regionName
+      } : null
+    ]
   }
   dependsOn: [
-    geodesLayer
     regionalLayers
     monitoringLayers
   ]

@@ -96,9 +96,13 @@
                     <label class="form-label">Preferred Region</label>
                     <select @bind="assignmentRegion" class="form-control form-control-sm">
                         <option value="">Any Region</option>
-                        <option value="eastus">East US</option>
-                        <option value="westus">West US</option>
-                        <option value="westeurope">West Europe</option>
+                        @if (cells != null)
+                        {
+                            foreach (var region in cells.Select(c => c.Region).Distinct().OrderBy(r => r))
+                            {
+                                <option value="@region">@region</option>
+                            }
+                        }
                     </select>
                 </div>
                 <div class="mb-3">

@@ -68,13 +68,14 @@ var regionShortNames = {
   westus: 'wus'
   westus2: 'wus2'
   westus3: 'wus3'
+  centralus: 'cus'
   northeurope: 'neu'
   westeurope: 'weu'
 }
 
 // Short names for geographies, used in resource naming.
 var geoShortNames = {
-  northamerica: 'us'
+  northamerica: 'na'
   europe: 'eu'
   asia: 'apac'
 }
@@ -106,7 +107,7 @@ resource globalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // Create a resource group for each region
 // Each region gets its own RG for isolation and quota management.
 resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for region in regions: {
-  name: 'rg-stamps-region-${region.geoName}-${region.regionName}-${envShort}'
+  name: 'rg-stamps-region-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}-${envShort}'
   location: region.regionName
   tags: union(tags, { geo: region.geoName, region: region.regionName, scope: 'region' })
 }]
@@ -114,7 +115,7 @@ resource regionResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = 
 // Create a resource group for each CELL
 // CELLs are the core isolation boundary for tenants; each gets its own RG.
 resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [for cell in cells: {
-  name: 'rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${envShort}'
+  name: 'rg-stamps-cell-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${cell.regionName}-${cell.cellName}-${envShort}'
   location: cell.regionName
   tags: union(tags, {
     geo: cell.geoName
@@ -135,8 +136,8 @@ resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [f
 
 // Deploy regional modules into their region RGs
 module regionalNetworks './regionalNetwork.bicep' = [for (region, idx) in regions: {
-  name: 'regionalNetwork-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${envShort}')
+  name: 'regionalNetwork-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}'
+  scope: resourceGroup('rg-stamps-region-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}-${envShort}')
   params: {
     location: region.regionName
     geoName: region.geoName
@@ -151,8 +152,8 @@ module regionalNetworks './regionalNetwork.bicep' = [for (region, idx) in region
 
 // Deploy monitoring and regional layers into their region RGs
 module monitoringLayers './monitoringLayer.bicep' = [for (region, idx) in regions: {
-  name: 'monitoring-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  name: 'monitoring-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}'
+  scope: resourceGroup('rg-stamps-region-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}-${envShort}')
   params: {
     location: region.regionName
     logAnalyticsWorkspaceName: 'law-stamps-${(regionShortNames[?region.regionName] ?? substring(region.regionName, 0, 3))}-${envShort}'
@@ -162,8 +163,8 @@ module monitoringLayers './monitoringLayer.bicep' = [for (region, idx) in region
 }]
 
 module regionalLayers './regionalLayer.bicep' = [for (region, idx) in regions: {
-  name: 'regional-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-region-${region.geoName}-${region.regionName}')
+  name: 'regional-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}'
+  scope: resourceGroup('rg-stamps-region-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${region.regionName}-${envShort}')
   params: {
     location: region.regionName
     appGatewayName: 'agw-${(geoShortNames[?region.geoName] ?? substring(region.geoName, 0, 2))}-${(regionShortNames[?region.regionName] ?? substring(region.regionName, 0, 3))}-${envShort}'
@@ -183,17 +184,17 @@ module regionalLayers './regionalLayer.bicep' = [for (region, idx) in regions: {
 
 // Deploy the CELL module into each dedicated RG
 module deploymentStampLayers './deploymentStampLayer.bicep' = [for (cell, idx) in cells: {
-  name: 'cell-${cell.geoName}-${cell.regionName}-${cell.cellName}'
-  scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-${cell.cellName}-${envShort}')
+  name: 'cell-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${cell.regionName}-${cell.cellName}'
+  scope: resourceGroup('rg-stamps-cell-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${cell.regionName}-${cell.cellName}-${envShort}')
   params: {
     location: cell.regionName
-    sqlServerName: toLower('sql-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}-${envShort}')
+    sqlServerName: toLower('sql-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-${envShort}')
     sqlAdminUsername: sqlAdminUsername
     sqlAdminPassword: sqlAdminPassword
-    sqlDbName: toLower('sqldb-cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}-z${string(length(cell.availabilityZones))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-${envShort}')
-    storageAccountName: toLower('st${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}z${string(length(cell.availabilityZones))}${envShort}${substring(uniqueString(subscription().id, cell.regionName, cell.cellName, deployment().name), 0, 2)}')
-    keyVaultName: toLower('kv-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}-${envShort}-${substring(uniqueString(subscription().id, cell.regionName, cell.cellName), 0, 2)}')
-    cosmosDbStampName: toLower('cosmos${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}z${string(length(cell.availabilityZones))}${envShort}${substring(uniqueString(subscription().id, cell.regionName, cell.cellName, deployment().name), 0, 6)}')
+    sqlDbName: toLower('sqldb-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-z${string(length(cell.availabilityZones))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-${envShort}')
+    storageAccountName: toLower('st${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}z${string(length(cell.availabilityZones))}${envShort}${substring(uniqueString(subscription().id, cell.regionName, cell.cellName, deployment().name), 0, 2)}')
+    keyVaultName: toLower('kv-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-${envShort}-${substring(uniqueString(subscription().id, cell.regionName, cell.cellName), 0, 2)}')
+    cosmosDbStampName: toLower('cosmos${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}z${string(length(cell.availabilityZones))}${envShort}${substring(uniqueString(subscription().id, cell.regionName, cell.cellName, deployment().name), 0, 6)}')
     tags: union(tags, {
       geo: cell.geoName
       region: cell.regionName
@@ -204,7 +205,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [for (cell, idx) i
     })
     containerRegistryName: toLower('acr${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}${envShort}')
     enableContainerRegistry: false
-    containerAppName: toLower('ca-cell${(substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 2) == '00' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 2, 1) : (substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 0, 1) == '0' ? substring(substring(cell.cellName, length(cell.cellName) - 3, 3), 1, 2) : substring(cell.cellName, length(cell.cellName) - 3, 3)))}-z${string(length(cell.availabilityZones))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-${envShort}')
+    containerAppName: toLower('ca-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-z${string(length(cell.availabilityZones))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-${envShort}')
     baseDomain: cell.baseDomain
     globalLogAnalyticsWorkspaceId: globalLogAnalyticsWorkspaceId
     cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? []

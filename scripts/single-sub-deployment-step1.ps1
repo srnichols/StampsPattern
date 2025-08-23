@@ -1,12 +1,14 @@
 #!/usr/bin/env pwsh
 
-# PowerShell script to deploy main.bicep, extract management portal outputs, and write to management-portal.parameters.json
+
+# PowerShell script to deploy main.bicep, extract outputs for routing and management portal, and write to JSON files
 
 # Set variables
 $BicepFile = "./AzureArchitecture/main.bicep"
 $ParametersFile = "./AzureArchitecture/main.parameters.json"
 $DeploymentName = "stamps-main-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-$OutputFile = "./AzureArchitecture/management-portal.parameters.json"
+$MgmtOutputFile = "./AzureArchitecture/management-portal.parameters.json"
+$RoutingOutputFile = "./AzureArchitecture/routing.parameters.json"
 
 # Deploy main.bicep at subscription scope and capture outputs
 $deploymentResult = az deployment sub create `
@@ -22,15 +24,23 @@ if (-not $deploymentResult) {
     exit 1
 }
 
-# Parse outputs and extract managementPortalDeploymentParams
+# Parse outputs
 $outputs = $deploymentResult | ConvertFrom-Json
-$mgmtParams = $outputs.managementPortalDeploymentParams.value
 
+# Extract management portal parameters
+$mgmtParams = $outputs.managementPortalDeploymentParams.value
 if (-not $mgmtParams) {
     Write-Error "managementPortalDeploymentParams output not found."
     exit 1
 }
+$mgmtParams | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $MgmtOutputFile
+Write-Host "Management portal parameters written to $MgmtOutputFile"
 
-# Write management portal parameters to JSON file
-$mgmtParams | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $OutputFile
-Write-Host "Management portal parameters written to $OutputFile"
+# Extract routing parameters (if present)
+if ($outputs.globalLayerOutputs) {
+    $routingParams = $outputs.globalLayerOutputs.value
+    $routingParams | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $RoutingOutputFile
+    Write-Host "Routing parameters written to $RoutingOutputFile"
+} else {
+    Write-Warning "globalLayerOutputs not found in deployment outputs. Routing parameters file not written."
+}

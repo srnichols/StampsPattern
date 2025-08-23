@@ -1,5 +1,6 @@
 // ...existing code...
 @page "/tenants"
+@using Microsoft.AspNetCore.Components.Forms
 // ...existing code...
 @inject Stamps.ManagementPortal.Services.IDataService Data
 @inject IJSRuntime JSRuntime
@@ -374,7 +375,9 @@
             Domain = tenant.Domain, 
             Tier = tenant.Tier, 
             Status = tenant.Status, 
-            CellId = tenant.CellId 
+            CellId = tenant.CellId,
+            ContactName = tenant.ContactName,
+            ContactEmail = tenant.ContactEmail
         };
         isEditing = true;
         errorMessage = "";

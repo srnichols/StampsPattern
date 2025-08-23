@@ -6,19 +6,11 @@
   "managementClientTenantId": { "value": "30dd575a-bca7-491b-adf6-41d5f39275d4" },
   "tags": { "value": { "environment": "tst", "project": "StampsPattern" } },
     "sqlAdminUsername": { "value": "sqladmin" },
-    "sqlAdminPassword": { "value": "REPLACE_WITH_SECURE_PASSWORD" },
-    "globalLogAnalyticsWorkspaceId": { "value": "REPLACE_WITH_HUB_LAW_ID" },
-  "smoke": { "value": false },
+    "sqlAdminPassword": { "value": "G7!rT9p#xQ2z@LmS" },
+    "globalLogAnalyticsWorkspaceId": { "value": "/subscriptions/2fb123ca-e419-4838-9b44-c2eb71a21769/resourceGroups/rg-stamps-global-tst/providers/Microsoft.OperationalInsights/workspaces/law-stamps-na-wus3" },
+  "smoke": { "value": true },
     "regions": {
       "value": [
-        {
-          "geoName": "northamerica",
-          "regionName": "westus2",
-          "cells": ["cell-01", "cell-02", "cell-03"],
-          "baseDomain": "westus2.stamps.sdp-saas.com",
-          "keyVaultName": "kv-stamps-na-wus2",
-          "logAnalyticsWorkspaceName": "law-stamps-na-wus2"
-        },
         {
           "geoName": "northamerica",
           "regionName": "westus3",
@@ -26,18 +18,26 @@
           "baseDomain": "westus3.stamps.sdp-saas.com",
           "keyVaultName": "kv-stamps-na-wus3",
           "logAnalyticsWorkspaceName": "law-stamps-na-wus3"
+        },
+        {
+          "geoName": "northamerica",
+          "regionName": "centralus",
+          "cells": ["cell-01", "cell-02", "cell-03"],
+          "baseDomain": "centralus.stamps.sdp-saas.com",
+          "keyVaultName": "kv-stamps-na-cus",
+          "logAnalyticsWorkspaceName": "law-stamps-na-cus"
         }
       ]
     },
     "cells": {
       "value": [
-  { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-001", "cellType": "Shared",    "availabilityZones": [],              "maxTenantCount": 100, "baseDomain": "westus2.stamps.sdp-saas.com" },
-  { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-002", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus2.stamps.sdp-saas.com" },
-  { "geoName": "northamerica", "regionName": "westus2", "cellName": "CELL-003", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus2.stamps.sdp-saas.com" },
+  { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-01", "cellType": "Shared",    "availabilityZones": [], "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com" },
+  { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": [], "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com" },
+  { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": [], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com" },
 
-  { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-001", "cellType": "Dedicated", "availabilityZones": [],              "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com" },
-  { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-002", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com" },
-  { "geoName": "northamerica", "regionName": "westus3", "cellName": "CELL-003", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com" }
+  { "geoName": "northamerica", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "availabilityZones": [], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com" },
+  { "geoName": "northamerica", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": [], "maxTenantCount": 100, "baseDomain": "centralus.stamps.sdp-saas.com" },
+  { "geoName": "northamerica", "regionName": "centralus", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": [], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com" }
       ]
     }
   }

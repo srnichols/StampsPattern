@@ -53,6 +53,8 @@ param enableGlobalCosmos bool = true
 @description('Array of regional endpoint FQDNs for Traffic Manager (e.g., Application Gateway FQDNs)')
 param regionalEndpoints array = []
 
+
+
 @description('APIM Gateway URL for Front Door origin configuration')
 param apimGatewayUrl string = ''
 
@@ -76,9 +78,9 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
     profileStatus: 'Enabled'
     trafficRoutingMethod: 'Performance'
     dnsConfig: {
-  // Traffic Manager requires a single-label relative name, not a FQDN.
-  // Derive a label from the dnsZoneName by taking the first label before the dot.
-  relativeName: split(toLower(dnsZoneName), '.')[0]
+      // Traffic Manager requires a single-label relative name, not a FQDN.
+      // Derive a label from the dnsZoneName by taking the first label before the dot.
+      relativeName: split(toLower(dnsZoneName), '.')[0]
       ttl: 60
     }
     monitorConfig: {
@@ -86,17 +88,19 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
       port: 443
       path: '/health'
     }
-    endpoints: [for (endpoint, i) in regionalEndpoints: {
-      name: 'regional-endpoint-${i + 1}'
-      type: 'Microsoft.Network/trafficManagerProfiles/externalEndpoints'
-      properties: {
-        target: endpoint.fqdn
-        endpointStatus: 'Enabled'
-        endpointLocation: endpoint.location
-        weight: 1
-        priority: i + 1
+    endpoints: [
+      for (endpoint, i) in regionalEndpoints: if (!empty(endpoint.fqdn)) {
+        name: 'regional-endpoint-${i + 1}'
+        type: 'Microsoft.Network/trafficManagerProfiles/externalEndpoints'
+        properties: {
+          target: endpoint.fqdn
+          endpointStatus: 'Enabled'
+          endpointLocation: endpoint.location
+          weight: 1
+          priority: i + 1
+        }
       }
-    }]
+    ]
   }
 }
 
@@ -181,7 +185,7 @@ resource apimRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if 
 }
 
 // Secondary Origin Group for regional Application Gateways (fallback/direct routing)
-resource regionalOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (length(regionalEndpoints) > 0) {
+resource regionalOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (length([for endpoint in regionalEndpoints: if (!empty(endpoint.fqdn)) endpoint]) > 0) {
   name: 'regional-agw-origins'
   parent: frontDoor
   properties: {
@@ -200,7 +204,7 @@ resource regionalOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = 
 }
 
 // Origins for each regional Application Gateway (fallback routing)
-resource regionalOrigins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (endpoint, i) in regionalEndpoints: if (length(regionalEndpoints) > 0) {
+resource regionalOrigins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (endpoint, i) in regionalEndpoints: if (!empty(endpoint.fqdn)) {
   name: 'agw-${endpoint.location}-origin'
   parent: regionalOriginGroup
   properties: {
@@ -216,7 +220,7 @@ resource regionalOrigins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01
 }]
 
 // Fallback Route for direct regional access (bypassing APIM)
-resource regionalRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (length(regionalEndpoints) > 0) {
+resource regionalRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (length([for endpoint in regionalEndpoints: if (!empty(endpoint.fqdn)) endpoint]) > 0) {
   name: 'regional-fallback-route'
   parent: frontDoorEndpoint
   properties: {
