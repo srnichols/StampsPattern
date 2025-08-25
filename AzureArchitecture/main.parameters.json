@@ -57,25 +57,27 @@
           "regionName": "westus3",
           "cells": ["cell-01", "cell-02", "cell-03"],
           "baseDomain": "westus3.stamps.sdp-saas.com",
-          "logAnalyticsWorkspaceName": "law-stamps-hub"
+          "logAnalyticsWorkspaceName": "law-stamps-hub",
+          "keyVaultName": "kv-stamps-na-westus3${empty(salt) ? '' : salt}"
         },
         {
           "geoName": "na",
           "regionName": "centralus",
           "cells": ["cell-01", "cell-02", "cell-03"],
           "baseDomain": "centralus.stamps.sdp-saas.com",
-          "logAnalyticsWorkspaceName": "law-stamps-hub"
+          "logAnalyticsWorkspaceName": "law-stamps-hub",
+          "keyVaultName": "kv-stamps-na-centralus${empty(salt) ? '' : salt}"
         }
       ]
     },
     "cells": {
       "value": [
-        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-01", "cellType": "Shared",    "availabilityZones": [],              "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub" },
-        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub" },
-        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub" },
-        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "availabilityZones": [],              "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub" },
-        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub" },
-        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub" }
+        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-01", "cellType": "Shared",    "availabilityZones": [],              "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub", "keyVaultName": "kv-stamps-na-westus3${empty(salt) ? '' : salt}" },
+        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub", "keyVaultName": "kv-stamps-na-westus3${empty(salt) ? '' : salt}" },
+        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub", "keyVaultName": "kv-stamps-na-westus3${empty(salt) ? '' : salt}" },
+        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "availabilityZones": [],              "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub", "keyVaultName": "kv-stamps-na-centralus${empty(salt) ? '' : salt}" },
+        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub", "keyVaultName": "kv-stamps-na-centralus${empty(salt) ? '' : salt}" },
+        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-hub", "keyVaultName": "kv-stamps-na-centralus${empty(salt) ? '' : salt}" }
       ]
     }
   }

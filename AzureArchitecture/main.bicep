@@ -160,7 +160,7 @@ param regions array = [
     regionName: 'eastus'
     cells: ['cell1', 'cell2']
     baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}'
+  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}${empty(salt) ? '' : salt}'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
@@ -168,7 +168,7 @@ param regions array = [
     regionName: 'westus2'
     cells: ['cell1', 'cell2']
     baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}'
+  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}${empty(salt) ? '' : salt}'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
 ]
@@ -185,7 +185,7 @@ param cells array = [
     availabilityZones: ['1', '2']
     maxTenantCount: 100
     baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}'
+  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}${empty(salt) ? '' : salt}'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
@@ -196,7 +196,7 @@ param cells array = [
     availabilityZones: ['1', '2', '3']
     maxTenantCount: 1
     baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-    keyVaultName: 'kv-stamps-na-eus'
+  keyVaultName: 'kv-stamps-na-eus${empty(salt) ? '' : salt}'
     logAnalyticsWorkspaceName: 'law-stamps-na-eus'
   }
   {
@@ -207,7 +207,7 @@ param cells array = [
     availabilityZones: ['1', '2']
     maxTenantCount: 50
     baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}'
+  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}${empty(salt) ? '' : salt}'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
   {
@@ -218,7 +218,7 @@ param cells array = [
     availabilityZones: ['1', '2', '3']
     maxTenantCount: 1
     baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-    keyVaultName: 'kv-stamps-na-wus2'
+  keyVaultName: 'kv-stamps-na-wus2${empty(salt) ? '' : salt}'
     logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
   }
 ]
