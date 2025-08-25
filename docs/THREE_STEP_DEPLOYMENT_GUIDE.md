@@ -1,3 +1,5 @@
+---
+
 # Three-Step Deployment Process for Management Portal and Routing
 
 This guide outlines the recommended three-step process for deploying the Stamps Pattern infrastructure, global routing, and the Management Portal application. This approach separates infrastructure, routing, and application deployment for maximum reliability and clarity.
@@ -85,5 +87,19 @@ This guide outlines the recommended three-step process for deploying the Stamps 
 - Adjust parameter values and secrets as needed for your environment.
 
 ---
+## Special Parameters for Repeated Deployments
 
+**salt**: To avoid Azure soft-delete conflicts (e.g., with Key Vaults), a `salt` parameter is now supported. This can be any short string (date, initials, random chars) and will be appended to resource names like Key Vault. Update the `salt` value in your deployment parameters or script for each new deployment attempt on the same day.
+
+**How to use:**
+- Add or update the `salt` parameter in your deployment command or parameters file (e.g., `-salt 20250824a`).
+- This ensures unique resource names and prevents soft-delete name collisions.
+
+**Example:**
+```pwsh
+pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id> -Location <primary-location> -Environment <env> -Salt 20250824a
+```
+
+If you encounter a Key Vault name conflict, simply change the `salt` value and redeploy.
+---
 For more details, see the project documentation or ask in the project discussions.

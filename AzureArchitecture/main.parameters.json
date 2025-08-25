@@ -47,15 +47,6 @@
     "sqlAdminPassword": {
       "value": "G7!rT9p#xQ2z@LmS"
     },
-    "sqlAadAdminLogin": {
-      "value": "srnichols_live.com#EXT#@fdpo.onmicrosoft.com"
-    },
-    "sqlAadAdminObjectId": {
-      "value": "90379532-1038-4db5-8709-b0dc8fec9cad"
-    },
-    "sqlAadAdminTenantId": {
-      "value": "16b3c013-d300-468d-ac64-7eda0820b6d3"
-    },
     "enableGlobalFunctions": {
       "value": true
     },

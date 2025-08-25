@@ -1,3 +1,12 @@
+# Helper: Filter out endpoints with empty/null FQDNs
+function Filter-ValidEndpoints {
+  param(
+    [Parameter(Mandatory=$true)]
+    [array]$Endpoints
+  )
+  return $Endpoints | Where-Object { $_.fqdn -and $_.fqdn.Trim() -ne '' }
+}
+
 # PowerShell script to configure post-deployment traffic routing between Front Door, APIM, and Application Gateways
 # This script should be run after single-sub-deployment-step1.ps1 completes successfully
 
@@ -59,6 +68,7 @@ if (-not $trafficManager) {
 
 Write-Host "Found Traffic Manager: $($trafficManager.name) - FQDN: $($trafficManager.fqdn)" -ForegroundColor Green
 
+
 # Get regional Application Gateways
 Write-Host "Step 2: Discovering regional Application Gateways..." -ForegroundColor Cyan
 
@@ -66,27 +76,28 @@ $resourceGroups = az group list --query "[?starts_with(name, '$regionalRgPrefix'
 $appGateways = @()
 
 foreach ($rgName in $resourceGroups) {
-    $agw = az network application-gateway list --resource-group $rgName --query "[0].{name:name, fqdn:frontendIPConfigurations[0].publicIPAddress.fqdn, location:location}" | ConvertFrom-Json
-    if ($agw) {
-        # Get the actual public IP FQDN
-        $pipName = az network application-gateway show --name $agw.name --resource-group $rgName --query "frontendIPConfigurations[0].publicIPAddress.id" --output tsv | Split-Path -Leaf
-        $pip = az network public-ip show --name $pipName --resource-group $rgName --query "{fqdn:dnsSettings.fqdn, ipAddress:ipAddress}" | ConvertFrom-Json
-        
-        $appGateways += @{
-            name = $agw.name
-            resourceGroup = $rgName
-            location = $agw.location
-            fqdn = $pip.fqdn
-            ipAddress = $pip.ipAddress
-        }
-        
-        Write-Host "Found App Gateway: $($agw.name) in $($agw.location) - FQDN: $($pip.fqdn)" -ForegroundColor Green
+  $agw = az network application-gateway list --resource-group $rgName --query "[0].{name:name, fqdn:frontendIPConfigurations[0].publicIPAddress.fqdn, location:location}" | ConvertFrom-Json
+  if ($agw) {
+    # Get the actual public IP FQDN
+    $pipName = az network application-gateway show --name $agw.name --resource-group $rgName --query "frontendIPConfigurations[0].publicIPAddress.id" --output tsv | Split-Path -Leaf
+    $pip = az network public-ip show --name $pipName --resource-group $rgName --query "{fqdn:dnsSettings.fqdn, ipAddress:ipAddress}" | ConvertFrom-Json
+    $appGateways += @{
+      name = $agw.name
+      resourceGroup = $rgName
+      location = $agw.location
+      fqdn = $pip.fqdn
+      ipAddress = $pip.ipAddress
     }
+    Write-Host "Found App Gateway: $($agw.name) in $($agw.location) - FQDN: $($pip.fqdn)" -ForegroundColor Green
+  }
 }
 
+# Filter out any app gateways with empty/null FQDNs before using them
+$appGateways = Filter-ValidEndpoints -Endpoints $appGateways
+
 if ($appGateways.Count -eq 0) {
-    Write-Error "No Application Gateways found in regional resource groups"
-    exit 1
+  Write-Error "No Application Gateways with valid FQDNs found in regional resource groups"
+  exit 1
 }
 
 Write-Host "Step 3: Configuring APIM backends for regional Application Gateways..." -ForegroundColor Cyan

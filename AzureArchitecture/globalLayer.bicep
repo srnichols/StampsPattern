@@ -1,3 +1,4 @@
+// Endpoints are now filtered in the deployment script. Use as-is.
 // --------------------------------------------------------------------------------------
 // Module: globalLayer
 // Purpose: Provisions global/shared resources such as DNS Zone, Traffic Manager, and Front Door.
@@ -88,19 +89,7 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
       port: 443
       path: '/health'
     }
-    endpoints: [
-      for (endpoint, i) in regionalEndpoints: if (!empty(endpoint.fqdn)) {
-        name: 'regional-endpoint-${i + 1}'
-        type: 'Microsoft.Network/trafficManagerProfiles/externalEndpoints'
-        properties: {
-          target: endpoint.fqdn
-          endpointStatus: 'Enabled'
-          endpointLocation: endpoint.location
-          weight: 1
-          priority: i + 1
-        }
-      }
-    ]
+    endpoints: regionalEndpoints
   }
 }
 
@@ -184,62 +173,8 @@ resource apimRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if 
   ]
 }
 
-// Secondary Origin Group for regional Application Gateways (fallback/direct routing)
-resource regionalOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (length([for endpoint in regionalEndpoints: if (!empty(endpoint.fqdn)) endpoint]) > 0) {
-  name: 'regional-agw-origins'
-  parent: frontDoor
-  properties: {
-    loadBalancingSettings: {
-      sampleSize: 4
-      successfulSamplesRequired: 3
-      additionalLatencyInMilliseconds: 50
-    }
-    healthProbeSettings: {
-      probePath: '/health'
-      probeRequestType: 'GET'
-      probeProtocol: 'Https'
-      probeIntervalInSeconds: 100
-    }
-  }
-}
 
-// Origins for each regional Application Gateway (fallback routing)
-resource regionalOrigins 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (endpoint, i) in regionalEndpoints: if (!empty(endpoint.fqdn)) {
-  name: 'agw-${endpoint.location}-origin'
-  parent: regionalOriginGroup
-  properties: {
-    hostName: endpoint.fqdn
-    httpPort: 80
-    httpsPort: 443
-    originHostHeader: endpoint.fqdn
-    priority: (i % 5) + 1  // Ensure priority is between 1-5
-    weight: 1000
-    enabledState: 'Enabled'
-    enforceCertificateNameCheck: true
-  }
-}]
-
-// Fallback Route for direct regional access (bypassing APIM)
-resource regionalRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (length([for endpoint in regionalEndpoints: if (!empty(endpoint.fqdn)) endpoint]) > 0) {
-  name: 'regional-fallback-route'
-  parent: frontDoorEndpoint
-  properties: {
-    customDomains: []
-    originGroup: {
-      id: regionalOriginGroup.id
-    }
-    originPath: null
-    ruleSets: []
-    supportedProtocols: ['Http', 'Https']
-    patternsToMatch: ['/direct/*', '/regional/*']  // Specific patterns for direct regional access
-    forwardingProtocol: 'HttpsOnly'
-    linkToDefaultDomain: 'Enabled'
-    httpsRedirect: 'Enabled'
-  }
-  dependsOn: [
-    regionalOrigins
-  ]
-}
+// Fallback routing for regional Application Gateways must be implemented manually if needed.
 
 @description('Enable diagnostic settings for Front Door (some categories may be restricted by SKU/region).')
 param enableFrontDoorDiagnostics bool = false

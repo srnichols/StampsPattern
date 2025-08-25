@@ -1,11 +1,3 @@
-@description('Azure AD administrator login for SQL Server (user or group UPN)')
-param sqlAadAdminLogin string = ''
-
-@description('Azure AD administrator objectId for SQL Server (user or group objectId)')
-param sqlAadAdminObjectId string = ''
-
-@description('Azure AD tenantId for SQL Server')
-param sqlAadAdminTenantId string = ''
 // --------------------------------------------------------------------------------------
 // CELL Layer Module
 // - Deploys isolated application/data resources for a single CELL
@@ -36,6 +28,9 @@ param storageAccountName string
 
 @description('Name for the Key Vault for this CELL/Stamp')
 param keyVaultName string
+
+@description('Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)')
+param salt string = ''
 
 @description('Name for the Cosmos DB account for this CELL/Stamp')
 param cosmosDbStampName string
@@ -343,7 +338,7 @@ resource storageLifecyclePolicy 'Microsoft.Storage/storageAccounts/managementPol
 
 // Key Vault for CELL with security hardening
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
-  name: keyVaultName
+  name: empty(salt) ? keyVaultName : '${keyVaultName}${salt}'
   location: location
   properties: {
     sku: {
@@ -422,7 +417,7 @@ resource sqlEncryptionKey 'Microsoft.KeyVault/vaults/keys@2023-02-01' = {
 
 // Diagnostic settings for Key Vault
 resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: '${keyVaultName}-diagnostics'
+  name: empty(salt) ? '${keyVaultName}-diagnostics' : '${keyVaultName}${salt}-diagnostics'
   scope: keyVault
   properties: {
     workspaceId: globalLogAnalyticsWorkspaceId
@@ -487,7 +482,7 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = if
 
 // Private endpoint for Key Vault
 resource keyVaultPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' = if (enablePrivateEndpoints && !empty(privateEndpointSubnetId)) {
-  name: '${keyVaultName}-pe'
+  name: empty(salt) ? '${keyVaultName}-pe' : '${keyVaultName}${salt}-pe'
   location: location
   properties: {
     subnet: {
@@ -495,7 +490,7 @@ resource keyVaultPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01'
     }
     privateLinkServiceConnections: [
       {
-        name: '${keyVaultName}-psc'
+  name: empty(salt) ? '${keyVaultName}-psc' : '${keyVaultName}${salt}-psc'
         properties: {
           privateLinkServiceId: keyVault.id
           groupIds: ['vault']
@@ -749,24 +744,14 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   identity: {
     type: 'SystemAssigned'
   }
-  // Note: Only AAD admin is configured to comply with AAD-only authentication policy.
+  // Note: Only SQL admin login is configured. AAD-only authentication is NOT enabled by default.
   properties: {
+    administratorLogin: sqlAdminUsername
+    administratorLoginPassword: sqlAdminPassword
     version: '12.0'
     // Security hardening
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
-  }
-}
-
-// Azure AD administrator for SQL Server (required for AAD-only authentication)
-resource sqlServerAadAdmin 'Microsoft.Sql/servers/administrators@2022-11-01-preview' = if (!empty(sqlAadAdminObjectId) && !empty(sqlAadAdminLogin) && !empty(sqlAadAdminTenantId)) {
-  name: 'activeDirectory'
-  parent: sqlServer
-  properties: {
-    administratorType: 'ActiveDirectory'
-    login: sqlAadAdminLogin
-    sid: sqlAadAdminObjectId
-    tenantId: sqlAadAdminTenantId
   }
 }
 

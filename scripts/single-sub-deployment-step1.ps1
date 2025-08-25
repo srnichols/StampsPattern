@@ -1,21 +1,43 @@
 #!/usr/bin/env pwsh
 
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$SubscriptionId,
+    [Parameter(Mandatory=$true)]
+    [string]$Location,
+    [Parameter(Mandatory=$true)]
+    [string]$Environment,
+    [Parameter(Mandatory=$false)]
+    [string]$Salt = ''
+)
+
 
 # PowerShell script to deploy main.bicep, extract outputs for routing and management portal, and write to JSON files
 
 # Set variables
 $BicepFile = "./AzureArchitecture/main.bicep"
 $ParametersFile = "./AzureArchitecture/main.parameters.json"
-$DeploymentName = "stamps-main-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+$DeploymentName = "stamps-main-$Environment-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 $MgmtOutputFile = "./AzureArchitecture/management-portal.parameters.json"
 $RoutingOutputFile = "./AzureArchitecture/routing.parameters.json"
+
+# Set the subscription
+az account set --subscription $SubscriptionId
+
+
+
+# Build parameters arguments
+$paramArgs = @("@$ParametersFile")
+if ($Salt -ne '') {
+    $paramArgs += "salt=$Salt"
+}
 
 # Deploy main.bicep at subscription scope and capture outputs
 $deploymentResult = az deployment sub create `
     --name $DeploymentName `
-    --location westus2 `
+    --location $Location `
     --template-file $BicepFile `
-    --parameters @$ParametersFile `
+    --parameters $paramArgs `
     --query "properties.outputs" `
     --output json
 

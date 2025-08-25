@@ -1,3 +1,12 @@
+# Helper: Filter out endpoints with empty/null FQDNs
+function Filter-ValidEndpoints {
+    param(
+        [Parameter(Mandatory=$true)]
+        [array]$Endpoints
+    )
+    return $Endpoints | Where-Object { $_.fqdn -and $_.fqdn.Trim() -ne '' }
+}
+
 # PowerShell script to deploy main.bicep, extract management portal outputs, and write to management-portal.parameters.json
 
 # Set variables
@@ -5,6 +14,13 @@ $BicepFile = "./AzureArchitecture/host-main.bicep"
 $ParametersFile = "./AzureArchitecture/host-main.parameters.json"
 $DeploymentName = "stamps-host-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 $OutputFile = "./AzureArchitecture/management-portal.parameters.json"
+
+
+# (Optional) If you have a regionalEndpoints array to pass, filter it here before deployment
+# Example usage:
+# $regionalEndpoints = ... # Load or construct your endpoints array
+# $filteredEndpoints = Filter-ValidEndpoints -Endpoints $regionalEndpoints
+# Then pass $filteredEndpoints to Bicep as a parameter
 
 # Deploy host-main.bicep at subscription scope and capture outputs
 $deploymentResult = az deployment sub create `

@@ -1,3 +1,5 @@
+@description('Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)')
+param salt string = ''
 // Requires Bicep CLI v0.20.0 or later for array filtering with ternary operator
 @description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
 param enableGlobalFunctions bool = true
@@ -433,7 +435,8 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
   // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
   // Example: kvs-wus2-p-abc123de
-  keyVaultName: toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}')
+  keyVaultName: toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}${empty(salt) ? '' : salt}')
+  salt: salt
   // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
   cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
       tags: union(baseTags, {

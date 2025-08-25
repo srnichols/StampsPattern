@@ -1,3 +1,5 @@
+@description('Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)')
+param salt string = ''
 
 // Orchestrator for regional networking and CELL deployments in the Host subscription
 // Consumes a central Log Analytics workspace resource ID from the Hub deployment
@@ -193,7 +195,8 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [for (cell, idx) i
     sqlAdminPassword: sqlAdminPassword
     sqlDbName: toLower('sqldb-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-z${string(length(cell.availabilityZones))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-${envShort}')
     storageAccountName: toLower('st${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}z${string(length(cell.availabilityZones))}${envShort}${substring(uniqueString(subscription().id, cell.regionName, cell.cellName, deployment().name), 0, 2)}')
-    keyVaultName: toLower('kv-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-${envShort}-${substring(uniqueString(subscription().id, cell.regionName, cell.cellName), 0, 2)}')
+  keyVaultName: toLower('kv-${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}-${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}-cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}-${envShort}-${substring(uniqueString(subscription().id, cell.regionName, cell.cellName), 0, 2)}${empty(salt) ? '' : salt}')
+  salt: salt
     cosmosDbStampName: toLower('cosmos${(geoShortNames[?cell.geoName] ?? substring(cell.geoName, 0, 2))}${(regionShortNames[?cell.regionName] ?? substring(cell.regionName, 0, 3))}cell${substring(cell.cellName, length(cell.cellName) - 2, 2)}z${string(length(cell.availabilityZones))}${envShort}${substring(uniqueString(subscription().id, cell.regionName, cell.cellName, deployment().name), 0, 6)}')
     tags: union(tags, {
       geo: cell.geoName
