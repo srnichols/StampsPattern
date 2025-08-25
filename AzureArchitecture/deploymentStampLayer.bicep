@@ -43,8 +43,15 @@ param containerRegistryName string
 @description('Enable Azure Container Registry for this CELL (disabled in smoke)')
 param enableContainerRegistry bool = false
 
+
 @description('Name of the Container App for this CELL')
 param containerAppName string
+
+@description('Name of the Container App Environment for this CELL')
+param containerAppEnvironmentName string
+
+@description('Enable deployment of Container App Environment for this CELL')
+param enableContainerAppEnvironment bool = true
 
 @description('Base domain for the CELL')
 param baseDomain string
@@ -110,7 +117,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
   name: containerRegistryName
   location: location
   sku: {
-  name: 'Standard'
+    name: 'Standard'
   }
   identity: {
     type: 'SystemAssigned'
@@ -121,8 +128,25 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
     dataEndpointEnabled: false
     publicNetworkAccess: 'Enabled' // Can be set to 'Disabled' for private access only
     networkRuleBypassOptions: 'AzureServices'
-  // Policies omitted in smoke
-  // Use Microsoft-managed encryption by default in smoke; CMK can be configured post-deployment
+    // Policies omitted in smoke
+    // Use Microsoft-managed encryption by default in smoke; CMK can be configured post-deployment
+  }
+  tags: tags
+}
+
+// Container App Environment for this CELL
+resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = if (enableContainerAppEnvironment) {
+  name: containerAppEnvironmentName
+  location: location
+  properties: {
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: reference(globalLogAnalyticsWorkspaceId, '2021-06-01').customerId
+        sharedKey: '' // Set via portal or automation if needed
+      }
+    }
+    zoneRedundant: false
   }
   tags: tags
 }
@@ -823,6 +847,7 @@ resource sqlFailoverGroup 'Microsoft.Sql/servers/failoverGroups@2021-11-01' = if
   }
 }
 
+
 // Outputs (secure - no credential exposure)
 // ACR outputs omitted in smoke
 output keyVaultId string = keyVault.id
@@ -835,3 +860,5 @@ output applicationGatewayId string = enableApplicationGateway && !empty(applicat
 output applicationGatewayPublicIPId string = enableApplicationGateway && !empty(applicationGatewaySubnetId) ? applicationGatewayPublicIP.id : 'not-deployed'
 output storageEncryptionKeyId string = storageEncryptionKey.properties.keyUriWithVersion
 output sqlEncryptionKeyId string = sqlEncryptionKey.properties.keyUriWithVersion
+output containerAppEnvironmentId string = enableContainerAppEnvironment ? containerAppEnvironment.id : 'not-deployed'
+

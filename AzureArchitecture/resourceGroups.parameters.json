@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": { "value": "test" },
+    "primaryLocation": { "value": "westus3" },
+    "regions": {
+      "value": [
+        {
+          "geoName": "na",
+          "regionName": "westus3"
+        },
+        {
+          "geoName": "na",
+          "regionName": "centralus"
+        }
+      ]
+    },
+    "cells": {
+      "value": [
+        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-01", "cellType": "Shared", "maxTenantCount": 100 },
+        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-02", "cellType": "Shared", "maxTenantCount": 100 },
+        { "geoName": "na", "regionName": "westus3", "cellName": "CELL-03", "cellType": "Dedicated", "maxTenantCount": 1 },
+        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "maxTenantCount": 1 },
+        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared", "maxTenantCount": 100 },
+        { "geoName": "na", "regionName": "centralus", "cellName": "CELL-03", "cellType": "Dedicated", "maxTenantCount": 1 }
+      ]
+    },
+    "baseTags": { "value": {} }
+  }
+}

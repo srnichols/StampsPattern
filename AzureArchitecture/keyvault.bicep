@@ -10,8 +10,12 @@ param tags object = {}
 @description('The tenant ID for the Key Vault')
 param tenantId string = subscription().tenantId
 
+
 @description('The SKU for the Key Vault')
 param skuName string = 'standard'
+
+@description('Access policies to assign to the Key Vault')
+param accessPolicies array = []
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: name
@@ -23,7 +27,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       name: skuName
     }
     tenantId: tenantId
-    accessPolicies: []
+    accessPolicies: accessPolicies
     enabledForDeployment: true
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: true

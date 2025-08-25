@@ -8,12 +8,28 @@ This guide outlines the recommended three-step process for deploying the Stamps 
 
 ## Step 1: Deploy Core Infrastructure
 
-1. **Automated Step 1: Deploy and Extract Outputs**
-   - Run the `single-sub-deployment-step1.ps1` PowerShell script from the `scripts` folder to deploy `AzureArchitecture/main.bicep` and automatically extract the outputs needed for routing and management portal deployment.
-   - This script provisions all resource groups, core assets, and the management portal resource group, then writes the required outputs to `routing.parameters.json` and `management-portal.parameters.json`.
+
+### Step 1a: Create Resource Groups
+   - Deploy the `resourceGroups.bicep` template to create all required resource groups before deploying any assets.
+   - Example usage:
+      ```pwsh
+      az deployment sub create \
+        --location <primary-location> \
+        --template-file ./AzureArchitecture/resourceGroups.bicep \
+        --parameters @./AzureArchitecture/resourceGroups.parameters.json \
+        --subscription <subscription-id>
+      ```
+   - This ensures all resource groups exist and are named correctly before proceeding.
+
+### Step 1b: Deploy Core Assets and Extract Outputs
+   - After all resource groups are created, run the `single-sub-deployment-step1.ps1` PowerShell script to deploy `AzureArchitecture/main.bicep` and extract outputs needed for routing and management portal deployment.
    - Example usage:
       ```pwsh
       pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id> -Location <primary-location> -Environment <env>
+      ```
+   - Concrete example (replace values as needed):
+      ```pwsh
+      pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId 00000000-1111-2222-3333-444455556666 -Location westus3 -Environment test -salt jChBrq
       ```
    - The script will:
      - Deploy the Bicep template using `main.parameters.json`.
@@ -102,4 +118,30 @@ pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id>
 
 If you encounter a Key Vault name conflict, simply change the `salt` value and redeploy.
 ---
+
+## Feature Toggle Reference: Enable Flags in Bicep Templates
+
+The following table lists all `enable*` flags (feature toggles) available in the main and downstream Bicep templates. Use these flags to control optional features and deployment behaviors.
+
+| Flag Name                        | Description                                                        | Template File                                 |
+|----------------------------------|--------------------------------------------------------------------|-----------------------------------------------|
+| enableGlobalFunctions            | Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota) | main.bicep, globalLayer.bicep, hub-main.bicep |
+| enableStorageObjectReplication   | Enable Blob Object Replication (ORS) from each CELL to a destination account | main.bicep, deploymentStampLayer.bicep        |
+| enableSqlFailoverGroup           | Enable SQL Auto-failover Group for each CELL                       | main.bicep, deploymentStampLayer.bicep        |
+| enableGlobalCosmos               | Enable deployment of global Cosmos DB resources                     | globalLayer.bicep, hub-main.bicep             |
+| enableFrontDoorDiagnostics       | Enable diagnostics for Azure Front Door                             | globalLayer.bicep                             |
+| enableTrafficManagerDiagnostics  | Enable diagnostics for Azure Traffic Manager                        | globalLayer.bicep                             |
+| enableContainerRegistry          | Enable Azure Container Registry for this CELL (disabled in smoke)   | deploymentStampLayer.bicep                    |
+| enableContainerAppEnvironment     | Enable deployment of Container App Environment for this CELL         | deploymentStampLayer.bicep                    |
+| enablePrivateEndpoints           | Enable private endpoints for enhanced security                      | deploymentStampLayer.bicep                    |
+| enableApplicationGateway         | Enable Application Gateway WAF for advanced threat protection       | deploymentStampLayer.bicep                    |
+| enableCellTrafficManager         | Enable a per-cell Traffic Manager profile (disabled in smoke)       | deploymentStampLayer.bicep                    |
+| enableAdvancedThreatProtection   | Enable advanced threat protection features                          | advancedSecurity.bicep, advancedSecurityResourceGroup.bicep |
+| enableAzureDefender              | Enable Azure Defender for all supported resource types              | advancedSecurity.bicep                        |
+| enableHttps                      | Enable HTTPS for Application Gateway                                | regionalLayer.bicep                           |
+| enableAutomation                 | Enable Automation Account deployment                                | regionalLayer.bicep                           |
+| cosmosZoneRedundant              | Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal) | geodesLayer.bicep                            |
+
+> **Tip:** Set these flags in your parameters files (e.g., `main.parameters.json`) to control deployment features as needed.
+
 For more details, see the project documentation or ask in the project discussions.

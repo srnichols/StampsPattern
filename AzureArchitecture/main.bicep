@@ -1,5 +1,32 @@
+@description('DNS zone name for the deployment (e.g., stamps.sdp-saas.com)')
+param dnsZoneName string = 'stamps.sdp-saas.com'
+@description('Traffic Manager profile name')
+param trafficManagerName string = 'tm-stamps-global'
+@description('Front Door name')
+param frontDoorName string = 'fd-stamps-global'
+@description('Front Door SKU')
+param frontDoorSku string = 'Standard_AzureFrontDoor'
+@description('Function App name prefix')
+param functionAppNamePrefix string = 'fa-stamps-global-control'
+@description('Function Storage name prefix')
+param functionStorageNamePrefix string = 'stfastampsglobalcontrol'
+@description('Global Control Cosmos DB name')
+param globalControlCosmosDbName string = 'global-cosmos-stamps-control'
+@description('Additional locations for deployment')
+param additionalLocations array = [ 'centralus' ]
+@description('Function App regions')
+param functionAppRegions array = [ 'westus3', 'centralus' ]
+@description('SQL admin username')
+param sqlAdminUsername string = 'sqladmin'
+@description('SQL admin password')
+@secure()
+param sqlAdminPassword string
 @description('Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)')
 param salt string = ''
+
+@description('Deployment environment name (e.g., dev, test, prod)')
+@allowed(['dev', 'test', 'staging', 'prod'])
+param environment string = 'test'
 // Requires Bicep CLI v0.20.0 or later for array filtering with ternary operator
 @description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
 param enableGlobalFunctions bool = true
@@ -73,6 +100,8 @@ param managementClientTenantId string
 // Organization Parameters
 @description('The organization domain (e.g., sdp-saas.com)')
 param organizationDomain string = 'sdp-saas.com'
+@description('The base DNS zone name (without domain)')
+param baseDnsZoneName string = 'stamps'
 
 @description('The department responsible for the deployment')
 param department string = 'IT'
@@ -87,147 +116,105 @@ param workloadName string = 'stamps-pattern'
 param ownerEmail string = 'platform-team@sdp-saas.com'
 
 // Geography Parameters
-@description('The geography name (e.g., northamerica, europe, asia)')
-param geoName string = 'northamerica'
-
-@description('The base DNS zone name (without domain)')
-param baseDnsZoneName string = 'stamps'
-
-// Deployment Parameters
-@description('Environment name for deployment')
-@allowed(['dev', 'test', 'staging', 'prod'])
-param environment string = 'prod'
-
-@description('High-level environment profile to drive safe defaults (smoke/dev/prod). Smoke keeps footprint minimal and disables optional features; dev/prod enable full features.')
-@allowed(['smoke','dev','prod'])
-param environmentProfile string = 'dev'
-
-@description('Minimum number of availability zones required')
-@minValue(1)
-@maxValue(3)
-param minAvailabilityZones int = 2
-
-@description('Maximum tenants allowed per shared CELL')
-@minValue(10)
-@maxValue(1000)
-param maxTenantsPerSharedCell int = 100
-
-@description('Name of the DNS Zone')
-param dnsZoneName string = '${baseDnsZoneName}.${organizationDomain}'
-
-@description('Name of the Traffic Manager profile')
-param trafficManagerName string = 'tm-stamps-global'
-
-@description('Name of the Front Door instance')
-param frontDoorName string = 'fd-stamps-global'
-
-@description('Azure Front Door SKU - Standard_AzureFrontDoor (minimum) or Premium_AzureFrontDoor (for Private Link)')
-@allowed(['Standard_AzureFrontDoor', 'Premium_AzureFrontDoor'])
-param frontDoorSku string = 'Standard_AzureFrontDoor'
-
-@description('Prefix for Function App names')
-param functionAppNamePrefix string = 'fa-stamps'
-
-@description('Prefix for Function App Storage accounts')
-param functionStorageNamePrefix string = 'stfastamps'
-
-@description('Name for the global control Cosmos DB')
-param globalControlCosmosDbName string = 'cosmos-stamps-control'
-
-@description('Primary location for global resources')
-param primaryLocation string = 'eastus'
-
-@description('Additional locations for replication')
-param additionalLocations array = ['westus2']
-
-@description('Regions for Function Apps deployment')
-param functionAppRegions array = ['eastus', 'westus2']
-
-@secure()
-@description('Administrator username for SQL Server')
-param sqlAdminUsername string
-
-@secure()
-@description('Administrator password for SQL Server')
-param sqlAdminPassword string
-
-@description('Array of regions to deploy stamps to')
-@minLength(1)
-@maxLength(10)
+@description('Primary Azure region for global resources')
+param primaryLocation string = 'westus3'
 param regions array = [
   {
-    geoName: geoName
-    regionName: 'eastus'
-    cells: ['cell1', 'cell2']
-    baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}${empty(salt) ? '' : salt}'
-    logAnalyticsWorkspaceName: 'law-stamps-na-eus'
+    geoName: 'na'
+    regionName: 'westus3'
+    cells: [ 'cell-01', 'cell-02', 'cell-03' ]
+    baseDomain: 'westus3.${baseDnsZoneName}.${organizationDomain}'
+    keyVaultName: 'kv-stamps-na-westus3${empty(salt) ? '' : salt}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-westus3'
   }
   {
-    geoName: geoName
-    regionName: 'westus2'
-    cells: ['cell1', 'cell2']
-    baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}${empty(salt) ? '' : salt}'
-    logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
+    geoName: 'na'
+    regionName: 'centralus'
+    cells: [ 'cell-01', 'cell-02', 'cell-03' ]
+    baseDomain: 'centralus.${baseDnsZoneName}.${organizationDomain}'
+    keyVaultName: 'kv-stamps-na-centralus${empty(salt) ? '' : salt}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-centralus'
   }
 ]
+@maxValue(3)
+param minAvailabilityZones int = 1
 
-@description('Array of cells (deployment stamps) to deploy')
-@minLength(1)
-@maxLength(50)
+@description('Maximum tenants allowed per shared CELL')
 param cells array = [
   {
-    geoName: geoName
-    regionName: 'eastus'
-    cellName: 'shared-smb-z2'
+    geoName: 'na'
+    regionName: 'westus3'
+    cellName: 'CELL-01'
     cellType: 'Shared'
-    availabilityZones: ['1', '2']
+    availabilityZones: []
     maxTenantCount: 100
-    baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-eus-${uniqueString(subscription().id, 'eus', environment)}${empty(salt) ? '' : salt}'
-    logAnalyticsWorkspaceName: 'law-stamps-na-eus'
+    baseDomain: 'westus3.${baseDnsZoneName}.${organizationDomain}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-westus3'
+    keyVaultName: 'kv-stamps-na-westus3${empty(salt) ? '' : salt}'
   }
   {
-    geoName: geoName
-    regionName: 'eastus'
-    cellName: 'dedicated-enterprise-z3'
-    cellType: 'Dedicated'
-    availabilityZones: ['1', '2', '3']
-    maxTenantCount: 1
-    baseDomain: 'eastus.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-eus${empty(salt) ? '' : salt}'
-    logAnalyticsWorkspaceName: 'law-stamps-na-eus'
-  }
-  {
-    geoName: geoName
-    regionName: 'westus2'
-    cellName: 'shared-startup-z2'
+    geoName: 'na'
+    regionName: 'westus3'
+    cellName: 'CELL-02'
     cellType: 'Shared'
-    availabilityZones: ['1', '2']
-    maxTenantCount: 50
-    baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-wus2-${uniqueString(subscription().id, 'wus2', environment)}${empty(salt) ? '' : salt}'
-    logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
+    availabilityZones: [ '1', '2' ]
+    maxTenantCount: 100
+    baseDomain: 'westus3.${baseDnsZoneName}.${organizationDomain}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-westus3'
+    keyVaultName: 'kv-stamps-na-westus3${empty(salt) ? '' : salt}'
   }
   {
-    geoName: geoName
-    regionName: 'westus2'
-    cellName: 'dedicated-healthcare-z3'
+    geoName: 'na'
+    regionName: 'westus3'
+    cellName: 'CELL-03'
     cellType: 'Dedicated'
-    availabilityZones: ['1', '2', '3']
+    availabilityZones: [ '1', '2', '3' ]
     maxTenantCount: 1
-    baseDomain: 'westus2.${baseDnsZoneName}.${organizationDomain}'
-  keyVaultName: 'kv-stamps-na-wus2${empty(salt) ? '' : salt}'
-    logAnalyticsWorkspaceName: 'law-stamps-na-wus2'
+    baseDomain: 'westus3.${baseDnsZoneName}.${organizationDomain}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-westus3'
+    keyVaultName: 'kv-stamps-na-westus3${empty(salt) ? '' : salt}'
   }
+  {
+    geoName: 'na'
+    regionName: 'centralus'
+    cellName: 'CELL-01'
+    cellType: 'Dedicated'
+    availabilityZones: []
+    maxTenantCount: 1
+    baseDomain: 'centralus.${baseDnsZoneName}.${organizationDomain}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-centralus'
+    keyVaultName: 'kv-stamps-na-centralus${empty(salt) ? '' : salt}'
+  }
+  {
+    geoName: 'na'
+    regionName: 'centralus'
+    cellName: 'CELL-02'
+    cellType: 'Shared'
+    availabilityZones: [ '1', '2' ]
+    maxTenantCount: 100
+    baseDomain: 'centralus.${baseDnsZoneName}.${organizationDomain}'
+    logAnalyticsWorkspaceName: 'law-stamps-na-centralus'
+    keyVaultName: 'kv-stamps-na-centralus${empty(salt) ? '' : salt}'
+  }
+
+   {
+     geoName: 'na'
+     regionName: 'centralus'
+     cellName: 'CELL-03'
+     cellType: 'Dedicated'
+     availabilityZones: [ '1', '2', '3' ]
+     maxTenantCount: 1
+     baseDomain: 'centralus.${baseDnsZoneName}.${organizationDomain}'
+     logAnalyticsWorkspaceName: 'law-stamps-na-centralus'
+     keyVaultName: 'kv-stamps-na-centralus${empty(salt) ? '' : salt}'
+   }
 ]
 
-@description('Use HTTP for Application Gateway listeners in lab/smoke (no Key Vault cert required)')
-param useHttpForSmoke bool = true
+// @description('Use HTTP for Application Gateway listeners in lab/smoke (no Key Vault cert required)')
+// param useHttpForSmoke bool = true
 
 // Derived flag: treat either explicit useHttpForSmoke or environmentProfile==smoke as smoke mode
-var isSmoke = useHttpForSmoke || environmentProfile == 'smoke'
+// var isSmoke = useHttpForSmoke || environmentProfile == 'smoke'
 
 // ============ OPTIONAL DATA HA/DR KNOBS (safe defaults) ============
 // Note: These knobs apply to CELL-layer resources only. Global control plane replication
@@ -249,6 +236,8 @@ param enableStorageObjectReplication bool = false
 param enableSqlFailoverGroup bool = false
 
 // ============ VARIABLES ============
+// Key Vault names: max 24 chars, alphanumeric, start with letter, end with letter/digit
+var keyVaultNames = [for (region, index) in regions: take(toLower('kvs${take(region.regionName, 2)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', region.regionName, environment), 0, 8)}${replace(replace(take(salt, 6), '-', ''), '_', '')}'), 24)]
 var baseTags = {
   environment: environment
   department: department
@@ -266,11 +255,11 @@ var cellValidation = [for cell in cells: {
 }]
 
 // Validation: Ensure shared cells don't exceed max tenant limit
-var tenantValidation = [for cell in cells: {
-  isValid: cell.cellType == 'Dedicated' || cell.maxTenantCount <= maxTenantsPerSharedCell
-  cellName: cell.cellName
-  tenantCount: cell.maxTenantCount
-}]
+// var tenantValidation = [for cell in cells: {
+//   isValid: cell.cellType == 'Dedicated' || cell.maxTenantCount <= maxTenantsPerSharedCell
+//   cellName: cell.cellName
+//   tenantCount: cell.maxTenantCount
+// }]
 
 // ============ GEODES LAYER (APIM & Global Control Plane) ============
 // Deploy this first as it's needed for global layer configuration
@@ -279,7 +268,7 @@ module geodesLayer './geodesLayer.bicep' = {
   scope: resourceGroup('rg-stamps-global-${environment}')
   params: {
     location: primaryLocation
-    apimName: 'apim-stamps-global-${environment}'
+  apimName: 'apim-stamps-global-${environment}${empty(salt) ? '' : '-${salt}'}'
     apimPublisherEmail: ownerEmail
     apimPublisherName: department
     apimAdditionalRegions: additionalLocations
@@ -303,20 +292,60 @@ module keyVaults './keyvault.bicep' = [
     name: 'keyVault-${region.geoName}-${region.regionName}'
     scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
     params: {
-  // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
-  // Example: kvs-na-wus2-p-abc123def456
-  name: 'kvs${take(region.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, region.regionName, environment), 0, 8)}'
+      name: keyVaultNames[index]
       location: region.regionName
       skuName: 'standard'
       tags: union(baseTags, {
         geo: region.geoName
         region: region.regionName
       })
+      accessPolicies: [
+        {
+          tenantId: subscription().tenantId
+          objectId: regionalUserAssignedIdentities[index].outputs.principalId
+          permissions: {
+            secrets: [ 'get', 'list' ]
+          }
+        }
+      ]
     }
   }
 ]
 
+// Provision a placeholder ssl-cert secret in each Key Vault for Application Gateway
+module keyVaultSecrets './keyvaultSecret.bicep' = [
+  for (region, index) in regions: {
+    name: 'keyVaultSecret-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
+    params: {
+      keyVaultName: keyVaultNames[index]
+      secretName: 'ssl-cert'
+      secretValue: 'PLACEHOLDER-REPLACE-ME'
+    }
+    dependsOn: [
+      keyVaults
+    ]
+  }
+]
+
 // ============ REGIONAL LAYER ============
+// Create a user-assigned managed identity for each region
+module regionalUserAssignedIdentities './managedIdentity.bicep' = [
+  for (region, index) in regions: {
+    name: 'regionalUserAssignedIdentity-${region.geoName}-${region.regionName}'
+    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
+    params: {
+      name: 'agw-identity-${region.geoName}-${region.regionName}-${environment}'
+      location: region.regionName
+      tags: union(baseTags, {
+        geo: region.geoName
+        region: region.regionName
+        scope: 'region-agw-identity'
+      })
+    }
+  }
+]
+
 module regionalLayers './regionalLayer.bicep' = [
   for (region, index) in regions: {
     name: 'regionalLayer-${region.geoName}-${region.regionName}'
@@ -326,11 +355,12 @@ module regionalLayers './regionalLayer.bicep' = [
       appGatewayName: 'agw-${region.geoName}-${region.regionName}'
       subnetId: regionalNetworks[index].outputs.subnetId
       publicIpId: regionalNetworks[index].outputs.publicIpId
-      sslCertSecretId: 'https://kvs${take(region.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, region.regionName, environment), 0, 8)}.${az.environment().suffixes.keyvaultDns}/secrets/ssl-cert'
+  sslCertSecretId: ''
+  enableHttps: false
+    userAssignedIdentityId: regionalUserAssignedIdentities[index].outputs.id
       cellCount: length(region.cells)
       cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
       demoBackendFqdn: 'fa-stamps-${region.regionName}.azurewebsites.net'
-      enableHttps: !isSmoke
       tags: union(baseTags, {
         geo: region.geoName
         region: region.regionName
@@ -341,6 +371,7 @@ module regionalLayers './regionalLayer.bicep' = [
     dependsOn: [
       keyVaults
       regionalNetworks
+      regionalUserAssignedIdentities
     ]
   }
 ]
@@ -365,9 +396,9 @@ module globalLayer './globalLayer.bicep' = {
     globalControlCosmosDbName: globalControlCosmosDbName
     primaryLocation: primaryLocation
     additionalLocations: additionalLocations
-    cosmosZoneRedundant: !isSmoke
+    // cosmosZoneRedundant: !isSmoke
     enableGlobalFunctions: enableGlobalFunctions
-    enableGlobalCosmos: !isSmoke
+    // enableGlobalCosmos: !isSmoke
     // Pass APIM gateway URL for Front Door configuration
     apimGatewayUrl: geodesLayer.outputs.apimGatewayUrl
     // Pass all regional Application Gateway endpoints for Traffic Manager (filtering will be done in globalLayer.bicep)
@@ -433,12 +464,12 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
-  // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
-  // Example: kvs-wus2-p-abc123de
-  keyVaultName: toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}${empty(salt) ? '' : salt}')
-  salt: salt
-  // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
-  cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
+      // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
+      // Example: kvs-wus2-p-abc123de
+      keyVaultName: toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}${empty(salt) ? '' : salt}')
+      salt: salt
+      // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
+      cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
       tags: union(baseTags, {
         geo: cell.geoName
         region: cell.regionName
@@ -452,19 +483,20 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       containerRegistryName: 'acr${cell.geoName}${cell.regionName}CELL${padLeft(string(index + 1), 2, '0')}'
       enableContainerRegistry: false
       containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
+      containerAppEnvironmentName: cell.containerAppEnvironmentName
       baseDomain: cell.baseDomain
       globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
       cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
       cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
-      cosmosZoneRedundant: !isSmoke
+      // cosmosZoneRedundant: !isSmoke
       storageSkuName: (cell.?storageSkuName ?? storageSkuName)
-  createStorageAccount: true
+      createStorageAccount: true
       enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
       storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
       enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
       sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
       enableCellTrafficManager: false
-      diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
+      // diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
     }
     dependsOn: [
       regionalLayers
@@ -494,9 +526,9 @@ output globalLayerOutputs object = globalLayer.outputs
 
 output validationResults object = {
   cellValidation: cellValidation
-  tenantValidation: tenantValidation
+  // tenantValidation: tenantValidation
   allCellsValid: !contains(map(cellValidation, item => item.isValid), false)
-  allTenantsValid: !contains(map(tenantValidation, item => item.isValid), false)
+  // allTenantsValid: !contains(map(tenantValidation, item => item.isValid), false)
 }
 
 output keyVaultOutputs array = [
