@@ -255,7 +255,7 @@ function Get-DeploymentParameters {
                 regionName = $Location
                 cells = @("shared-smb-z$AvailabilityZones", "shared-startup-z$AvailabilityZones")
                 baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
-                keyVaultName = "kv-stamps-shared-$Location"
+                keyVaultName = "kv-stamps-shared-$Location$Salt"
                 logAnalyticsWorkspaceName = "law-stamps-shared-$Location"
             }
             
@@ -286,7 +286,7 @@ function Get-DeploymentParameters {
                 regionName = $Location
                 cells = @("dedicated-enterprise-z$AvailabilityZones")
                 baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
-                keyVaultName = "kv-stamps-ent-$Location"
+                keyVaultName = "kv-stamps-ent-$Location$Salt"
                 logAnalyticsWorkspaceName = "law-stamps-ent-$Location"
             }
             
@@ -308,7 +308,7 @@ function Get-DeploymentParameters {
                 regionName = $Location
                 cells = @("shared-smb-z$AvailabilityZones", "shared-startup-z$AvailabilityZones", "dedicated-enterprise-z$AvailabilityZones")
                 baseDomain = "$Location.$BaseDnsZoneName.$OrganizationDomain"
-                keyVaultName = "kv-stamps-mixed-$Location"
+                keyVaultName = "kv-stamps-mixed-$Location$Salt"
                 logAnalyticsWorkspaceName = "law-stamps-mixed-$Location"
             }
             
