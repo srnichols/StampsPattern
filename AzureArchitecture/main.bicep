@@ -235,9 +235,11 @@ param enableStorageObjectReplication bool = false
 @description('Enable SQL Auto-failover Group for each CELL')
 param enableSqlFailoverGroup bool = false
 
+@description('Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)')
+
 // ============ VARIABLES ============
 // Key Vault names: max 24 chars, alphanumeric, start with letter, end with letter/digit
-var keyVaultNames = [for (region, index) in regions: take(toLower('kvs${take(region.regionName, 2)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', region.regionName, environment), 0, 8)}${replace(replace(take(salt, 6), '-', ''), '_', '')}'), 24)]
+var keyVaultNames = [for (region, index) in regions: take(toLower('kvs${take(region.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', region.regionName, environment), 0, 8)}${replace(replace(take(salt, 6), '-', ''), '_', '')}'), 24)]
 var baseTags = {
   environment: environment
   department: department
@@ -466,7 +468,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
       // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
       // Example: kvs-wus2-p-abc123de
-      keyVaultName: toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}${empty(salt) ? '' : salt}')
+  keyVaultName: take(toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 8)}${replace(replace(take(salt, 6), '-', ''), '_', '')}'), 24)
       salt: salt
       // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
       cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
@@ -488,7 +490,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
       cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
       cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
-      // cosmosZoneRedundant: !isSmoke
+  cosmosZoneRedundant: false
       storageSkuName: (cell.?storageSkuName ?? storageSkuName)
       createStorageAccount: true
       enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
