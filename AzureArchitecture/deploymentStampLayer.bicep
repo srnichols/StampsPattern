@@ -1,3 +1,11 @@
+@description('Azure AD administrator login for SQL Server (user or group UPN)')
+param sqlAadAdminLogin string = ''
+
+@description('Azure AD administrator objectId for SQL Server (user or group objectId)')
+param sqlAadAdminObjectId string = ''
+
+@description('Azure AD tenantId for SQL Server')
+param sqlAadAdminTenantId string = ''
 // --------------------------------------------------------------------------------------
 // CELL Layer Module
 // - Deploys isolated application/data resources for a single CELL
@@ -741,14 +749,24 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   identity: {
     type: 'SystemAssigned'
   }
-  // Note: Only SQL admin login is configured. AAD-only authentication is NOT enabled by default.
+  // Note: Only AAD admin is configured to comply with AAD-only authentication policy.
   properties: {
-    administratorLogin: sqlAdminUsername
-    administratorLoginPassword: sqlAdminPassword
     version: '12.0'
     // Security hardening
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
+  }
+}
+
+// Azure AD administrator for SQL Server (required for AAD-only authentication)
+resource sqlServerAadAdmin 'Microsoft.Sql/servers/administrators@2022-11-01-preview' = if (!empty(sqlAadAdminObjectId) && !empty(sqlAadAdminLogin) && !empty(sqlAadAdminTenantId)) {
+  name: 'activeDirectory'
+  parent: sqlServer
+  properties: {
+    administratorType: 'ActiveDirectory'
+    login: sqlAadAdminLogin
+    sid: sqlAadAdminObjectId
+    tenantId: sqlAadAdminTenantId
   }
 }
 
