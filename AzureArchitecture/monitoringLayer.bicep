@@ -29,7 +29,8 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   }
 }
 
-// Output the workspace resource ID for use in other modules.
+// Output the workspace resource ID and primary shared key for use in other modules.
 output logAnalyticsWorkspaceId string = logAnalytics.id
+output logAnalyticsWorkspaceKey string = logAnalytics.listKeys().primarySharedKey
 
 // Add additional monitoring resources (alerts, solutions, etc.) as needed.

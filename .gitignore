@@ -1,5 +1,6 @@
 # Bicep build artifacts - exclude generated ARM templates but keep parameter files
 *.json
+!AzureArchitecture/main.json
 !*.parameters.json
 !*.parameters.json.example
 !config/azure-region-mapping.json

@@ -59,6 +59,10 @@ param baseDomain string
 @description('The resource ID of the central Log Analytics Workspace for diagnostics.')
 param globalLogAnalyticsWorkspaceId string
 
+@description('The primary shared key of the central Log Analytics Workspace.')
+@secure()
+param globalLogAnalyticsWorkspaceKey string
+
 @description('Subnet resource ID for private endpoints')
 param privateEndpointSubnetId string = ''
 
@@ -143,7 +147,7 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: reference(globalLogAnalyticsWorkspaceId, '2021-06-01').customerId
-        sharedKey: '' // Set via portal or automation if needed
+        sharedKey: globalLogAnalyticsWorkspaceKey
       }
     }
     zoneRedundant: false

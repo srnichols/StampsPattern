@@ -27,7 +27,7 @@ az account set --subscription $SubscriptionId
 
 
 # Build parameters arguments
-$paramArgs = @("@$ParametersFile")
+$paramArgs = @("$ParametersFile")
 if ($Salt -ne '') {
     $paramArgs += "salt=$Salt"
 }
