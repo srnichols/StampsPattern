@@ -1,0 +1,3546 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.36.1.42791",
+      "templateHash": "9073659415116799566"
+    }
+  },
+  "parameters": {
+    "dnsZoneName": {
+      "type": "string",
+      "defaultValue": "stamps.sdp-saas.com",
+      "metadata": {
+        "description": "DNS zone name for the deployment (e.g., stamps.sdp-saas.com)"
+      }
+    },
+    "trafficManagerName": {
+      "type": "string",
+      "defaultValue": "tm-stamps-global",
+      "metadata": {
+        "description": "Traffic Manager profile name"
+      }
+    },
+    "frontDoorName": {
+      "type": "string",
+      "defaultValue": "fd-stamps-global",
+      "metadata": {
+        "description": "Front Door name"
+      }
+    },
+    "frontDoorSku": {
+      "type": "string",
+      "defaultValue": "Standard_AzureFrontDoor",
+      "metadata": {
+        "description": "Front Door SKU"
+      }
+    },
+    "functionAppNamePrefix": {
+      "type": "string",
+      "defaultValue": "fa-stamps-global-control",
+      "metadata": {
+        "description": "Function App name prefix"
+      }
+    },
+    "functionStorageNamePrefix": {
+      "type": "string",
+      "defaultValue": "stfastampsglobalcontrol",
+      "metadata": {
+        "description": "Function Storage name prefix"
+      }
+    },
+    "globalControlCosmosDbName": {
+      "type": "string",
+      "defaultValue": "global-cosmos-stamps-control",
+      "metadata": {
+        "description": "Global Control Cosmos DB name"
+      }
+    },
+    "additionalLocations": {
+      "type": "array",
+      "defaultValue": [
+        "centralus"
+      ],
+      "metadata": {
+        "description": "Additional locations for deployment"
+      }
+    },
+    "functionAppRegions": {
+      "type": "array",
+      "defaultValue": [
+        "westus3",
+        "centralus"
+      ],
+      "metadata": {
+        "description": "Function App regions"
+      }
+    },
+    "sqlAdminUsername": {
+      "type": "string",
+      "defaultValue": "sqladmin",
+      "metadata": {
+        "description": "SQL admin username"
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SQL admin password"
+      }
+    },
+    "salt": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "defaultValue": "test",
+      "allowedValues": [
+        "dev",
+        "test",
+        "staging",
+        "prod"
+      ],
+      "metadata": {
+        "description": "Deployment environment name (e.g., dev, test, prod)"
+      }
+    },
+    "enableGlobalFunctions": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)"
+      }
+    },
+    "managementClientAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "Application (client) ID for the StampsManagementClient enterprise app registration"
+      }
+    },
+    "managementClientTenantId": {
+      "type": "string",
+      "metadata": {
+        "description": "Entra ID Tenant ID for the StampsManagementClient enterprise app registration"
+      }
+    },
+    "organizationDomain": {
+      "type": "string",
+      "defaultValue": "sdp-saas.com",
+      "metadata": {
+        "description": "The organization domain (e.g., sdp-saas.com)"
+      }
+    },
+    "baseDnsZoneName": {
+      "type": "string",
+      "defaultValue": "stamps",
+      "metadata": {
+        "description": "The base DNS zone name (without domain)"
+      }
+    },
+    "department": {
+      "type": "string",
+      "defaultValue": "IT",
+      "metadata": {
+        "description": "The department responsible for the deployment"
+      }
+    },
+    "projectName": {
+      "type": "string",
+      "defaultValue": "StampsPattern",
+      "metadata": {
+        "description": "The project name for resource tagging and naming"
+      }
+    },
+    "workloadName": {
+      "type": "string",
+      "defaultValue": "stamps-pattern",
+      "metadata": {
+        "description": "The workload name for resource tagging"
+      }
+    },
+    "ownerEmail": {
+      "type": "string",
+      "defaultValue": "platform-team@sdp-saas.com",
+      "metadata": {
+        "description": "The owner email for resource tagging"
+      }
+    },
+    "primaryLocation": {
+      "type": "string",
+      "defaultValue": "westus3",
+      "metadata": {
+        "description": "Primary Azure region for global resources"
+      }
+    },
+    "regions": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "geoName": "na",
+          "regionName": "westus3",
+          "cells": [
+            "cell-01",
+            "cell-02",
+            "cell-03"
+          ],
+          "baseDomain": "[format('westus3.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "keyVaultName": "[format('kv-stamps-na-westus3{0}', if(empty(parameters('salt')), '', parameters('salt')))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-westus3"
+        },
+        {
+          "geoName": "na",
+          "regionName": "centralus",
+          "cells": [
+            "cell-01",
+            "cell-02",
+            "cell-03"
+          ],
+          "baseDomain": "[format('centralus.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "keyVaultName": "[format('kv-stamps-na-centralus{0}', if(empty(parameters('salt')), '', parameters('salt')))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-centralus"
+        }
+      ]
+    },
+    "minAvailabilityZones": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 3
+    },
+    "cells": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "geoName": "na",
+          "regionName": "westus3",
+          "cellName": "CELL-01",
+          "cellType": "Shared",
+          "availabilityZones": [],
+          "maxTenantCount": 100,
+          "baseDomain": "[format('westus3.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-westus3",
+          "keyVaultName": "[format('kv-stamps-na-westus3{0}', if(empty(parameters('salt')), '', parameters('salt')))]"
+        },
+        {
+          "geoName": "na",
+          "regionName": "westus3",
+          "cellName": "CELL-02",
+          "cellType": "Shared",
+          "availabilityZones": [
+            "1",
+            "2"
+          ],
+          "maxTenantCount": 100,
+          "baseDomain": "[format('westus3.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-westus3",
+          "keyVaultName": "[format('kv-stamps-na-westus3{0}', if(empty(parameters('salt')), '', parameters('salt')))]"
+        },
+        {
+          "geoName": "na",
+          "regionName": "westus3",
+          "cellName": "CELL-03",
+          "cellType": "Dedicated",
+          "availabilityZones": [
+            "1",
+            "2",
+            "3"
+          ],
+          "maxTenantCount": 1,
+          "baseDomain": "[format('westus3.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-westus3",
+          "keyVaultName": "[format('kv-stamps-na-westus3{0}', if(empty(parameters('salt')), '', parameters('salt')))]"
+        },
+        {
+          "geoName": "na",
+          "regionName": "centralus",
+          "cellName": "CELL-01",
+          "cellType": "Dedicated",
+          "availabilityZones": [],
+          "maxTenantCount": 1,
+          "baseDomain": "[format('centralus.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-centralus",
+          "keyVaultName": "[format('kv-stamps-na-centralus{0}', if(empty(parameters('salt')), '', parameters('salt')))]"
+        },
+        {
+          "geoName": "na",
+          "regionName": "centralus",
+          "cellName": "CELL-02",
+          "cellType": "Shared",
+          "availabilityZones": [
+            "1",
+            "2"
+          ],
+          "maxTenantCount": 100,
+          "baseDomain": "[format('centralus.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-centralus",
+          "keyVaultName": "[format('kv-stamps-na-centralus{0}', if(empty(parameters('salt')), '', parameters('salt')))]"
+        },
+        {
+          "geoName": "na",
+          "regionName": "centralus",
+          "cellName": "CELL-03",
+          "cellType": "Dedicated",
+          "availabilityZones": [
+            "1",
+            "2",
+            "3"
+          ],
+          "maxTenantCount": 1,
+          "baseDomain": "[format('centralus.{0}.{1}', parameters('baseDnsZoneName'), parameters('organizationDomain'))]",
+          "logAnalyticsWorkspaceName": "law-stamps-na-centralus",
+          "keyVaultName": "[format('kv-stamps-na-centralus{0}', if(empty(parameters('salt')), '', parameters('salt')))]"
+        }
+      ],
+      "metadata": {
+        "description": "Maximum tenants allowed per shared CELL"
+      }
+    },
+    "cosmosAdditionalLocations": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Additional Cosmos DB locations to add to each CELL (optional)"
+      }
+    },
+    "cosmosMultiWrite": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable multi-write for Cosmos DB across locations (A/A)"
+      }
+    },
+    "storageSkuName": {
+      "type": "string",
+      "defaultValue": "Premium_ZRS",
+      "allowedValues": [
+        "Premium_ZRS",
+        "Standard_GZRS",
+        "Standard_RAGZRS"
+      ],
+      "metadata": {
+        "description": "Default storage SKU for CELL storage accounts"
+      }
+    },
+    "enableStorageObjectReplication": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable Blob Object Replication (ORS) from each CELL to a destination account"
+      }
+    },
+    "enableSqlFailoverGroup": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable SQL Auto-failover Group for each CELL"
+      }
+    }
+  },
+  "variables": {
+    "copy": [
+      {
+        "name": "keyVaultNames",
+        "count": "[length(parameters('regions'))]",
+        "input": "[take(toLower(format('kvs{0}{1}{2}{3}', take(parameters('regions')[copyIndex('keyVaultNames')].regionName, 3), take(parameters('environment'), 1), substring(uniqueString(subscription().id, 'kv', parameters('regions')[copyIndex('keyVaultNames')].regionName, parameters('environment')), 0, 8), replace(replace(take(parameters('salt'), 6), '-', ''), '_', ''))), 24)]"
+      },
+      {
+        "name": "cellValidation",
+        "count": "[length(parameters('cells'))]",
+        "input": {
+          "isValid": "[greaterOrEquals(length(parameters('cells')[copyIndex('cellValidation')].availabilityZones), parameters('minAvailabilityZones'))]",
+          "cellName": "[parameters('cells')[copyIndex('cellValidation')].cellName]",
+          "zoneCount": "[length(parameters('cells')[copyIndex('cellValidation')].availabilityZones)]"
+        }
+      }
+    ],
+    "baseTags": {
+      "environment": "[parameters('environment')]",
+      "department": "[parameters('department')]",
+      "project": "[parameters('projectName')]",
+      "deployedBy": "Bicep",
+      "workload": "[parameters('workloadName')]",
+      "owner": "[parameters('ownerEmail')]"
+    }
+  },
+  "resources": {
+    "globalResourceGroup": {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[format('rg-stamps-global-{0}', parameters('environment'))]",
+      "location": "[parameters('primaryLocation')]",
+      "tags": "[union(variables('baseTags'), createObject('scope', 'global'))]"
+    },
+    "regionResourceGroups": {
+      "copy": {
+        "name": "regionResourceGroups",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "location": "[parameters('regions')[copyIndex()].regionName]",
+      "tags": "[union(variables('baseTags'), createObject('geo', parameters('regions')[copyIndex()].geoName, 'region', parameters('regions')[copyIndex()].regionName, 'scope', 'region'))]"
+    },
+    "cellResourceGroups": {
+      "copy": {
+        "name": "cellResourceGroups",
+        "count": "[length(parameters('cells'))]"
+      },
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[format('rg-stamps-cell-{0}-{1}-CELL-{2}-{3}', parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, padLeft(string(add(copyIndex(), 1)), 2, '0'), parameters('environment'))]",
+      "location": "[parameters('cells')[copyIndex()].regionName]",
+      "tags": "[union(variables('baseTags'), createObject('geo', parameters('cells')[copyIndex()].geoName, 'region', parameters('cells')[copyIndex()].regionName, 'cell', parameters('cells')[copyIndex()].cellName, 'tenancyModel', toLower(parameters('cells')[copyIndex()].cellType), 'maxTenantCount', string(parameters('cells')[copyIndex()].maxTenantCount), 'scope', 'cell'))]"
+    },
+    "managementPortalResourceGroup": {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[format('rg-stamps-management-portal-{0}', parameters('environment'))]",
+      "location": "[parameters('primaryLocation')]",
+      "tags": "[union(variables('baseTags'), createObject('scope', 'management-portal', 'managementClientAppId', parameters('managementClientAppId'), 'managementClientTenantId', parameters('managementClientTenantId')))]"
+    },
+    "geodesLayer": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "geodesLayer",
+      "resourceGroup": "[format('rg-stamps-global-{0}', parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('primaryLocation')]"
+          },
+          "apimName": {
+            "value": "[format('apim-stamps-global-{0}{1}', parameters('environment'), if(empty(parameters('salt')), '', format('-{0}', parameters('salt'))))]"
+          },
+          "apimPublisherEmail": {
+            "value": "[parameters('ownerEmail')]"
+          },
+          "apimPublisherName": {
+            "value": "[parameters('department')]"
+          },
+          "apimAdditionalRegions": {
+            "value": "[parameters('additionalLocations')]"
+          },
+          "customDomain": {
+            "value": ""
+          },
+          "tags": {
+            "value": "[variables('baseTags')]"
+          },
+          "globalLogAnalyticsWorkspaceId": {
+            "value": "[reference(format('monitoringLayers[{0}]', 0)).outputs.logAnalyticsWorkspaceId.value]"
+          },
+          "globalControlCosmosDbName": {
+            "value": "[parameters('globalControlCosmosDbName')]"
+          },
+          "primaryLocation": {
+            "value": "[parameters('primaryLocation')]"
+          },
+          "additionalLocations": {
+            "value": "[parameters('additionalLocations')]"
+          },
+          "cosmosZoneRedundant": {
+            "value": false
+          },
+          "entraTenantId": {
+            "value": "[parameters('managementClientTenantId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "1604546463295194073"
+            }
+          },
+          "parameters": {
+            "entraTenantId": {
+              "type": "string",
+              "metadata": {
+                "description": "Entra ID Tenant ID for APIM OpenID configuration"
+              }
+            },
+            "cosmosZoneRedundant": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal)"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for the primary Geode (e.g., eastus, westeurope)"
+              }
+            },
+            "apimName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the API Management instance"
+              }
+            },
+            "apimPublisherEmail": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM Publisher Email"
+              }
+            },
+            "apimPublisherName": {
+              "type": "string",
+              "metadata": {
+                "description": "APIM Publisher Name"
+              }
+            },
+            "apimAdditionalRegions": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Additional regions for APIM multi-region deployment"
+              }
+            },
+            "customDomain": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Custom domain for APIM (e.g., api.sdp-saas.com)"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags for resource management"
+              }
+            },
+            "globalLogAnalyticsWorkspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the central Log Analytics Workspace for diagnostics"
+              }
+            },
+            "globalControlCosmosDbName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the global control plane Cosmos DB account"
+              }
+            },
+            "primaryLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Primary location for the global Cosmos DB"
+              }
+            },
+            "additionalLocations": {
+              "type": "array",
+              "metadata": {
+                "description": "Additional locations for geo-replication (array of region names, e.g., [\"westus2\"])"
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "additionalCosmosDbLocations",
+                "count": "[length(parameters('additionalLocations'))]",
+                "input": {
+                  "locationName": "[string(parameters('additionalLocations')[copyIndex('additionalCosmosDbLocations')])]",
+                  "failoverPriority": "[add(copyIndex('additionalCosmosDbLocations'), 1)]",
+                  "isZoneRedundant": false
+                }
+              }
+            ],
+            "apimGlobalPolicyXml": "[format('<policies>\n  <inbound>\n    <!-- Global security headers -->\n    <set-header name=\"X-Frame-Options\" exists-action=\"override\">\n      <value>DENY</value>\n    </set-header>\n    <set-header name=\"X-Content-Type-Options\" exists-action=\"override\">\n      <value>nosniff</value>\n    </set-header>\n    <set-header name=\"Strict-Transport-Security\" exists-action=\"override\">\n      <value>max-age=31536000; includeSubDomains</value>\n    </set-header>\n    <!-- Rate limiting by tenant -->\n    <rate-limit-by-key calls=\"1000\" renewal-period=\"60\" counter-key=\"@(context.Request.Headers.GetValueOrDefault(&quot;X-Tenant-ID&quot;,&quot;anonymous&quot;))\" />\n    <!-- Tenant validation -->\n    <validate-jwt header-name=\"Authorization\" failed-validation-httpcode=\"401\" failed-validation-error-message=\"Unauthorized\">\n      <openid-config url=\"{0}{1}/v2.0/.well-known/openid-configuration\" />\n      <required-claims>\n        <claim name=\"aud\">\n          <value>api://stamps-pattern</value>\n        </claim>\n      </required-claims>\n    </validate-jwt>\n  </inbound>\n  <backend>\n    <forward-request />\n  </backend>\n  <outbound>\n    <!-- Remove sensitive headers -->\n    <set-header name=\"Server\" exists-action=\"delete\" />\n    <set-header name=\"X-Powered-By\" exists-action=\"delete\" />\n  </outbound>\n  <on-error>\n    <!-- Error logging to Log Analytics -->\n    <trace source=\"@(context.RequestId)\" severity=\"error\">\n      @{{\n        return new JObject(\n          new JProperty(\"timestamp\", DateTime.UtcNow),\n          new JProperty(\"error\", context.LastError.Message),\n          new JProperty(\"requestId\", context.RequestId)\n        ).ToString();\n      }}\n    </trace>\n  </on-error>\n</policies>', environment().authentication.loginEndpoint, parameters('entraTenantId'))]",
+            "cosmosDbLocations": "[concat(createArray(createObject('locationName', parameters('primaryLocation'), 'failoverPriority', 0, 'isZoneRedundant', parameters('cosmosZoneRedundant'))), variables('additionalCosmosDbLocations'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ApiManagement/service",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[parameters('apimName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Premium",
+                "capacity": 1
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "copy": [
+                  {
+                    "name": "additionalLocations",
+                    "count": "[length(parameters('apimAdditionalRegions'))]",
+                    "input": {
+                      "location": "[string(parameters('apimAdditionalRegions')[copyIndex('additionalLocations')])]",
+                      "sku": {
+                        "name": "Premium",
+                        "capacity": 1
+                      },
+                      "zones": []
+                    }
+                  }
+                ],
+                "publisherEmail": "[parameters('apimPublisherEmail')]",
+                "publisherName": "[parameters('apimPublisherName')]",
+                "virtualNetworkType": "None",
+                "customProperties": {
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False"
+                },
+                "apiVersionConstraint": {
+                  "minApiVersion": "2021-08-01"
+                }
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[not(empty(parameters('customDomain')))]",
+              "type": "Microsoft.ApiManagement/service/gateways",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'gateway-custom')]",
+              "properties": {
+                "description": "Custom domain gateway for multi-tenant API access",
+                "locationData": {
+                  "name": "Custom Domain",
+                  "countryOrRegion": "Global"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/policies",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'policy')]",
+              "properties": {
+                "value": "[variables('apimGlobalPolicyXml')]",
+                "format": "xml"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/apis",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'tenant-management-api')]",
+              "properties": {
+                "displayName": "Tenant Management API",
+                "description": "API for managing tenant lifecycle, user access, and CELL routing",
+                "serviceUrl": "[format('https://functions-{0}.azurewebsites.net/api', parameters('location'))]",
+                "path": "tenant",
+                "protocols": [
+                  "https"
+                ],
+                "subscriptionRequired": true,
+                "apiVersion": "v1",
+                "apiVersionSetId": "[resourceId('Microsoft.ApiManagement/service/apiVersionSets', parameters('apimName'), 'tenant-api-versions')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/apiVersionSets', parameters('apimName'), 'tenant-api-versions')]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/apiVersionSets",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'tenant-api-versions')]",
+              "properties": {
+                "displayName": "Tenant Management API Versions",
+                "description": "Version set for tenant management APIs",
+                "versioningScheme": "Header",
+                "versionHeaderName": "Api-Version"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/products",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'basic-tier')]",
+              "properties": {
+                "displayName": "Basic Tier",
+                "description": "Basic API access for starter tenants",
+                "state": "published",
+                "subscriptionRequired": true,
+                "approvalRequired": false,
+                "terms": "Basic tier terms and conditions"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/products",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}', parameters('apimName'), 'premium-tier')]",
+              "properties": {
+                "displayName": "Premium Tier",
+                "description": "Premium API access with higher limits and SLA",
+                "state": "published",
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "terms": "Premium tier terms and conditions with SLA guarantees"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/products/policies",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}/{2}', parameters('apimName'), 'basic-tier', 'policy')]",
+              "properties": {
+                "value": "    <policies>\n      <inbound>\n        <rate-limit calls=\"10000\" renewal-period=\"300\" />\n        <quota calls=\"100000\" renewal-period=\"86400\" />\n      </inbound>\n      <backend>\n        <forward-request />\n      </backend>\n      <outbound />\n      <on-error />\n    </policies>\n    ",
+                "format": "xml"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimName'), 'basic-tier')]"
+              ]
+            },
+            {
+              "type": "Microsoft.ApiManagement/service/products/policies",
+              "apiVersion": "2023-05-01-preview",
+              "name": "[format('{0}/{1}/{2}', parameters('apimName'), 'premium-tier', 'policy')]",
+              "properties": {
+                "value": "    <policies>\n      <inbound>\n        <rate-limit calls=\"50000\" renewal-period=\"300\" />\n        <quota calls=\"1000000\" renewal-period=\"86400\" />\n      </inbound>\n      <backend>\n        <forward-request />\n      </backend>\n      <outbound />\n      <on-error />\n    </policies>\n    ",
+                "format": "xml"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimName'), 'premium-tier')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.ApiManagement/service/{0}', parameters('apimName'))]",
+              "name": "[format('{0}-diagnostics', parameters('apimName'))]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "categoryGroup": "allLogs",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2023-04-15",
+              "name": "[parameters('globalControlCosmosDbName')]",
+              "location": "[parameters('primaryLocation')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": "[variables('cosmosDbLocations')]",
+                "enableMultipleWriteLocations": true,
+                "databaseAccountOfferType": "Standard"
+              }
+            }
+          ],
+          "outputs": {
+            "apimGatewayUrl": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-05-01-preview').gatewayUrl]"
+            },
+            "apimDeveloperPortalUrl": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-05-01-preview').developerPortalUrl]"
+            },
+            "apimManagementApiUrl": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apimName')), '2023-05-01-preview').managementApiUrl]"
+            },
+            "apimResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ApiManagement/service', parameters('apimName'))]"
+            },
+            "globalControlCosmosDbEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('globalControlCosmosDbName')), '2023-04-15').documentEndpoint]"
+            },
+            "globalControlCosmosDbId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('globalControlCosmosDbName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "monitoringLayers"
+      ]
+    },
+    "keyVaults": {
+      "copy": {
+        "name": "keyVaults",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('keyVault-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]",
+      "resourceGroup": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[variables('keyVaultNames')[copyIndex()]]"
+          },
+          "location": {
+            "value": "[parameters('regions')[copyIndex()].regionName]"
+          },
+          "skuName": {
+            "value": "standard"
+          },
+          "tags": {
+            "value": "[union(variables('baseTags'), createObject('geo', parameters('regions')[copyIndex()].geoName, 'region', parameters('regions')[copyIndex()].regionName))]"
+          },
+          "accessPolicies": {
+            "value": [
+              {
+                "tenantId": "[subscription().tenantId]",
+                "objectId": "[reference(format('regionalUserAssignedIdentities[{0}]', copyIndex())).outputs.principalId.value]",
+                "permissions": {
+                  "secrets": [
+                    "get",
+                    "list"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "9395101858015568695"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the Key Vault"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The Azure region for the Key Vault"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags for the Key Vault"
+              }
+            },
+            "tenantId": {
+              "type": "string",
+              "defaultValue": "[subscription().tenantId]",
+              "metadata": {
+                "description": "The tenant ID for the Key Vault"
+              }
+            },
+            "skuName": {
+              "type": "string",
+              "defaultValue": "standard",
+              "metadata": {
+                "description": "The SKU for the Key Vault"
+              }
+            },
+            "accessPolicies": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Access policies to assign to the Key Vault"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2022-07-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "sku": {
+                  "family": "A",
+                  "name": "[parameters('skuName')]"
+                },
+                "tenantId": "[parameters('tenantId')]",
+                "accessPolicies": "[parameters('accessPolicies')]",
+                "enabledForDeployment": true,
+                "enabledForTemplateDeployment": true,
+                "enabledForDiskEncryption": true
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "vaultName": {
+              "type": "string",
+              "value": "[parameters('name')]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[format('regionalUserAssignedIdentities[{0}]', copyIndex())]"
+      ]
+    },
+    "keyVaultSecrets": {
+      "copy": {
+        "name": "keyVaultSecrets",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('keyVaultSecret-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]",
+      "resourceGroup": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "keyVaultName": {
+            "value": "[variables('keyVaultNames')[copyIndex()]]"
+          },
+          "secretName": {
+            "value": "ssl-cert"
+          },
+          "secretValue": {
+            "value": "PLACEHOLDER-REPLACE-ME"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "16050180700552218419"
+            }
+          },
+          "parameters": {
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the Key Vault"
+              }
+            },
+            "secretName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the secret"
+              }
+            },
+            "secretValue": {
+              "type": "securestring",
+              "metadata": {
+                "description": "The value of the secret"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2023-02-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]",
+              "properties": {
+                "value": "[parameters('secretValue')]"
+              }
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults/secrets', split(format('{0}/{1}', parameters('keyVaultName'), parameters('secretName')), '/')[0], split(format('{0}/{1}', parameters('keyVaultName'), parameters('secretName')), '/')[1])]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "keyVaults"
+      ]
+    },
+    "regionalUserAssignedIdentities": {
+      "copy": {
+        "name": "regionalUserAssignedIdentities",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('regionalUserAssignedIdentity-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]",
+      "resourceGroup": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[format('agw-identity-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]"
+          },
+          "location": {
+            "value": "[parameters('regions')[copyIndex()].regionName]"
+          },
+          "tags": {
+            "value": "[union(variables('baseTags'), createObject('geo', parameters('regions')[copyIndex()].geoName, 'region', parameters('regions')[copyIndex()].regionName, 'scope', 'region-agw-identity'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "5587404547090989185"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the user-assigned managed identity"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The Azure region for the managed identity"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags for the managed identity"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name'))]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('name')), '2023-01-31').principalId]"
+            }
+          }
+        }
+      }
+    },
+    "regionalLayers": {
+      "copy": {
+        "name": "regionalLayers",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('regionalLayer-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]",
+      "resourceGroup": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('regions')[copyIndex()].regionName]"
+          },
+          "appGatewayName": {
+            "value": "[format('agw-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]"
+          },
+          "subnetId": {
+            "value": "[reference(format('regionalNetworks[{0}]', copyIndex())).outputs.subnetId.value]"
+          },
+          "publicIpId": {
+            "value": "[reference(format('regionalNetworks[{0}]', copyIndex())).outputs.publicIpId.value]"
+          },
+          "sslCertSecretId": {
+            "value": ""
+          },
+          "enableHttps": {
+            "value": false
+          },
+          "userAssignedIdentityId": {
+            "value": "[reference(format('regionalUserAssignedIdentities[{0}]', copyIndex())).outputs.id.value]"
+          },
+          "cellCount": {
+            "value": "[length(parameters('regions')[copyIndex()].cells)]"
+          },
+          "cellBackendFqdns": {
+            "copy": [
+              {
+                "name": "value",
+                "count": "[length(range(0, length(parameters('regions')[copyIndex()].cells)))]",
+                "input": "[format('fa-stamps-{0}.azurewebsites.net', parameters('regions')[copyIndex()].regionName)]"
+              }
+            ]
+          },
+          "demoBackendFqdn": {
+            "value": "[format('fa-stamps-{0}.azurewebsites.net', parameters('regions')[copyIndex()].regionName)]"
+          },
+          "tags": {
+            "value": "[union(variables('baseTags'), createObject('geo', parameters('regions')[copyIndex()].geoName, 'region', parameters('regions')[copyIndex()].regionName))]"
+          },
+          "healthProbePath": {
+            "value": "/api/health"
+          },
+          "automationAccountName": {
+            "value": "[format('auto-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "432164323247078363"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The Azure region for this regional layer"
+              }
+            },
+            "appGatewayName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the Application Gateway"
+              }
+            },
+            "subnetId": {
+              "type": "string",
+              "metadata": {
+                "description": "The subnet resource ID for the Application Gateway"
+              }
+            },
+            "publicIpId": {
+              "type": "string",
+              "metadata": {
+                "description": "The public IP resource ID for the Application Gateway"
+              }
+            },
+            "sslCertSecretId": {
+              "type": "securestring",
+              "metadata": {
+                "description": "The Key Vault secret ID for the SSL certificate"
+              }
+            },
+            "cellCount": {
+              "type": "int",
+              "metadata": {
+                "description": "The number of CELLs (stamps) in this region"
+              }
+            },
+            "cellBackendFqdns": {
+              "type": "array",
+              "metadata": {
+                "description": "The FQDNs for each CELL backend in this region"
+              }
+            },
+            "demoBackendFqdn": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional: Override backend FQDN for all cells (demo). When set, all pools/probes use this FQDN."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to apply to all resources"
+              }
+            },
+            "healthProbePath": {
+              "type": "string",
+              "defaultValue": "/health",
+              "metadata": {
+                "description": "Health probe path for Application Gateway"
+              }
+            },
+            "automationAccountName": {
+              "type": "string",
+              "defaultValue": "[format('{0}-automation', parameters('appGatewayName'))]",
+              "metadata": {
+                "description": "The name of the Automation Account for this region"
+              }
+            },
+            "enableHttps": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable HTTPS listener for Application Gateway (set false for lab/smoke to use HTTP)"
+              }
+            },
+            "enableAutomation": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable creation of a regional Automation Account (disabled in smoke)"
+              }
+            },
+            "userAssignedIdentityId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the User Assigned Managed Identity to attach to Application Gateway for Key Vault access"
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "resolvedBackendFqdns",
+                "count": "[length(range(0, parameters('cellCount')))]",
+                "input": "[if(empty(parameters('demoBackendFqdn')), parameters('cellBackendFqdns')[range(0, parameters('cellCount'))[copyIndex('resolvedBackendFqdns')]], parameters('demoBackendFqdn'))]"
+              },
+              {
+                "name": "backendPools",
+                "count": "[length(range(0, parameters('cellCount')))]",
+                "input": {
+                  "name": "[format('cell{0}-backend', add(range(0, parameters('cellCount'))[copyIndex('backendPools')], 1))]",
+                  "properties": {
+                    "backendAddresses": [
+                      {
+                        "fqdn": "[variables('resolvedBackendFqdns')[range(0, parameters('cellCount'))[copyIndex('backendPools')]]]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "backendHttpSettings",
+                "count": "[length(range(0, parameters('cellCount')))]",
+                "input": {
+                  "name": "[format('cell{0}-http-settings', add(range(0, parameters('cellCount'))[copyIndex('backendHttpSettings')], 1))]",
+                  "properties": {
+                    "port": "[variables('backendPort')]",
+                    "protocol": "[variables('backendProtocol')]",
+                    "probe": {
+                      "id": "[resourceId('Microsoft.Network/applicationGateways/probes', parameters('appGatewayName'), format('cell{0}-probe', add(range(0, parameters('cellCount'))[copyIndex('backendHttpSettings')], 1)))]"
+                    },
+                    "pickHostNameFromBackendAddress": true,
+                    "requestTimeout": 30
+                  }
+                }
+              },
+              {
+                "name": "probes",
+                "count": "[length(range(0, parameters('cellCount')))]",
+                "input": {
+                  "name": "[format('cell{0}-probe', add(range(0, parameters('cellCount'))[copyIndex('probes')], 1))]",
+                  "properties": {
+                    "protocol": "[variables('probeProtocol')]",
+                    "host": "[variables('resolvedBackendFqdns')[range(0, parameters('cellCount'))[copyIndex('probes')]]]",
+                    "path": "[parameters('healthProbePath')]",
+                    "interval": 30,
+                    "timeout": 30,
+                    "unhealthyThreshold": 3,
+                    "match": {
+                      "statusCodes": [
+                        "200-399"
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "frontendPortName": "[if(parameters('enableHttps'), 'httpsPort', 'httpPort')]",
+            "backendPort": "[if(parameters('enableHttps'), 443, 80)]",
+            "backendProtocol": "[if(parameters('enableHttps'), 'Https', 'Http')]",
+            "probeProtocol": "[if(parameters('enableHttps'), 'Https', 'Http')]",
+            "listenerName": "[if(parameters('enableHttps'), 'httpsListener', 'httpListener')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/applicationGateways",
+              "apiVersion": "2022-09-01",
+              "name": "[parameters('appGatewayName')]",
+              "location": "[parameters('location')]",
+              "identity": "[if(and(parameters('enableHttps'), not(empty(parameters('userAssignedIdentityId')))), createObject('type', 'UserAssigned', 'userAssignedIdentities', createObject(format('{0}', parameters('userAssignedIdentityId')), createObject())), null())]",
+              "zones": [
+                "1",
+                "2"
+              ],
+              "properties": {
+                "sku": {
+                  "name": "WAF_v2",
+                  "tier": "WAF_v2",
+                  "capacity": 2
+                },
+                "gatewayIPConfigurations": [
+                  {
+                    "name": "appGatewayIpConfig",
+                    "properties": {
+                      "subnet": {
+                        "id": "[parameters('subnetId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendIPConfigurations": [
+                  {
+                    "name": "appGatewayFrontendIp",
+                    "properties": {
+                      "publicIPAddress": {
+                        "id": "[parameters('publicIpId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendPorts": "[concat(createArray(createObject('name', variables('frontendPortName'), 'properties', createObject('port', variables('backendPort')))), if(parameters('enableHttps'), createArray(createObject('name', 'httpPort', 'properties', createObject('port', 80))), createArray()))]",
+                "sslCertificates": "[if(parameters('enableHttps'), createArray(createObject('name', 'gatewayCert', 'properties', createObject('keyVaultSecretId', parameters('sslCertSecretId')))), createArray())]",
+                "httpListeners": "[concat(if(parameters('enableHttps'), createArray(createObject('name', 'httpsListener', 'properties', createObject('frontendIPConfiguration', createObject('id', resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), 'appGatewayFrontendIp')), 'frontendPort', createObject('id', resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), variables('frontendPortName'))), 'protocol', 'Https', 'sslCertificate', createObject('id', resourceId('Microsoft.Network/applicationGateways/sslCertificates', parameters('appGatewayName'), 'gatewayCert'))))), createArray()), if(parameters('enableHttps'), createArray(createObject('name', 'httpListener', 'properties', createObject('frontendIPConfiguration', createObject('id', resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), 'appGatewayFrontendIp')), 'frontendPort', createObject('id', resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), 'httpPort')), 'protocol', 'Http'))), createArray()), if(not(parameters('enableHttps')), createArray(createObject('name', 'httpListener', 'properties', createObject('frontendIPConfiguration', createObject('id', resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), 'appGatewayFrontendIp')), 'frontendPort', createObject('id', resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), variables('frontendPortName'))), 'protocol', 'Http'))), createArray()))]",
+                "redirectConfigurations": "[if(parameters('enableHttps'), createArray(createObject('name', 'redirectToHttps', 'properties', createObject('redirectType', 'Permanent', 'targetListener', createObject('id', resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('appGatewayName'), 'httpsListener')), 'includePath', true(), 'includeQueryString', true()))), createArray())]",
+                "backendAddressPools": "[variables('backendPools')]",
+                "backendHttpSettingsCollection": "[variables('backendHttpSettings')]",
+                "probes": "[variables('probes')]",
+                "urlPathMaps": [
+                  {
+                    "name": "cellPathMap",
+                    "properties": {
+                      "copy": [
+                        {
+                          "name": "pathRules",
+                          "count": "[length(range(0, parameters('cellCount')))]",
+                          "input": {
+                            "name": "[format('cell{0}-path', add(range(0, parameters('cellCount'))[copyIndex('pathRules')], 1))]",
+                            "properties": {
+                              "paths": [
+                                "[format('/cell{0}/*', add(range(0, parameters('cellCount'))[copyIndex('pathRules')], 1))]"
+                              ],
+                              "backendAddressPool": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), variables('backendPools')[range(0, parameters('cellCount'))[copyIndex('pathRules')]].name)]"
+                              },
+                              "backendHttpSettings": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('appGatewayName'), variables('backendHttpSettings')[range(0, parameters('cellCount'))[copyIndex('pathRules')]].name)]"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "defaultBackendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), variables('backendPools')[0].name)]"
+                      },
+                      "defaultBackendHttpSettings": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('appGatewayName'), variables('backendHttpSettings')[0].name)]"
+                      }
+                    }
+                  }
+                ],
+                "requestRoutingRules": "[concat(createArray(createObject('name', 'cellRoutingRule', 'properties', createObject('ruleType', 'PathBasedRouting', 'priority', 100, 'httpListener', createObject('id', resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('appGatewayName'), variables('listenerName'))), 'urlPathMap', createObject('id', resourceId('Microsoft.Network/applicationGateways/urlPathMaps', parameters('appGatewayName'), 'cellPathMap'))))), if(parameters('enableHttps'), createArray(createObject('name', 'httpToHttpsRedirectRule', 'properties', createObject('ruleType', 'Basic', 'priority', 10, 'httpListener', createObject('id', resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('appGatewayName'), 'httpListener')), 'redirectConfiguration', createObject('id', resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', parameters('appGatewayName'), 'redirectToHttps'))))), createArray()))]",
+                "webApplicationFirewallConfiguration": {
+                  "enabled": true,
+                  "firewallMode": "Prevention",
+                  "ruleSetType": "OWASP",
+                  "ruleSetVersion": "3.2"
+                }
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[parameters('enableAutomation')]",
+              "type": "Microsoft.Automation/automationAccounts",
+              "apiVersion": "2020-01-13-preview",
+              "name": "[parameters('automationAccountName')]",
+              "location": "[parameters('location')]",
+              "properties": {},
+              "tags": "[parameters('tags')]"
+            }
+          ],
+          "outputs": {
+            "regionalEndpointIpAddress": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', last(split(parameters('publicIpId'), '/'))), '2022-05-01').ipAddress]"
+            },
+            "regionalEndpointFqdn": {
+              "type": "string",
+              "value": "[if(and(contains(reference(resourceId('Microsoft.Network/publicIPAddresses', last(split(parameters('publicIpId'), '/'))), '2022-05-01'), 'dnsSettings'), contains(reference(resourceId('Microsoft.Network/publicIPAddresses', last(split(parameters('publicIpId'), '/'))), '2022-05-01').dnsSettings, 'fqdn')), reference(resourceId('Microsoft.Network/publicIPAddresses', last(split(parameters('publicIpId'), '/'))), '2022-05-01').dnsSettings.fqdn, '')]"
+            },
+            "automationAccountId": {
+              "type": "string",
+              "value": "[if(parameters('enableAutomation'), resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName')), '')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "keyVaults",
+        "regionalNetworks",
+        "regionalUserAssignedIdentities"
+      ]
+    },
+    "globalLayer": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "globalLayer",
+      "resourceGroup": "[format('rg-stamps-global-{0}', parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[parameters('dnsZoneName')]"
+          },
+          "trafficManagerName": {
+            "value": "[parameters('trafficManagerName')]"
+          },
+          "frontDoorName": {
+            "value": "[parameters('frontDoorName')]"
+          },
+          "frontDoorSku": {
+            "value": "[parameters('frontDoorSku')]"
+          },
+          "globalLogAnalyticsWorkspaceId": {
+            "value": "[reference(format('monitoringLayers[{0}]', 0)).outputs.logAnalyticsWorkspaceId.value]"
+          },
+          "functionAppNamePrefix": {
+            "value": "[parameters('functionAppNamePrefix')]"
+          },
+          "functionStorageNamePrefix": {
+            "value": "[parameters('functionStorageNamePrefix')]"
+          },
+          "tags": {
+            "value": "[variables('baseTags')]"
+          },
+          "functionAppRegions": {
+            "value": "[parameters('functionAppRegions')]"
+          },
+          "globalControlCosmosDbName": {
+            "value": "[parameters('globalControlCosmosDbName')]"
+          },
+          "primaryLocation": {
+            "value": "[parameters('primaryLocation')]"
+          },
+          "additionalLocations": {
+            "value": "[parameters('additionalLocations')]"
+          },
+          "enableGlobalFunctions": {
+            "value": "[parameters('enableGlobalFunctions')]"
+          },
+          "apimGatewayUrl": {
+            "value": "[reference('geodesLayer').outputs.apimGatewayUrl.value]"
+          },
+          "regionalEndpoints": {
+            "copy": [
+              {
+                "name": "value",
+                "count": "[length(parameters('regions'))]",
+                "input": "[if(not(empty(reference(format('regionalLayers[{0}]', copyIndex('value'))).outputs.regionalEndpointFqdn.value)), createObject('fqdn', reference(format('regionalLayers[{0}]', copyIndex('value'))).outputs.regionalEndpointFqdn.value, 'location', parameters('regions')[copyIndex('value')].regionName), null())]"
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "2099492506565012925"
+            }
+          },
+          "parameters": {
+            "dnsZoneName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the DNS Zone"
+              }
+            },
+            "trafficManagerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Traffic Manager profile"
+              }
+            },
+            "frontDoorName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Front Door instance"
+              }
+            },
+            "globalLogAnalyticsWorkspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the central Log Analytics Workspace for global resource diagnostics."
+              }
+            },
+            "functionAppNamePrefix": {
+              "type": "string",
+              "metadata": {
+                "description": "Prefix for Function App names"
+              }
+            },
+            "functionStorageNamePrefix": {
+              "type": "string",
+              "metadata": {
+                "description": "Prefix for Function App Storage accounts"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags for resource management"
+              }
+            },
+            "functionAppRegions": {
+              "type": "array",
+              "defaultValue": [
+                "eastus",
+                "westeurope"
+              ],
+              "metadata": {
+                "description": "Regions for Function Apps deployment"
+              }
+            },
+            "globalControlCosmosDbName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the global control plane Cosmos DB account"
+              }
+            },
+            "primaryLocation": {
+              "type": "string",
+              "metadata": {
+                "description": "Primary location for the global Cosmos DB"
+              }
+            },
+            "additionalLocations": {
+              "type": "array",
+              "metadata": {
+                "description": "Additional locations for geo-replication (array of region names, e.g., [\"westus2\"])"
+              }
+            },
+            "cosmosZoneRedundant": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)"
+              }
+            },
+            "enableGlobalFunctions": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)"
+              }
+            },
+            "enableGlobalCosmos": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable deployment of the global control plane Cosmos DB (disable in smoke/lab to avoid regional capacity issues)"
+              }
+            },
+            "regionalEndpoints": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Array of regional endpoint FQDNs for Traffic Manager (e.g., Application Gateway FQDNs)"
+              }
+            },
+            "apimGatewayUrl": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "APIM Gateway URL for Front Door origin configuration"
+              }
+            },
+            "frontDoorSku": {
+              "type": "string",
+              "defaultValue": "Standard_AzureFrontDoor",
+              "allowedValues": [
+                "Standard_AzureFrontDoor",
+                "Premium_AzureFrontDoor"
+              ],
+              "metadata": {
+                "description": "Azure Front Door SKU - Standard_AzureFrontDoor (minimum) or Premium_AzureFrontDoor (for Private Link)"
+              }
+            },
+            "enableFrontDoorDiagnostics": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable diagnostic settings for Front Door (some categories may be restricted by SKU/region)."
+              }
+            },
+            "enableTrafficManagerDiagnostics": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable diagnostic settings for Traffic Manager (categories vary; disabled in smoke)."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "functionApps",
+                "count": "[length(parameters('functionAppRegions'))]",
+                "input": {
+                  "name": "[format('{0}-{1}', parameters('functionAppNamePrefix'), parameters('functionAppRegions')[copyIndex('functionApps')])]",
+                  "storageName": "[format('{0}{1}', parameters('functionStorageNamePrefix'), toLower(replace(parameters('functionAppRegions')[copyIndex('functionApps')], ' ', '')))]",
+                  "location": "[parameters('functionAppRegions')[copyIndex('functionApps')]]"
+                }
+              },
+              {
+                "name": "additionalCosmosDbLocations",
+                "count": "[length(parameters('additionalLocations'))]",
+                "input": {
+                  "locationName": "[string(parameters('additionalLocations')[copyIndex('additionalCosmosDbLocations')])]",
+                  "failoverPriority": "[add(copyIndex('additionalCosmosDbLocations'), 1)]",
+                  "isZoneRedundant": "[parameters('cosmosZoneRedundant')]"
+                }
+              }
+            ],
+            "functionAppsEff": "[if(parameters('enableGlobalFunctions'), variables('functionApps'), createArray())]",
+            "cosmosDbLocations": "[concat(createArray(createObject('locationName', parameters('primaryLocation'), 'failoverPriority', 0, 'isZoneRedundant', parameters('cosmosZoneRedundant'))), variables('additionalCosmosDbLocations'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/dnsZones",
+              "apiVersion": "2018-05-01",
+              "name": "[parameters('dnsZoneName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Network/trafficmanagerprofiles",
+              "apiVersion": "2022-04-01",
+              "name": "[parameters('trafficManagerName')]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "profileStatus": "Enabled",
+                "trafficRoutingMethod": "Performance",
+                "dnsConfig": {
+                  "relativeName": "[split(toLower(parameters('dnsZoneName')), '.')[0]]",
+                  "ttl": 60
+                },
+                "monitorConfig": {
+                  "protocol": "HTTPS",
+                  "port": 443,
+                  "path": "/health"
+                },
+                "endpoints": "[parameters('regionalEndpoints')]"
+              }
+            },
+            {
+              "type": "Microsoft.Cdn/profiles",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('frontDoorName')]",
+              "location": "global",
+              "sku": {
+                "name": "[parameters('frontDoorSku')]"
+              },
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "originResponseTimeoutSeconds": 60
+              }
+            },
+            {
+              "type": "Microsoft.Cdn/profiles/afdEndpoints",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', parameters('frontDoorName'), 'stamps-global-endpoint')]",
+              "location": "global",
+              "properties": {
+                "enabledState": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('apimGatewayUrl')))]",
+              "type": "Microsoft.Cdn/profiles/originGroups",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', parameters('frontDoorName'), 'apim-global-origins')]",
+              "properties": {
+                "loadBalancingSettings": {
+                  "sampleSize": 4,
+                  "successfulSamplesRequired": 3,
+                  "additionalLatencyInMilliseconds": 50
+                },
+                "healthProbeSettings": {
+                  "probePath": "/status-0123456789abcdef",
+                  "probeRequestType": "GET",
+                  "probeProtocol": "Https",
+                  "probeIntervalInSeconds": 100
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorName'))]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('apimGatewayUrl')))]",
+              "type": "Microsoft.Cdn/profiles/originGroups/origins",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), 'apim-global-origins', 'apim-global-origin')]",
+              "properties": {
+                "hostName": "[replace(parameters('apimGatewayUrl'), 'https://', '')]",
+                "httpPort": 80,
+                "httpsPort": 443,
+                "originHostHeader": "[replace(parameters('apimGatewayUrl'), 'https://', '')]",
+                "priority": 1,
+                "weight": 1000,
+                "enabledState": "Enabled",
+                "enforceCertificateNameCheck": true
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles/originGroups', parameters('frontDoorName'), 'apim-global-origins')]"
+              ]
+            },
+            {
+              "condition": "[not(empty(parameters('apimGatewayUrl')))]",
+              "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', parameters('frontDoorName'), 'stamps-global-endpoint', 'apim-global-route')]",
+              "properties": {
+                "customDomains": [],
+                "originGroup": {
+                  "id": "[resourceId('Microsoft.Cdn/profiles/originGroups', parameters('frontDoorName'), 'apim-global-origins')]"
+                },
+                "originPath": null,
+                "ruleSets": [],
+                "supportedProtocols": [
+                  "Http",
+                  "Https"
+                ],
+                "patternsToMatch": [
+                  "/*"
+                ],
+                "forwardingProtocol": "HttpsOnly",
+                "linkToDefaultDomain": "Enabled",
+                "httpsRedirect": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles/originGroups/origins', parameters('frontDoorName'), 'apim-global-origins', 'apim-global-origin')]",
+                "[resourceId('Microsoft.Cdn/profiles/originGroups', parameters('frontDoorName'), 'apim-global-origins')]",
+                "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('frontDoorName'), 'stamps-global-endpoint')]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "functionStorage",
+                "count": "[length(variables('functionAppsEff'))]"
+              },
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2022-09-01",
+              "name": "[variables('functionAppsEff')[copyIndex()].storageName]",
+              "location": "[variables('functionAppsEff')[copyIndex()].location]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {}
+            },
+            {
+              "copy": {
+                "name": "appServicePlan",
+                "count": "[length(variables('functionAppsEff'))]"
+              },
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2022-03-01",
+              "name": "[format('{0}-plan', variables('functionAppsEff')[copyIndex()].name)]",
+              "location": "[variables('functionAppsEff')[copyIndex()].location]",
+              "sku": {
+                "name": "Y1",
+                "tier": "Dynamic"
+              },
+              "properties": {}
+            },
+            {
+              "copy": {
+                "name": "functionApp",
+                "count": "[length(variables('functionAppsEff'))]"
+              },
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2022-03-01",
+              "name": "[variables('functionAppsEff')[copyIndex()].name]",
+              "location": "[variables('functionAppsEff')[copyIndex()].location]",
+              "kind": "functionapp",
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('{0}-plan', variables('functionAppsEff')[copyIndex()].name))]",
+                "siteConfig": {
+                  "appSettings": [
+                    {
+                      "name": "AzureWebJobsStorage",
+                      "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net', variables('functionAppsEff')[copyIndex()].storageName, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('functionAppsEff')[copyIndex()].storageName), '2022-09-01').keys[0].value)]"
+                    }
+                  ]
+                },
+                "httpsOnly": true
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', format('{0}-plan', variables('functionAppsEff')[copyIndex()].name))]",
+                "[resourceId('Microsoft.Web/serverfarms', format('{0}-plan', variables('functionAppsEff')[copyIndex()].name))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('functionAppsEff')[copyIndex()].storageName)]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('functionAppsEff')[copyIndex()].storageName)]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('functionAppsEff')[copyIndex()].storageName)]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('functionAppsEff')[copyIndex()].storageName)]"
+              ]
+            },
+            {
+              "condition": "[parameters('enableGlobalCosmos')]",
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2023-04-15",
+              "name": "[parameters('globalControlCosmosDbName')]",
+              "location": "[parameters('primaryLocation')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": "[variables('cosmosDbLocations')]",
+                "enableMultipleWriteLocations": true,
+                "databaseAccountOfferType": "Standard"
+              }
+            },
+            {
+              "copy": {
+                "name": "functionAppDiagnostics",
+                "count": "[length(variables('functionAppsEff'))]"
+              },
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Web/sites/{0}', variables('functionAppsEff')[copyIndex()].name)]",
+              "name": "[format('{0}-diagnostics', variables('functionAppsEff')[copyIndex()].name)]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "FunctionAppLogs",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppsEff')[copyIndex()].name)]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "storageDiagnostics",
+                "count": "[length(variables('functionAppsEff'))]"
+              },
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('functionAppsEff')[copyIndex()].storageName)]",
+              "name": "[format('{0}-diagnostics', variables('functionAppsEff')[copyIndex()].storageName)]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "StorageRead",
+                    "enabled": true
+                  },
+                  {
+                    "category": "StorageWrite",
+                    "enabled": true
+                  },
+                  {
+                    "category": "StorageDelete",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('functionAppsEff')[copyIndex()].storageName)]"
+              ]
+            },
+            {
+              "condition": "[parameters('enableGlobalCosmos')]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('globalControlCosmosDbName'))]",
+              "name": "cosmosdb-diagnostics",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "DataPlaneRequests",
+                    "enabled": true
+                  },
+                  {
+                    "category": "MongoRequests",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('globalControlCosmosDbName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enableFrontDoorDiagnostics')]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Cdn/profiles/{0}', parameters('frontDoorName'))]",
+              "name": "frontdoor-diagnostics",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "FrontdoorWebApplicationFirewallLog",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('enableTrafficManagerDiagnostics')]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Network/trafficmanagerprofiles/{0}', parameters('trafficManagerName'))]",
+              "name": "trafficmanager-diagnostics",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "EndpointHealthStatus",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/trafficmanagerprofiles', parameters('trafficManagerName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "functionAppNames": {
+              "type": "array",
+              "copy": {
+                "count": "[length(variables('functionApps'))]",
+                "input": "[variables('functionApps')[copyIndex()].name]"
+              }
+            },
+            "message": {
+              "type": "string",
+              "value": "Global layer deployed successfully"
+            },
+            "trafficManagerFqdn": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/trafficmanagerprofiles', parameters('trafficManagerName')), '2022-04-01').dnsConfig.fqdn]"
+            },
+            "frontDoorProfileName": {
+              "type": "string",
+              "value": "[parameters('frontDoorName')]"
+            },
+            "frontDoorEndpointHostname": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('frontDoorName'), 'stamps-global-endpoint'), '2023-05-01').hostName]"
+            },
+            "dnsZoneName": {
+              "type": "string",
+              "value": "[parameters('dnsZoneName')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "geodesLayer",
+        "monitoringLayers",
+        "regionalLayers"
+      ]
+    },
+    "regionalNetworks": {
+      "copy": {
+        "name": "regionalNetworks",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('regionalNetwork-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]",
+      "resourceGroup": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('regions')[copyIndex()].regionName]"
+          },
+          "geoName": {
+            "value": "[parameters('regions')[copyIndex()].geoName]"
+          },
+          "regionName": {
+            "value": "[parameters('regions')[copyIndex()].regionName]"
+          },
+          "vnetName": {
+            "value": "[format('vnet-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]"
+          },
+          "subnetName": {
+            "value": "subnet-agw"
+          },
+          "publicIpName": {
+            "value": "[format('pip-agw-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]"
+          },
+          "tags": {
+            "value": "[union(variables('baseTags'), createObject('geo', parameters('regions')[copyIndex()].geoName, 'region', parameters('regions')[copyIndex()].regionName))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "12585132551612522208"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for these network resources"
+              }
+            },
+            "geoName": {
+              "type": "string",
+              "metadata": {
+                "description": "Geography name (e.g., northamerica)"
+              }
+            },
+            "regionName": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region short name (e.g., eastus)"
+              }
+            },
+            "vnetName": {
+              "type": "string",
+              "defaultValue": "[format('vnet-{0}-{1}', parameters('geoName'), parameters('regionName'))]",
+              "metadata": {
+                "description": "Virtual network name"
+              }
+            },
+            "subnetName": {
+              "type": "string",
+              "defaultValue": "subnet-agw",
+              "metadata": {
+                "description": "Subnet name for Application Gateway"
+              }
+            },
+            "publicIpName": {
+              "type": "string",
+              "defaultValue": "[format('pip-agw-{0}-{1}', parameters('geoName'), parameters('regionName'))]",
+              "metadata": {
+                "description": "Public IP name for Application Gateway"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to apply to network resources"
+              }
+            },
+            "publicIpDnsLabel": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional DNS label for the public IP (must be unique within region). Leave empty to skip."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2023-04-01",
+              "name": "[parameters('publicIpName')]",
+              "location": "[parameters('location')]",
+              "zones": [
+                "1",
+                "2"
+              ],
+              "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+              },
+              "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": "[if(empty(parameters('publicIpDnsLabel')), null(), createObject('domainNameLabel', parameters('publicIpDnsLabel')))]"
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2023-04-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "10.0.0.0/16"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                      "addressPrefix": "10.0.1.0/24"
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]"
+            }
+          ],
+          "outputs": {
+            "publicIpId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+            },
+            "subnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+            }
+          }
+        }
+      }
+    },
+    "monitoringLayers": {
+      "copy": {
+        "name": "monitoringLayers",
+        "count": "[length(parameters('regions'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('monitoringLayer-{0}-{1}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName)]",
+      "resourceGroup": "[format('rg-stamps-region-{0}-{1}-{2}', parameters('regions')[copyIndex()].geoName, parameters('regions')[copyIndex()].regionName, parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('regions')[copyIndex()].regionName]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('regions')[copyIndex()].logAnalyticsWorkspaceName]"
+          },
+          "retentionInDays": {
+            "value": 30
+          },
+          "tags": {
+            "value": "[union(variables('baseTags'), createObject('geo', parameters('regions')[copyIndex()].geoName, 'region', parameters('regions')[copyIndex()].regionName))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "2.0",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "2577645178284808330"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for the monitoring resources"
+              }
+            },
+            "logAnalyticsWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Log Analytics Workspace (must be globally unique)"
+              }
+            },
+            "retentionInDays": {
+              "type": "int",
+              "metadata": {
+                "description": "Retention period (in days) for logs"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags for resource management"
+              }
+            }
+          },
+          "resources": {
+            "logAnalytics": {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}-{1}', parameters('logAnalyticsWorkspaceName'), uniqueString(resourceGroup().id))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "retentionInDays": "[parameters('retentionInDays')]",
+                "sku": {
+                  "name": "PerGB2018"
+                }
+              }
+            }
+          },
+          "outputs": {
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', format('{0}-{1}', parameters('logAnalyticsWorkspaceName'), uniqueString(resourceGroup().id)))]"
+            },
+            "logAnalyticsWorkspaceKey": {
+              "type": "string",
+              "value": "[listKeys('logAnalytics', '2021-06-01').primarySharedKey]"
+            }
+          }
+        }
+      }
+    },
+    "deploymentStampLayers": {
+      "copy": {
+        "name": "deploymentStampLayers",
+        "count": "[length(parameters('cells'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('deploymentStampLayer-{0}-{1}-CELL-{2}', parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, padLeft(string(add(copyIndex(), 1)), 2, '0'))]",
+      "resourceGroup": "[format('rg-stamps-cell-{0}-{1}-CELL-{2}-{3}', parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, padLeft(string(add(copyIndex(), 1)), 2, '0'), parameters('environment'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('cells')[copyIndex()].regionName]"
+          },
+          "sqlServerName": {
+            "value": "[format('sql-{0}-{1}-CELL-{2}-z{3}', parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, padLeft(string(add(copyIndex(), 1)), 2, '0'), string(length(parameters('cells')[copyIndex()].availabilityZones)))]"
+          },
+          "sqlAdminUsername": {
+            "value": "[parameters('sqlAdminUsername')]"
+          },
+          "sqlAdminPassword": {
+            "value": "[parameters('sqlAdminPassword')]"
+          },
+          "sqlDbName": {
+            "value": "[format('sqldb-{0}-{1}-CELL-{2}-z{3}', parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, padLeft(string(add(copyIndex(), 1)), 2, '0'), string(length(parameters('cells')[copyIndex()].availabilityZones)))]"
+          },
+          "storageAccountName": {
+            "value": "[toLower(format('st{0}z{1}', uniqueString(subscription().id, parameters('cells')[copyIndex()].regionName, format('CELL-{0}', padLeft(string(add(copyIndex(), 1)), 2, '0'))), string(length(parameters('cells')[copyIndex()].availabilityZones))))]"
+          },
+          "keyVaultName": {
+            "value": "[take(toLower(format('kvs{0}{1}{2}{3}', take(parameters('cells')[copyIndex()].regionName, 3), take(parameters('environment'), 1), substring(uniqueString(subscription().id, 'kv', parameters('cells')[copyIndex()].regionName, parameters('environment'), format('CELL-{0}', padLeft(string(add(copyIndex(), 1)), 2, '0'))), 0, 6), replace(replace(take(parameters('salt'), 4), '-', ''), '_', ''))), 24)]"
+          },
+          "salt": {
+            "value": "[parameters('salt')]"
+          },
+          "cosmosDbStampName": {
+            "value": "[toLower(format('cosmos{0}{1}{2}z{3}{4}', take(parameters('cells')[copyIndex()].geoName, 3), take(parameters('cells')[copyIndex()].regionName, 3), padLeft(string(add(copyIndex(), 1)), 2, '0'), string(length(parameters('cells')[copyIndex()].availabilityZones)), substring(uniqueString(subscription().id, parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, string(copyIndex())), 0, 6)))]"
+          },
+          "tags": {
+            "value": "[union(variables('baseTags'), createObject('geo', parameters('cells')[copyIndex()].geoName, 'region', parameters('cells')[copyIndex()].regionName, 'cell', format('CELL-{0}', padLeft(string(add(copyIndex(), 1)), 2, '0')), 'availabilityZones', string(length(parameters('cells')[copyIndex()].availabilityZones)), 'tenancyModel', toLower(parameters('cells')[copyIndex()].cellType), 'maxTenantCount', string(parameters('cells')[copyIndex()].maxTenantCount), 'workload', 'stamps-pattern', 'costCenter', 'IT-Infrastructure'))]"
+          },
+          "containerRegistryName": {
+            "value": "[format('acr{0}{1}CELL{2}', parameters('cells')[copyIndex()].geoName, parameters('cells')[copyIndex()].regionName, padLeft(string(add(copyIndex(), 1)), 2, '0'))]"
+          },
+          "enableContainerRegistry": {
+            "value": false
+          },
+          "containerAppName": {
+            "value": "[format('CELL-{0}', padLeft(string(add(copyIndex(), 1)), 2, '0'))]"
+          },
+          "containerAppEnvironmentName": {
+            "value": "[format('cae-{0}-{1}-{2}-{3}', parameters('cells')[copyIndex()].regionName, toLower(parameters('cells')[copyIndex()].cellName), parameters('environment'), take(subscription().subscriptionId, 8))]"
+          },
+          "baseDomain": {
+            "value": "[parameters('cells')[copyIndex()].baseDomain]"
+          },
+          "globalLogAnalyticsWorkspaceId": {
+            "value": "[reference(format('monitoringLayers[{0}]', 0)).outputs.logAnalyticsWorkspaceId.value]"
+          },
+          "globalLogAnalyticsWorkspaceKey": {
+            "value": "[reference(format('monitoringLayers[{0}]', 0)).outputs.logAnalyticsWorkspaceKey.value]"
+          },
+          "cosmosAdditionalLocations": {
+            "value": "[coalesce(tryGet(parameters('cells')[copyIndex()], 'cosmosAdditionalLocations'), parameters('cosmosAdditionalLocations'))]"
+          },
+          "cosmosMultiWrite": {
+            "value": "[bool(coalesce(tryGet(parameters('cells')[copyIndex()], 'cosmosMultiWrite'), parameters('cosmosMultiWrite')))]"
+          },
+          "cosmosZoneRedundant": {
+            "value": false
+          },
+          "storageSkuName": {
+            "value": "[coalesce(tryGet(parameters('cells')[copyIndex()], 'storageSkuName'), parameters('storageSkuName'))]"
+          },
+          "createStorageAccount": {
+            "value": true
+          },
+          "enableStorageObjectReplication": {
+            "value": "[bool(coalesce(tryGet(parameters('cells')[copyIndex()], 'enableStorageObjectReplication'), parameters('enableStorageObjectReplication')))]"
+          },
+          "storageReplicationDestinationId": {
+            "value": "[string(coalesce(tryGet(parameters('cells')[copyIndex()], 'storageReplicationDestinationId'), ''))]"
+          },
+          "enableSqlFailoverGroup": {
+            "value": "[bool(coalesce(tryGet(parameters('cells')[copyIndex()], 'enableSqlFailoverGroup'), parameters('enableSqlFailoverGroup')))]"
+          },
+          "sqlSecondaryServerId": {
+            "value": "[string(coalesce(tryGet(parameters('cells')[copyIndex()], 'sqlSecondaryServerId'), ''))]"
+          },
+          "enableCellTrafficManager": {
+            "value": false
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.36.1.42791",
+              "templateHash": "8837885142801822719"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for the CELL/Stamp"
+              }
+            },
+            "sqlServerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the SQL Server"
+              }
+            },
+            "sqlAdminUsername": {
+              "type": "string",
+              "metadata": {
+                "description": "SQL admin username"
+              }
+            },
+            "sqlAdminPassword": {
+              "type": "securestring",
+              "metadata": {
+                "description": "SQL admin password"
+              }
+            },
+            "sqlDbName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the SQL Database"
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the Storage Account"
+              }
+            },
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the Key Vault for this CELL/Stamp"
+              }
+            },
+            "salt": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)"
+              }
+            },
+            "cosmosDbStampName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the Cosmos DB account for this CELL/Stamp"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags for resources"
+              }
+            },
+            "containerRegistryName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Azure Container Registry for this region"
+              }
+            },
+            "enableContainerRegistry": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Azure Container Registry for this CELL (disabled in smoke)"
+              }
+            },
+            "containerAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Container App for this CELL"
+              }
+            },
+            "containerAppEnvironmentName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Container App Environment for this CELL"
+              }
+            },
+            "enableContainerAppEnvironment": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable deployment of Container App Environment for this CELL"
+              }
+            },
+            "baseDomain": {
+              "type": "string",
+              "metadata": {
+                "description": "Base domain for the CELL"
+              }
+            },
+            "globalLogAnalyticsWorkspaceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the central Log Analytics Workspace for diagnostics."
+              }
+            },
+            "globalLogAnalyticsWorkspaceKey": {
+              "type": "securestring",
+              "metadata": {
+                "description": "The primary shared key of the central Log Analytics Workspace."
+              }
+            },
+            "privateEndpointSubnetId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Subnet resource ID for private endpoints"
+              }
+            },
+            "enablePrivateEndpoints": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable private endpoints for enhanced security"
+              }
+            },
+            "enableApplicationGateway": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Application Gateway WAF for advanced threat protection"
+              }
+            },
+            "applicationGatewaySubnetId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Application Gateway subnet resource ID"
+              }
+            },
+            "enableCellTrafficManager": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable a per-cell Traffic Manager profile (disabled in smoke; global TM is managed in global layer)"
+              }
+            },
+            "cosmosAdditionalLocations": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Additional Cosmos DB locations for this CELL (optional)"
+              }
+            },
+            "cosmosMultiWrite": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Cosmos DB multi-write across locations (Active/Active)"
+              }
+            },
+            "storageSkuName": {
+              "type": "string",
+              "defaultValue": "Premium_ZRS",
+              "allowedValues": [
+                "Premium_ZRS",
+                "Standard_GZRS",
+                "Standard_RAGZRS"
+              ],
+              "metadata": {
+                "description": "Storage redundancy SKU (zone or geo-redundant)"
+              }
+            },
+            "cosmosZoneRedundant": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)"
+              }
+            },
+            "enableStorageObjectReplication": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable Storage Object Replication (Blob ORS) to a destination storage account"
+              }
+            },
+            "storageReplicationDestinationId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Destination storage account resource ID for Blob Object Replication (when enabled)"
+              }
+            },
+            "enableSqlFailoverGroup": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable SQL Auto-failover Group to a partner server in another region"
+              }
+            },
+            "sqlSecondaryServerId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Resource ID of the partner SQL Server for Auto-failover Group"
+              }
+            },
+            "createStorageAccount": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Create the storage account in this deployment (set false to use an existing account)"
+              }
+            },
+            "diagnosticsMode": {
+              "type": "string",
+              "defaultValue": "metricsOnly",
+              "allowedValues": [
+                "metricsOnly",
+                "standard"
+              ],
+              "metadata": {
+                "description": "Diagnostics mode for this CELL. Use metricsOnly to minimize categories in constrained environments (smoke)."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "cosmosAdditionalLocationObjs",
+                "count": "[length(parameters('cosmosAdditionalLocations'))]",
+                "input": {
+                  "locationName": "[string(parameters('cosmosAdditionalLocations')[copyIndex('cosmosAdditionalLocationObjs')])]",
+                  "failoverPriority": "[add(copyIndex('cosmosAdditionalLocationObjs'), 1)]",
+                  "isZoneRedundant": "[parameters('cosmosZoneRedundant')]"
+                }
+              }
+            ],
+            "diagMetricsOnly": "[equals(parameters('diagnosticsMode'), 'metricsOnly')]",
+            "cosmosDbLocations": "[concat(createArray(createObject('locationName', parameters('location'), 'failoverPriority', 0, 'isZoneRedundant', parameters('cosmosZoneRedundant'))), variables('cosmosAdditionalLocationObjs'))]"
+          },
+          "resources": [
+            {
+              "condition": "[parameters('enableContainerRegistry')]",
+              "type": "Microsoft.ContainerRegistry/registries",
+              "apiVersion": "2023-01-01-preview",
+              "name": "[parameters('containerRegistryName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "adminUserEnabled": false,
+                "dataEndpointEnabled": false,
+                "publicNetworkAccess": "Enabled",
+                "networkRuleBypassOptions": "AzureServices"
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[parameters('enableContainerAppEnvironment')]",
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('containerAppEnvironmentName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(parameters('globalLogAnalyticsWorkspaceId'), '2021-06-01').customerId]",
+                    "sharedKey": "[parameters('globalLogAnalyticsWorkspaceKey')]"
+                  }
+                },
+                "zoneRedundant": false
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[parameters('enableCellTrafficManager')]",
+              "type": "Microsoft.Network/trafficmanagerprofiles",
+              "apiVersion": "2022-04-01",
+              "name": "myTrafficManager",
+              "location": "global",
+              "properties": {
+                "trafficRoutingMethod": "Performance",
+                "dnsConfig": {
+                  "relativeName": "mytrafficmanager",
+                  "ttl": 30
+                },
+                "monitorConfig": {
+                  "protocol": "HTTP",
+                  "port": 80,
+                  "path": "/health"
+                },
+                "endpoints": []
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2023-04-15",
+              "name": "[parameters('cosmosDbStampName')]",
+              "location": "[parameters('location')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                },
+                "locations": "[variables('cosmosDbLocations')]",
+                "enableMultipleWriteLocations": "[parameters('cosmosMultiWrite')]",
+                "databaseAccountOfferType": "Standard",
+                "backupPolicy": {
+                  "type": "Continuous",
+                  "continuousModeProperties": {
+                    "tier": "Continuous7Days"
+                  }
+                },
+                "enableFreeTier": false,
+                "enableAnalyticalStorage": false,
+                "enableAutomaticFailover": "[greater(length(parameters('cosmosAdditionalLocations')), 0)]",
+                "disableKeyBasedMetadataWriteAccess": true,
+                "networkAclBypass": "AzureServices",
+                "networkAclBypassResourceIds": [],
+                "isVirtualNetworkFilterEnabled": "[parameters('enablePrivateEndpoints')]",
+                "virtualNetworkRules": [],
+                "ipRules": [],
+                "enableCassandraConnector": false,
+                "minimalTlsVersion": "Tls12",
+                "publicNetworkAccess": "Disabled"
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.DocumentDB/databaseAccounts/{0}', parameters('cosmosDbStampName'))]",
+              "name": "[format('{0}-diagnostics', parameters('cosmosDbStampName'))]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": "[if(variables('diagMetricsOnly'), createArray(), createArray(createObject('category', 'DataPlaneRequests', 'enabled', true())))]",
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbStampName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('createStorageAccount')]",
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2022-09-01",
+              "name": "[parameters('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "[parameters('storageSkuName')]"
+              },
+              "kind": "[if(equals(parameters('storageSkuName'), 'Premium_ZRS'), 'BlockBlobStorage', 'StorageV2')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "minimumTlsVersion": "TLS1_2",
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": false,
+                "networkAcls": {
+                  "defaultAction": "Deny",
+                  "bypass": "AzureServices",
+                  "virtualNetworkRules": [],
+                  "ipRules": []
+                },
+                "encryption": {
+                  "requireInfrastructureEncryption": true,
+                  "services": {
+                    "blob": {
+                      "enabled": true,
+                      "keyType": "Account"
+                    }
+                  },
+                  "keySource": "Microsoft.Storage"
+                }
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[and(and(not(equals(parameters('storageSkuName'), 'Premium_ZRS')), parameters('enableStorageObjectReplication')), not(empty(parameters('storageReplicationDestinationId'))))]",
+              "type": "Microsoft.Storage/storageAccounts/objectReplicationPolicies",
+              "apiVersion": "2021-09-01",
+              "name": "[format('{0}/{1}', parameters('storageAccountName'), 'cell-replication')]",
+              "properties": {
+                "sourceAccount": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+                "destinationAccount": "[parameters('storageReplicationDestinationId')]",
+                "rules": [
+                  {
+                    "ruleId": "rule-1",
+                    "sourceContainer": "appdata",
+                    "destinationContainer": "appdata",
+                    "filters": {
+                      "prefixMatch": []
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+              ]
+            },
+            {
+              "condition": "[not(equals(parameters('storageSkuName'), 'Premium_ZRS'))]",
+              "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
+              "properties": {
+                "policy": {
+                  "rules": [
+                    {
+                      "name": "DefaultLifecycleRule",
+                      "enabled": true,
+                      "type": "Lifecycle",
+                      "definition": {
+                        "filters": {
+                          "blobTypes": [
+                            "blockBlob"
+                          ]
+                        },
+                        "actions": {
+                          "baseBlob": {
+                            "tierToCool": {
+                              "daysAfterModificationGreaterThan": 30
+                            },
+                            "delete": {
+                              "daysAfterModificationGreaterThan": 365
+                            }
+                          },
+                          "snapshot": {
+                            "delete": {
+                              "daysAfterCreationGreaterThan": 30
+                            }
+                          },
+                          "version": {
+                            "delete": {
+                              "daysAfterCreationGreaterThan": 30
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2023-02-01",
+              "name": "[if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt')))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": true,
+                "softDeleteRetentionInDays": 90,
+                "enablePurgeProtection": true,
+                "publicNetworkAccess": "Enabled",
+                "networkAcls": {
+                  "defaultAction": "Deny",
+                  "bypass": "AzureServices",
+                  "ipRules": [],
+                  "virtualNetworkRules": []
+                },
+                "accessPolicies": []
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/accessPolicies",
+              "apiVersion": "2023-02-01",
+              "name": "[format('{0}/{1}', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))), 'add')]",
+              "properties": {
+                "accessPolicies": [
+                  {
+                    "objectId": "[reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName')), '2022-11-01-preview', 'full').identity.principalId]",
+                    "tenantId": "[subscription().tenantId]",
+                    "permissions": {
+                      "secrets": [
+                        "get"
+                      ],
+                      "keys": [
+                        "get",
+                        "wrapKey",
+                        "unwrapKey"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]",
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/keys",
+              "apiVersion": "2023-02-01",
+              "name": "[format('{0}/{1}', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))), 'storage-encryption-key')]",
+              "properties": {
+                "kty": "RSA",
+                "keySize": 2048,
+                "keyOps": [
+                  "encrypt",
+                  "decrypt",
+                  "wrapKey",
+                  "unwrapKey"
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/keys",
+              "apiVersion": "2023-02-01",
+              "name": "[format('{0}/{1}', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))), 'sql-tde-encryption-key')]",
+              "properties": {
+                "kty": "RSA",
+                "keySize": 2048,
+                "keyOps": [
+                  "encrypt",
+                  "decrypt",
+                  "wrapKey",
+                  "unwrapKey"
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]",
+              "name": "[if(empty(parameters('salt')), format('{0}-diagnostics', parameters('keyVaultName')), format('{0}{1}-diagnostics', parameters('keyVaultName'), parameters('salt')))]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": "[if(variables('diagMetricsOnly'), createArray(), createArray(createObject('category', 'AuditEvent', 'enabled', true())))]",
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]"
+              ]
+            },
+            {
+              "condition": "[and(parameters('enablePrivateEndpoints'), not(empty(parameters('privateEndpointSubnetId'))))]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-pe', parameters('storageAccountName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('privateEndpointSubnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-psc', parameters('storageAccountName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+                      "groupIds": [
+                        "blob"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[and(parameters('enablePrivateEndpoints'), not(empty(parameters('privateEndpointSubnetId'))))]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-pe', parameters('sqlServerName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('privateEndpointSubnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-psc', parameters('sqlServerName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]",
+                      "groupIds": [
+                        "sqlServer"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+              ]
+            },
+            {
+              "condition": "[and(parameters('enablePrivateEndpoints'), not(empty(parameters('privateEndpointSubnetId'))))]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[if(empty(parameters('salt')), format('{0}-pe', parameters('keyVaultName')), format('{0}{1}-pe', parameters('keyVaultName'), parameters('salt')))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('privateEndpointSubnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[if(empty(parameters('salt')), format('{0}-psc', parameters('keyVaultName')), format('{0}{1}-psc', parameters('keyVaultName'), parameters('salt')))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]",
+                      "groupIds": [
+                        "vault"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]"
+              ]
+            },
+            {
+              "condition": "[and(and(parameters('enableContainerRegistry'), parameters('enablePrivateEndpoints')), not(empty(parameters('privateEndpointSubnetId'))))]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-pe', parameters('containerRegistryName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('privateEndpointSubnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-psc', parameters('containerRegistryName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]",
+                      "groupIds": [
+                        "registry"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]"
+              ]
+            },
+            {
+              "condition": "[and(parameters('enablePrivateEndpoints'), not(empty(parameters('privateEndpointSubnetId'))))]",
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-pe', parameters('cosmosDbStampName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('privateEndpointSubnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('{0}-psc', parameters('cosmosDbStampName'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbStampName'))]",
+                      "groupIds": [
+                        "Sql"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbStampName'))]"
+              ]
+            },
+            {
+              "condition": "[and(parameters('enableApplicationGateway'), not(empty(parameters('applicationGatewaySubnetId'))))]",
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-agw-pip', parameters('containerAppName'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+              },
+              "properties": {
+                "publicIPAllocationMethod": "Static"
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "condition": "[and(parameters('enableApplicationGateway'), not(empty(parameters('applicationGatewaySubnetId'))))]",
+              "type": "Microsoft.Network/applicationGateways",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}-agw', parameters('containerAppName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "WAF_v2",
+                  "tier": "WAF_v2",
+                  "capacity": 2
+                },
+                "webApplicationFirewallConfiguration": {
+                  "enabled": true,
+                  "firewallMode": "Prevention",
+                  "ruleSetType": "OWASP",
+                  "ruleSetVersion": "3.2",
+                  "requestBodyCheck": true,
+                  "maxRequestBodySizeInKb": 128,
+                  "fileUploadLimitInMb": 100
+                },
+                "gatewayIPConfigurations": [
+                  {
+                    "name": "appGatewayIpConfig",
+                    "properties": {
+                      "subnet": {
+                        "id": "[parameters('applicationGatewaySubnetId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendIPConfigurations": [
+                  {
+                    "name": "appGatewayFrontendIP",
+                    "properties": {
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-agw-pip', parameters('containerAppName')))]"
+                      }
+                    }
+                  }
+                ],
+                "frontendPorts": [
+                  {
+                    "name": "port_80",
+                    "properties": {
+                      "port": 80
+                    }
+                  },
+                  {
+                    "name": "port_443",
+                    "properties": {
+                      "port": 443
+                    }
+                  }
+                ],
+                "backendAddressPools": [
+                  {
+                    "name": "appServiceBackendPool",
+                    "properties": {
+                      "backendAddresses": [
+                        {
+                          "fqdn": "[format('{0}.{1}', parameters('containerAppName'), parameters('baseDomain'))]"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "backendHttpSettingsCollection": [
+                  {
+                    "name": "appServiceBackendHttpSettings",
+                    "properties": {
+                      "port": 443,
+                      "protocol": "Https",
+                      "cookieBasedAffinity": "Disabled",
+                      "pickHostNameFromBackendAddress": true,
+                      "probeEnabled": true,
+                      "probe": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/probes', format('{0}-agw', parameters('containerAppName')), 'healthProbe')]"
+                      }
+                    }
+                  }
+                ],
+                "httpListeners": [
+                  {
+                    "name": "appServiceHttpListener",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', format('{0}-agw', parameters('containerAppName')), 'appGatewayFrontendIP')]"
+                      },
+                      "frontendPort": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', format('{0}-agw', parameters('containerAppName')), 'port_80')]"
+                      },
+                      "protocol": "Http"
+                    }
+                  }
+                ],
+                "requestRoutingRules": [
+                  {
+                    "name": "appServiceRoutingRule",
+                    "properties": {
+                      "ruleType": "Basic",
+                      "priority": 100,
+                      "httpListener": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', format('{0}-agw', parameters('containerAppName')), 'appServiceHttpListener')]"
+                      },
+                      "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', format('{0}-agw', parameters('containerAppName')), 'appServiceBackendPool')]"
+                      },
+                      "backendHttpSettings": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', format('{0}-agw', parameters('containerAppName')), 'appServiceBackendHttpSettings')]"
+                      }
+                    }
+                  }
+                ],
+                "probes": [
+                  {
+                    "name": "healthProbe",
+                    "properties": {
+                      "protocol": "Https",
+                      "host": "[format('{0}.{1}', parameters('containerAppName'), parameters('baseDomain'))]",
+                      "path": "/health",
+                      "interval": 30,
+                      "timeout": 30,
+                      "unhealthyThreshold": 3,
+                      "pickHostNameFromBackendHttpSettings": false,
+                      "minServers": 0,
+                      "match": {
+                        "statusCodes": [
+                          "200-399"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}-agw-pip', parameters('containerAppName')))]"
+              ]
+            },
+            {
+              "condition": "[and(parameters('enableApplicationGateway'), not(empty(parameters('applicationGatewaySubnetId'))))]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Network/applicationGateways/{0}', format('{0}-agw', parameters('containerAppName')))]",
+              "name": "[format('{0}-agw-diagnostics', parameters('containerAppName'))]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "logs": "[if(variables('diagMetricsOnly'), createArray(), createArray(createObject('category', 'ApplicationGatewayAccessLog', 'enabled', true()), createObject('category', 'ApplicationGatewayPerformanceLog', 'enabled', true()), createObject('category', 'ApplicationGatewayFirewallLog', 'enabled', true())))]",
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/applicationGateways', format('{0}-agw', parameters('containerAppName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageAccountName'))]",
+              "name": "[format('{0}-diagnostics', parameters('storageAccountName'))]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2022-11-01-preview",
+              "name": "[parameters('sqlServerName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "administratorLogin": "[parameters('sqlAdminUsername')]",
+                "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+                "version": "12.0",
+                "minimalTlsVersion": "1.2",
+                "publicNetworkAccess": "Disabled"
+              }
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2022-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('sqlDbName'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "S1",
+                "tier": "Standard"
+              },
+              "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "requestedBackupStorageRedundancy": "GeoZone"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
+              "apiVersion": "2022-11-01-preview",
+              "name": "[format('{0}/{1}/{2}', parameters('sqlServerName'), parameters('sqlDbName'), 'default')]",
+              "properties": {
+                "weeklyRetention": "P12W",
+                "monthlyRetention": "P12M",
+                "yearlyRetention": "P5Y",
+                "weekOfYear": 1
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('sqlDbName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Sql/servers/{0}', parameters('sqlServerName'))]",
+              "name": "[format('{0}-diagnostics', parameters('sqlServerName'))]",
+              "properties": {
+                "workspaceId": "[parameters('globalLogAnalyticsWorkspaceId')]",
+                "metrics": [
+                  {
+                    "category": "AllMetrics",
+                    "enabled": true
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+              ]
+            },
+            {
+              "condition": "[and(parameters('enableSqlFailoverGroup'), not(empty(parameters('sqlSecondaryServerId'))))]",
+              "type": "Microsoft.Sql/servers/failoverGroups",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), format('fg-{0}', parameters('sqlServerName')))]",
+              "properties": {
+                "partnerServers": [
+                  {
+                    "id": "[parameters('sqlSecondaryServerId')]"
+                  }
+                ],
+                "databases": [
+                  "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('sqlDbName'))]"
+                ],
+                "readWriteEndpoint": {
+                  "failoverPolicy": "Automatic",
+                  "failoverWithDataLossGracePeriodMinutes": 120
+                },
+                "readOnlyEndpoint": {
+                  "failoverPolicy": "Enabled"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('sqlDbName'))]",
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "keyVaultId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))))]"
+            },
+            "keyVaultUri": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt')))), '2023-02-01').vaultUri]"
+            },
+            "sqlServerSystemAssignedPrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName')), '2022-11-01-preview', 'full').identity.principalId]"
+            },
+            "storageAccountSystemAssignedPrincipalId": {
+              "type": "string",
+              "value": "[if(parameters('createStorageAccount'), string(reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2022-09-01', 'full').identity.principalId), 'not-assigned')]"
+            },
+            "cosmosDbId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbStampName'))]"
+            },
+            "cosmosDbEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbStampName')), '2023-04-15').documentEndpoint]"
+            },
+            "applicationGatewayId": {
+              "type": "string",
+              "value": "[if(and(parameters('enableApplicationGateway'), not(empty(parameters('applicationGatewaySubnetId')))), resourceId('Microsoft.Network/applicationGateways', format('{0}-agw', parameters('containerAppName'))), 'not-deployed')]"
+            },
+            "applicationGatewayPublicIPId": {
+              "type": "string",
+              "value": "[if(and(parameters('enableApplicationGateway'), not(empty(parameters('applicationGatewaySubnetId')))), resourceId('Microsoft.Network/publicIPAddresses', format('{0}-agw-pip', parameters('containerAppName'))), 'not-deployed')]"
+            },
+            "storageEncryptionKeyId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/keys', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))), 'storage-encryption-key'), '2023-02-01').keyUriWithVersion]"
+            },
+            "sqlEncryptionKeyId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults/keys', if(empty(parameters('salt')), parameters('keyVaultName'), format('{0}{1}', parameters('keyVaultName'), parameters('salt'))), 'sql-tde-encryption-key'), '2023-02-01').keyUriWithVersion]"
+            },
+            "containerAppEnvironmentId": {
+              "type": "string",
+              "value": "[if(parameters('enableContainerAppEnvironment'), resourceId('Microsoft.App/managedEnvironments', parameters('containerAppEnvironmentName')), 'not-deployed')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "monitoringLayers",
+        "regionalLayers"
+      ]
+    }
+  },
+  "outputs": {
+    "apimGatewayUrl": {
+      "type": "string",
+      "value": "[reference('geodesLayer').outputs.apimGatewayUrl.value]"
+    },
+    "apimDeveloperPortalUrl": {
+      "type": "string",
+      "value": "[reference('geodesLayer').outputs.apimDeveloperPortalUrl.value]"
+    },
+    "apimManagementApiUrl": {
+      "type": "string",
+      "value": "[reference('geodesLayer').outputs.apimManagementApiUrl.value]"
+    },
+    "apimResourceId": {
+      "type": "string",
+      "value": "[reference('geodesLayer').outputs.apimResourceId.value]"
+    },
+    "globalControlCosmosDbEndpoint": {
+      "type": "string",
+      "value": "[reference('geodesLayer').outputs.globalControlCosmosDbEndpoint.value]"
+    },
+    "globalControlCosmosDbId": {
+      "type": "string",
+      "value": "[reference('geodesLayer').outputs.globalControlCosmosDbId.value]"
+    },
+    "globalLayerOutputs": {
+      "type": "object",
+      "value": "[reference('globalLayer').outputs]"
+    },
+    "validationResults": {
+      "type": "object",
+      "value": {
+        "cellValidation": "[variables('cellValidation')]",
+        "allCellsValid": "[not(contains(map(variables('cellValidation'), lambda('item', lambdaVariables('item').isValid)), false()))]"
+      }
+    },
+    "keyVaultOutputs": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('regions'))]",
+        "input": {
+          "geoName": "[parameters('regions')[copyIndex()].geoName]",
+          "regionName": "[parameters('regions')[copyIndex()].regionName]",
+          "keyVaultId": "[reference(format('keyVaults[{0}]', copyIndex())).outputs.id.value]",
+          "keyVaultName": "[reference(format('keyVaults[{0}]', copyIndex())).outputs.vaultName.value]"
+        }
+      }
+    },
+    "regionalLayerOutputs": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('regions'))]",
+        "input": {
+          "geoName": "[parameters('regions')[copyIndex()].geoName]",
+          "regionName": "[parameters('regions')[copyIndex()].regionName]",
+          "automationAccountId": "[reference(format('regionalLayers[{0}]', copyIndex())).outputs.automationAccountId.value]",
+          "publicIpAddress": "[reference(format('regionalLayers[{0}]', copyIndex())).outputs.regionalEndpointIpAddress.value]"
+        }
+      }
+    },
+    "deploymentStampOutputs": {
+      "type": "array",
+      "copy": {
+        "count": "[length(parameters('cells'))]",
+        "input": {
+          "geoName": "[parameters('cells')[copyIndex()].geoName]",
+          "regionName": "[parameters('cells')[copyIndex()].regionName]",
+          "cellName": "[format('CELL-{0}', padLeft(string(add(copyIndex(), 1)), 2, '0'))]",
+          "keyVaultId": "[reference(format('deploymentStampLayers[{0}]', copyIndex())).outputs.keyVaultId.value]",
+          "keyVaultUri": "[reference(format('deploymentStampLayers[{0}]', copyIndex())).outputs.keyVaultUri.value]",
+          "sqlServerSystemAssignedPrincipalId": "[reference(format('deploymentStampLayers[{0}]', copyIndex())).outputs.sqlServerSystemAssignedPrincipalId.value]",
+          "storageAccountSystemAssignedPrincipalId": "[reference(format('deploymentStampLayers[{0}]', copyIndex())).outputs.storageAccountSystemAssignedPrincipalId.value]"
+        }
+      }
+    },
+    "managementPortalDeploymentParams": {
+      "type": "object",
+      "value": {
+        "resourceGroupName": "[format('rg-stamps-management-portal-{0}', parameters('environment'))]",
+        "location": "[reference('managementPortalResourceGroup', '2021-04-01', 'full').location]",
+        "environment": "[parameters('environment')]",
+        "managementClientAppId": "[parameters('managementClientAppId')]",
+        "managementClientTenantId": "[parameters('managementClientTenantId')]",
+        "subscriptionId": "[subscription().subscriptionId]"
+      }
+    }
+  }
+}
