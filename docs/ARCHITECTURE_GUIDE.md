@@ -699,6 +699,7 @@ Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth st
 
 1. **Global Security**:
    - Front Door WAF with OWASP rules
+   - API Management (APIM) for global API gateway, authentication, and policy enforcement
    - Traffic Manager DDoS protection
    - DNS-level filtering
 
