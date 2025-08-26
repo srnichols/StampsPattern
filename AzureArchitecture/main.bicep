@@ -391,7 +391,6 @@ module globalLayer './globalLayer.bicep' = {
     frontDoorName: frontDoorName
     frontDoorSku: frontDoorSku
     globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-    globalLogAnalyticsWorkspaceKeyVaultSecretUri: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeyVaultSecretUri
     functionAppNamePrefix: functionAppNamePrefix
     functionStorageNamePrefix: functionStorageNamePrefix
     tags: baseTags
@@ -465,6 +464,10 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
   for (cell, index) in cells: {
     name: 'deploymentStampLayer-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}'
     scope: resourceGroup('rg-stamps-cell-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-${environment}')
+    // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
+    // Example: kvs-wus2-p-abc123de
+    // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
+    // diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
     params: {
       location: cell.regionName
       sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
@@ -472,11 +475,8 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
-      // Key Vault name: max 24 chars, alphanumeric only, must start with letter, end with letter/digit
-      // Example: kvs-wus2-p-abc123de
-  keyVaultName: take(toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 6)}${replace(replace(take(salt, 4), '-', ''), '_', '')}'), 24)
+      keyVaultName: take(toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 6)}${replace(replace(take(salt, 4), '-', ''), '_', '')}'), 24)
       salt: salt
-      // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
       cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
       tags: union(baseTags, {
         geo: cell.geoName
@@ -494,10 +494,9 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
       baseDomain: cell.baseDomain
   globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-  globalLogAnalyticsWorkspaceKeyVaultSecretUri: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeyVaultSecretUri
       cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
       cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
-  cosmosZoneRedundant: false
+      cosmosZoneRedundant: false
       storageSkuName: (cell.?storageSkuName ?? storageSkuName)
       createStorageAccount: true
       enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
@@ -505,7 +504,6 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
       sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
       enableCellTrafficManager: false
-      // diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
     }
     dependsOn: [
       regionalLayers

@@ -13,8 +13,6 @@ param resourceToken string = take(uniqueString(resourceGroup().id), 6)
 @description('Log Analytics Workspace ID')
 param logAnalyticsWorkspaceId string
 
-@description('Application Insights ID')
-param applicationInsightsId string
 
 @description('Redis Cache resource ID')
 param redisCacheId string

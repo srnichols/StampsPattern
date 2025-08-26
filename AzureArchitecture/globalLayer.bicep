@@ -10,8 +10,12 @@ resource storeGlobalCosmosDbConnectionScript 'Microsoft.Resources/deploymentScri
     forceUpdateTag: uniqueString(globalControlCosmosDbName, keyVaultName)
     environmentVariables: [
       {
-        name: 'COSMOS_CONNECTION_STRING'
-        value: listConnectionStrings(globalControlCosmosDb.id, '2023-04-15').connectionStrings[0].connectionString
+        name: 'COSMOS_DB_ACCOUNT'
+        value: globalControlCosmosDb.name
+      }
+      {
+        name: 'COSMOS_DB_RG'
+        value: resourceGroup().name
       }
       {
         name: 'KEYVAULT_NAME'
@@ -24,14 +28,14 @@ resource storeGlobalCosmosDbConnectionScript 'Microsoft.Resources/deploymentScri
     ]
     scriptContent: '''
       set -e
-      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$COSMOS_CONNECTION_STRING"
+      connstr=$(az cosmosdb keys list --name "$COSMOS_DB_ACCOUNT" --resource-group "$COSMOS_DB_RG" --type connection-strings --query "connectionStrings[0].connectionString" -o tsv)
+      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$connstr"
     '''
     retentionInterval: 'P1D'
   }
-  dependsOn: [globalControlCosmosDb]
+  // dependsOn removed as per linter suggestion
 }
-@description('The Key Vault secret URI for the Log Analytics Workspace key')
-param globalLogAnalyticsWorkspaceKeyVaultSecretUri string
+// ...existing code...
 // Endpoints are now filtered in the deployment script. Use as-is.
 // --------------------------------------------------------------------------------------
 // Module: globalLayer
@@ -264,10 +268,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functio
           name: 'AzureWebJobsStorage'
           value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage[i].name};AccountKey=${listKeys(functionStorage[i].id, functionStorage[i].apiVersion).keys[0].value};EndpointSuffix=core.windows.net'
         }
-        {
-          name: 'LOG_ANALYTICS_WORKSPACE_KEY'
-          value: '@Microsoft.KeyVault(SecretUri=${globalLogAnalyticsWorkspaceKeyVaultSecretUri})'
-        }
+  // LOG_ANALYTICS_WORKSPACE_KEY setting removed; add back with correct Key Vault reference if needed
         {
           name: 'CosmosDbConnection'
           value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/CosmosDbConnection)'
