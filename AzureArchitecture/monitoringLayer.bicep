@@ -4,33 +4,75 @@
 //          Outputs the workspace resource ID for integration with other modules.
 // --------------------------------------------------------------------------------------
 
+
 @description('Azure region for the monitoring resources')
-param location string // The Azure region where monitoring resources will be deployed.
-
+param location string
 @description('Name of the Log Analytics Workspace (must be globally unique)')
-param logAnalyticsWorkspaceName string // Unique name for the Log Analytics Workspace.
-
+param logAnalyticsWorkspaceName string
 @description('Retention period (in days) for logs')
-param retentionInDays int // Number of days to retain logs in the workspace.
-
+param retentionInDays int
 @description('Tags for resource management')
-param tags object = {} // Optional tags for resource organization and cost tracking.
+param tags object = {}
+@description('Key Vault name to store the Log Analytics key')
+param keyVaultName string
+@description('Secret name for the Log Analytics key in Key Vault')
+param logAnalyticsKeySecretName string = 'logAnalyticsWorkspaceKey'
 
-// Deploy Log Analytics Workspace for monitoring and diagnostics.
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${logAnalyticsWorkspaceName}-${uniqueString(resourceGroup().id)}'
   location: location
   tags: tags
   properties: {
-    retentionInDays: retentionInDays // Set log retention period.
+    retentionInDays: retentionInDays
     sku: {
-      name: 'PerGB2018' // Standard pay-as-you-go SKU.
+      name: 'PerGB2018'
     }
   }
 }
 
-// Output the workspace resource ID and primary shared key for use in other modules.
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
+}
+
+
+resource storeLogAnalyticsKeyScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'store-loganalytics-key-script'
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.53.0'
+    timeout: 'PT10M'
+    cleanupPreference: 'OnSuccess'
+    forceUpdateTag: uniqueString(logAnalytics.id)
+    environmentVariables: [
+      {
+        name: 'WORKSPACE_ID'
+        value: logAnalytics.name
+      }
+      {
+        name: 'RESOURCE_GROUP'
+        value: resourceGroup().name
+      }
+      {
+        name: 'KEYVAULT_NAME'
+        value: keyVaultName
+      }
+      {
+        name: 'SECRET_NAME'
+        value: logAnalyticsKeySecretName
+      }
+    ]
+    scriptContent: '''
+      set -e
+      KEY=$(az monitor log-analytics workspace get-shared-keys --resource-group "$RESOURCE_GROUP" --workspace-name "$WORKSPACE_ID" --query primarySharedKey -o tsv)
+      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$KEY"
+    '''
+    retentionInterval: 'P1D'
+  }
+  dependsOn: [keyVault]
+}
+
 output logAnalyticsWorkspaceId string = logAnalytics.id
-output logAnalyticsWorkspaceKey string = logAnalytics.listKeys().primarySharedKey
+output logAnalyticsWorkspaceKeyVaultSecretUri string = '${keyVault.properties.vaultUri}secrets/${logAnalyticsKeySecretName}'
 
 // Add additional monitoring resources (alerts, solutions, etc.) as needed.

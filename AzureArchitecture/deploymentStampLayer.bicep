@@ -1,11 +1,4 @@
-// --------------------------------------------------------------------------------------
-// CELL Layer Module
-// - Deploys isolated application/data resources for a single CELL
-// - Intended to be deployed multiple times per region for full isolation
-// - Receives dependencies from regional and global layers
-// - Network isolation and diagnostic settings are included per CELL
-// - Implements host-based (subdomain) routing for tenants via Azure Front Door
-// --------------------------------------------------------------------------------------
+// ...existing code...
 
 @description('Azure region for the CELL/Stamp')
 param location string
@@ -59,9 +52,7 @@ param baseDomain string
 @description('The resource ID of the central Log Analytics Workspace for diagnostics.')
 param globalLogAnalyticsWorkspaceId string
 
-@description('The primary shared key of the central Log Analytics Workspace.')
-@secure()
-param globalLogAnalyticsWorkspaceKey string
+// ...existing code...
 
 @description('Subnet resource ID for private endpoints')
 param privateEndpointSubnetId string = ''
@@ -147,7 +138,9 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: reference(globalLogAnalyticsWorkspaceId, '2021-06-01').customerId
-        sharedKey: globalLogAnalyticsWorkspaceKey
+        // The sharedKey should be retrieved at runtime from Key Vault using the URI provided in globalLogAnalyticsWorkspaceKeyVaultSecretUri.
+        // Example: Use a managed identity and app setting referencing the Key Vault secret URI.
+        // sharedKey: <retrieve from Key Vault at runtime>
       }
     }
     zoneRedundant: false
@@ -390,6 +383,38 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
     accessPolicies: []  // Start with empty access policies to avoid circular dependencies
   }
   tags: tags
+}
+// Store SQL admin password in Key Vault using a deploymentScript
+resource storeSqlAdminPasswordScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'store-sqladmin-password-script'
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.53.0'
+    timeout: 'PT10M'
+    cleanupPreference: 'OnSuccess'
+    forceUpdateTag: uniqueString(sqlServerName, keyVault.name)
+    environmentVariables: [
+      {
+        name: 'SQL_ADMIN_PASSWORD'
+        value: sqlAdminPassword
+      }
+      {
+        name: 'KEYVAULT_NAME'
+        value: keyVault.name
+      }
+      {
+        name: 'SECRET_NAME'
+        value: 'sqlAdminPassword'
+      }
+    ]
+    scriptContent: '''
+      set -e
+      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$SQL_ADMIN_PASSWORD"
+    '''
+    retentionInterval: 'P1D'
+  }
+  // dependsOn removed as per linter suggestion
 }
 
 // Key Vault access policies (created separately to avoid circular dependencies)
@@ -775,13 +800,14 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   // Note: Only SQL admin login is configured. AAD-only authentication is NOT enabled by default.
   properties: {
     administratorLogin: sqlAdminUsername
-    administratorLoginPassword: sqlAdminPassword
+    administratorLoginPassword: '@Microsoft.KeyVault(SecretUri=${keyVault.properties.vaultUri}secrets/sqlAdminPassword)'
     version: '12.0'
     // Security hardening
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
   }
 }
+  // dependsOn removed as per linter suggestion
 
 // SQL Server firewall rule is not created because public network access is disabled.
 // If you enable public access, add a conditional firewall rule accordingly.

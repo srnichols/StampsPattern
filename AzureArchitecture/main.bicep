@@ -391,6 +391,7 @@ module globalLayer './globalLayer.bicep' = {
     frontDoorName: frontDoorName
     frontDoorSku: frontDoorSku
     globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+    globalLogAnalyticsWorkspaceKeyVaultSecretUri: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeyVaultSecretUri
     functionAppNamePrefix: functionAppNamePrefix
     functionStorageNamePrefix: functionStorageNamePrefix
     tags: baseTags
@@ -410,6 +411,7 @@ module globalLayer './globalLayer.bicep' = {
         location: region.regionName
       } : null
     ]
+    keyVaultName: regions[0].keyVaultName
   }
   dependsOn: [
     regionalLayers
@@ -441,7 +443,7 @@ module regionalNetworks './regionalNetwork.bicep' = [
 module monitoringLayers './monitoringLayer.bicep' = [
   for (region, index) in regions: {
     name: 'monitoringLayer-${region.geoName}-${region.regionName}'
-  scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
+    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
     params: {
       location: region.regionName
       logAnalyticsWorkspaceName: region.logAnalyticsWorkspaceName
@@ -450,7 +452,11 @@ module monitoringLayers './monitoringLayer.bicep' = [
         geo: region.geoName
         region: region.regionName
       })
+      keyVaultName: keyVaults[index].outputs.vaultName
     }
+    dependsOn: [
+      keyVaults
+    ]
   }
 ]
 
@@ -487,8 +493,8 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
       containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
       baseDomain: cell.baseDomain
-      globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-      globalLogAnalyticsWorkspaceKey: monitoringLayers[0].outputs.logAnalyticsWorkspaceKey
+  globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+  globalLogAnalyticsWorkspaceKeyVaultSecretUri: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeyVaultSecretUri
       cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
       cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
   cosmosZoneRedundant: false

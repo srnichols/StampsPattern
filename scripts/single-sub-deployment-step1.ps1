@@ -25,44 +25,74 @@ $RoutingOutputFile = "./AzureArchitecture/routing.parameters.json"
 az account set --subscription $SubscriptionId
 
 
-
 # Build parameters arguments
 $paramArgs = @("$ParametersFile")
 if ($Salt -ne '') {
     $paramArgs += "salt=$Salt"
 }
 
-# Deploy main.bicep at subscription scope and capture outputs
-$deploymentResult = az deployment sub create `
-    --name $DeploymentName `
-    --location $Location `
-    --template-file $BicepFile `
-    --parameters $paramArgs `
-    --query "properties.outputs" `
-    --output json
 
-if (-not $deploymentResult) {
-    Write-Error "Deployment failed or no outputs returned."
+# Deploy main.bicep at subscription scope and capture outputs with error handling
+Write-Host "\n[INFO] Starting deployment: $DeploymentName"
+$azCmd = @(
+    'az deployment sub create',
+    "--name '$DeploymentName'",
+    "--location '$Location'",
+    "--template-file '$BicepFile'",
+    "--parameters $($paramArgs -join ' ')",
+    '--query "properties.outputs"',
+    '--output json'
+)
+$azCmdStr = $azCmd -join ' '
+Write-Host "[DEBUG] Running: $azCmdStr"
+
+try {
+    $deploymentResult = & az deployment sub create `
+        --name $DeploymentName `
+        --location $Location `
+        --template-file $BicepFile `
+        --parameters $paramArgs `
+        --query "properties.outputs" `
+        --output json 2>&1
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0 -or -not $deploymentResult) {
+        Write-Error "[ERROR] Deployment command failed with exit code $exitCode."
+        Write-Host "[ERROR] Full output from az deployment sub create:"
+        Write-Host $deploymentResult
+        exit 1
+    }
+} catch {
+    Write-Error "[ERROR] Exception during deployment: $_"
     exit 1
 }
 
 # Parse outputs
-$outputs = $deploymentResult | ConvertFrom-Json
-
-# Extract management portal parameters
-$mgmtParams = $outputs.managementPortalDeploymentParams.value
-if (-not $mgmtParams) {
-    Write-Error "managementPortalDeploymentParams output not found."
+try {
+    $outputs = $deploymentResult | ConvertFrom-Json
+} catch {
+    Write-Error "[ERROR] Failed to parse deployment output as JSON. Raw output:"
+    Write-Host $deploymentResult
     exit 1
 }
-$mgmtParams | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $MgmtOutputFile
-Write-Host "Management portal parameters written to $MgmtOutputFile"
+
+# Extract management portal parameters
+if ($outputs.managementPortalDeploymentParams -and $outputs.managementPortalDeploymentParams.value) {
+    $mgmtParams = $outputs.managementPortalDeploymentParams.value
+    $mgmtParams | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $MgmtOutputFile
+    Write-Host "[INFO] Management portal parameters written to $MgmtOutputFile"
+} else {
+    Write-Error "[ERROR] managementPortalDeploymentParams output not found in deployment outputs. Full outputs:"
+    Write-Host ($outputs | ConvertTo-Json -Depth 5)
+    exit 1
+}
 
 # Extract routing parameters (if present)
-if ($outputs.globalLayerOutputs) {
+if ($outputs.globalLayerOutputs -and $outputs.globalLayerOutputs.value) {
     $routingParams = $outputs.globalLayerOutputs.value
     $routingParams | ConvertTo-Json -Depth 5 | Out-File -Encoding utf8 $RoutingOutputFile
-    Write-Host "Routing parameters written to $RoutingOutputFile"
+    Write-Host "[INFO] Routing parameters written to $RoutingOutputFile"
 } else {
-    Write-Warning "globalLayerOutputs not found in deployment outputs. Routing parameters file not written."
+    Write-Warning "[WARN] globalLayerOutputs not found in deployment outputs. Routing parameters file not written."
+    Write-Host "[DEBUG] Full outputs:"
+    Write-Host ($outputs | ConvertTo-Json -Depth 5)
 }

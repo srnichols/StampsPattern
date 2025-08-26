@@ -1,3 +1,37 @@
+// Store global Cosmos DB connection string in Key Vault using a deploymentScript
+resource storeGlobalCosmosDbConnectionScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = if (enableGlobalCosmos) {
+  name: 'store-global-cosmosdb-connection-script'
+  location: primaryLocation
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.53.0'
+    timeout: 'PT10M'
+    cleanupPreference: 'OnSuccess'
+    forceUpdateTag: uniqueString(globalControlCosmosDbName, keyVaultName)
+    environmentVariables: [
+      {
+        name: 'COSMOS_CONNECTION_STRING'
+        value: listConnectionStrings(globalControlCosmosDb.id, '2023-04-15').connectionStrings[0].connectionString
+      }
+      {
+        name: 'KEYVAULT_NAME'
+        value: keyVaultName
+      }
+      {
+        name: 'SECRET_NAME'
+        value: 'CosmosDbConnection'
+      }
+    ]
+    scriptContent: '''
+      set -e
+      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$COSMOS_CONNECTION_STRING"
+    '''
+    retentionInterval: 'P1D'
+  }
+  dependsOn: [globalControlCosmosDb]
+}
+@description('The Key Vault secret URI for the Log Analytics Workspace key')
+param globalLogAnalyticsWorkspaceKeyVaultSecretUri string
 // Endpoints are now filtered in the deployment script. Use as-is.
 // --------------------------------------------------------------------------------------
 // Module: globalLayer
@@ -35,6 +69,9 @@ param functionAppRegions array = [
 
 @description('Name for the global control plane Cosmos DB account')
 param globalControlCosmosDbName string
+
+@description('Name of the Key Vault to use for global secrets')
+param keyVaultName string
 
 @description('Primary location for the global Cosmos DB')
 param primaryLocation string
@@ -226,6 +263,14 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functio
         {
           name: 'AzureWebJobsStorage'
           value: 'DefaultEndpointsProtocol=https;AccountName=${functionStorage[i].name};AccountKey=${listKeys(functionStorage[i].id, functionStorage[i].apiVersion).keys[0].value};EndpointSuffix=core.windows.net'
+        }
+        {
+          name: 'LOG_ANALYTICS_WORKSPACE_KEY'
+          value: '@Microsoft.KeyVault(SecretUri=${globalLogAnalyticsWorkspaceKeyVaultSecretUri})'
+        }
+        {
+          name: 'CosmosDbConnection'
+          value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/CosmosDbConnection)'
         }
         // Add additional settings here as needed
       ]
