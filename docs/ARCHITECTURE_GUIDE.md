@@ -37,54 +37,52 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
-  subgraph "🌐 Global Layer"
-    FD[Azure Front Door\nGlobal Load Balancing]
-    APIM[API Management (APIM)\nGlobal API Gateway]
-    TM[Traffic Manager\nDNS-based Routing]
-    GF[Global Functions\nTenant Management]
-  end
-
-  subgraph "🌍 GEO: North America"
-    subgraph "🏢 Region: East US"
-      subgraph "🗂️ AZ 1"
-        AG1[App Gateway\nZone-Redundant]
-        C1[CELL-001\nShared: 50 tenants]
-        C2[CELL-002\nDedicated: 1 tenant]
-      end
-      subgraph "🗂️ AZ 2"
-        C3[CELL-003\nShared: 30 tenants]
-      end
+    subgraph "🌐 Global Layer"
+        FD[Azure Front Door<br/>Global Load Balancing]
+        TM[Traffic Manager<br/>DNS-based Routing]
+        GF[Global Functions<br/>Tenant Management]
     end
-    subgraph "🏢 Region: West US"
-      subgraph "🗂️ AZ 1"
-        AG2[App Gateway\nZone-Redundant]
-        C4[CELL-004\nShared: 75 tenants]
-      end
-      subgraph "🗂️ AZ 2"
-        C5[CELL-005\nDedicated: 1 tenant]
-      end
+    
+    subgraph "🌍 GEO: North America"
+        subgraph "🏢 Region: East US"
+            subgraph "🗂️ AZ 1"
+                AG1[App Gateway<br/>Zone-Redundant]
+                C1[CELL-001<br/>Shared: 50 tenants]
+                C2[CELL-002<br/>Dedicated: 1 tenant]
+            end
+            subgraph "🗂️ AZ 2"
+                C3[CELL-003<br/>Shared: 30 tenants]
+            end
+        end
+        subgraph "🏢 Region: West US"
+            subgraph "🗂️ AZ 1"
+                AG2[App Gateway<br/>Zone-Redundant]
+                C4[CELL-004<br/>Shared: 75 tenants]
+            end
+            subgraph "🗂️ AZ 2"
+                C5[CELL-005<br/>Dedicated: 1 tenant]
+            end
+        end
     end
-  end
-
-  subgraph "🌍 GEO: Europe"
-    subgraph "🏢 Region: West Europe"
-      subgraph "🗂️ AZ 1"
-        AG3[App Gateway\nZone-Redundant]
-        C6[CELL-006\nEnterprise GDPR]
-      end
+    
+    subgraph "🌍 GEO: Europe"
+        subgraph "🏢 Region: West Europe"
+            subgraph "🗂️ AZ 1"
+                AG3[App Gateway<br/>Zone-Redundant]
+                C6[CELL-006<br/>Enterprise GDPR]
+            end
+        end
     end
-  end
-
-  FD --> APIM
-  APIM --> AG1
-  APIM --> AG2
-  APIM --> AG3
-
-  AG1 --> C1
-  AG1 --> C2
-  AG2 --> C4
-  AG2 --> C5
-  AG3 --> C6
+    
+    FD --> AG1
+    FD --> AG2
+    FD --> AG3
+    
+    AG1 --> C1
+    AG1 --> C2
+    AG2 --> C4
+    AG2 --> C5
+    AG3 --> C6
 ```
 
 _Figure: Global-to-CELL hierarchy with zone-aware deployment. Azure Front Door and Traffic Manager route to regional Application Gateways, which direct traffic to shared or dedicated CELLs per tenant policy and capacity._
@@ -700,10 +698,9 @@ Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth st
 ### 🛡️ Multi-Layer Security Model
 
 1. **Global Security**:
-  - Front Door WAF with OWASP rules
-  - API Management (APIM) for global API gateway, authentication, and policy enforcement
-  - Traffic Manager DDoS protection
-  - DNS-level filtering
+   - Front Door WAF with OWASP rules
+   - Traffic Manager DDoS protection
+   - DNS-level filtering
 
 2. **Regional Security**:
    - Application Gateway WAF v2
