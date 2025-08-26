@@ -32,10 +32,17 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 
 ---
 
+### Test Mermaid Rendering
+
+```mermaid
+flowchart TB
+    A[Test Node A] --> B[Test Node B]
+```
+
+_Figure: Simple test diagram to validate Mermaid rendering._
 ### 🌍 **Visual: Global Architecture Hierarchy with Availability Zones**
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
   subgraph "🌐 Global Layer"
     FD[Azure Front Door\nGlobal Load Balancing]
