@@ -37,11 +37,12 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart TB
-    subgraph "🌐 Global Layer"
-        FD[Azure Front Door<br/>Global Load Balancing]
-        TM[Traffic Manager<br/>DNS-based Routing]
-        GF[Global Functions<br/>Tenant Management]
-    end
+  subgraph "🌐 Global Layer"
+    FD[Azure Front Door<br/>Global Load Balancing]
+    APIM[API Management (APIM)<br/>Global API Gateway]
+    TM[Traffic Manager<br/>DNS-based Routing]
+    GF[Global Functions<br/>Tenant Management]
+  end
     
     subgraph "🌍 GEO: North America"
         subgraph "🏢 Region: East US"
@@ -74,15 +75,16 @@ flowchart TB
         end
     end
     
-    FD --> AG1
-    FD --> AG2
-    FD --> AG3
+  FD --> APIM
+  APIM --> AG1
+  APIM --> AG2
+  APIM --> AG3
     
-    AG1 --> C1
-    AG1 --> C2
-    AG2 --> C4
-    AG2 --> C5
-    AG3 --> C6
+  AG1 --> C1
+  AG1 --> C2
+  AG2 --> C4
+  AG2 --> C5
+  AG3 --> C6
 ```
 
 _Figure: Global-to-CELL hierarchy with zone-aware deployment. Azure Front Door and Traffic Manager route to regional Application Gateways, which direct traffic to shared or dedicated CELLs per tenant policy and capacity._
@@ -698,9 +700,10 @@ Security in the Azure Stamps Pattern follows a comprehensive defense-in-depth st
 ### 🛡️ Multi-Layer Security Model
 
 1. **Global Security**:
-   - Front Door WAF with OWASP rules
-   - Traffic Manager DDoS protection
-   - DNS-level filtering
+  - Front Door WAF with OWASP rules
+  - API Management (APIM) for global API gateway, authentication, and policy enforcement
+  - Traffic Manager DDoS protection
+  - DNS-level filtering
 
 2. **Regional Security**:
    - Application Gateway WAF v2
