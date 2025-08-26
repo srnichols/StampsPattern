@@ -39,7 +39,7 @@ This solution implements a sophisticated **GEO → Region → Availability Zone 
 flowchart TB
     subgraph "🌐 Global Layer"
         FD[Azure Front Door<br/>Global Load Balancing]
-        APIM[API Management (APIM)\Global API Gateway]
+        APIM[API Management<br/>(APIM)\Global API Gateway]
         TM[Traffic Manager<br/>DNS-based Routing]
         GF[Global Functions<br/>Tenant Management]
     end
