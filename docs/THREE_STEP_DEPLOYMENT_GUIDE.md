@@ -149,3 +149,75 @@ The following table lists all `enable*` flags (feature toggles) available in the
 > **Tip:** Set these flags in your parameters files (e.g., `main.parameters.json`) to control deployment features as needed.
 
 For more details, see the project documentation or ask in the project discussions.
+
+---
+
+## Troubleshooting: Cosmos DB Zone Redundancy and Storage Diagnostics
+
+### Cosmos DB AZ Migration Capability Error
+
+If you see an error like:
+
+```
+"code": "BadRequest",
+"message": "AZ migration capability is disabled for subscription ..."
+```
+
+This means your subscription does not have the Account Zone Redundancy (AZ) migration feature enabled for Cosmos DB. Unless you have specifically requested this feature from Microsoft, you must set the `cosmosZoneRedundant` flag to `false` in your parameters file. Attempting to enable zone redundancy without this capability will cause deployment failures.
+
+**Action:**
+- Set `cosmosZoneRedundant` to `false` in your parameters (e.g., `main.parameters.json`).
+- If you require zone redundancy, open a support request with Microsoft to enable this feature for your subscription.
+
+### Storage Diagnostics Category Error
+
+If you see an error like:
+
+```
+"code": "BadRequest",
+"message": "Category 'StorageRead' is not supported."
+```
+
+This means the diagnostic category you are trying to enable (e.g., `StorageRead`) is not supported for the target Storage Account or in your region/subscription.
+
+**Action:**
+- Review your Bicep/ARM template for diagnostic settings on Storage Accounts.
+- Only use supported diagnostic categories. Remove or correct any unsupported categories.
+
+For a list of supported diagnostic categories, see the [Azure documentation](https://learn.microsoft.com/azure/azure-monitor/reference/supported-diagnostic-logs).
+
+---
+
+---
+
+## Log Analytics Workspace (LAW) and Diagnostics Reference
+
+### What is the `customerId` and why does it matter?
+
+The `customerId` is a globally unique identifier (GUID) for a Log Analytics Workspace (LAW) in Azure Monitor. It is required by downstream resources (such as Container App Environments, diagnostics, and monitoring agents) to connect and send telemetry to the correct workspace. In Bicep deployments, the `customerId` is typically output by the module that provisions the LAW (e.g., `monitoringLayer.bicep`) and must be passed as a parameter to any module or resource that needs to send logs or metrics to that workspace.
+
+**Key points:**
+- The `customerId` is NOT the resourceId; it is a GUID property of the LAW resource.
+- Some Azure resources (e.g., Container App Environment) require the `customerId` at deployment time to configure diagnostics.
+- The `customerId` is only available after the LAW is fully provisioned, so Bicep modules must use explicit `dependsOn` to ensure correct sequencing.
+- If the `customerId` is not available or is invalid at deployment time, dependent resources will fail to deploy with errors like `LogAnalyticsConfiguration is invalid`.
+
+### Reference Table: LAW/Diagnostics Parameters and Outputs
+
+| Name/Parameter                | Description                                                                 | Source/Usage                        |
+|-------------------------------|-----------------------------------------------------------------------------|-------------------------------------|
+| `logAnalyticsWorkspaceId`     | Resource ID of the LAW (used for RBAC, diagnostic settings, etc.)           | Output from `monitoringLayer.bicep` |
+| `logAnalyticsCustomerId`      | GUID of the LAW (required for Container App Env, agents, etc.)              | Output from `monitoringLayer.bicep` |
+| `globalLogAnalyticsWorkspaceId` | Resource ID for global diagnostics (passed to globalLayer, etc.)            | Parameter in `main.bicep`           |
+| `logAnalyticsCustomerId` (parameter) | Passed to modules that need to configure diagnostics (e.g., deploymentStampLayer) | Parameter in `main.bicep`, `deploymentStampLayer.bicep` |
+| `diagnosticSettings`          | Diagnostic settings block referencing LAW                                   | Used in various modules             |
+
+**Propagation Example:**
+- `main.bicep` deploys `monitoringLayer.bicep` → outputs `logAnalyticsWorkspaceId` and `logAnalyticsCustomerId`.
+- `main.bicep` passes these outputs as parameters to `globalLayer.bicep` and each `deploymentStampLayer.bicep`.
+- Each downstream module uses the `customerId` to configure diagnostics for resources (e.g., Container App Environment, App Service, Key Vault, etc.).
+
+> **Tip for new developers:**
+> Always ensure that any resource or module requiring diagnostics or monitoring is passed the correct `customerId` and that module dependencies are set so the LAW is fully provisioned before its value is needed.
+
+For more details, see the in-code comments in `main.bicep`, `monitoringLayer.bicep`, and `deploymentStampLayer.bicep`, or ask in project discussions.

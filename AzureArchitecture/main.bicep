@@ -1,3 +1,15 @@
+output debugLogAnalyticsCustomerId string = monitoringLayers[0].outputs.logAnalyticsWorkspaceCustomerId
+
+@description('Default storage SKU for CELL storage accounts')
+@allowed([ 'Premium_ZRS', 'Standard_GZRS', 'Standard_RAGZRS', 'Standard_LRS' ])
+param storageSkuName string = 'Standard_LRS'
+
+
+@description('Enable Blob Object Replication (ORS) from each CELL to a destination account')
+param enableStorageObjectReplication bool = false
+
+@description('Destination storage account resource ID for Blob Object Replication (when enabled)')
+param storageReplicationDestinationId string = ''
 @description('Enable zone redundancy for Cosmos DB')
 param cosmosZoneRedundant bool = false
 @description('DNS zone name for the deployment (e.g., stamps.sdp-saas.com)')
@@ -218,6 +230,7 @@ param cells array = [
 // Derived flag: treat either explicit useHttpForSmoke or environmentProfile==smoke as smoke mode
 // var isSmoke = useHttpForSmoke || environmentProfile == 'smoke'
 
+
 // ============ OPTIONAL DATA HA/DR KNOBS (safe defaults) ============
 // Note: These knobs apply to CELL-layer resources only. Global control plane replication
 // is configured in globalLayer and is not tenant/team configurable.
@@ -227,13 +240,6 @@ param cosmosAdditionalLocations array = []
 @description('Enable multi-write for Cosmos DB across locations (A/A)')
 param cosmosMultiWrite bool = false
 
-@allowed([ 'Premium_ZRS', 'Standard_GZRS', 'Standard_RAGZRS' ])
-@description('Default storage SKU for CELL storage accounts')
-param storageSkuName string = 'Premium_ZRS'
-
-@description('Enable Blob Object Replication (ORS) from each CELL to a destination account')
-param enableStorageObjectReplication bool = false
-
 @description('Enable SQL Auto-failover Group for each CELL')
 param enableSqlFailoverGroup bool = false
 
@@ -242,9 +248,6 @@ param enableContainerRegistry bool = true
 
 @description('Create the storage account in this deployment (set false to use an existing account)')
 param createStorageAccount bool = true
-
-@description('Destination storage account resource ID for Blob Object Replication (when enabled)')
-param storageReplicationDestinationId string = ''
 
 @description('Resource ID of the partner SQL Server for Auto-failover Group')
 param sqlSecondaryServerId string = ''
@@ -322,9 +325,9 @@ module keyVaults './keyvault.bicep' = [
       accessPolicies: [
         {
           tenantId: subscription().tenantId
-            objectId: '' // Set to global identity principalId if needed, or remove accessPolicies if not required
+          objectId: reference(userAssignedIdentityResourceId, '2018-11-30').principalId
           permissions: {
-            secrets: [ 'get', 'list' ]
+            secrets: [ 'get', 'list', 'set' ]
           }
         }
       ]
@@ -381,6 +384,20 @@ module regionalLayers './regionalLayer.bicep' = [
   }
 ]
 
+
+// --------------------------------------------------------------------------------------
+// Log Analytics Workspace (LAW) Parameter Propagation
+// --------------------------------------------------------------------------------------
+// - The monitoringLayer module provisions the central Log Analytics Workspace (LAW).
+// - Outputs from monitoringLayers[0] include:
+//     - logAnalyticsWorkspaceId: The resourceId for use in diagnosticSettings.
+//     - logAnalyticsWorkspaceCustomerId: The GUID required for Container App Environment integration.
+// - These outputs are passed as parameters to only those modules that require them:
+//     - globalLayer: Receives globalLogAnalyticsWorkspaceId for diagnostics on global resources.
+//     - deploymentStampLayer: Receives both globalLogAnalyticsWorkspaceId and logAnalyticsCustomerId for cell-level diagnostics and Container App Environment.
+// - Do NOT pass LAW parameters to regionalLayer or other modules unless you add diagnosticSettings there.
+// - This approach keeps the deployment modular, clear, and easy to maintain.
+// --------------------------------------------------------------------------------------
 // ============ GLOBAL LAYER ============
 
 
@@ -482,7 +499,6 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
       keyVaultName: take(toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 6)}${replace(replace(take(salt, 4), '-', ''), '_', '')}'), 24)
       salt: salt
-      cosmosDbStampName: toLower('cosmos${take(cell.geoName, 3)}${take(cell.regionName, 3)}${padLeft(string(index + 1), 2, '0')}z${string(length(cell.availabilityZones))}${substring(uniqueString(subscription().id, cell.geoName, cell.regionName, string(index)), 0, 6)}')
       tags: union(baseTags, {
         geo: cell.geoName
         region: cell.regionName
@@ -493,27 +509,28 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
         workload: 'stamps-pattern'
         costCenter: 'IT-Infrastructure'
       })
-  containerRegistryName: 'acr${cell.geoName}${cell.regionName}CELL${padLeft(string(index + 1), 2, '0')}'
-  enableContainerRegistry: enableContainerRegistry
-  containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
-  containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
-  baseDomain: cell.baseDomain
+      containerRegistryName: 'acr${cell.geoName}${cell.regionName}CELL${padLeft(string(index + 1), 2, '0')}'
+      enableContainerRegistry: enableContainerRegistry
+      containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
+      containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
+      baseDomain: cell.baseDomain
   globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-  cosmosAdditionalLocations: cosmosAdditionalLocations
-  cosmosMultiWrite: cosmosMultiWrite
-  cosmosZoneRedundant: cosmosZoneRedundant
-  storageSkuName: storageSkuName
-  createStorageAccount: createStorageAccount
-  enableStorageObjectReplication: enableStorageObjectReplication
-  storageReplicationDestinationId: storageReplicationDestinationId
-  enableSqlFailoverGroup: enableSqlFailoverGroup
-  sqlSecondaryServerId: sqlSecondaryServerId
-  enableCellTrafficManager: enableCellTrafficManager
-  userAssignedIdentityId: userAssignedIdentityResourceId
+  logAnalyticsCustomerId: monitoringLayers[0].outputs.logAnalyticsWorkspaceCustomerId
+      cosmosAdditionalLocations: cosmosAdditionalLocations
+      cosmosMultiWrite: cosmosMultiWrite
+      cosmosZoneRedundant: cosmosZoneRedundant
+      storageSkuName: storageSkuName
+      createStorageAccount: createStorageAccount
+      enableStorageObjectReplication: enableStorageObjectReplication
+      storageReplicationDestinationId: storageReplicationDestinationId
+      enableSqlFailoverGroup: enableSqlFailoverGroup
+      sqlSecondaryServerId: sqlSecondaryServerId
+      enableCellTrafficManager: enableCellTrafficManager
+      userAssignedIdentityId: userAssignedIdentityResourceId
     }
     dependsOn: [
-      regionalLayers
       monitoringLayers
+      regionalLayers
     ]
   }
 ]

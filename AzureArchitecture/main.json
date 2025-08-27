@@ -7,10 +7,10 @@
       "version": "0.37.4.10188",
       "templateHash": "18171389708173071211"
     }
-  },
-  "parameters": {
-    "dnsZoneName": {
-      "type": "string",
+                  {
+                    "category": "StorageWrite",
+                    "enabled": true
+                  },
       "defaultValue": "stamps.sdp-saas.com",
       "metadata": {
         "description": "DNS zone name for the deployment (e.g., stamps.sdp-saas.com)"

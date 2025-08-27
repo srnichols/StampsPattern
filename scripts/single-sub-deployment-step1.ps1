@@ -125,6 +125,7 @@ try {
     exit 1
 }
 
+
 # Extract management portal parameters
 if ($outputs.managementPortalDeploymentParams -and $outputs.managementPortalDeploymentParams.value) {
     $mgmtParams = $outputs.managementPortalDeploymentParams.value
@@ -145,4 +146,21 @@ if ($outputs.globalLayerOutputs -and $outputs.globalLayerOutputs.value) {
     Write-Warning "[WARN] globalLayerOutputs not found in deployment outputs. Routing parameters file not written."
     Write-Host "[DEBUG] Full outputs:"
     Write-Host ($outputs | ConvertTo-Json -Depth 5)
+}
+
+# Post-deployment: Assign Key Vault access policy to SQL Server managed identity
+if ($outputs.sqlServerSystemAssignedPrincipalId -and $outputs.sqlServerSystemAssignedPrincipalId.value -and $outputs.keyVaultName -and $outputs.keyVaultName.value) {
+    $sqlPrincipalId = $outputs.sqlServerSystemAssignedPrincipalId.value
+    $keyVaultName = $outputs.keyVaultName.value
+    Write-Host "[INFO] Assigning Key Vault access policy to SQL Server managed identity..."
+    $setPolicyResult = & az keyvault set-policy --name $keyVaultName --object-id $sqlPrincipalId --secret-permissions get --key-permissions get wrapKey unwrapKey 2>&1
+    if ($LASTEXITCODE -ne 0 -or -not $setPolicyResult) {
+        Write-Error "[ERROR] Failed to assign Key Vault access policy to SQL Server managed identity."
+        Write-Host $setPolicyResult
+        exit 1
+    } else {
+        Write-Host "[INFO] Key Vault access policy assigned to SQL Server managed identity."
+    }
+} else {
+    Write-Warning "[WARN] Could not find SQL Server principalId or Key Vault name in outputs. Skipping post-deployment Key Vault policy assignment."
 }

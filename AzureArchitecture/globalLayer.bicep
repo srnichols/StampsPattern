@@ -52,6 +52,8 @@ param trafficManagerName string
 @description('Name of the Front Door instance')
 param frontDoorName string
 
+// The globalLogAnalyticsWorkspaceId parameter is required for diagnostics on global resources (Function Apps, Storage, Cosmos DB, Front Door, Traffic Manager, etc.).
+// This value is passed from main.bicep, which gets it from monitoringLayers[0].outputs.logAnalyticsWorkspaceId.
 @description('The resource ID of the central Log Analytics Workspace for global resource diagnostics.')
 param globalLogAnalyticsWorkspaceId string
 
@@ -341,33 +343,7 @@ resource functionAppDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-0
 }]
 
 // Diagnostics for Storage Accounts
-resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = [for (app, i) in functionAppsEff: {
-  name: '${app.storageName}-diagnostics'
-  scope: functionStorage[i]
-  properties: {
-    workspaceId: globalLogAnalyticsWorkspaceId
-    logs: [
-      {
-        category: 'StorageRead'
-        enabled: true
-      }
-      {
-        category: 'StorageWrite'
-        enabled: true
-      }
-      {
-        category: 'StorageDelete'
-        enabled: true
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-      }
-    ]
-  }
-}]
+
 
 // Diagnostics for Cosmos DB
 resource cosmosDbDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (enableGlobalCosmos) {

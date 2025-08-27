@@ -88,7 +88,9 @@ resource storeLogAnalyticsKeyScript 'Microsoft.Resources/deploymentScripts@2020-
   dependsOn: [keyVault]
 }
 
+
 output logAnalyticsWorkspaceId string = logAnalytics.id
+output logAnalyticsWorkspaceCustomerId string = logAnalytics.properties.customerId
 output logAnalyticsWorkspaceKeyVaultSecretUri string = '${keyVault.properties.vaultUri}secrets/${logAnalyticsKeySecretName}'
 
 // Add additional monitoring resources (alerts, solutions, etc.) as needed.
