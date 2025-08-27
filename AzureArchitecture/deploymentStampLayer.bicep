@@ -141,6 +141,13 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
 @description('Log Analytics Workspace customerId (GUID) for Container App Environment')
 param logAnalyticsCustomerId string
 
+@description('Log Analytics Workspace Key Vault name for Container App Environment')
+param logAnalyticsWorkspaceKeyVaultName string
+
+@description('Log Analytics Workspace shared key secret name for Container App Environment')
+param logAnalyticsWorkspaceKeySecretName string
+
+
 // Container App Environment for this CELL
 resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = if (enableContainerAppEnvironment) {
   name: containerAppEnvironmentName
@@ -150,11 +157,13 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: logAnalyticsCustomerId
-        // The sharedKey should be retrieved at runtime from Key Vault using the URI provided in globalLogAnalyticsWorkspaceKeyVaultSecretUri.
-        // Example: Use a managed identity and app setting referencing the Key Vault secret URI.
-        // sharedKey: <retrieve from Key Vault at runtime>
+        sharedKey: reference(resourceId('Microsoft.KeyVault/vaults/secrets', logAnalyticsWorkspaceKeyVaultName, logAnalyticsWorkspaceKeySecretName), '2023-02-01').secretValue
       }
     }
+
+        
+
+        
     zoneRedundant: false
   }
   tags: tags

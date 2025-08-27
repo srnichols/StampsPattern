@@ -3,7 +3,7 @@ var apimGlobalPolicyXml = '<policies>\n  <inbound>\n    <!-- Global security hea
 @description('Entra ID Tenant ID for APIM OpenID configuration')
 param entraTenantId string
 @description('Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal)')
-param cosmosZoneRedundant bool = true
+param cosmosZoneRedundant bool = false
 // --------------------------------------------------------------------------------------
 // Module: geodesLayer
 // Purpose: Provisions Enterprise-grade API Management (APIM) and the Global Control Plane Cosmos DB account.

@@ -514,8 +514,10 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
       containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
       baseDomain: cell.baseDomain
-  globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-  logAnalyticsCustomerId: monitoringLayers[0].outputs.logAnalyticsWorkspaceCustomerId
+      globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+      logAnalyticsCustomerId: monitoringLayers[0].outputs.logAnalyticsWorkspaceCustomerId
+      logAnalyticsWorkspaceKeyVaultName: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeyVaultName
+      logAnalyticsWorkspaceKeySecretName: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeySecretName
       cosmosAdditionalLocations: cosmosAdditionalLocations
       cosmosMultiWrite: cosmosMultiWrite
       cosmosZoneRedundant: cosmosZoneRedundant

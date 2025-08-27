@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "salt": {
-      "value": "TeAB"
+      "value": "0zNl"
     },
     "managementClientAppId": {
       "value": "d8f3024a-0c6a-4cea-af8b-7a7cd985354f"
@@ -58,29 +58,27 @@
         {
           "geoName": "na",
           "regionName": "westus3",
-          "cells": ["cell-01", "cell-02", "cell-03"],
+          "cells": ["cell-01", "cell-02"],
           "baseDomain": "westus3.stamps.sdp-saas.com",
           "logAnalyticsWorkspaceName": "law-stamps-na-westus3",
-          "keyVaultName": "kv-stamps-na-westus3vDEWHp"
+          "keyVaultName": "kv-stamps-na-westus30zNl"
         },
         {
           "geoName": "na",
           "regionName": "centralus",
-          "cells": ["cell-01", "cell-02", "cell-03"],
+          "cells": ["cell-01", "cell-02"],
           "baseDomain": "centralus.stamps.sdp-saas.com",
           "logAnalyticsWorkspaceName": "law-stamps-na-centralus",
-          "keyVaultName": "kv-stamps-na-centralusvDEWHp"
+          "keyVaultName": "kv-stamps-na-centralus0zNl"
         }
       ]
     },
     "cells": {
       "value": [
-  { "geoName": "na", "regionName": "westus3", "cellName": "CELL-01", "cellType": "Shared",    "availabilityZones": [],              "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-westus3", "keyVaultName": "kv-stamps-na-westus3vDEWHp" },
-  { "geoName": "na", "regionName": "westus3", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-westus3", "keyVaultName": "kv-stamps-na-westus3vDEWHp" },
-  { "geoName": "na", "regionName": "westus3", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-westus3", "keyVaultName": "kv-stamps-na-westus3vDEWHp" },
-  { "geoName": "na", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "availabilityZones": [],              "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralusvDEWHp" },
-  { "geoName": "na", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": ["1", "2"],      "maxTenantCount": 100, "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralusvDEWHp" },
-  { "geoName": "na", "regionName": "centralus", "cellName": "CELL-03", "cellType": "Dedicated", "availabilityZones": ["1", "2", "3"], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralusvDEWHp" }
+  { "geoName": "na", "regionName": "westus3", "cellName": "CELL-01", "cellType": "Dedicated",    "availabilityZones": [], "maxTenantCount": 1, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-westus3", "keyVaultName": "kv-stamps-na-westus30zNl" },
+  { "geoName": "na", "regionName": "westus3", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": [], "maxTenantCount": 100, "baseDomain": "westus3.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-westus3", "keyVaultName": "kv-stamps-na-westus30zNl" },
+  { "geoName": "na", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "availabilityZones": [], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralus0zNl" },
+  { "geoName": "na", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": [], "maxTenantCount": 100, "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralus0zNl" }
       ]
     },
     "cosmosZoneRedundant": {

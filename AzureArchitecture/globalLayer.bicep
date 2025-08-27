@@ -86,7 +86,7 @@ param primaryLocation string
 param additionalLocations array
 
 @description('Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)')
-param cosmosZoneRedundant bool = true
+param cosmosZoneRedundant bool = false
 
 @description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
 param enableGlobalFunctions bool = true
@@ -293,7 +293,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functio
 var additionalCosmosDbLocations = [for (loc, idx) in additionalLocations: {
   locationName: string(loc)
   failoverPriority: idx + 1
-  isZoneRedundant: cosmosZoneRedundant
+  isZoneRedundant: false
 }]
 
 var cosmosDbLocations = concat(
@@ -301,7 +301,7 @@ var cosmosDbLocations = concat(
     {
       locationName: primaryLocation
       failoverPriority: 0
-  isZoneRedundant: cosmosZoneRedundant
+      isZoneRedundant: false
     }
   ],
   additionalCosmosDbLocations
