@@ -37,6 +37,7 @@ resource cellResourceGroups 'Microsoft.Resources/resourceGroups@2021-04-01' = [f
   })
 }]
 
+
 // Management Portal resource group
 resource managementPortalResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'rg-stamps-management-portal-${environment}'
@@ -46,3 +47,17 @@ resource managementPortalResourceGroup 'Microsoft.Resources/resourceGroups@2021-
     // managementClientAppId and managementClientTenantId are not needed for RG creation
   })
 }
+
+
+// Deploy managed identity into the global resource group using a module
+module globalIdentityModule './globalIdentity.module.bicep' = {
+  name: 'globalIdentityModule'
+  scope: resourceGroup(globalResourceGroup.name)
+  params: {
+    location: primaryLocation
+    identityName: 'global-deployment-identity'
+  }
+}
+
+output globalIdentityResourceId string = globalIdentityModule.outputs.identityResourceId
+output globalIdentityPrincipalId string = globalIdentityModule.outputs.principalId

@@ -58,8 +58,9 @@ param smoke bool = false
 @description('Optional: force all regional backends to this single FQDN for demo/smoke (e.g., www.bing.com). When empty, use per-cell backend domains.')
 param demoBackendFqdn string = ''
 
-@description('Optional per-region override for the Key Vault SSL secret IDs (use to pass versioned SecretIds). Order must align with regions array.')
-param sslCertSecretIdOverrides array = []
+
+@description('Resource ID of the User Assigned Managed Identity to attach to Application Gateway for Key Vault access')
+param userAssignedIdentityId string = ''
 
 var isSmoke = smoke
 
@@ -176,7 +177,7 @@ module regionalLayers './regionalLayer.bicep' = [for (region, idx) in regions: {
     cellCount: length(region.cells)
     cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
     enableHttps: !isSmoke
-    userAssignedIdentityId: ''
+    userAssignedIdentityId: userAssignedIdentityId
     tags: union(tags, { geo: region.geoName, region: region.regionName })
     healthProbePath: '/api/health'
     demoBackendFqdn: demoBackendFqdn

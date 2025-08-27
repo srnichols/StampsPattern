@@ -13,10 +13,14 @@ param logAnalyticsWorkspaceName string
 param retentionInDays int
 @description('Tags for resource management')
 param tags object = {}
+
 @description('Key Vault name to store the Log Analytics key')
 param keyVaultName string
 @description('Secret name for the Log Analytics key in Key Vault')
 param logAnalyticsKeySecretName string = 'logAnalyticsWorkspaceKey'
+
+@description('Resource ID of a user-assigned managed identity with access to Key Vault and Log Analytics')
+param userAssignedIdentityResourceId string
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${logAnalyticsWorkspaceName}-${uniqueString(resourceGroup().id)}'
@@ -39,6 +43,12 @@ resource storeLogAnalyticsKeyScript 'Microsoft.Resources/deploymentScripts@2020-
   name: 'store-loganalytics-key-script'
   location: location
   kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityResourceId}': {}
+    }
+  }
   properties: {
     azCliVersion: '2.53.0'
     timeout: 'PT10M'
@@ -61,9 +71,15 @@ resource storeLogAnalyticsKeyScript 'Microsoft.Resources/deploymentScripts@2020-
         name: 'SECRET_NAME'
         value: logAnalyticsKeySecretName
       }
+      {
+        name: 'SUBSCRIPTION_ID'
+        value: subscription().subscriptionId
+      }
     ]
     scriptContent: '''
       set -e
+      az login --identity --allow-no-subscriptions
+      az account set --subscription "$SUBSCRIPTION_ID"
       KEY=$(az monitor log-analytics workspace get-shared-keys --resource-group "$RESOURCE_GROUP" --workspace-name "$WORKSPACE_ID" --query primarySharedKey -o tsv)
       az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$KEY"
     '''

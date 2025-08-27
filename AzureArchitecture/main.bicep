@@ -1,3 +1,5 @@
+@description('Enable zone redundancy for Cosmos DB')
+param cosmosZoneRedundant bool = false
 @description('DNS zone name for the deployment (e.g., stamps.sdp-saas.com)')
 param dnsZoneName string = 'stamps.sdp-saas.com'
 @description('Traffic Manager profile name')
@@ -7,11 +9,11 @@ param frontDoorName string = 'fd-stamps-global'
 @description('Front Door SKU')
 param frontDoorSku string = 'Standard_AzureFrontDoor'
 @description('Function App name prefix')
-param functionAppNamePrefix string = 'fa-stamps-global-control'
+param functionAppNamePrefix string = 'fa-stamps-global'
 @description('Function Storage name prefix')
-param functionStorageNamePrefix string = 'stfastampsglobalcontrol'
+param functionStorageNamePrefix string = 'stfastampsglobal'
 @description('Global Control Cosmos DB name')
-param globalControlCosmosDbName string = 'global-cosmos-stamps-control'
+param globalControlCosmosDbName string = 'global-cosmos-stamps'
 @description('Additional locations for deployment')
 param additionalLocations array = [ 'centralus' ]
 @description('Function App regions')
@@ -235,6 +237,22 @@ param enableStorageObjectReplication bool = false
 @description('Enable SQL Auto-failover Group for each CELL')
 param enableSqlFailoverGroup bool = false
 
+@description('Enable Azure Container Registry for each CELL (disabled in smoke)')
+param enableContainerRegistry bool = true
+
+@description('Create the storage account in this deployment (set false to use an existing account)')
+param createStorageAccount bool = true
+
+@description('Destination storage account resource ID for Blob Object Replication (when enabled)')
+param storageReplicationDestinationId string = ''
+
+@description('Resource ID of the partner SQL Server for Auto-failover Group')
+param sqlSecondaryServerId string = ''
+
+param userAssignedIdentityResourceId string
+@description('Enable a per-cell Traffic Manager profile (disabled in smoke; global TM is managed in global layer)')
+param enableCellTrafficManager bool = true
+
 @description('Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)')
 
 // ============ VARIABLES ============
@@ -304,7 +322,7 @@ module keyVaults './keyvault.bicep' = [
       accessPolicies: [
         {
           tenantId: subscription().tenantId
-          objectId: regionalUserAssignedIdentities[index].outputs.principalId
+            objectId: '' // Set to global identity principalId if needed, or remove accessPolicies if not required
           permissions: {
             secrets: [ 'get', 'list' ]
           }
@@ -331,22 +349,7 @@ module keyVaultSecrets './keyvaultSecret.bicep' = [
 ]
 
 // ============ REGIONAL LAYER ============
-// Create a user-assigned managed identity for each region
-module regionalUserAssignedIdentities './managedIdentity.bicep' = [
-  for (region, index) in regions: {
-    name: 'regionalUserAssignedIdentity-${region.geoName}-${region.regionName}'
-    scope: resourceGroup('rg-stamps-region-${region.geoName}-${region.regionName}-${environment}')
-    params: {
-      name: 'agw-identity-${region.geoName}-${region.regionName}-${environment}'
-      location: region.regionName
-      tags: union(baseTags, {
-        geo: region.geoName
-        region: region.regionName
-        scope: 'region-agw-identity'
-      })
-    }
-  }
-]
+
 
 module regionalLayers './regionalLayer.bicep' = [
   for (region, index) in regions: {
@@ -359,7 +362,7 @@ module regionalLayers './regionalLayer.bicep' = [
       publicIpId: regionalNetworks[index].outputs.publicIpId
   sslCertSecretId: ''
   enableHttps: false
-    userAssignedIdentityId: regionalUserAssignedIdentities[index].outputs.id
+    userAssignedIdentityId: userAssignedIdentityResourceId
       cellCount: length(region.cells)
       cellBackendFqdns: [for i in range(0, length(region.cells)): 'fa-stamps-${region.regionName}.azurewebsites.net']
       demoBackendFqdn: 'fa-stamps-${region.regionName}.azurewebsites.net'
@@ -373,7 +376,7 @@ module regionalLayers './regionalLayer.bicep' = [
     dependsOn: [
       keyVaults
       regionalNetworks
-      regionalUserAssignedIdentities
+    // regionalUserAssignedIdentities removed
     ]
   }
 ]
@@ -452,9 +455,11 @@ module monitoringLayers './monitoringLayer.bicep' = [
         region: region.regionName
       })
       keyVaultName: keyVaults[index].outputs.vaultName
+    userAssignedIdentityResourceId: userAssignedIdentityResourceId
     }
     dependsOn: [
       keyVaults
+    // regionalUserAssignedIdentities removed
     ]
   }
 ]
@@ -468,7 +473,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
     // Example: kvs-wus2-p-abc123de
     // Cosmos DB name: 3-44 chars, lowercase, letters, numbers, hyphens only, must start with a letter
     // diagnosticsMode: isSmoke ? 'metricsOnly' : 'standard'
-    params: {
+  params: {
       location: cell.regionName
       sqlServerName: 'sql-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
       sqlAdminUsername: sqlAdminUsername
@@ -488,22 +493,23 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
         workload: 'stamps-pattern'
         costCenter: 'IT-Infrastructure'
       })
-      containerRegistryName: 'acr${cell.geoName}${cell.regionName}CELL${padLeft(string(index + 1), 2, '0')}'
-      enableContainerRegistry: false
-      containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
-      containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
-      baseDomain: cell.baseDomain
+  containerRegistryName: 'acr${cell.geoName}${cell.regionName}CELL${padLeft(string(index + 1), 2, '0')}'
+  enableContainerRegistry: enableContainerRegistry
+  containerAppName: 'CELL-${padLeft(string(index + 1), 2, '0')}'
+  containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
+  baseDomain: cell.baseDomain
   globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-      cosmosAdditionalLocations: cell.?cosmosAdditionalLocations ?? cosmosAdditionalLocations
-      cosmosMultiWrite: bool(cell.?cosmosMultiWrite ?? cosmosMultiWrite)
-      cosmosZoneRedundant: false
-      storageSkuName: (cell.?storageSkuName ?? storageSkuName)
-      createStorageAccount: true
-      enableStorageObjectReplication: bool(cell.?enableStorageObjectReplication ?? enableStorageObjectReplication)
-      storageReplicationDestinationId: string(cell.?storageReplicationDestinationId ?? '')
-      enableSqlFailoverGroup: bool(cell.?enableSqlFailoverGroup ?? enableSqlFailoverGroup)
-      sqlSecondaryServerId: string(cell.?sqlSecondaryServerId ?? '')
-      enableCellTrafficManager: false
+  cosmosAdditionalLocations: cosmosAdditionalLocations
+  cosmosMultiWrite: cosmosMultiWrite
+  cosmosZoneRedundant: cosmosZoneRedundant
+  storageSkuName: storageSkuName
+  createStorageAccount: createStorageAccount
+  enableStorageObjectReplication: enableStorageObjectReplication
+  storageReplicationDestinationId: storageReplicationDestinationId
+  enableSqlFailoverGroup: enableSqlFailoverGroup
+  sqlSecondaryServerId: sqlSecondaryServerId
+  enableCellTrafficManager: enableCellTrafficManager
+  userAssignedIdentityId: userAssignedIdentityResourceId
     }
     dependsOn: [
       regionalLayers

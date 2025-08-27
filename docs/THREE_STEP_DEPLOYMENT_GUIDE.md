@@ -6,41 +6,45 @@ This guide outlines the recommended three-step process for deploying the Stamps 
 
 ---
 
-## Step 1: Deploy Core Infrastructure
+
+## Step 1: Deploy Core Infrastructure (Resource Groups and Main Assets)
 
 
-### Step 1a: Create Resource Groups
-   - Deploy the `resourceGroups.bicep` template to create all required resource groups before deploying any assets.
-   - Example usage:
-      ```pwsh
-      az deployment sub create \
-        --location <primary-location> \
-        --template-file ./AzureArchitecture/resourceGroups.bicep \
-        --parameters @./AzureArchitecture/resourceGroups.parameters.json \
-        --subscription <subscription-id>
-      ```
-   - This ensures all resource groups exist and are named correctly before proceeding.
+Run the `single-sub-deployment-step1.ps1` PowerShell script to automate the entire core infrastructure deployment. This script fully automates global identity creation and permissions for all downstream modules. The process includes:
 
-### Step 1b: Deploy Core Assets and Extract Outputs
-   - After all resource groups are created, run the `single-sub-deployment-step1.ps1` PowerShell script to deploy `AzureArchitecture/main.bicep` and extract outputs needed for routing and management portal deployment.
-   - Example usage:
-      ```pwsh
-      pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id> -Location <primary-location> -Environment <env>
-      ```
-   - Concrete example (replace values as needed):
-      ```pwsh
-      pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId 00000000-1111-2222-3333-444455556666 -Location westus3 -Environment test -salt jChBrq
-      ```
-   - The script will:
-     - Deploy the Bicep template using `main.parameters.json`.
-     - Extract outputs for routing and management portal deployment.
-     - Write outputs to `routing.parameters.json` and `management-portal.parameters.json` for use in later steps.
+- Deploy the `AzureArchitecture/resourceGroups.bicep` template to create all required resource groups **and** a global user-assigned managed identity in the global resource group.
+- Parse and extract the global identity's resource ID and principalId from the deployment outputs.
+- Deploy the `AzureArchitecture/globalIdentityRoleAssignment.sub.bicep` template at the subscription scope to assign Contributor to the global identity (no manual role assignment or re-run required).
+- Wait 30 seconds to ensure propagation of permissions.
+- Deploy the `AzureArchitecture/main.bicep` template using `main.parameters.json`, passing the global identity resource ID to all modules that require it (monitoring, Key Vault, etc.).
+- Extract outputs for routing and management portal deployment.
+- Write outputs to `routing.parameters.json` and `management-portal.parameters.json` for use in later steps.
 
-2. **Wait for deployment to complete**
-   - Confirm that all resource groups and assets are created, including ACR, Key Vault, and `rg-stamps-management-portal-<env>`.
 
-3. **Review generated outputs**
-   - The script will generate `routing.parameters.json` and `management-portal.parameters.json` containing all parameters needed for the next steps.
+**Example usage:**
+```pwsh
+pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id> -Location <primary-location> -Environment <env>
+```
+
+**Real-world example:**
+```pwsh
+pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId "00000000-1111-2222-3333-444455556666" -Location "westus3" -Environment "test" -salt "TeAB"
+```
+
+
+**What the script does:**
+- Creates all resource groups as defined in `resourceGroups.bicep`.
+- Deploys a global user-assigned managed identity in the global resource group.
+- Assigns Contributor at the subscription scope to the global identity (fully automated, no manual step required).
+- Waits 30 seconds for propagation.
+- Deploys all core assets as defined in `main.bicep`, passing the global identity to all modules that require it.
+- Extracts and writes outputs for use in routing and management portal deployment.
+
+
+**After running the script:**
+1. Confirm that all resource groups and assets are created, including the global managed identity, ACR, Key Vault, and `rg-stamps-management-portal-<env>`.
+2. The global managed identity will have Contributor at the subscription scope and will be used by all deployment scripts and modules requiring permissions (monitoring, Key Vault, etc.).
+3. Review the generated `routing.parameters.json` and `management-portal.parameters.json` files for use in the next steps.
 
 ---
 

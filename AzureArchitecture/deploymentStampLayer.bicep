@@ -3,6 +3,9 @@
 @description('Azure region for the CELL/Stamp')
 param location string
 
+@description('Resource ID of the user-assigned managed identity for deployment scripts and automation')
+param userAssignedIdentityId string
+
 @description('Name for the SQL Server')
 param sqlServerName string
 
@@ -389,6 +392,12 @@ resource storeSqlAdminPasswordScript 'Microsoft.Resources/deploymentScripts@2020
   name: 'store-sqladmin-password-script'
   location: location
   kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityId}': {}
+    }
+  }
   properties: {
     azCliVersion: '2.53.0'
     timeout: 'PT10M'
@@ -430,6 +439,14 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2023-0
         permissions: {
           secrets: ['get']
           keys: ['get', 'wrapKey', 'unwrapKey']
+        }
+      }
+      // Grant access to global user-assigned managed identity for deployment scripts
+      {
+        objectId: reference(userAssignedIdentityId, '2018-11-30').principalId
+        tenantId: subscription().tenantId
+        permissions: {
+          secrets: ['get', 'set']
         }
       }
     ]
