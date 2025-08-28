@@ -1,5 +1,5 @@
 // Cosmos DB account name for the CELL/Stamp
-var cosmosDbStampName = '${location}cellcosmosdb'
+var cosmosDbStampName = '${location}cellcosmosdb${uniqueString(resourceGroup().id, salt)}'
 // ...existing code...
 
 @description('Azure region for the CELL/Stamp')
@@ -32,6 +32,7 @@ param salt string = ''
 
 @description('Tags for resources')
 param tags object = {}
+
 
 // Remove invalid resource declarations and misplaced decorators
 // If storageEncryptionKey and sqlEncryptionKey are needed, declare them with valid resource types and unique names, e.g.:
@@ -171,14 +172,13 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
 
 // Front Door configuration is managed at the global layer. Omitted from CELL layer in smoke.
 
-// Traffic Manager resource definition
 resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = if (enableCellTrafficManager) {
-  name: 'myTrafficManager'
+  name: 'tm-${location}-cell-${uniqueString(resourceGroup().id, salt)}'
   location: 'global'
   properties: {
     trafficRoutingMethod: 'Performance'
     dnsConfig: {
-      relativeName: 'mytrafficmanager'
+      relativeName: 'tm${uniqueString(resourceGroup().id)}'
       ttl: 30
     }
     monitorConfig: {
@@ -343,7 +343,6 @@ resource storageAccountCreate 'Microsoft.Storage/storageAccounts@2022-09-01' = i
   // }
 }
 
-// Key Vault for CELL with security hardening
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
   name: empty(salt) ? keyVaultName : '${keyVaultName}${salt}'
   location: location
@@ -353,62 +352,31 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
       name: 'standard'
     }
     tenantId: subscription().tenantId
-    // Security hardening
     enabledForDeployment: false
     enabledForDiskEncryption: false
     enabledForTemplateDeployment: true
     softDeleteRetentionInDays: 90
     enablePurgeProtection: true
-    publicNetworkAccess: 'Enabled' // Can be set to 'Disabled' for private access
+    publicNetworkAccess: 'Enabled'
     networkAcls: {
       defaultAction: 'Deny'
       bypass: 'AzureServices'
       ipRules: []
       virtualNetworkRules: []
     }
-  accessPolicies: []  // All access policies assigned post-deployment via script
-  }
-  tags: tags
-  // ...existing code...
-}
-// Store SQL admin password in Key Vault using a deploymentScript
-resource storeSqlAdminPasswordScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'store-sqladmin-password-script'
-  location: location
-  kind: 'AzureCLI'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${userAssignedIdentityId}': {}
-    }
-  }
-  properties: {
-    azCliVersion: '2.53.0'
-    timeout: 'PT10M'
-    cleanupPreference: 'OnSuccess'
-    forceUpdateTag: uniqueString(sqlServerName, keyVault.name)
-    environmentVariables: [
+    accessPolicies: [
       {
-        name: 'SQL_ADMIN_PASSWORD'
-        value: sqlAdminPassword
-      }
-      {
-        name: 'KEYVAULT_NAME'
-        value: keyVault.name
-      }
-      {
-        name: 'SECRET_NAME'
-        value: 'sqlAdminPassword'
+        tenantId: subscription().tenantId
+        objectId: reference(userAssignedIdentityId, '2018-11-30', 'Full').principalId
+        permissions: {
+          secrets: ['get', 'list', 'set']
+        }
       }
     ]
-    scriptContent: '''
-      set -e
-      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$SQL_ADMIN_PASSWORD"
-    '''
-    retentionInterval: 'P1D'
   }
-  // dependsOn removed as per linter suggestion
+  tags: tags
 }
+
 
 // Key Vault access policies (created separately to avoid circular dependencies)
 
@@ -436,6 +404,14 @@ resource storagePrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-04-01' 
     ]
   }
   tags: tags
+}
+
+resource sqlAdminPasswordSecret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
+parent: keyVault
+name: 'sqlAdminPassword'
+properties: {
+  value: sqlAdminPassword
+}
 }
 
 // Private endpoint for SQL Server
@@ -735,12 +711,10 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   identity: {
     type: 'SystemAssigned'
   }
-  // Note: Only SQL admin login is configured. AAD-only authentication is NOT enabled by default.
   properties: {
     administratorLogin: sqlAdminUsername
-  administratorLoginPassword: '@Microsoft.KeyVault(SecretUri=${reference(resourceId('Microsoft.KeyVault/vaults', keyVaultResourceName), '2023-02-01').properties.vaultUri}secrets/sqlAdminPassword)'
+    administratorLoginPassword: reference(resourceId('Microsoft.KeyVault/vaults/secrets', keyVaultResourceName, 'sqlAdminPassword'), '2023-02-01').secretValue
     version: '12.0'
-    // Security hardening
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
   }

@@ -52,6 +52,7 @@ if ($rgExitCode -ne 0 -or -not $rgDeployResult) {
     exit 1
 }
 
+Start-Sleep -Seconds 15
 # Parse outputs for global identity
 try {
     $rgOutputs = $rgDeployResult | ConvertFrom-Json
