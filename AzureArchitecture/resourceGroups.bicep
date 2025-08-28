@@ -55,7 +55,7 @@ module globalIdentityModule './globalIdentity.module.bicep' = {
   scope: resourceGroup(globalResourceGroup.name)
   params: {
     location: primaryLocation
-    identityName: 'global-deployment-identity'
+    identityName: 'global-deployment-identity-v2'
   }
 }
 
