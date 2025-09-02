@@ -85,7 +85,7 @@ param primaryLocation string
 @description('Additional locations for geo-replication (array of region names, e.g., ["westus2"])')
 param additionalLocations array
 
-@description('Whether Cosmos DB regions should be zone redundant (set false for lab/smoke in constrained regions)')
+@description('Enable zone redundancy for Cosmos DB regions in this module (true = zone redundant). Recommended: true in prod, false otherwise.')
 param cosmosZoneRedundant bool = false
 
 @description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
@@ -99,8 +99,11 @@ param regionalEndpoints array = []
 
 
 
-@description('APIM Gateway URL for Front Door origin configuration')
+@description('APIM Gateway URL for Front Door origin configuration (legacy single)')
 param apimGatewayUrl string = ''
+
+@description('APIM Gateway URLs for Front Door origin configuration (primary + secondaries)')
+param apimGatewayUrls array = []
 
 @description('Azure Front Door SKU - Standard_AzureFrontDoor (minimum) or Premium_AzureFrontDoor (for Private Link)')
 @allowed(['Standard_AzureFrontDoor', 'Premium_AzureFrontDoor'])
@@ -160,7 +163,8 @@ resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2023-05-01' = {
 }
 
 // Origin Group for APIM Global Gateway (primary routing strategy)
-resource apimOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (!empty(apimGatewayUrl)) {
+// Create an origin group if we have at least one APIM gateway URL
+resource apimOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (!empty(apimGatewayUrls) || !empty(apimGatewayUrl)) {
   name: 'apim-global-origins'
   parent: frontDoor
   properties: {
@@ -179,20 +183,21 @@ resource apimOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = if (
 }
 
 // Origin for APIM Global Gateway
-resource apimOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = if (!empty(apimGatewayUrl)) {
-  name: 'apim-global-origin'
+// Create one origin per APIM gateway URL
+resource apimOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = [for (url, i) in (length(apimGatewayUrls) > 0 ? apimGatewayUrls : [apimGatewayUrl]): if (!empty(url)) {
+  name: length(apimGatewayUrls) > 0 ? 'apim-origin-${i}' : 'apim-global-origin'
   parent: apimOriginGroup
   properties: {
-    hostName: replace(apimGatewayUrl, 'https://', '')
+    hostName: replace(url, 'https://', '')
     httpPort: 80
     httpsPort: 443
-    originHostHeader: replace(apimGatewayUrl, 'https://', '')
+    originHostHeader: replace(url, 'https://', '')
     priority: 1
     weight: 1000
     enabledState: 'Enabled'
     enforceCertificateNameCheck: true
   }
-}
+}]
 
 // Primary Route to forward traffic to APIM (main traffic flow)
 resource apimRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = if (!empty(apimGatewayUrl)) {
@@ -293,7 +298,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = [for (app, i) in functio
 var additionalCosmosDbLocations = [for (loc, idx) in additionalLocations: {
   locationName: string(loc)
   failoverPriority: idx + 1
-  isZoneRedundant: false
+  isZoneRedundant: cosmosZoneRedundant
 }]
 
 var cosmosDbLocations = concat(
@@ -301,7 +306,7 @@ var cosmosDbLocations = concat(
     {
       locationName: primaryLocation
       failoverPriority: 0
-      isZoneRedundant: false
+  isZoneRedundant: cosmosZoneRedundant
     }
   ],
   additionalCosmosDbLocations

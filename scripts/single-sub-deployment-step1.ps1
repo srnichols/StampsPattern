@@ -8,7 +8,9 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Environment,
     [Parameter(Mandatory=$false)]
-    [string]$Salt = ''
+    [string]$Salt = '',
+    [Parameter(Mandatory=$false)]
+    [switch]$AutoRunApimSync = $false
 )
 
 
@@ -184,4 +186,71 @@ if ($outputs.sqlServerSystemAssignedPrincipalId -and $outputs.sqlServerSystemAss
 } else {
     Write-Warning "[WARN] Could not find SQL Server principalId or Key Vault name in outputs. Skipping post-deployment Key Vault policy assignment."
 }
+// Conditional: run apim-sync.ps1 for non-prod multi-APIM demo deployments
+Write-Host "[INFO] Evaluating whether to run apim-sync.ps1..."
+try {
+    $aggregatedApim = $null
+    if ($outputs.aggregatedApimGatewayUrls -and $outputs.aggregatedApimGatewayUrls.value) {
+        $aggregatedApim = $outputs.aggregatedApimGatewayUrls.value
+    } elseif ($outputs.apimGatewayUrls -and $outputs.apimGatewayUrls.value) {
+        # Fallback: older templates may expose apimGatewayUrls directly
+        $aggregatedApim = $outputs.apimGatewayUrls.value
+    }
+
+    if ($null -ne $aggregatedApim) {
+        Write-Host "[DEBUG] Aggregated APIM gateway URLs: $($aggregatedApim | ConvertTo-Json -Depth 2)"
+    } else {
+        Write-Host "[DEBUG] No aggregated APIM gateway URLs found in outputs. apim-sync will be skipped."
+    }
+
+    # Only run the sync if explicitly requested, non-prod, and there are multiple APIM gateway URLs
+    if ($AutoRunApimSync -and $Environment -ne 'prod' -and $aggregatedApim -and $aggregatedApim.Count -gt 1) {
+        Write-Host "[INFO] AutoRunApimSync enabled and non-prod multi-APIM deployment detected. Preparing to run apim-sync.ps1"
+
+        # Require explicit apimResourceId output (do not attempt risky best-effort parsing)
+        if (-not ($outputs.apimResourceId -and $outputs.apimResourceId.value)) {
+            Write-Warning "[WARN] apimResourceId output not present. For safety, apim-sync will not run. Provide apimResourceId in outputs or run apim-sync manually."
+        } else {
+            $apimResId = $outputs.apimResourceId.value
+            $segments = $apimResId -split '/' | Where-Object { $_ -ne '' }
+            $rgIndex = [array]::IndexOf($segments, 'resourceGroups')
+            $primaryRg = $null
+            $primaryApimName = $null
+            if ($rgIndex -ge 0 -and $rgIndex -lt ($segments.Length - 1)) {
+                $primaryRg = $segments[$rgIndex + 1]
+                $primaryApimName = $segments[-1]
+            }
+
+            if ($primaryApimName -and $primaryRg) {
+                # Derive secondary names only from well-formed azure-api.net hostnames
+                $secondaryNames = @()
+                for ($i = 1; $i -lt $aggregatedApim.Count; $i++) {
+                    $url = $aggregatedApim[$i]
+                    if ($url -and ($url -match '^https?://')) {
+                        $hostname = $url -replace '^https?://','' -replace '/.*$',''
+                        if ($hostname -match '^(?<svc>[^.]+)\.azure-api\.net$') {
+                            $secondaryNames += $Matches['svc']
+                        } else {
+                            Write-Warning "[WARN] Skipping secondary APIM URL with non-standard host: $hostname (custom domains are not auto-mapped)."
+                        }
+                    }
+                }
+
+                if ($secondaryNames.Count -gt 0) {
+                    Write-Host "[INFO] Calling apim-sync.ps1: Primary=$primaryApimName RG=$primaryRg Secondaries=$($secondaryNames -join ',')"
+                    pwsh ./scripts/apim-sync.ps1 -PrimaryApimName $primaryApimName -PrimaryRg $primaryRg -SecondaryApimNames $secondaryNames -SubscriptionId $SubscriptionId
+                } else {
+                    Write-Warning "[WARN] No auto-discoverable secondary APIM names found. Skipping apim-sync."
+                }
+            } else {
+                Write-Warning "[WARN] Could not derive primary APIM name or resource group from apimResourceId. Skipping apim-sync."
+            }
+        }
+    } else {
+        Write-Host "[INFO] apim-sync not required or AutoRunApimSync not enabled. Skipping."
+    }
+} catch {
+    Write-Warning "[WARN] Exception while evaluating/running apim-sync: $_"
+}
+
 Write-Host "[INFO] Deployment script completed successfully!"

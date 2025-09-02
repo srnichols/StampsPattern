@@ -21,6 +21,12 @@ param sqlAdminPassword string
 @description('Name for the SQL Database')
 param sqlDbName string
 
+@description('SQL Database SKU tier (e.g., Basic, Standard, GeneralPurpose)')
+param sqlDatabaseSkuTier string = 'Standard'
+
+@description('SQL Database SKU name (e.g., Basic, S0, S1)')
+param sqlDatabaseSkuName string = 'S1'
+
 @description('Name for the Storage Account')
 param storageAccountName string
 
@@ -85,11 +91,9 @@ param enableCellTrafficManager bool = false
 @allowed([ 'Premium_ZRS', 'Standard_GZRS', 'Standard_RAGZRS', 'Standard_LRS' ])
 param storageSkuName string = 'Premium_ZRS'
 
-@description('Enable Blob Object Replication (ORS) from each CELL to a destination account')
-param enableStorageObjectReplication bool = false
-
-@description('Destination storage account resource ID for Blob Object Replication (when enabled)')
-param storageReplicationDestinationId string = ''
+// Removed parameters:
+// - enableStorageObjectReplication (unused)
+// - storageReplicationDestinationId (unused)
 
 @description('Additional Cosmos DB locations for this CELL (optional)')
 param cosmosAdditionalLocations array = []
@@ -98,7 +102,7 @@ param cosmosAdditionalLocations array = []
 param cosmosMultiWrite bool = false
 
 
-param cosmosZoneRedundant bool = true
+// Removed: cosmosZoneRedundant (unused)
 
 
 @description('Enable SQL Auto-failover Group to a partner server in another region')
@@ -731,8 +735,8 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-11-01-preview' = {
   location: location
   tags: tags
   sku: {
-    name: 'S1'
-    tier: 'Standard'
+  name: sqlDatabaseSkuName
+  tier: sqlDatabaseSkuTier
   }
   properties: {
     collation: 'SQL_Latin1_General_CP1_CI_AS'
@@ -795,7 +799,7 @@ resource sqlFailoverGroup 'Microsoft.Sql/servers/failoverGroups@2021-11-01' = if
 output keyVaultId string = resourceId('Microsoft.KeyVault/vaults', keyVaultResourceName)
 output keyVaultUri string = reference(resourceId('Microsoft.KeyVault/vaults', keyVaultResourceName), '2023-02-01').properties.vaultUri
 output sqlServerSystemAssignedPrincipalId string = sqlServer.identity.principalId
-output storageAccountSystemAssignedPrincipalId string = createStorageAccount ? storageAccountCreate.identity.principalId : 'not-assigned'
+output storageAccountSystemAssignedPrincipalId string = createStorageAccount ? 'assigned' : 'not-assigned'
 output cosmosDbId string = cellCosmosDb.id
 output cosmosDbEndpoint string = cellCosmosDb.properties.documentEndpoint
 output applicationGatewayId string = enableApplicationGateway && !empty(applicationGatewaySubnetId) ? applicationGateway.id : 'not-deployed'

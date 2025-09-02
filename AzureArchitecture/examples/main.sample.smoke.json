@@ -12,9 +12,11 @@
     "globalControlCosmosDbName": { "value": "cosmos-stamps-control" },
     "primaryLocation": { "value": "eastus" },
     "additionalLocations": { "value": ["westus2"] },
-    "functionAppRegions": { "value": ["eastus", "westus2"] },
+  "functionAppRegions": { "value": ["eastus", "westus2"] },
     "sqlAdminUsername": { "value": "sqladmin" },
   "sqlAdminPassword": { "value": "P@ssw0rd!ChangeMe1234" },
+  "sqlDatabaseSkuTier": { "value": "Standard" },
+  "sqlDatabaseSkuName": { "value": "S0" },
     "regions": {
       "value": [
         {
@@ -45,7 +47,6 @@
   "cosmosAdditionalLocations": { "value": [] },
     "cosmosMultiWrite": { "value": false },
   "storageSkuName": { "value": "Premium_ZRS" },
-    "enableStorageObjectReplication": { "value": false },
     "enableSqlFailoverGroup": { "value": false }
   }
 }

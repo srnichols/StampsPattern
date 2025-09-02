@@ -2,8 +2,9 @@
 var apimGlobalPolicyXml = '<policies>\n  <inbound>\n    <!-- Global security headers -->\n    <set-header name="X-Frame-Options" exists-action="override">\n      <value>DENY</value>\n    </set-header>\n    <set-header name="X-Content-Type-Options" exists-action="override">\n      <value>nosniff</value>\n    </set-header>\n    <set-header name="Strict-Transport-Security" exists-action="override">\n      <value>max-age=31536000; includeSubDomains</value>\n    </set-header>\n    <!-- Rate limiting by tenant -->\n    <rate-limit-by-key calls="1000" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault(&quot;X-Tenant-ID&quot;,&quot;anonymous&quot;))" />\n    <!-- Tenant validation -->\n    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized">\n      <openid-config url="${environment().authentication.loginEndpoint}${entraTenantId}/v2.0/.well-known/openid-configuration" />\n      <required-claims>\n        <claim name="aud">\n          <value>api://stamps-pattern</value>\n        </claim>\n      </required-claims>\n    </validate-jwt>\n  </inbound>\n  <backend>\n    <forward-request />\n  </backend>\n  <outbound>\n    <!-- Remove sensitive headers -->\n    <set-header name="Server" exists-action="delete" />\n    <set-header name="X-Powered-By" exists-action="delete" />\n  </outbound>\n  <on-error>\n    <!-- Error logging to Log Analytics -->\n    <trace source="@(context.RequestId)" severity="error">\n      @{\n        return new JObject(\n          new JProperty("timestamp", DateTime.UtcNow),\n          new JProperty("error", context.LastError.Message),\n          new JProperty("requestId", context.RequestId)\n        ).ToString();\n      }\n    </trace>\n  </on-error>\n</policies>'
 @description('Entra ID Tenant ID for APIM OpenID configuration')
 param entraTenantId string
-@description('Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal)')
-param cosmosZoneRedundant bool = false
+@description('Deployment environment name (e.g., dev, test, prod)')
+param deploymentEnvironment string = 'test'
+// cosmosZoneRedundant is handled by the top-level orchestrator (main.bicep)
 // --------------------------------------------------------------------------------------
 // Module: geodesLayer
 // Purpose: Provisions Enterprise-grade API Management (APIM) and the Global Control Plane Cosmos DB account.
@@ -36,11 +37,25 @@ param tags object = {}
 param globalLogAnalyticsWorkspaceId string
 
 // Deploy Enterprise Premium APIM instance for the geode with multi-region support
+// Determine APIM SKU: Developer for non-prod (demo/dev), Premium for prod
+var apimSkuName = deploymentEnvironment == 'prod' ? 'Premium' : 'Developer'
+// Common APIM configuration fragments
+var apimCustomProperties = {
+  'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10': 'False'
+  'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11': 'False'
+  'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10': 'False'
+  'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11': 'False'
+  'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30': 'False'
+}
+
+var apimApiVersionConstraint = {
+  minApiVersion: '2021-08-01'
+}
 resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
   name: apimName
   location: location
   sku: {
-    name: 'Premium'    // Premium required for multi-region, VNet integration, and enterprise features
+    name: apimSkuName
     capacity: 1
   }
   identity: {
@@ -50,27 +65,19 @@ resource apim 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
     publisherEmail: apimPublisherEmail
     publisherName: apimPublisherName
     virtualNetworkType: 'None'
-    additionalLocations: [for region in apimAdditionalRegions: {
-      location: string(region)
-      sku: {
-        name: 'Premium'
-        capacity: 1
-      }
-      zones: []
-    }]
-    customProperties: {
-      'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10': 'False'
-      'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11': 'False'
-      'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10': 'False'
-      'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11': 'False'
-      'Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30': 'False'
-    }
-    apiVersionConstraint: {
-      minApiVersion: '2021-08-01'
-    }
+    // additionalLocations is intentionally left empty here; main.bicep controls multi-region per environment
+    additionalLocations: []
+    customProperties: apimCustomProperties
+    apiVersionConstraint: apimApiVersionConstraint
   }
   tags: tags
 }
+
+// Create additional independent APIM instances (Developer/Standard) in specified regions for demo HA/DR
+// Deploy per-region APIM instances via child module to safely capture runtime outputs
+// Secondary APIMs are deployed by the top-level orchestrator (main.bicep) as module instances
+// to allow collection of authoritative runtime outputs. Keep apimAdditionalRegions parameter
+// for the orchestrator to use.
 
 // Configure custom domain if provided
 resource apimCustomDomain 'Microsoft.ApiManagement/service/gateways@2023-05-01-preview' = if (!empty(customDomain)) {
@@ -220,51 +227,33 @@ resource apimDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
 // This resource enables multi-region write and failover across all GEOs/regions.
 // --------------------------------------------------------------------------------------
 
+// The global control Cosmos DB account is created by the top-level orchestrator
+// (`main.bicep`). We keep the parameter here for documentation parity but do not
+// create the resource inside this module.
 @description('Name for the global control plane Cosmos DB account')
 param globalControlCosmosDbName string
 
-@description('Primary location for the global Cosmos DB')
-param primaryLocation string
-
-@description('Additional locations for geo-replication (array of region names, e.g., ["westus2"])')
-param additionalLocations array
-
-// Flatten the list of Cosmos DB locations
-var additionalCosmosDbLocations = [for (loc, idx) in additionalLocations: {
-  locationName: string(loc)
-  failoverPriority: idx + 1
-  isZoneRedundant: false
-}]
-
-var cosmosDbLocations = concat(
-  [
-    {
-      locationName: primaryLocation
-      failoverPriority: 0
-      isZoneRedundant: cosmosZoneRedundant
-    }
-  ],
-  additionalCosmosDbLocations
-)
-
-resource globalControlCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
-  name: globalControlCosmosDbName
-  location: primaryLocation
-  kind: 'GlobalDocumentDB'
-  properties: {
-    consistencyPolicy: {
-      defaultConsistencyLevel: 'Session'
-    }
-    locations: cosmosDbLocations
-    enableMultipleWriteLocations: true
-    databaseAccountOfferType: 'Standard'
-  }
-}
+// NOTE: The global control Cosmos DB is owned by the top-level orchestrator to avoid
+// duplicate definitions across modules. Do NOT create the account here. Instead,
+// reference the orchestrator-owned account by name when needing the endpoint/ID.
 
 // Outputs
 output apimGatewayUrl string = apim.properties.gatewayUrl
+
+// Build secondary APIM instance names and their expected gateway URLs without referencing resource collections.
+// Compute secondary APIM instance names and deterministic gateway hostnames to wire Front Door.
+// We avoid indexing module outputs here because module outputs may not be available at template start.
+var apimSecondaryNames = [for r in apimAdditionalRegions: '${apimName}-${replace(string(r), ' ', '-') }']
+var apimSecondaryGatewayUrlsComputed = [for n in apimSecondaryNames: format('https://{0}.azure-api.net', toLower(n))]
+
+// Use deterministic hostnames for downstream wiring (safe and deterministic for demo). If you
+// prefer authoritative runtime hostnames, read module outputs from a parent orchestrator after
+// the modules have completed.
+output apimSecondaryGatewayUrls array = apimSecondaryGatewayUrlsComputed
+output apimGatewayUrls array = concat([apim.properties.gatewayUrl], apimSecondaryGatewayUrlsComputed)
 output apimDeveloperPortalUrl string = apim.properties.developerPortalUrl
 output apimManagementApiUrl string = apim.properties.managementApiUrl
 output apimResourceId string = apim.id
-output globalControlCosmosDbEndpoint string = globalControlCosmosDb.properties.documentEndpoint
-output globalControlCosmosDbId string = globalControlCosmosDb.id
+// Reference orchestrator-owned Cosmos DB by resourceId to avoid duplicate creation.
+output globalControlCosmosDbEndpoint string = reference(resourceId('Microsoft.DocumentDB/databaseAccounts', globalControlCosmosDbName), '2023-04-15').documentEndpoint
+output globalControlCosmosDbId string = resourceId('Microsoft.DocumentDB/databaseAccounts', globalControlCosmosDbName)

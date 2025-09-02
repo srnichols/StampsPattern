@@ -50,6 +50,12 @@
     "sqlAdminPassword": {
       "value": "G7!rT9p#xQ2z@LmS"
     },
+    "sqlDatabaseSkuTier": {
+      "value": "Standard"
+    },
+    "sqlDatabaseSkuName": {
+      "value": "S0"
+    },
     "enableGlobalFunctions": {
       "value": true
     },
@@ -80,9 +86,6 @@
   { "geoName": "na", "regionName": "centralus", "cellName": "CELL-01", "cellType": "Dedicated", "availabilityZones": [], "maxTenantCount": 1,   "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralus0zNl" },
   { "geoName": "na", "regionName": "centralus", "cellName": "CELL-02", "cellType": "Shared",    "availabilityZones": [], "maxTenantCount": 100, "baseDomain": "centralus.stamps.sdp-saas.com", "logAnalyticsWorkspaceName": "law-stamps-na-centralus", "keyVaultName": "kv-stamps-na-centralus0zNl" }
       ]
-    },
-    "cosmosZoneRedundant": {
-      "value": false
-    }
+  }
   }
 }

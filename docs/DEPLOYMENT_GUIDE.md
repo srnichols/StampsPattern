@@ -637,7 +637,10 @@ az deployment group create --resource-group $rg --template-file $tmpl --paramete
   "useHttpForSmoke": { "value": true },
     "functionAppRegions": { "value": ["eastus", "westus2"] },
     "sqlAdminUsername": { "value": "sqladmin" },
-    "sqlAdminPassword": { "value": "P@ssw0rd123!" }
+  "sqlAdminPassword": { "value": "P@ssw0rd123!" },
+  // Optional SQL cost controls (defaults: Standard/S0 non-prod, Standard/S1 prod)
+  "sqlDatabaseSkuTier": { "value": "Standard" },
+  "sqlDatabaseSkuName": { "value": "S0" }
   }
 }
 ```
@@ -777,6 +780,9 @@ The template provisions per-region networking (VNet, `subnet-agw`, and Standard 
 ## 🚪 **Enterprise API Management Deployment**
 
 ### 🎯 **APIM Deployment Considerations**
+ 
+- SKU behavior: The orchestrator selects Developer for non-prod and Premium for prod by default.
+- Multi-region demo: In non-prod, multiple Developer APIM instances are fronted by Front Door. Use the Step 1 script with `-AutoRunApimSync` to synchronize APIs/policy across regions (azure-api.net endpoints only; skipped for prod).
 
 > **⏱️ Deployment Time**: Premium APIM takes 45-60 minutes to deploy
 > **💰 Cost Impact**: Premium tier costs $2,800-7,400/month but provides enterprise features

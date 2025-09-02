@@ -26,6 +26,19 @@ Run the `single-sub-deployment-step1.ps1` PowerShell script to automate the enti
 pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id> -Location <primary-location> -Environment <env>
 ```
 
+Optional: Auto-run APIM sync (non-prod only)
+- To automatically synchronize APIs/policies from the primary APIM to secondary APIM instances during Step 1 for demo/non-prod environments, pass the `-AutoRunApimSync` switch.
+- This runs only when:
+   - `Environment` is not `prod`, and
+   - multiple APIM gateway URLs are present, and
+   - standard Azure endpoints (`*.azure-api.net`) are used.
+- It’s intentionally skipped for prod. For custom domains or advanced topologies, run `scripts/apim-sync.ps1` manually with explicit parameters.
+
+Example (auto-sync enabled in non-prod):
+```pwsh
+pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId <subscription-id> -Location <primary-location> -Environment test -AutoRunApimSync
+```
+
 **Real-world example:**
 ```pwsh
 pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId "00000000-1111-2222-3333-444455556666" -Location "westus3" -Environment "test" -salt "TeAB"
@@ -39,6 +52,7 @@ pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId "00000000-1111-22
 - Waits 30 seconds for propagation.
 - Deploys all core assets as defined in `main.bicep`, passing the global identity to all modules that require it.
 - Extracts and writes outputs for use in routing and management portal deployment.
+- If `-AutoRunApimSync` is provided and conditions are met (non-prod, multiple APIMs, azure-api.net endpoints), runs `scripts/apim-sync.ps1` to sync secondary APIM instances.
 
 
 **After running the script:**
@@ -105,6 +119,9 @@ pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId "00000000-1111-22
 - Tags on the resource group are for metadata only; permissions must be set via Azure RBAC or Key Vault access policies.
 - Ensure the management portal has access to required secrets and resources.
 - Adjust parameter values and secrets as needed for your environment.
+- APIM Sync behavior: `-AutoRunApimSync` is safe-by-default. It will not run for `prod` and will only auto-map secondaries using standard Azure endpoints (`*.azure-api.net`). If you plan to use custom domains for APIM, run `./scripts/apim-sync.ps1` manually and provide explicit names.
+- SQL cost controls: you can tune SQL Database cost from `AzureArchitecture/main.parameters.json` using `sqlDatabaseSkuTier` and `sqlDatabaseSkuName`. Defaults are environment-aware: S0 for non-prod, S1 for prod. Override as needed.
+- APIM cost controls: the templates use Developer tier for non-prod and Premium for prod. For a low-cost multi-region demo, multiple Developer instances are fronted by Front Door; `-AutoRunApimSync` can sync APIs/policies between regions in non-prod.
 
 ---
 ## Special Parameters for Repeated Deployments
@@ -144,7 +161,7 @@ The following table lists all `enable*` flags (feature toggles) available in the
 | enableAzureDefender              | Enable Azure Defender for all supported resource types              | advancedSecurity.bicep                        |
 | enableHttps                      | Enable HTTPS for Application Gateway                                | regionalLayer.bicep                           |
 | enableAutomation                 | Enable Automation Account deployment                                | regionalLayer.bicep                           |
-| cosmosZoneRedundant              | Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal) | geodesLayer.bicep                            |
+| cosmosZoneRedundant              | Enable zone redundancy for Cosmos DB (true = zone redundant, false = non-zonal). Defaults: true in prod, false otherwise. | globalLayer.bicep                            |
 
 > **Tip:** Set these flags in your parameters files (e.g., `main.parameters.json`) to control deployment features as needed.
 

@@ -15,6 +15,8 @@
     "functionAppRegions": { "value": ["eastus", "westus2"] },
     "sqlAdminUsername": { "value": "sqladmin" },
     "sqlAdminPassword": { "value": "REPLACE_WITH_SECURE_PASSWORD" },
+  "sqlDatabaseSkuTier": { "value": "Standard" },
+  "sqlDatabaseSkuName": { "value": "S1" },
     "regions": {
       "value": [
         {
@@ -65,7 +67,6 @@
     "cosmosAdditionalLocations": { "value": ["westus2"] },
     "cosmosMultiWrite": { "value": false },
     "storageSkuName": { "value": "Premium_ZRS" },
-    "enableStorageObjectReplication": { "value": false },
     "enableSqlFailoverGroup": { "value": false }
   }
 }

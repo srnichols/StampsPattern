@@ -5,13 +5,7 @@ output debugLogAnalyticsCustomerId string = monitoringLayers[0].outputs.logAnaly
 param storageSkuName string = 'Standard_LRS'
 
 
-@description('Enable Blob Object Replication (ORS) from each CELL to a destination account')
-param enableStorageObjectReplication bool = false
-
-@description('Destination storage account resource ID for Blob Object Replication (when enabled)')
-param storageReplicationDestinationId string = ''
-@description('Enable zone redundancy for Cosmos DB')
-param cosmosZoneRedundant bool = false
+// Removed ORS and per-cell Cosmos zone redundancy knobs from main; can be reintroduced if needed.
 @description('DNS zone name for the deployment (e.g., stamps.sdp-saas.com)')
 param dnsZoneName string = 'stamps.sdp-saas.com'
 @description('Traffic Manager profile name')
@@ -35,8 +29,15 @@ param sqlAdminUsername string = 'sqladmin'
 @description('SQL admin password')
 @secure()
 param sqlAdminPassword string
+@description('SQL Database SKU tier for CELL databases (e.g., Basic, Standard, GeneralPurpose)')
+param sqlDatabaseSkuTier string = (environment == 'prod' ? 'Standard' : 'Standard')
+@description('SQL Database SKU name for CELL databases (e.g., Basic, S0, S1)')
+param sqlDatabaseSkuName string = (environment == 'prod' ? 'S1' : 'S0')
 @description('Optional salt to ensure unique resource names for repeated deployments (e.g., date, initials, or random chars)')
 param salt string = ''
+
+@description('Whether Cosmos DB regions should be zone redundant. Defaults to true in prod, false otherwise. Applies to the global control plane Cosmos DB.')
+param cosmosZoneRedundant bool = (environment == 'prod')
 
 @description('Deployment environment name (e.g., dev, test, prod)')
 @allowed(['dev', 'test', 'staging', 'prod'])
@@ -46,6 +47,7 @@ param environment string = 'test'
 param enableGlobalFunctions bool = true
 // APIM and Cosmos DB outputs from geodesLayer
 output apimGatewayUrl string = geodesLayer.outputs.apimGatewayUrl
+output apimGatewayUrls array = geodesLayer.outputs.apimGatewayUrls
 output apimDeveloperPortalUrl string = geodesLayer.outputs.apimDeveloperPortalUrl
 output apimManagementApiUrl string = geodesLayer.outputs.apimManagementApiUrl
 output apimResourceId string = geodesLayer.outputs.apimResourceId
@@ -299,15 +301,39 @@ module geodesLayer './geodesLayer.bicep' = {
     tags: baseTags
     globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
     globalControlCosmosDbName: globalControlCosmosDbName
-    primaryLocation: primaryLocation
-    additionalLocations: additionalLocations
-    cosmosZoneRedundant: false
     entraTenantId: managementClientTenantId
   }
   dependsOn: [
     monitoringLayers
   ]
 }
+
+// Deploy secondary APIM instances per additionalLocations using apimInstance module
+module apimSecondaries './apimInstance.bicep' = [for region in additionalLocations: if (!empty(string(region))) {
+  name: 'apim-${replace(string(region), ' ', '-')}'
+  scope: resourceGroup('rg-stamps-global-${environment}')
+  params: {
+    apimName: 'apim-stamps-global-${environment}-${replace(string(region), ' ', '-')}'
+    location: region
+    apimPublisherEmail: ownerEmail
+    apimPublisherName: department
+    apimSkuName: environment == 'prod' ? 'Premium' : 'Developer'
+    tags: baseTags
+    globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
+  }
+  dependsOn: [
+    geodesLayer
+  ]
+}]
+
+// Collect authoritative gateway URLs from secondary APIM module outputs (if any)
+// Compute deterministic secondary APIM names and hostnames so they can be wired into globalLayer.
+var secondaryApimNames = [for region in additionalLocations: 'apim-stamps-global-${environment}-${replace(string(region), ' ', '-') }']
+var secondaryApimGatewayUrlsComputed = [for n in secondaryApimNames: format('https://{0}.azure-api.net', toLower(n))]
+var allApimGatewayUrls = concat([geodesLayer.outputs.apimGatewayUrl], secondaryApimGatewayUrlsComputed)
+
+// Export aggregated APIM gateway URLs for consumption by globalLayer
+output aggregatedApimGatewayUrls array = allApimGatewayUrls
 
 // ============ KEY VAULTS ============
 module keyVaults './keyvault.bicep' = [
@@ -418,11 +444,12 @@ module globalLayer './globalLayer.bicep' = {
     globalControlCosmosDbName: globalControlCosmosDbName
     primaryLocation: primaryLocation
     additionalLocations: additionalLocations
-    // cosmosZoneRedundant: !isSmoke
+  cosmosZoneRedundant: cosmosZoneRedundant
     enableGlobalFunctions: enableGlobalFunctions
     // enableGlobalCosmos: !isSmoke
     // Pass APIM gateway URL for Front Door configuration
     apimGatewayUrl: geodesLayer.outputs.apimGatewayUrl
+  apimGatewayUrls: allApimGatewayUrls
     // Pass all regional Application Gateway endpoints for Traffic Manager (filtering will be done in globalLayer.bicep)
     regionalEndpoints: [
       for (region, i) in regions: !empty(regionalLayers[i].outputs.regionalEndpointFqdn) ? {
@@ -496,6 +523,8 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       sqlAdminUsername: sqlAdminUsername
       sqlAdminPassword: sqlAdminPassword
       sqlDbName: 'sqldb-${cell.geoName}-${cell.regionName}-CELL-${padLeft(string(index + 1), 2, '0')}-z${string(length(cell.availabilityZones))}'
+  sqlDatabaseSkuTier: sqlDatabaseSkuTier
+  sqlDatabaseSkuName: sqlDatabaseSkuName
       storageAccountName: toLower('st${uniqueString(subscription().id, cell.regionName, 'CELL-${padLeft(string(index + 1), 2, '0')}')}z${string(length(cell.availabilityZones))}')
       keyVaultName: take(toLower('kvs${take(cell.regionName, 3)}${take(environment, 1)}${substring(uniqueString(subscription().id, 'kv', cell.regionName, environment, 'CELL-${padLeft(string(index + 1), 2, '0')}'), 0, 6)}${replace(replace(take(salt, 4), '-', ''), '_', '')}'), 24)
       salt: salt
@@ -520,11 +549,10 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       logAnalyticsWorkspaceKeySecretName: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeySecretName
       cosmosAdditionalLocations: cosmosAdditionalLocations
       cosmosMultiWrite: cosmosMultiWrite
-      cosmosZoneRedundant: cosmosZoneRedundant
+  // cosmosZoneRedundant deprecated in CELL layer; keeping global use only
       storageSkuName: storageSkuName
       createStorageAccount: createStorageAccount
-      enableStorageObjectReplication: enableStorageObjectReplication
-      storageReplicationDestinationId: storageReplicationDestinationId
+  // Storage ORS knobs removed from CELL layer for smoke
       enableSqlFailoverGroup: enableSqlFailoverGroup
       sqlSecondaryServerId: sqlSecondaryServerId
       enableCellTrafficManager: enableCellTrafficManager

@@ -4,6 +4,20 @@
 - Enforce descriptive Azure Container Registry naming conventions in Bicep files (management-portal, traffic-routing)
 
 # Changelog
+## [1.6.0] - 2025-09-02
+
+### Added
+- Parameterized SQL Database SKU for CELLs: `sqlDatabaseSkuTier` and `sqlDatabaseSkuName` with environment-aware defaults (S0 non-prod, S1 prod)
+- Optional SQL SKU overrides documented in Deployment Guide and Three-Step guide
+- Example parameter files updated to include SQL SKU knobs
+
+### Changed
+- APIM cost behavior clarified: Developer tier for non-prod; Premium for prod; non-prod multi-region demo pattern backed by Front Door and optional `-AutoRunApimSync`
+- Removed deprecated/unused CELL-layer knobs (storage object replication, per-cell cosmos zone redundant) and cleaned linter warnings
+
+### Fixed
+- Linter issues in `deploymentStampLayer.bicep` and unused params in `main.bicep`
+
 
 All notable changes to the Azure Stamps Pattern project will be documented in this file.
 

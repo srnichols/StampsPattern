@@ -15,6 +15,8 @@
     "functionAppRegions": { "value": ["eastus", "westus2"] },
     "sqlAdminUsername": { "value": "sqladmin" },
     "sqlAdminPassword": { "value": "REPLACE_WITH_SECURE_PASSWORD" },
+  "sqlDatabaseSkuTier": { "value": "Standard" },
+  "sqlDatabaseSkuName": { "value": "S0" },
     "regions": {
       "value": [
         {
@@ -46,9 +48,7 @@
           "maxTenantCount": 100,
           "baseDomain": "eastus.stamps.contoso.com",
           "keyVaultName": "kv-stamps-na-eus",
-          "logAnalyticsWorkspaceName": "law-stamps-na-eus",
-          "enableStorageObjectReplication": true,
-          "storageReplicationDestinationId": "/subscriptions/<SUBID>/resourceGroups/<RG>/providers/Microsoft.Storage/storageAccounts/stnorthamericawestus2cell1"
+          "logAnalyticsWorkspaceName": "law-stamps-na-eus"
         },
         {
           "geoName": "northamerica",
@@ -66,7 +66,6 @@
     "cosmosAdditionalLocations": { "value": ["westus2"] },
     "cosmosMultiWrite": { "value": false },
     "storageSkuName": { "value": "Premium_ZRS" },
-    "enableStorageObjectReplication": { "value": false },
     "enableSqlFailoverGroup": { "value": false }
   }
 }
