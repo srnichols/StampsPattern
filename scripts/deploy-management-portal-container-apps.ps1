@@ -54,14 +54,16 @@ $cosmosAccountName = ("cosmos-{0}-{1}" -f $sanitizedEnv, $sub8)
 $portalImageRepo = "stamps-portal:latest"
 
 
-# Ensure we're logged into Azure
-Write-Host "🔐 Checking Azure login..." -ForegroundColor Yellow
+# Ensure we're logged into Azure and set subscription context
+Write-Host "🔐 Ensuring Azure context..." -ForegroundColor Yellow
 $accountInfo = az account show --query "id" --output tsv 2>$null
-if (-not $accountInfo -or $accountInfo -ne $SubscriptionId) {
-	Write-Host "Please log into Azure and set the correct subscription:" -ForegroundColor Red
-	Write-Host "  az login" -ForegroundColor White
-	Write-Host "  az account set --subscription $SubscriptionId" -ForegroundColor White
+if (-not $accountInfo) {
+	Write-Host "You are not logged in. Please run 'az login' and re-run this script." -ForegroundColor Red
 	exit 1
+}
+if ($accountInfo -ne $SubscriptionId) {
+	Write-Host "Switching subscription context to $SubscriptionId" -ForegroundColor Yellow
+	az account set --subscription $SubscriptionId | Out-Null
 }
 
 # Create resource group if it doesn't exist
@@ -341,6 +343,45 @@ if (-not $existingContainerApp) {
 		--resource-group $ResourceGroupName `
 		--image "$acrLoginServer/$portalImageRepo" `
 		--output none
+}
+
+# Ensure system-assigned managed identity, grant Reader at subscription scope, and restart active revision
+Write-Host "🔑 Ensuring managed identity and Reader permissions for the Portal app..." -ForegroundColor Yellow
+try {
+	$identity = az containerapp show --name "ca-stamps-portal" --resource-group $ResourceGroupName -o json | ConvertFrom-Json
+	$principalId = $identity.identity.principalId
+
+	if (-not $principalId) {
+		Write-Host "Enabling system-assigned identity on ca-stamps-portal..." -ForegroundColor Yellow
+		az containerapp identity assign --name "ca-stamps-portal" --resource-group $ResourceGroupName --system-assigned | Out-Null
+		Start-Sleep -Seconds 5
+		$principalId = (az containerapp show --name "ca-stamps-portal" --resource-group $ResourceGroupName --query identity.principalId -o tsv)
+	}
+
+	if ($principalId) {
+		$scope = "/subscriptions/$SubscriptionId"
+		$hasReader = az role assignment list --assignee $principalId --scope $scope --role Reader -o tsv | Select-String . -Quiet
+		if (-not $hasReader) {
+			Write-Host "Assigning Reader role at subscription scope to the app's managed identity..." -ForegroundColor Yellow
+			az role assignment create --assignee $principalId --role Reader --scope $scope | Out-Null
+		} else {
+			Write-Host "Reader role already present at subscription scope." -ForegroundColor Green
+		}
+
+		# Restart active revision to pick up identity and env changes
+		$revs = az containerapp revision list --name "ca-stamps-portal" --resource-group $ResourceGroupName -o json | ConvertFrom-Json
+		$active = $revs | Where-Object { $_.properties.active -eq $true } | Select-Object -First 1
+		if (-not $active) { $active = $revs | Select-Object -First 1 }
+		if ($active) {
+			Write-Host "Restarting active revision: $($active.name)" -ForegroundColor Yellow
+			az containerapp revision restart --name "ca-stamps-portal" --resource-group $ResourceGroupName --revision $active.name | Out-Null
+		}
+	} else {
+		Write-Host "Warning: Managed identity principalId could not be determined." -ForegroundColor Yellow
+	}
+}
+catch {
+	Write-Host "Warning: Failed to ensure managed identity/role assignment. You may need to grant Reader manually." -ForegroundColor Yellow
 }
 
 # Get Portal URL
