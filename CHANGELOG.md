@@ -1,24 +1,3 @@
-# [1.5.2] - 2025-08-21
-
-### Changed
-- Enforce descriptive Azure Container Registry naming conventions in Bicep files (management-portal, traffic-routing)
-
-# Changelog
-## [1.6.0] - 2025-09-02
-
-### Added
-- Parameterized SQL Database SKU for CELLs: `sqlDatabaseSkuTier` and `sqlDatabaseSkuName` with environment-aware defaults (S0 non-prod, S1 prod)
-- Optional SQL SKU overrides documented in Deployment Guide and Three-Step guide
-- Example parameter files updated to include SQL SKU knobs
-
-### Changed
-- APIM cost behavior clarified: Developer tier for non-prod; Premium for prod; non-prod multi-region demo pattern backed by Front Door and optional `-AutoRunApimSync`
-- Removed deprecated/unused CELL-layer knobs (storage object replication, per-cell cosmos zone redundant) and cleaned linter warnings
-
-### Fixed
-- Linter issues in `deploymentStampLayer.bicep` and unused params in `main.bicep`
-
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -73,7 +52,6 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ### Added
 - Major repository cleanup and documentation improvements
 - Standardize documentation version footers across all files
-
 - Repository organization: moved troubleshooting files to docs/archive/troubleshooting/
 - Repository organization: moved temporary files to `temp/` directory
 - Repository organization: moved tools to `docs/tools/`
@@ -185,16 +163,3 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Multi-tenant architecture patterns
 - Security and compliance frameworks
 - Documentation and deployment guides
-### Added
-
-
-
-- **Management Portal Authentication**: Complete Azure Entra ID integration with OpenID Connect
-
-  - Container Apps deployment with authentication middleware
-
-  - Support for Azure AD app registrations and role-based access control
-
-  - Production-ready authentication configuration with HTTPS redirect handling
-
-- **Container Apps Infrastructure**: Production deployment of management portal and DAB services
