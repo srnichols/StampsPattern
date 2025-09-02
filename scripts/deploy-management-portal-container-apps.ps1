@@ -14,7 +14,9 @@
 
 param(
 	[Parameter(Mandatory = $false)]
-	[string]$ParametersFile = "./AzureArchitecture/management-portal.parameters.json"
+	[string]$ParametersFile = "./AzureArchitecture/management-portal.parameters.json",
+	[Parameter(Mandatory = $false, HelpMessage = "Additional subscription IDs to grant Reader to the portal's managed identity for discovery.")]
+	[string[]]$AdditionalSubscriptions = @()
 )
 
 # Set error action preference
@@ -345,7 +347,7 @@ if (-not $existingContainerApp) {
 		--output none
 }
 
-# Ensure system-assigned managed identity, grant Reader at subscription scope, and restart active revision
+# Ensure system-assigned managed identity, grant Reader at subscription scope(s), and restart active revision
 Write-Host "🔑 Ensuring managed identity and Reader permissions for the Portal app..." -ForegroundColor Yellow
 try {
 	$identity = az containerapp show --name "ca-stamps-portal" --resource-group $ResourceGroupName -o json | ConvertFrom-Json
@@ -359,16 +361,29 @@ try {
 	}
 
 	if ($principalId) {
-		$scope = "/subscriptions/$SubscriptionId"
-		$hasReader = az role assignment list --assignee $principalId --scope $scope --role Reader -o tsv | Select-String . -Quiet
-		if (-not $hasReader) {
-			Write-Host "Assigning Reader role at subscription scope to the app's managed identity..." -ForegroundColor Yellow
-			az role assignment create --assignee $principalId --role Reader --scope $scope | Out-Null
-		} else {
-			Write-Host "Reader role already present at subscription scope." -ForegroundColor Green
+		$subsToGrant = @($SubscriptionId)
+		if ($AdditionalSubscriptions -and $AdditionalSubscriptions.Count -gt 0) {
+			$subsToGrant += $AdditionalSubscriptions
 		}
 
-		# Restart active revision to pick up identity and env changes
+		foreach ($sub in ($subsToGrant | Sort-Object -Unique)) {
+			$scope = "/subscriptions/$sub"
+			Write-Host "Checking Reader assignment at scope: $scope" -ForegroundColor Yellow
+			$hasReader = az role assignment list --assignee $principalId --scope $scope --role Reader -o tsv 2>$null | Select-String . -Quiet
+			if (-not $hasReader) {
+				Write-Host "Assigning Reader to MI at $scope..." -ForegroundColor Yellow
+				try {
+					az role assignment create --assignee $principalId --role Reader --scope $scope | Out-Null
+					Write-Host "✅ Reader assigned at $scope" -ForegroundColor Green
+				} catch {
+					Write-Host "⚠️  Could not assign Reader at $scope. Ensure your identity has Owner/User Access Administrator on that subscription." -ForegroundColor Yellow
+				}
+			} else {
+				Write-Host "✅ Reader already assigned at $scope" -ForegroundColor Green
+			}
+		}
+
+	# Restart active revision to pick up identity and env changes
 		$revs = az containerapp revision list --name "ca-stamps-portal" --resource-group $ResourceGroupName -o json | ConvertFrom-Json
 		$active = $revs | Where-Object { $_.properties.active -eq $true } | Select-Object -First 1
 		if (-not $active) { $active = $revs | Select-Object -First 1 }

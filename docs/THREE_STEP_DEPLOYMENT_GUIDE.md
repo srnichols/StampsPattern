@@ -90,6 +90,12 @@ pwsh ./scripts/single-sub-deployment-step1.ps1 -SubscriptionId "00000000-1111-22
       pwsh ../scripts/deploy-management-portal-container-apps.ps1 -ParametersFile ./management-portal.parameters.json
       ```
    - The script will handle all required steps, including setting the `portalImage` parameter and ensuring all required secrets and configuration are provided.
+   - Optional: grant discovery across multiple subscriptions with `-AdditionalSubscriptions` (assigns Reader to the portal's managed identity on those subscriptions as well):
+      ```pwsh
+      cd AzureArchitecture
+      pwsh ../scripts/deploy-management-portal-container-apps.ps1 -ParametersFile ./management-portal.parameters.json -AdditionalSubscriptions @('11111111-2222-3333-4444-555555555555','aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee')
+      ```
+      Note: You (or the executing identity) must have Owner or User Access Administrator on each subscription to create role assignments.
 
 2. **Manual alternative**
    - Build the Docker image locally:
