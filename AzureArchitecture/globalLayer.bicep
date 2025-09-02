@@ -3,6 +3,12 @@ resource storeGlobalCosmosDbConnectionScript 'Microsoft.Resources/deploymentScri
   name: 'store-global-cosmosdb-connection-script'
   location: primaryLocation
   kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityId}': {}
+    }
+  }
   properties: {
     azCliVersion: '2.53.0'
     timeout: 'PT10M'
@@ -25,9 +31,15 @@ resource storeGlobalCosmosDbConnectionScript 'Microsoft.Resources/deploymentScri
         name: 'SECRET_NAME'
         value: 'CosmosDbConnection'
       }
+      {
+        name: 'SUBSCRIPTION_ID'
+        value: subscription().subscriptionId
+      }
     ]
     scriptContent: '''
       set -e
+  az login --identity --allow-no-subscriptions
+      az account set --subscription "$SUBSCRIPTION_ID"
       connstr=$(az cosmosdb keys list --name "$COSMOS_DB_ACCOUNT" --resource-group "$COSMOS_DB_RG" --type connection-strings --query "connectionStrings[0].connectionString" -o tsv)
       az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$connstr"
     '''
@@ -93,6 +105,9 @@ param enableGlobalFunctions bool = true
 
 @description('Enable deployment of the global control plane Cosmos DB (disable in smoke/lab to avoid regional capacity issues)')
 param enableGlobalCosmos bool = true
+
+@description('Resource ID of the user-assigned managed identity used by deployment scripts')
+param userAssignedIdentityId string
 
 @description('Array of regional endpoint FQDNs for Traffic Manager (e.g., Application Gateway FQDNs)')
 param regionalEndpoints array = []

@@ -71,8 +71,6 @@ output apimGatewayUrls array = geodesLayer.outputs.apimGatewayUrls
 output apimDeveloperPortalUrl string = geodesLayer.outputs.apimDeveloperPortalUrl
 output apimManagementApiUrl string = geodesLayer.outputs.apimManagementApiUrl
 output apimResourceId string = geodesLayer.outputs.apimResourceId
-output globalControlCosmosDbEndpoint string = geodesLayer.outputs.globalControlCosmosDbEndpoint
-output globalControlCosmosDbId string = geodesLayer.outputs.globalControlCosmosDbId
 // Filter out regional endpoints with empty FQDNs for Traffic Manager
 // The filteredRegionalEndpoints variable has been removed as part of the patch.
 
@@ -320,7 +318,6 @@ module geodesLayer './geodesLayer.bicep' = {
     customDomain: '' // Set if you want a custom APIM domain
     tags: baseTags
     globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-    globalControlCosmosDbName: globalControlCosmosDbName
     entraTenantId: managementClientTenantId
   }
   dependsOn: [
@@ -371,7 +368,8 @@ module keyVaults './keyvault.bicep' = [
       accessPolicies: [
         {
           tenantId: subscription().tenantId
-          objectId: reference(userAssignedIdentityResourceId, '2018-11-30').principalId
+          // Use supported Managed Identity API version
+          objectId: reference(userAssignedIdentityResourceId, '2023-01-31').principalId
           permissions: {
             secrets: [ 'get', 'list', 'set' ]
           }
@@ -478,6 +476,7 @@ module globalLayer './globalLayer.bicep' = {
       } : null
     ]
     keyVaultName: regions[0].keyVaultName
+  userAssignedIdentityId: userAssignedIdentityResourceId
   }
   dependsOn: [
     regionalLayers
@@ -577,9 +576,7 @@ module deploymentStampLayers './deploymentStampLayer.bicep' = [
       containerAppEnvironmentName: 'cae-${cell.regionName}-${toLower(cell.cellName)}-${environment}-${take(subscription().subscriptionId, 8)}'
       baseDomain: cell.baseDomain
       globalLogAnalyticsWorkspaceId: monitoringLayers[0].outputs.logAnalyticsWorkspaceId
-      logAnalyticsCustomerId: monitoringLayers[0].outputs.logAnalyticsWorkspaceCustomerId
-      logAnalyticsWorkspaceKeyVaultName: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeyVaultName
-      logAnalyticsWorkspaceKeySecretName: monitoringLayers[0].outputs.logAnalyticsWorkspaceKeySecretName
+  // Container Apps log analytics integration disabled in smoke
       cosmosAdditionalLocations: cosmosAdditionalLocations
       cosmosMultiWrite: cosmosMultiWrite
   // cosmosZoneRedundant deprecated in CELL layer; keeping global use only

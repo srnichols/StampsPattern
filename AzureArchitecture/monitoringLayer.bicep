@@ -93,5 +93,6 @@ output logAnalyticsWorkspaceId string = logAnalytics.id
 output logAnalyticsWorkspaceCustomerId string = logAnalytics.properties.customerId
 output logAnalyticsWorkspaceKeyVaultName string = keyVaultName
 output logAnalyticsWorkspaceKeySecretName string = logAnalyticsKeySecretName
+output logAnalyticsWorkspaceKeyVaultId string = resourceId('Microsoft.KeyVault/vaults', keyVaultName)
 
 // Add additional monitoring resources (alerts, solutions, etc.) as needed.

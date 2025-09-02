@@ -143,14 +143,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-pr
   tags: tags
 }
 
-@description('Log Analytics Workspace customerId (GUID) for Container App Environment')
-param logAnalyticsCustomerId string
-
-@description('Log Analytics Workspace Key Vault name for Container App Environment')
-param logAnalyticsWorkspaceKeyVaultName string
-
-@description('Log Analytics Workspace shared key secret name for Container App Environment')
-param logAnalyticsWorkspaceKeySecretName string
+// Container Apps logs to Log Analytics are disabled in smoke to avoid cross-RG secret reads.
 
 
 // Container App Environment for this CELL
@@ -158,17 +151,6 @@ resource containerAppEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' 
   name: containerAppEnvironmentName
   location: location
   properties: {
-    appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: logAnalyticsCustomerId
-        sharedKey: reference(resourceId('Microsoft.KeyVault/vaults/secrets', logAnalyticsWorkspaceKeyVaultName, logAnalyticsWorkspaceKeySecretName), '2023-02-01').secretValue
-      }
-    }
-
-        
-
-        
     zoneRedundant: false
   }
   tags: tags
@@ -371,7 +353,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
     accessPolicies: [
       {
         tenantId: subscription().tenantId
-        objectId: reference(userAssignedIdentityId, '2018-11-30', 'Full').principalId
+  // Use a supported API version for Managed Identity and access principalId directly
+  objectId: reference(userAssignedIdentityId, '2023-01-31').principalId
         permissions: {
           secrets: ['get', 'list', 'set']
         }
@@ -717,7 +700,8 @@ resource sqlServer 'Microsoft.Sql/servers@2022-11-01-preview' = {
   }
   properties: {
     administratorLogin: sqlAdminUsername
-    administratorLoginPassword: reference(resourceId('Microsoft.KeyVault/vaults/secrets', keyVaultResourceName, 'sqlAdminPassword'), '2023-02-01').secretValue
+  // Use the secure parameter directly; the value is stored to Key Vault separately via sqlAdminPasswordSecret
+  administratorLoginPassword: sqlAdminPassword
     version: '12.0'
     minimalTlsVersion: '1.2'
     publicNetworkAccess: 'Disabled'
@@ -797,7 +781,8 @@ resource sqlFailoverGroup 'Microsoft.Sql/servers/failoverGroups@2021-11-01' = if
 // Outputs (secure - no credential exposure)
 // ACR outputs omitted in smoke
 output keyVaultId string = resourceId('Microsoft.KeyVault/vaults', keyVaultResourceName)
-output keyVaultUri string = reference(resourceId('Microsoft.KeyVault/vaults', keyVaultResourceName), '2023-02-01').properties.vaultUri
+// vaultUri is a top-level property in the 2023-02-01 API shape
+output keyVaultUri string = reference(resourceId('Microsoft.KeyVault/vaults', keyVaultResourceName), '2023-02-01').vaultUri
 output sqlServerSystemAssignedPrincipalId string = sqlServer.identity.principalId
 output storageAccountSystemAssignedPrincipalId string = createStorageAccount ? 'assigned' : 'not-assigned'
 output cosmosDbId string = cellCosmosDb.id
