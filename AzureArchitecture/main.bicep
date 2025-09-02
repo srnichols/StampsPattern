@@ -42,6 +42,26 @@ param cosmosZoneRedundant bool = (environment == 'prod')
 @description('Deployment environment name (e.g., dev, test, prod)')
 @allowed(['dev', 'test', 'staging', 'prod'])
 param environment string = 'test'
+
+// Cost optimization: Microsoft Defender for Cloud plans
+@description('Apply cost-optimized Defender for Cloud pricing (keeps CSPM/policy at Free; turns off paid plans in non-prod).')
+param enableDefenderCostOptimizations bool = true
+
+@description('Defender for Servers plan: Off, P1, or P2 (cost). Defaults Off in non-prod, P1 in prod.')
+@allowed(['Off','P1','P2'])
+param defenderForServersPlan string = (environment == 'prod' ? 'P1' : 'Off')
+
+@description('Enable paid Defender for Storage. Defaults true in prod, false otherwise.')
+param enableDefenderForStorage bool = (environment == 'prod')
+
+@description('Enable paid Defender for SQL. Defaults true in prod, false otherwise.')
+param enableDefenderForSql bool = (environment == 'prod')
+
+@description('Enable paid Defender for App Services. Defaults false.')
+param enableDefenderForAppServices bool = false
+
+@description('Enable paid Defender for Key Vault. Defaults false.')
+param enableDefenderForKeyVault bool = false
 // Requires Bicep CLI v0.20.0 or later for array filtering with ternary operator
 @description('Enable deployment of global Function Apps and their plans/storage (disable in smoke/lab to avoid quota)')
 param enableGlobalFunctions bool = true
@@ -463,6 +483,19 @@ module globalLayer './globalLayer.bicep' = {
     regionalLayers
     monitoringLayers
   ]
+}
+
+// ============ DEFENDER FOR CLOUD PRICING (COST CONTROL) ============
+module defenderPlans './defenderPlans.bicep' = if (enableDefenderCostOptimizations) {
+  name: 'defenderPlans'
+  params: {
+    environment: environment
+    defenderForServersPlan: defenderForServersPlan
+    enableDefenderForStorage: enableDefenderForStorage
+    enableDefenderForSql: enableDefenderForSql
+    enableDefenderForAppServices: enableDefenderForAppServices
+    enableDefenderForKeyVault: enableDefenderForKeyVault
+  }
 }
 
 // ============ REGIONAL NETWORK PREREQS ============
