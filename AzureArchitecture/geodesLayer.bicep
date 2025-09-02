@@ -230,8 +230,6 @@ resource apimDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
 // The global control Cosmos DB account is created by the top-level orchestrator
 // (`main.bicep`). We keep the parameter here for documentation parity but do not
 // create the resource inside this module.
-@description('Name for the global control plane Cosmos DB account')
-param globalControlCosmosDbName string
 
 // NOTE: The global control Cosmos DB is owned by the top-level orchestrator to avoid
 // duplicate definitions across modules. Do NOT create the account here. Instead,
@@ -255,5 +253,4 @@ output apimDeveloperPortalUrl string = apim.properties.developerPortalUrl
 output apimManagementApiUrl string = apim.properties.managementApiUrl
 output apimResourceId string = apim.id
 // Reference orchestrator-owned Cosmos DB by resourceId to avoid duplicate creation.
-output globalControlCosmosDbEndpoint string = reference(resourceId('Microsoft.DocumentDB/databaseAccounts', globalControlCosmosDbName), '2023-04-15').documentEndpoint
-output globalControlCosmosDbId string = resourceId('Microsoft.DocumentDB/databaseAccounts', globalControlCosmosDbName)
+// Cosmos DB is created in globalLayer; expose its details from that module instead.

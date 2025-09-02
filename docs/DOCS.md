@@ -8,6 +8,7 @@ Your single source of truth for the Azure Stamps Pattern - Architecture (ASPA), 
 - Run the Live Data Path: `docs/LIVE_DATA_PATH.md` to seed Cosmos and validate Management Portal ↔ DAB ↔ Cosmos.
 - For local development: follow `docs/DEVELOPER_QUICKSTART.md` (run Functions + Portal locally).
 - For deployments: open `docs/DEPLOYMENT_GUIDE.md` and use `scripts/deploy.ps1` or Bicep templates as documented.
+- Fast path: for a complete single-subscription deployment end-to-end, use the [Three-Step Deployment Guide](./THREE_STEP_DEPLOYMENT_GUIDE.md).
 
 ## 👤 Who Should Use This Guide?
 
@@ -148,6 +149,10 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 ## 🔍 Quick Reference & Common Tasks
 
 ### 🚀 Deployment Quick Links
+
+| Task | Documentation | Time Required |
+|------|---------------|---------------|
+| ✅ Complete Single-Subscription Deployment (3 steps) | [THREE_STEP_DEPLOYMENT_GUIDE](./THREE_STEP_DEPLOYMENT_GUIDE.md) | 45–90 minutes |
 
 | Task | Documentation | Time Required |
 |------|---------------|---------------|

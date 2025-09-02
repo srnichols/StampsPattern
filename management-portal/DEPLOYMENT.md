@@ -98,6 +98,22 @@ az containerapp update \
     "azure-ad-client-secret=[YOUR-CLIENT-SECRET]"
 ```
 
+### Secret lifetime and rotation
+
+- The client secret often expires in ~30 days due to tenant policy. To rotate it quickly, re-run the helper script:
+
+   ```powershell
+   pwsh -File ./scripts/configure-entra-auth.ps1 \ 
+      -ResourceGroup <your-rg> \ 
+      -ContainerAppName ca-stamps-portal \ 
+      -TenantId <your-tenant-id>
+   ```
+
+   This creates a new app registration or reuses the latest one, sets the redirect URI to your Container App default URL, generates a policy-compliant secret, and updates the Container App secrets/env vars.
+
+- For longer-lived credentials, work with your AAD admin to adjust secret lifetime policy, or avoid secrets by using federated credentials (workload identity) with Azure Container Apps.
+- After updating secrets, the Container App may need a revision restart for changes to take effect.
+
 ## Step 4: Verify Deployment
 
 1. **Check Application Health**:
@@ -189,6 +205,7 @@ ContainerAppSystemLogs_CL
    - Verify Azure AD app registration
    - Check redirect URLs
    - Validate client secret
+   - Error AADSTS700016 (app not found): ensure the app was created in the correct tenant and the redirect URI matches your Container App URL (default: `https://<fqdn>/signin-oidc`). Running `scripts/configure-entra-auth.ps1` can fix this end-to-end.
 
 2. **Database Connection Issues**:
    - Check Cosmos DB connection string

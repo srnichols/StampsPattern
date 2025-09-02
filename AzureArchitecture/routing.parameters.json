@@ -1,0 +1,29 @@
+{
+  "dnsZoneName": {
+    "type": "String",
+    "value": "stamps.sdp-saas.com"
+  },
+  "frontDoorEndpointHostname": {
+    "type": "String",
+    "value": "stamps-global-endpoint-hmc2gkf0dsaqfden.b01.azurefd.net"
+  },
+  "frontDoorProfileName": {
+    "type": "String",
+    "value": "fd-stamps-global"
+  },
+  "functionAppNames": {
+    "type": "Array",
+    "value": [
+      "fa-stamps-westus3",
+      "fa-stamps-centralus"
+    ]
+  },
+  "message": {
+    "type": "String",
+    "value": "Global layer deployed successfully"
+  },
+  "trafficManagerFqdn": {
+    "type": "String",
+    "value": "stamps.trafficmanager.net"
+  }
+}

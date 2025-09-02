@@ -41,13 +41,17 @@ Write-Host "  Subscription: $SubscriptionId" -ForegroundColor White
 Write-Host "  Environment: $EnvironmentName" -ForegroundColor White
 
 # Variables - Use deterministic names to avoid creating duplicates
-$containerRegistryName = "cr$($EnvironmentName.Replace('-', ''))"
-$containerAppsEnvironmentName = "cae-$EnvironmentName"
-$logAnalyticsWorkspaceName = "law-$EnvironmentName"
-$appInsightsName = "ai-$EnvironmentName"
-$cosmosAccountName = "cosmos-$EnvironmentName"
+# Generate unique, compliant names using subscription ID
+$sub8 = ($SubscriptionId -replace '-', '').Substring(0,8)
+$sanitizedEnv = ($EnvironmentName -replace '[^a-z0-9]', '').ToLower()
+$containerRegistryName = ("acr{0}{1}" -f $sanitizedEnv, $sub8)
+$containerAppsEnvironmentName = "cae-$sanitizedEnv"
+$logAnalyticsWorkspaceName = "law-$sanitizedEnv"
+$appInsightsName = "ai-$sanitizedEnv"
+$cosmosAccountName = ("cosmos-{0}-{1}" -f $sanitizedEnv, $sub8)
 
-$portalImage = "$containerRegistryName.azurecr.io/stamps-portal:latest"
+# Image tag (login server resolved later)
+$portalImageRepo = "stamps-portal:latest"
 
 
 # Ensure we're logged into Azure
@@ -103,7 +107,7 @@ if (-not $existingAppInsights) {
 	Write-Host "✅ Application Insights '$appInsightsName' already exists, reusing..." -ForegroundColor Green
 }
 
-# Create Container Registry (if it doesn't exist)
+# Create Container Registry (if it doesn't exist) - globally unique name
 Write-Host "🐳 Checking Container Registry..." -ForegroundColor Yellow
 $existingAcr = az acr show --name $containerRegistryName --resource-group $ResourceGroupName --output tsv --query "name" 2>$null
 if (-not $existingAcr) {
@@ -119,7 +123,7 @@ if (-not $existingAcr) {
 	Write-Host "✅ Container Registry '$containerRegistryName' already exists, reusing..." -ForegroundColor Green
 }
 
-# Create Cosmos DB Account (if it doesn't exist)
+# Create Cosmos DB Account (if it doesn't exist) - globally unique name
 Write-Host "🌐 Checking Cosmos DB Account..." -ForegroundColor Yellow
 $existingCosmos = az cosmosdb show --name $cosmosAccountName --resource-group $ResourceGroupName --output tsv --query "name" 2>$null
 if (-not $existingCosmos) {
@@ -134,82 +138,94 @@ if (-not $existingCosmos) {
 	Write-Host "✅ Cosmos DB Account '$cosmosAccountName' already exists, reusing..." -ForegroundColor Green
 }
 
-# Create Cosmos DB Database (if it doesn't exist)
+	# Helper to test if Cosmos account is available
+	function Test-CosmosExists {
+		param([string]$name,[string]$rg)
+		try {
+			az cosmosdb show --name $name --resource-group $rg --only-show-errors 1>$null 2>$null
+			return ($LASTEXITCODE -eq 0)
+		} catch { return $false }
+	}
+
+	# Create Cosmos DB Database (if it exists / after account is available)
 Write-Host "💾 Checking Cosmos DB Database..." -ForegroundColor Yellow
-$existingDb = az cosmosdb sql database show --account-name $cosmosAccountName --resource-group $ResourceGroupName --name "stamps-control-plane" --output tsv --query "name" 2>$null
-if (-not $existingDb) {
+	if ($existingCosmos -or (Test-CosmosExists -name $cosmosAccountName -rg $ResourceGroupName)) {
+	$existingDb = az cosmosdb sql database show --account-name $cosmosAccountName --resource-group $ResourceGroupName --name "stamps-control-plane" --output tsv --query "name" 2>$null
+	if (-not $existingDb) {
 	Write-Host "💾 Creating Cosmos DB Database..." -ForegroundColor Yellow
 	az cosmosdb sql database create `
 		--resource-group $ResourceGroupName `
 		--account-name $cosmosAccountName `
 		--name "stamps-control-plane" `
 		--output none
-} else {
-	Write-Host "✅ Cosmos DB Database 'stamps-control-plane' already exists, reusing..." -ForegroundColor Green
+	} else {
+		Write-Host "✅ Cosmos DB Database 'stamps-control-plane' already exists, reusing..." -ForegroundColor Green
+	}
 }
+if ($existingCosmos -or (Test-CosmosExists -name $cosmosAccountName -rg $ResourceGroupName)) {
+	# Create Cosmos DB Containers (if they don't exist)
+	Write-Host "📦 Checking Cosmos DB Containers..." -ForegroundColor Yellow
 
-# Create Cosmos DB Containers (if they don't exist)
-Write-Host "📦 Checking Cosmos DB Containers..." -ForegroundColor Yellow
+	# Tenants container
+	$existingTenants = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "tenants" --output tsv --query "name" 2>$null
+	if (-not $existingTenants) {
+		Write-Host "📦 Creating Tenants container..." -ForegroundColor Yellow
+		az cosmosdb sql container create `
+			--resource-group $ResourceGroupName `
+			--account-name $cosmosAccountName `
+			--database-name "stamps-control-plane" `
+			--name "tenants" `
+			--partition-key-path "/tenantId" `
+			--output none
+	} else {
+		Write-Host "✅ Tenants container already exists, reusing..." -ForegroundColor Green
+	}
 
-# Tenants container
-$existingTenants = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "tenants" --output tsv --query "name" 2>$null
-if (-not $existingTenants) {
-	Write-Host "📦 Creating Tenants container..." -ForegroundColor Yellow
-	az cosmosdb sql container create `
-		--resource-group $ResourceGroupName `
-		--account-name $cosmosAccountName `
-		--database-name "stamps-control-plane" `
-		--name "tenants" `
-		--partition-key-path "/tenantId" `
-		--output none
-} else {
-	Write-Host "✅ Tenants container already exists, reusing..." -ForegroundColor Green
-}
+	# Cells container
+	$existingCells = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "cells" --output tsv --query "name" 2>$null
+	if (-not $existingCells) {
+		Write-Host "📦 Creating Cells container..." -ForegroundColor Yellow
+		az cosmosdb sql container create `
+			--resource-group $ResourceGroupName `
+			--account-name $cosmosAccountName `
+			--database-name "stamps-control-plane" `
+			--name "cells" `
+			--partition-key-path "/cellId" `
+			--output none
+	} else {
+		Write-Host "✅ Cells container already exists, reusing..." -ForegroundColor Green
+	}
 
-# Cells container
-$existingCells = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "cells" --output tsv --query "name" 2>$null
-if (-not $existingCells) {
-	Write-Host "📦 Creating Cells container..." -ForegroundColor Yellow
-	az cosmosdb sql container create `
-		--resource-group $ResourceGroupName `
-		--account-name $cosmosAccountName `
-		--database-name "stamps-control-plane" `
-		--name "cells" `
-		--partition-key-path "/cellId" `
-		--output none
-} else {
-	Write-Host "✅ Cells container already exists, reusing..." -ForegroundColor Green
-}
+	# Operations container
+	$existingOperations = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "operations" --output tsv --query "name" 2>$null
+	if (-not $existingOperations) {
+		Write-Host "📦 Creating Operations container..." -ForegroundColor Yellow
+		az cosmosdb sql container create `
+			--resource-group $ResourceGroupName `
+			--account-name $cosmosAccountName `
+			--database-name "stamps-control-plane" `
+			--name "operations" `
+			--partition-key-path "/tenantId" `
+			--ttl 5184000 `
+			--output none
+	} else {
+		Write-Host "✅ Operations container already exists, reusing..." -ForegroundColor Green
+	}
 
-# Operations container
-$existingOperations = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "operations" --output tsv --query "name" 2>$null
-if (-not $existingOperations) {
-	Write-Host "📦 Creating Operations container..." -ForegroundColor Yellow
-	az cosmosdb sql container create `
-		--resource-group $ResourceGroupName `
-		--account-name $cosmosAccountName `
-		--database-name "stamps-control-plane" `
-		--name "operations" `
-		--partition-key-path "/tenantId" `
-		--ttl 5184000 `
-		--output none
-} else {
-	Write-Host "✅ Operations container already exists, reusing..." -ForegroundColor Green
-}
-
-# Catalogs container
-$existingCatalogs = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "catalogs" --output tsv --query "name" 2>$null
-if (-not $existingCatalogs) {
-	Write-Host "📦 Creating Catalogs container..." -ForegroundColor Yellow
-	az cosmosdb sql container create `
-		--resource-group $ResourceGroupName `
-		--account-name $cosmosAccountName `
-		--database-name "stamps-control-plane" `
-		--name "catalogs" `
-		--partition-key-path "/type" `
-		--output none
-} else {
-	Write-Host "✅ Catalogs container already exists, reusing..." -ForegroundColor Green
+	# Catalogs container
+	$existingCatalogs = az cosmosdb sql container show --account-name $cosmosAccountName --resource-group $ResourceGroupName --database-name "stamps-control-plane" --name "catalogs" --output tsv --query "name" 2>$null
+	if (-not $existingCatalogs) {
+		Write-Host "📦 Creating Catalogs container..." -ForegroundColor Yellow
+		az cosmosdb sql container create `
+			--resource-group $ResourceGroupName `
+			--account-name $cosmosAccountName `
+			--database-name "stamps-control-plane" `
+			--name "catalogs" `
+			--partition-key-path "/type" `
+			--output none
+	} else {
+		Write-Host "✅ Catalogs container already exists, reusing..." -ForegroundColor Green
+	}
 }
 
 # Create Container Apps Environment (if it doesn't exist)
@@ -257,31 +273,15 @@ $appInsightsConnectionString = az monitor app-insights component show `
 	--query "connectionString" `
 	--output tsv
 
-# Phase 2: Build and push container images
+# Phase 2: Build and push container images (remote ACR build to avoid local Docker dependency)
 Write-Host "🏗️  Phase 2: Building and pushing container images..." -ForegroundColor Yellow
-
-# Log into Container Registry
-Write-Host "🔐 Logging into Container Registry..." -ForegroundColor Yellow
-az acr login --name $containerRegistryName
-
-# Build and push Portal image
-Write-Host "📦 Building Portal container image..." -ForegroundColor Yellow
+Write-Host "Building Portal container image with ACR Build..." -ForegroundColor Yellow
 Push-Location "./management-portal/src/Portal"
 try {
-	docker build -t $portalImage .
-	if ($LASTEXITCODE -ne 0) {
-		throw "Portal image build failed"
-	}
-    
-	Write-Host "📤 Pushing Portal image to registry..." -ForegroundColor Yellow
-	docker push $portalImage
-	if ($LASTEXITCODE -ne 0) {
-		throw "Portal image push failed"
-	}
+	az acr build -r $containerRegistryName -t $portalImageRepo .
+	if ($LASTEXITCODE -ne 0) { throw "Portal image ACR build failed" }
 }
-finally {
-	Pop-Location
-}
+finally { Pop-Location }
 
 
 # Phase 3: Deploy Container Apps
@@ -321,7 +321,7 @@ if (-not $existingContainerApp) {
 		--name "ca-stamps-portal" `
 		--resource-group $ResourceGroupName `
 		--environment $containerAppsEnvironmentName `
-		--image $portalImage `
+		--image "$acrLoginServer/$portalImageRepo" `
 		--target-port 8080 `
 		--ingress external `
 		--registry-server $acrLoginServer `
@@ -339,7 +339,7 @@ if (-not $existingContainerApp) {
 	az containerapp update `
 		--name "ca-stamps-portal" `
 		--resource-group $ResourceGroupName `
-		--image $portalImage `
+		--image "$acrLoginServer/$portalImageRepo" `
 		--output none
 }
 

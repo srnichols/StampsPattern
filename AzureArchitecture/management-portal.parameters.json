@@ -1,8 +1,8 @@
-﻿{
-    "environment":  "prod",
-    "location":  "westus2",
-    "managementClientAppId":  "d8f3024a-0c6a-4cea-af8b-7a7cd985354f",
-    "managementClientTenantId":  "30dd575a-bca7-491b-adf6-41d5f39275d4",
-    "resourceGroupName":  "rg-stamps-management-portal-prod",
-    "subscriptionId":  "2fb123ca-e419-4838-9b44-c2eb71a21769"
+{
+  "environment": "test",
+  "location": "westus3",
+  "managementClientAppId": "d8f3024a-0c6a-4cea-af8b-7a7cd985354f",
+  "managementClientTenantId": "30dd575a-bca7-491b-adf6-41d5f39275d4",
+  "resourceGroupName": "rg-stamps-management-portal-test",
+  "subscriptionId": "2fb123ca-e419-4838-9b44-c2eb71a21769"
 }

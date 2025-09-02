@@ -14,9 +14,8 @@ param(
 )
 
 
-
 # PowerShell script to deploy resourceGroups.bicep, then main.bicep, extract outputs for routing and management portal, and write to JSON files
-
+# Conditional: run apim-sync.ps1 for non-prod multi-APIM demo deployments
 # Set variables
 Write-Host "[INFO] Setting deployment variables..."
 $ResourceGroupsBicep = "./AzureArchitecture/resourceGroups.bicep"
@@ -74,7 +73,7 @@ $roleAssignResult = & az deployment sub create `
     --name "stamps-identity-role-$Environment-$(Get-Date -Format 'yyyyMMdd-HHmmss')" `
     --location $Location `
     --template-file "./AzureArchitecture/globalIdentityRoleAssignment.sub.bicep" `
-    --parameters identityResourceId="$globalIdentityResourceId" principalId="$globalIdentityPrincipalId" `
+    --parameters principalId="$globalIdentityPrincipalId" `
     --output json 2>&1
 if ($LASTEXITCODE -ne 0 -or -not $roleAssignResult) {
     Write-Error "[ERROR] Role assignment deployment failed."
@@ -186,7 +185,7 @@ if ($outputs.sqlServerSystemAssignedPrincipalId -and $outputs.sqlServerSystemAss
 } else {
     Write-Warning "[WARN] Could not find SQL Server principalId or Key Vault name in outputs. Skipping post-deployment Key Vault policy assignment."
 }
-// Conditional: run apim-sync.ps1 for non-prod multi-APIM demo deployments
+# Conditional: run apim-sync.ps1 for non-prod multi-APIM demo deployments
 Write-Host "[INFO] Evaluating whether to run apim-sync.ps1..."
 try {
     $aggregatedApim = $null

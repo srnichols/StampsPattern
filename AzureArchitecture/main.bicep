@@ -468,19 +468,20 @@ module globalLayer './globalLayer.bicep' = {
     // Pass APIM gateway URL for Front Door configuration
     apimGatewayUrl: geodesLayer.outputs.apimGatewayUrl
   apimGatewayUrls: allApimGatewayUrls
-    // Pass all regional Application Gateway endpoints for Traffic Manager (filtering will be done in globalLayer.bicep)
-    regionalEndpoints: [
-      for (region, i) in regions: !empty(regionalLayers[i].outputs.regionalEndpointFqdn) ? {
-        fqdn: regionalLayers[i].outputs.regionalEndpointFqdn
-        location: region.regionName
-      } : null
-    ]
-    keyVaultName: regions[0].keyVaultName
+    // Pass all regional endpoints; filtering is applied in globalLayer via child resource loop
+    regionalEndpoints: [for (region, i) in regions: {
+      fqdn: !empty(regionalLayers[i].outputs.regionalEndpointFqdn) ? regionalLayers[i].outputs.regionalEndpointFqdn : ''
+      location: region.regionName
+    }]
+  // Use the actual created Key Vault (first regional KV) to store the global Cosmos connection
+  keyVaultName: keyVaults[0].outputs.vaultName
   userAssignedIdentityId: userAssignedIdentityResourceId
   }
   dependsOn: [
     regionalLayers
     monitoringLayers
+  // Ensure Key Vault exists before globalLayer scripts try to write secrets
+  keyVaults
   ]
 }
 

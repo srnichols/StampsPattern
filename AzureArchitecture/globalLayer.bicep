@@ -38,10 +38,40 @@ resource storeGlobalCosmosDbConnectionScript 'Microsoft.Resources/deploymentScri
     ]
     scriptContent: '''
       set -e
-  az login --identity --allow-no-subscriptions
-      az account set --subscription "$SUBSCRIPTION_ID"
-      connstr=$(az cosmosdb keys list --name "$COSMOS_DB_ACCOUNT" --resource-group "$COSMOS_DB_RG" --type connection-strings --query "connectionStrings[0].connectionString" -o tsv)
-      az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$connstr"
+      # Retry helper
+      retry() {
+        local attempts=$1; shift
+        local delay=$1; shift
+        local n=0
+        until "$@"; do
+          n=$((n+1))
+          if [ $n -ge $attempts ]; then
+            echo "[ERROR] Command failed after $n attempts: $@"
+            return 1
+          fi
+          echo "[WARN] Command failed. Attempt $n/$attempts. Retrying in $delay seconds..."
+          sleep $delay
+        done
+      }
+
+      # Login and select subscription (with retries)
+      retry 5 10 az login --identity --allow-no-subscriptions
+      retry 5 10 az account set --subscription "$SUBSCRIPTION_ID"
+
+      # Wait for Key Vault DNS propagation (resolve via az to avoid external DNS dependency)
+      retry 10 10 az keyvault show --name "$KEYVAULT_NAME" --only-show-errors 1>/dev/null
+
+      # Get Cosmos connection string with retries
+      get_conn() {
+        az cosmosdb keys list --name "$COSMOS_DB_ACCOUNT" --resource-group "$COSMOS_DB_RG" --type connection-strings --query "connectionStrings[0].connectionString" -o tsv
+      }
+      connstr=$(retry 10 10 get_conn)
+
+      # Set secret in Key Vault with retries
+      set_secret() {
+        az keyvault secret set --vault-name "$KEYVAULT_NAME" --name "$SECRET_NAME" --value "$connstr" --only-show-errors 1>/dev/null
+      }
+      retry 10 10 set_secret
     '''
     retentionInterval: 'P1D'
   }
@@ -150,9 +180,25 @@ resource trafficManager 'Microsoft.Network/trafficManagerProfiles@2022-04-01' = 
       port: 443
       path: '/health'
     }
-    endpoints: regionalEndpoints
+    // Endpoints defined as child resources below
+    endpoints: []
   }
 }
+
+// External endpoints as child resources (preferred pattern)
+resource trafficManagerExternalEndpoints 'Microsoft.Network/trafficManagerProfiles/externalEndpoints@2022-04-01' = [
+  for i in range(0, length(regionalEndpoints)): if (!empty(string(regionalEndpoints[i].fqdn))) {
+    name: 'ext-${i}'
+    parent: trafficManager
+    properties: {
+      target: string(regionalEndpoints[i].fqdn)
+      endpointStatus: 'Enabled'
+      endpointLocation: string(regionalEndpoints[i].location)
+      priority: i + 1
+      weight: 1
+    }
+  }
+]
 
 // Modern Azure Front Door Profile (Standard/Premium)
 resource frontDoor 'Microsoft.Cdn/profiles@2023-05-01' = {

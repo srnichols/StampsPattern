@@ -32,6 +32,8 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 - **Simple Setup**: 45-60 minutes for basic 2-region deployment
 - **Enterprise Setup**: 2-3 hours for full multi-GEO production deployment
 
+> Quick start for single-subscription deployments: Use the end-to-end [Three-Step Single-Subscription Deployment Guide](./THREE_STEP_DEPLOYMENT_GUIDE.md) to provision core infra (Step 1), validate routing (Step 2), and deploy the Management Portal (Step 3).
+
 ### Minimal Happy Path (Live Data)
 ### Cost Controls: Defender for Cloud Plans
 

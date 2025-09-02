@@ -166,6 +166,7 @@ Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) f
 ## 🧭 Quick Navigation
 
 - [📈 Documentation Hub](./docs/DOCS.md)
+- [🚀 Three-Step Single-Subscription Deployment](./docs/THREE_STEP_DEPLOYMENT_GUIDE.md)
 
 ## 💡 Why This Project?
 
@@ -214,6 +215,16 @@ This solution is designed for:
 - ✅ Azure subscription with **Contributor** access
 
 **🔧 Multi-Organization Support**: For custom domains and organization-specific deployments, see the <a href="./docs/PARAMETERIZATION_GUIDE.md" target="_blank" rel="noopener" title="Opens in a new tab">📋 Parameterization Guide</a>&nbsp;<sup>↗</sup> for template customization options.
+
+### ⚡ Fast Path: Complete Single-Subscription Deployment (Recommended for first run)
+
+If you want an end-to-end deployment of the full architecture into a single subscription using battle-tested scripts, follow the three-step guide:
+
+- Step 1: Provision core infra and identities
+- Step 2: Validate global routing
+- Step 3: Deploy the Management Portal
+
+Start here: [Three-Step Single-Subscription Deployment Guide](./docs/THREE_STEP_DEPLOYMENT_GUIDE.md)
 
 ### 🎯 Choose Your Tenancy Model
 
