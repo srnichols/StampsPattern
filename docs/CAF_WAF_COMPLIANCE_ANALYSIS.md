@@ -1114,7 +1114,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
 ---
 
 **📝 Document Version Information**
-- **Version**: 1.5.2
+ - **Version**: 1.6.2
 - **Last Updated**: 2025-08-21 14:41:41 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11

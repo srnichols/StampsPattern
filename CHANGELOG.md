@@ -55,6 +55,66 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Major repository cleanup and documentation improvements
 
 - Repository organization: moved troubleshooting files to docs/archive/troubleshooting/
+```markdown
+# [1.6.2] - 2025-09-02
+
+### Added
+- `scripts/configure-entra-auth.ps1` — helper to create an Entra ID app registration, generate a policy-compliant client secret, and wire the secret/env vars into the Management Portal Container App.
+- Documentation links: added the Three-Step Single-Subscription Deployment guide and cross-linked it from README and docs hub for discoverability.
+
+### Changed
+- Documentation footers and release metadata updated to 1.6.2 across docs.
+- Management Portal deployment docs: added secret rotation guidance and restart notes.
+
+### Fixed
+- Resolved Step 3 deployment issues: switched the Management Portal ACR build to remote ACR build, added subscription-unique names to avoid collisions, and fixed PowerShell parser issues in the deployment script.
+
+All notable changes to the Azure Stamps Pattern project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+
+## [1.6.0] - 2025-09-02
+
+### Added
+- Parameterized SQL Database SKU for CELLs: `sqlDatabaseSkuTier` and `sqlDatabaseSkuName` with environment-aware defaults (S0 non-prod, S1 prod)
+- Optional SQL SKU overrides documented in Deployment Guide and Three-Step guide
+- Example parameter files updated to include SQL SKU knobs
+
+### Changed
+- APIM cost behavior clarified: Developer tier for non-prod; Premium for prod; non-prod multi-region demo pattern backed by Front Door and optional `-AutoRunApimSync`
+- Removed deprecated/unused CELL-layer knobs (storage object replication, per-cell cosmos zone redundant) and cleaned linter warnings
+
+### Fixed
+- Linter issues in `deploymentStampLayer.bicep` and unused params in `main.bicep`
+
+
+## [1.5.2] - 2025-08-21
+
+### Added
+- Enforce descriptive ACR naming conventions in Bicep files (management-portal, traffic-routing)
+## [1.5.0] - 2025-08-21
+
+### Added
+- Rebaseline: Hot Chocolate GraphQL, DAB removal, doc and infra cleanup
+## [1.4.0] - 2025-08-18
+
+### Added
+- Version footer update after emoji restoration
+## [1.4.0] - 2025-08-18
+
+### Added
+- Comprehensive documentation enhancements and Quick Navigation improvements
+## [1.3.0] - 2025-08-18
+
+### Added
+- Standardize documentation version footers across all files
+## [1.3.0] - 2025-08-18
+
+### Added
+- Major repository cleanup and documentation improvements
+
+- Repository organization: moved troubleshooting files to docs/archive/troubleshooting/
 - Repository organization: moved temporary files to temp/ directory
 - Repository organization: moved tools to docs/tools/  
 - Repository organization: moved azuredeploy.json to AzureArchitecture/
@@ -146,16 +206,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Updated DEPLOYMENT_GUIDE.md with management portal authentication requirements
   - Improved MANAGEMENT_PORTAL_USER_GUIDE.md with authentication flow details
   - Enhanced management-portal README with production authentication guidelines
-- **Security Improvements**: HTTPS enforcement and forwarded headers handling for container environments
-
 ### Fixed
-
 - **HTTPS Redirect Issues**: Resolved authentication redirect URI problems in container environments
 - **Azure AD Token Configuration**: Fixed AADSTS700054 errors with proper ID token enablement
 - **Container App Secrets**: Proper client secret configuration and management
 
 ### Archived
-
 - Moved temporary authentication setup documentation to docs/archive/
   - FINAL_AUTH_SETUP.md
   - AZURE_ENTRA_SETUP.md  
@@ -177,6 +233,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Multi-tenant architecture patterns
 - Security and compliance frameworks
 - Documentation and deployment guides
+
+
+```
 
 
 
