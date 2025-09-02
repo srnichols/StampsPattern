@@ -33,6 +33,16 @@ This guide walks you through deploying the Azure Stamps Pattern - think of it as
 - **Enterprise Setup**: 2-3 hours for full multi-GEO production deployment
 
 ### Minimal Happy Path (Live Data)
+### Cost Controls: Defender for Cloud Plans
+
+The template includes subscription-scope toggles to reduce Microsoft Defender for Cloud costs while retaining CSPM (secure score/policy) insights:
+
+- enableDefenderCostOptimizations (bool): enables pricing configuration.
+- defenderForServersPlan (Off | P1 | P2): default Off outside prod, P1 in prod.
+- enableDefenderForStorage / enableDefenderForSql / enableDefenderForAppServices / enableDefenderForKeyVault (bool): default false outside prod; storage/sql default true in prod (example file shows baseline).
+
+These set Microsoft.Security/pricings resources to Free or Standard as appropriate. CSPM (Arm) remains Free to preserve secure score and policy evaluations.
+
 
 If you want the fastest, repeatable route to a working Management Portal backed by live Cosmos data, follow these steps. This path deploys the smoke sample, seeds representative baseline data using the Seeder (AAD RBAC), and verifies Portal ↔ DAB ↔ Cosmos connectivity.
 

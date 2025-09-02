@@ -67,6 +67,12 @@
     "cosmosAdditionalLocations": { "value": ["westus2"] },
     "cosmosMultiWrite": { "value": false },
     "storageSkuName": { "value": "Premium_ZRS" },
-    "enableSqlFailoverGroup": { "value": false }
+  "enableSqlFailoverGroup": { "value": false },
+  "enableDefenderCostOptimizations": { "value": true },
+  "defenderForServersPlan": { "value": "P1" },
+  "enableDefenderForStorage": { "value": true },
+  "enableDefenderForSql": { "value": true },
+  "enableDefenderForAppServices": { "value": false },
+  "enableDefenderForKeyVault": { "value": false }
   }
 }
