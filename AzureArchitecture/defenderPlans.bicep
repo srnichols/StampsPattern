@@ -27,16 +27,16 @@ param enableDefenderForAppServices bool = false
 @description('Enable Defender for Key Vault (Standard). Default off outside prod.')
 param enableDefenderForKeyVault bool = false
 
-// Keep CSPM/Secure Score via ARM at Free tier to preserve policy/assessment features
-resource pricingArm 'Microsoft.Security/pricings@2023-08-01' = {
-  name: 'Arm'
+// Keep CSPM/Secure Score at Free tier to preserve policy/assessment features (CloudPosture)
+resource pricingCloudPosture 'Microsoft.Security/pricings@2024-01-01' = {
+  name: 'CloudPosture'
   properties: {
     pricingTier: 'Free'
   }
 }
 
 // Defender for Servers (VirtualMachines)
-resource pricingVms 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingVms 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'VirtualMachines'
   properties: {
     pricingTier: defenderForServersPlan == 'Off' ? 'Free' : 'Standard'
@@ -45,7 +45,7 @@ resource pricingVms 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // Storage Accounts
-resource pricingStorage 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingStorage 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'StorageAccounts'
   properties: {
     pricingTier: enableDefenderForStorage ? 'Standard' : 'Free'
@@ -53,7 +53,7 @@ resource pricingStorage 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // SQL Servers (PaaS)
-resource pricingSql 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingSql 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'SqlServers'
   properties: {
     pricingTier: enableDefenderForSql ? 'Standard' : 'Free'
@@ -61,7 +61,7 @@ resource pricingSql 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // App Services
-resource pricingAppServices 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingAppServices 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'AppServices'
   properties: {
     pricingTier: enableDefenderForAppServices ? 'Standard' : 'Free'
@@ -69,7 +69,7 @@ resource pricingAppServices 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // Key Vaults
-resource pricingKeyVaults 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingKeyVaults 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'KeyVaults'
   properties: {
     pricingTier: enableDefenderForKeyVault ? 'Standard' : 'Free'
@@ -77,7 +77,7 @@ resource pricingKeyVaults 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // Kubernetes (AKS) — keep at Free unless required
-resource pricingK8s 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingK8s 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'KubernetesService'
   properties: {
     pricingTier: 'Free'
@@ -85,7 +85,7 @@ resource pricingK8s 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // Containers (registries) — keep at Free
-resource pricingContainers 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingContainers 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'Containers'
   properties: {
     pricingTier: 'Free'
@@ -93,7 +93,7 @@ resource pricingContainers 'Microsoft.Security/pricings@2023-08-01' = {
 }
 
 // Open Source Relational DBs (Flexible Server) — keep at Free
-resource pricingOssDb 'Microsoft.Security/pricings@2023-08-01' = {
+resource pricingOssDb 'Microsoft.Security/pricings@2024-01-01' = {
   name: 'OpenSourceRelationalDatabases'
   properties: {
     pricingTier: 'Free'
