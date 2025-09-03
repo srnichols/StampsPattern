@@ -1,0 +1,110 @@
+services:
+  tasktracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:80"
+      SkipCosmosInit: "false"
+      SeedOnStartup: "true"
+      ConnectionStrings__CosmosDb: "AccountEndpoint=https://cosmosdb:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
+      ConnectionStrings__BlobStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+      ConnectionStrings__Redis: "redis:6379"
+      DAPR_PUBSUB_NAME: "pubsub"
+      DAPR_STATESTORE_NAME: "statestore"
+      OTEL_SERVICE_NAME: "TaskTracker.Blazor"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+      OTEL_METRICS_EXPORTER: "otlp"
+      OTEL_TRACES_EXPORTER: "otlp"
+      OTEL_LOGS_EXPORTER: "otlp"
+    volumes:
+      - ./seed:/app/seed:ro
+      - ./dapr/components:/app/dapr/components:ro
+    depends_on:
+      - cosmosdb
+      - azurite
+      - redis
+      - placement
+    networks:
+      - tasktracker-network
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.99.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317" # gRPC OTLP
+      - "4318:4318" # HTTP OTLP
+    networks:
+      - tasktracker-network
+
+  # Dapr sidecar for tasktracker
+  tasktracker-dapr:
+    image: daprio/dapr:latest
+    command: ["./daprd",
+      "-app-id", "tasktracker",
+      "-app-port", "80",
+      "-placement-host-address", "placement:50006",
+      "-components-path", "/components",
+      "-config", "/config/config.yaml"]
+    volumes:
+      - ./dapr/components:/components:ro
+      - ./dapr/config:/config:ro
+    depends_on:
+      - tasktracker
+      - placement
+    network_mode: "service:tasktracker"
+
+  # Dapr placement service
+  placement:
+    image: daprio/dapr:latest
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - tasktracker-network
+
+  cosmosdb:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
+    ports: []
+    environment:
+      - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
+      - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true
+    volumes:
+      - cosmosdb-data:/data/db
+    networks:
+      - tasktracker-network
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "10000:10000" # Blob
+      - "10001:10001" # Queue
+      - "10002:10002" # Table
+    volumes:
+      - azurite-data:/data
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+    networks:
+      - tasktracker-network
+
+  redis:
+    image: redis:7-alpine
+    ports: []
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - tasktracker-network
+
+volumes:
+  cosmosdb-data:
+  azurite-data:
+  redis-data:
+
+networks:
+  tasktracker-network:
+    driver: bridge

@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using TaskTracker.Blazor.Components.Shared
+@using TaskTracker.Blazor.Components.Layout
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <RedirectToLogin />
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 text-center">
+                            <h1 class="display-1 text-muted">404</h1>
+                            <h2>Page Not Found</h2>
+                            <p class="lead">The page you're looking for doesn't exist.</p>
+                            <a href="/" class="btn btn-primary">Go Home</a>
+                        </div>
+                    </div>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+@code {
+    
+}

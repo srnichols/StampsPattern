@@ -1,0 +1,62 @@
+@namespace TaskTracker.Blazor.Components.Shared
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JS
+
+<div class="modal fade" id="@_modalId" tabindex="-1" aria-labelledby="@(_modalId + "Label")" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="@(_modalId + "Label")">@_title</h5>
+        <button type="button" class="btn-close" @onclick="OnCancel"></button>
+      </div>
+      <div class="modal-body">
+        @_message
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" @onclick="OnCancel">@_cancelText</button>
+        <button class="btn btn-primary" @onclick="OnConfirm">@_confirmText</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+@code {
+  private string _modalId = $"confirm-{Guid.NewGuid()}";
+  private string _title = "Confirm";
+  private string _message = string.Empty;
+  private string _confirmText = "Confirm";
+  private string _cancelText = "Cancel";
+  private TaskCompletionSource<bool>? _tcs;
+
+  public async Task<bool> ShowAsync(string title, string message, string confirmText = "Confirm", string cancelText = "Cancel")
+  {
+    _title = title;
+    _message = message;
+    _confirmText = confirmText;
+    _cancelText = cancelText;
+    _tcs = new TaskCompletionSource<bool>();
+    await JS.InvokeVoidAsync("bootstrapInterop.showModal", $"#{_modalId}");
+    StateHasChanged();
+    return await _tcs.Task.ConfigureAwait(false);
+  }
+
+  private async Task OnConfirm()
+  {
+    if (_tcs != null)
+    {
+      _tcs.TrySetResult(true);
+      await JS.InvokeVoidAsync("bootstrapInterop.hideModal", $"#{_modalId}");
+    }
+  }
+
+  private async Task OnCancel()
+  {
+    if (_tcs != null)
+    {
+      _tcs.TrySetResult(false);
+      await JS.InvokeVoidAsync("bootstrapInterop.hideModal", $"#{_modalId}");
+    }
+  }
+}

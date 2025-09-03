@@ -1,0 +1,19 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: tasktracker-config
+spec:
+  tracing:
+    samplingRate: "1"
+    otel:
+      endpointAddress: "http://jaeger:14268/api/traces"
+  logging:
+    level: "info"
+  httpPipeline:
+    handlers:
+      - name: cors
+        type: middleware.http.cors
+  appHttpPipeline:
+    handlers:
+      - name: cors
+        type: middleware.http.cors

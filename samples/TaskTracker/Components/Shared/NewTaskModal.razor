@@ -1,0 +1,461 @@
+@namespace TaskTracker.Blazor.Components.Shared
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@using TaskTracker.Blazor.Models
+@using TaskTracker.Blazor.Services
+@inject ICosmosDbService CosmosService
+@inject IAuthenticationService AuthService
+@inject IIconService IconService
+@inject IJSRuntime JSRuntime
+@inject IBlobStorageService BlobService
+@inject ILogger<NewTaskModal> Logger
+@using TaskTracker.Blazor.Components.Shared
+
+<!-- Modal -->
+<div class="modal fade" id="newTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <EditForm Model="newTask" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title *</label>
+                                <InputText id="title" class="form-control" @bind-value="newTask.Title" placeholder="Enter task title" />
+                                <ValidationMessage For="@(() => newTask.Title)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <InputTextArea id="description" class="form-control" rows="3" @bind-value="newTask.Description" 
+                                             placeholder="Optional description..." />
+                                <ValidationMessage For="@(() => newTask.Description)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    @foreach (var tag in selectedTags)
+                                    {
+                                        <span class="badge bg-primary">
+                                            #@tag
+                                            <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.7em;" 
+                                                    @onclick="() => RemoveTag(tag)"></button>
+                                        </span>
+                                    }
+                                </div>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Add tags..." 
+                                           @bind="tagInput" @onkeypress="HandleTagKeyPress" list="tagSuggestions">
+                                    <button type="button" class="btn btn-outline-secondary" @onclick="AddTag">Add</button>
+                                </div>
+                                <datalist id="tagSuggestions">
+                                    @foreach (var suggestion in GetTagSuggestions())
+                                    {
+                                        <option value="@suggestion" />
+                                    }
+                                </datalist>
+                            </div>
+
+                            <hr />
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="form-label mb-0">Attachments</label>
+                                    <InputFile OnChange="UploadFiles" multiple="true" />
+                                </div>
+
+                                @if (uploading)
+                                {
+                                    <div class="text-muted small mb-2">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>Uploading...
+                                    </div>
+                                }
+
+                                @if (newTask.Attachments?.Any() == true)
+                                {
+                                    <div class="attachment-list">
+                                        @foreach (var att in newTask.Attachments)
+                                        {
+                                            <div class="attachment-item d-flex align-items-center justify-content-between">
+                                                <div class="text-truncate me-2">
+                                                    <i class="bi bi-file-earmark me-1"></i>
+                                                    @att.FileName
+                                                    <small class="text-muted ms-2">(@FormatSize(att.SizeBytes))</small>
+                                                </div>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-outline-secondary" @onclick="() => DownloadAttachment(att)" title="Open">
+                                                        <i class="bi bi-box-arrow-up-right"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger" @onclick="() => DeleteAttachment(att)" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-muted small">No attachments added.</div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Icon (also used as category)</label>
+                                <IconSelect @bind-Value="newTask.Icon" />
+                                <small class="text-muted">Category is derived from the selected icon.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <InputSelect id="priority" class="form-select" @bind-Value="newTask.Priority">
+                                    <option value="@Priority.Low">Low</option>
+                                    <option value="@Priority.Mid">Mid</option>
+                                    <option value="@Priority.High">High</option>
+                                </InputSelect>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="dueDate" class="form-label">Due Date</label>
+                                <InputDate id="dueDate" class="form-control" @bind-value="newTask.DueDate" />
+                            </div>
+                        </div>
+                    </div>
+
+            <div class="row">
+                        <div class="col">
+                <hr class="my-3" />
+                            <div class="mb-3">
+                                <label class="form-label">Assign to Team Members</label>
+                                <div class="row">
+                                    @foreach (var user in Users.Where(u => u.Id != currentUserId))
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       id="user-@user.Id" 
+                                                       checked="@selectedAssignees.Contains(user.Id)"
+                                                       @onchange="@((e) => ToggleAssignee(user.Id, (bool)e.Value!))" />
+                                                <label class="form-check-label" for="user-@user.Id">
+                                                    @user.DisplayName <small class="text-muted">(@user.Email)</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessage
+                        </div>
+                    }
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        Create Task
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<ConfirmDialog @ref="confirmDialog" />
+
+@code {
+    [Parameter] public List<Category> Categories { get; set; } = new();
+    [Parameter] public List<UserProfile> Users { get; set; } = new();
+    [Parameter] public EventCallback OnTaskCreated { get; set; }
+
+    private TaskItem newTask = new();
+    private string? selectedCategoryId;
+    private List<string> selectedTags = new();
+    private List<string> selectedAssignees = new();
+    private string tagInput = string.Empty;
+    private string errorMessage = string.Empty;
+    private bool isSubmitting = false;
+    private bool isEditing = false;
+    private TaskItem? originalTask;
+    private bool uploading = false;
+    private ConfirmDialog? confirmDialog;
+
+    private string? currentTenantId;
+    private string? currentUserId;
+    // unified icon selection handled by IconSelect component
+
+    protected override void OnInitialized()
+    {
+        currentTenantId = AuthService.GetCurrentTenantId();
+        currentUserId = AuthService.GetCurrentUserId();
+        ResetForm();
+    }
+
+    public async Task Show(bool reset = true)
+    {
+        if (reset)
+        {
+            ResetForm();
+        }
+        await JSRuntime.InvokeVoidAsync("bootstrapInterop.showModal", "#newTaskModal");
+        await Task.Delay(50);
+        await FocusTitle();
+    }
+
+    public void LoadForEdit(TaskItem task)
+    {
+        isEditing = true;
+        originalTask = task;
+        // Create a working copy
+        newTask = new TaskItem
+        {
+            Id = task.Id,
+            TenantId = task.TenantId,
+            Title = task.Title,
+            Description = task.Description,
+            CategoryId = task.CategoryId,
+            Priority = task.Priority,
+            IsArchived = task.IsArchived,
+            DueDate = task.DueDate,
+            Icon = task.Icon,
+            Attachments = task.Attachments.ToList(),
+            AssigneeUserIds = task.AssigneeUserIds.ToList(),
+            CreatedByUserId = task.CreatedByUserId,
+            CreatedAtUtc = task.CreatedAtUtc,
+            UpdatedAtUtc = task.UpdatedAtUtc,
+            TagNames = task.TagNames.ToList()
+        };
+
+        selectedCategoryId = task.CategoryId?.ToString();
+        selectedTags = task.TagNames.ToList();
+        selectedAssignees = task.AssigneeUserIds.ToList();
+        errorMessage = string.Empty;
+    }
+
+    [JSInvokable]
+    public async Task FocusTitle()
+    {
+        await JSRuntime.InvokeVoidAsync("document.getElementById('title').focus");
+    }
+
+    private void ResetForm()
+    {
+        isEditing = false;
+        originalTask = null;
+        newTask = new TaskItem
+        {
+            Id = Guid.NewGuid(),
+            TenantId = currentTenantId ?? string.Empty,
+            CreatedByUserId = currentUserId ?? string.Empty,
+            Priority = Priority.Mid,
+            Attachments = new List<Attachment>()
+        };
+    // Default icon left as null/empty; IconSelect offers a Default option
+        selectedCategoryId = null;
+        selectedTags = new();
+        selectedAssignees = new();
+        tagInput = string.Empty;
+        errorMessage = string.Empty;
+        isSubmitting = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (string.IsNullOrEmpty(currentTenantId) || string.IsNullOrEmpty(currentUserId))
+        {
+            errorMessage = "Authentication error. Please log in again.";
+            return;
+        }
+
+        isSubmitting = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            // No separate categoryId; category is derived from icon category for filtering/grouping.
+
+            // Set tags and assignees
+            newTask.TagNames = selectedTags.ToList();
+            newTask.AssigneeUserIds = selectedAssignees.ToList();
+
+            if (isEditing)
+            {
+                await CosmosService.UpdateTaskAsync(newTask);
+            }
+            else
+            {
+                // Ensure required fields
+                if (newTask.Id == Guid.Empty) newTask.Id = Guid.NewGuid();
+                if (string.IsNullOrWhiteSpace(newTask.TenantId)) newTask.TenantId = currentTenantId!;
+                if (string.IsNullOrWhiteSpace(newTask.CreatedByUserId)) newTask.CreatedByUserId = currentUserId!;
+                await CosmosService.CreateTaskAsync(newTask);
+            }
+            await OnTaskCreated.InvokeAsync();
+            
+            // Close modal
+            await JSRuntime.InvokeVoidAsync("bootstrapInterop.hideModal", "#newTaskModal");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to create task: {ex.Message}";
+            Logger.LogError(ex, "Create/Update task failed for tenant {TenantId}", currentTenantId);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private List<string> GetTagSuggestions()
+    {
+        if (string.IsNullOrEmpty(tagInput) || tagInput.Length < 2)
+            return new List<string>();
+
+        // In a real app, this would come from your tag service
+        var commonTags = new[] 
+        { 
+            "urgent", "bug", "feature", "documentation", "testing", "review", 
+            "deployment", "meeting", "planning", "research", "design" 
+        };
+
+        return commonTags
+            .Where(tag => tag.Contains(tagInput.ToLower()) && !selectedTags.Contains(tag))
+            .Take(5)
+            .ToList();
+    }
+
+    // Category selection UI removed; category derives from selected icon
+
+    private async Task HandleTagKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await AddTag();
+        }
+    }
+
+    private async Task AddTag()
+    {
+        if (!string.IsNullOrWhiteSpace(tagInput) && 
+            !selectedTags.Contains(tagInput.Trim()) && 
+            selectedTags.Count < 10)
+        {
+            selectedTags.Add(tagInput.Trim().ToLower());
+            tagInput = string.Empty;
+        }
+        await Task.CompletedTask;
+    }
+
+    private void RemoveTag(string tag)
+    {
+        selectedTags.Remove(tag);
+    }
+
+    private void ToggleAssignee(string userId, bool isSelected)
+    {
+        if (isSelected && !selectedAssignees.Contains(userId))
+        {
+            selectedAssignees.Add(userId);
+        }
+        else if (!isSelected && selectedAssignees.Contains(userId))
+        {
+            selectedAssignees.Remove(userId);
+        }
+    }
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount == 0 || string.IsNullOrEmpty(currentTenantId)) return;
+        uploading = true;
+        try
+        {
+            foreach (var file in e.GetMultipleFiles())
+            {
+                await using var stream = file.OpenReadStream(10 * 1024 * 1024);
+                var blobUri = await BlobService.UploadAsync(currentTenantId!, newTask.Id, file.Name, file.ContentType ?? "application/octet-stream", stream);
+                newTask.Attachments ??= new List<Attachment>();
+                newTask.Attachments.Add(new Attachment
+                {
+                    BlobUri = blobUri,
+                    FileName = file.Name,
+                    ContentType = file.ContentType ?? "application/octet-stream",
+                    SizeBytes = file.Size,
+                    UploadedByUserId = currentUserId ?? string.Empty,
+                    UploadedAtUtc = DateTime.UtcNow
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Attachment upload failed: {ex.Message}";
+            Logger.LogError(ex, "Attachment upload failed for task {TaskId} (tenant {TenantId})", newTask.Id, currentTenantId);
+        }
+        finally
+        {
+            uploading = false;
+        }
+    }
+
+    private async Task DownloadAttachment(Attachment att)
+    {
+        try
+        {
+            var url = await BlobService.GenerateDownloadSasAsync(att.BlobUri, TimeSpan.FromMinutes(10));
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Open failed: {ex.Message}";
+            Logger.LogError(ex, "Attachment open failed for blob {BlobUri}", att.BlobUri);
+        }
+    }
+
+    private async Task DeleteAttachment(Attachment att)
+    {
+        var ok = confirmDialog != null
+            ? await confirmDialog.ShowAsync("Delete Attachment", $"Delete {att.FileName}?", "Delete", "Cancel")
+            : await JSRuntime.InvokeAsync<bool>("confirm", $"Delete {att.FileName}?");
+        if (!ok) return;
+        try
+        {
+            await BlobService.DeleteBlobAsync(att.BlobUri);
+            newTask.Attachments?.Remove(att);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Delete failed: {ex.Message}";
+            Logger.LogError(ex, "Attachment delete failed for blob {BlobUri}", att.BlobUri);
+        }
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes <= 0) return "0 B";
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        var order = (int)Math.Floor(Math.Log(bytes, 1024));
+        order = Math.Clamp(order, 0, sizes.Length - 1);
+        var value = bytes / Math.Pow(1024, order);
+        return $"{value:0.#} {sizes[order]}";
+    }
+}

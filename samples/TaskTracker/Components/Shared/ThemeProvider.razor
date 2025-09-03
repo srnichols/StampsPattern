@@ -1,0 +1,137 @@
+@using TaskTracker.Blazor.Models
+@using TaskTracker.Blazor.Services
+@inject ICosmosDbService CosmosService
+@inject ThemeState Theme
+@inject IAuthenticationService Auth
+
+@code {
+    private string _primary = "#0d6efd"; // default Blue
+    private string _primaryRgb = "13, 110, 253";
+    private string _primaryHover = "#0b5ed7";
+    private string _primaryActive = "#0a58ca";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tenantId = Auth.GetCurrentTenantId();
+        try
+        {
+            var settings = tenantId != null ? await CosmosService.GetSiteSettingsAsync(tenantId) : null;
+            if (!string.IsNullOrWhiteSpace(settings?.ThemeColor))
+            {
+                _primary = settings!.ThemeColor!;
+                Theme.SetColor(tenantId, _primary);
+            }
+            else
+            {
+                // Initialize from state if present
+                _primary = Theme.GetColor(tenantId);
+            }
+        }
+        catch
+        {
+            // ignore, keep defaults
+        }
+
+        // Derive rgb and shade variants for broader Bootstrap styling
+        DeriveThemeVariants(_primary);
+
+        // Subscribe to live changes
+        Theme.OnThemeChanged += HandleThemeChanged;
+    }
+
+    private void HandleThemeChanged(string changedTenantId, string hex)
+    {
+        var tenantId = Auth.GetCurrentTenantId();
+        if (!string.Equals(changedTenantId ?? string.Empty, tenantId ?? string.Empty, StringComparison.Ordinal))
+        {
+            return; // ignore themes for other tenants
+        }
+        _primary = hex;
+        DeriveThemeVariants(_primary);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void DeriveThemeVariants(string hex)
+    {
+        var (r, g, b) = HexToRgb(hex);
+        _primaryRgb = $"{r}, {g}, {b}";
+        var hover = Darken(r, g, b, 0.12);
+        var active = Darken(r, g, b, 0.18);
+        _primaryHover = ToHex(hover.r, hover.g, hover.b);
+        _primaryActive = ToHex(active.r, active.g, active.b);
+    }
+
+    private static (int r, int g, int b) HexToRgb(string hex)
+    {
+        if (string.IsNullOrWhiteSpace(hex)) return (13, 110, 253);
+        var h = hex.Trim();
+        if (h.StartsWith('#')) h = h[1..];
+        if (h.Length == 3) // short form rgb
+        {
+            h = string.Concat(h[0], h[0], h[1], h[1], h[2], h[2]);
+        }
+        if (h.Length != 6) return (13, 110, 253);
+        var r = Convert.ToInt32(h.Substring(0, 2), 16);
+        var g = Convert.ToInt32(h.Substring(2, 2), 16);
+        var b = Convert.ToInt32(h.Substring(4, 2), 16);
+        return (r, g, b);
+    }
+
+    private static (int r, int g, int b) Darken(int r, int g, int b, double factor)
+    {
+        int d(int c) => Math.Max(0, Math.Min(255, (int)Math.Round(c * (1 - factor))));
+        return (d(r), d(g), d(b));
+    }
+
+    private static string ToHex(int r, int g, int b)
+        => $"#{r:X2}{g:X2}{b:X2}";
+}
+
+<style>
+:root {
+  --bs-primary: @_primary;
+  --bs-primary-rgb: @_primaryRgb;
+  --bs-link-color: @_primary;
+  --bs-link-hover-color: @_primaryHover;
+}
+
+/* Ensure common components use the selected theme */
+.bg-primary { background-color: @_primary !important; }
+.text-primary { color: @_primary !important; }
+.border-primary { border-color: @_primary !important; }
+
+/* Buttons */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: @_primary;
+  --bs-btn-border-color: @_primary;
+  --bs-btn-hover-bg: @_primaryHover;
+  --bs-btn-hover-border-color: @_primaryHover;
+  --bs-btn-active-bg: @_primaryActive;
+  --bs-btn-active-border-color: @_primaryActive;
+}
+.btn-outline-primary {
+  --bs-btn-color: @_primary;
+  --bs-btn-border-color: @_primary;
+  --bs-btn-hover-bg: @_primary;
+  --bs-btn-hover-border-color: @_primary;
+  --bs-btn-hover-color: #fff;
+}
+
+/* Badges */
+.badge.bg-primary { background-color: @_primary !important; }
+
+/* Nav tabs */
+.nav-tabs .nav-link.active {
+    color: @_primary !important;
+    background-color: var(--bs-body-bg) !important;
+    border-color: @_primary @_primary transparent !important;
+}
+.nav-tabs .nav-link:hover { color: @_primary !important; }
+/* Ensure default nav-link background stays transparent so text is visible */
+.nav-tabs .nav-link { background-color: transparent; }
+
+/* Form controls */
+.form-check-input:checked { background-color: @_primary; border-color: @_primary; }
+
+</style>

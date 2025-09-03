@@ -1,0 +1,76 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using TaskTracker.Blazor.Components.Shared
+@using TaskTracker.Blazor.Services
+
+@inherits LayoutComponentBase
+@inject IAuthenticationService AuthService
+@inject NavigationManager Navigation
+
+<div class="page">
+    <header>
+        <ThemeProvider />
+        <AppHeader />
+    </header>
+    <main>
+        <article class="content px-4">
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent>
+                    <div class="alert alert-danger mt-3" role="alert">
+                        <h5 class="alert-heading">Something went wrong</h5>
+                        <p>We couldn't render this section due to an unexpected error. Please try reloading the page.</p>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="() => Navigation.NavigateTo(Navigation.Uri, forceLoad: true)">Reload</button>
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
+        </article>
+    </main>
+    
+</div>
+
+<div id="blazor-error-ui">
+    Environment: 
+    <environment include="Staging,Production">
+        An error has occurred. This application may no longer respond until reloaded.
+    </environment>
+    <environment include="Development">
+        An unhandled exception has occurred. See browser dev tools for details.
+    </environment>
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<style>
+    .page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .content {
+        flex: 1;
+    }
+
+    #blazor-error-ui {
+        background: lightyellow;
+        bottom: 0;
+        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+        display: none;
+        left: 0;
+        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+    }
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+</style>

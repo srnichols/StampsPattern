@@ -1,0 +1,56 @@
+@namespace TaskTracker.Blazor.Components.Shared
+@using TaskTracker.Blazor.Services
+@inject IIconService IconService
+
+<select class="@CssClass" @bind="InternalValue" @attributes="AdditionalAttributes">
+    @if (IncludeDefaultOption)
+    {
+        <option value="">@DefaultLabel</option>
+    }
+    @foreach (var group in GetGroupedIcons())
+    {
+        <optgroup label="@group.Key">
+            @foreach (var icon in group.OrderBy(i => i.Tooltip))
+            {
+                <option value="@icon.Key">@icon.Glyph @icon.Tooltip</option>
+            }
+        </optgroup>
+    }
+    
+</select>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    // Optional change callback if parent wants a hook separate from two-way binding
+    [Parameter] public EventCallback<string?> OnChanged { get; set; }
+
+    [Parameter] public bool IncludeDefaultOption { get; set; } = true;
+    [Parameter] public string DefaultLabel { get; set; } = "📋 Default";
+    [Parameter] public string CssClass { get; set; } = "form-select";
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string? InternalValue
+    {
+        get => Value;
+        set
+        {
+            if (!EqualityComparer<string?>.Default.Equals(Value, value))
+            {
+                Value = value;
+                _ = ValueChanged.InvokeAsync(value);
+                if (OnChanged.HasDelegate)
+                {
+                    _ = OnChanged.InvokeAsync(value);
+                }
+            }
+        }
+    }
+
+    private IEnumerable<IGrouping<string, IconDefinition>> GetGroupedIcons()
+    {
+        return IconService.GetAvailableIcons().Values
+            .GroupBy(i => i.Category)
+            .OrderBy(g => g.Key);
+    }
+}

@@ -1,0 +1,374 @@
+@page "/tasks/{Id:guid}/edit"
+@using TaskTracker.Blazor.Models
+@using TaskTracker.Blazor.Services
+@using TaskTracker.Blazor.Components.Shared
+@inject ICosmosDbService Cosmos
+@inject IAuthenticationService Auth
+@inject NavigationManager Nav
+@inject IIconService IconService
+@inject IBlobStorageService BlobService
+@inject IJSRuntime JS
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+
+<h4>Edit Task</h4>
+
+@if (isLoading)
+{
+  <div class="text-muted">Loading...</div>
+}
+else if (task is null)
+{
+  <div class="alert alert-warning">Task not found.</div>
+}
+else
+{
+  <EditForm Model="@task" OnValidSubmit="SaveAsync">
+    <DataAnnotationsValidator />
+    @if (!string.IsNullOrEmpty(errorMsg))
+    {
+      <div class="alert alert-danger">@errorMsg</div>
+    }
+    <div class="row">
+      <div class="col-md-8">
+        <div class="mb-3">
+          <label class="form-label">Title *</label>
+          <InputText class="form-control" @bind-Value="task!.Title" />
+          <ValidationMessage For="@(() => task!.Title)" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <InputTextArea class="form-control" rows="5" @bind-Value="task!.Description" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tags</label>
+          <div class="d-flex flex-wrap gap-1 mb-2">
+            @foreach (var tag in selectedTags)
+            {
+              <span class="badge bg-primary">
+                #@tag
+                <button type="button" class="btn-close btn-close-white ms-1" style="font-size: 0.7em;"
+                        @onclick="() => RemoveTag(tag)"></button>
+              </span>
+            }
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Add tags..."
+                   @bind="tagInput" @onkeypress="HandleTagKeyPress" list="editTagSuggestions">
+            <button type="button" class="btn btn-outline-secondary" @onclick="AddTag">Add</button>
+          </div>
+          <datalist id="editTagSuggestions">
+            @foreach (var suggestion in GetTagSuggestions())
+            {
+              <option value="@suggestion" />
+            }
+          </datalist>
+        </div>
+
+        <hr />
+        <div class="mb-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <label class="form-label mb-0">Attachments</label>
+            <InputFile OnChange="UploadFiles" multiple="true" />
+          </div>
+
+          @if (uploading)
+          {
+            <div class="text-muted small mb-2">
+              <span class="spinner-border spinner-border-sm me-2"></span>Uploading...
+            </div>
+          }
+
+          @if (task?.Attachments?.Any() == true)
+          {
+            <div class="attachment-list">
+              @foreach (var att in task.Attachments)
+              {
+                <div class="attachment-item d-flex align-items-center justify-content-between">
+                  <div class="text-truncate me-2">
+                    <i class="bi bi-file-earmark me-1"></i>
+                    @att.FileName
+                    <small class="text-muted ms-2">(@FormatSize(att.SizeBytes))</small>
+                  </div>
+                  <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="() => DownloadAttachment(att)" title="Open">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" @onclick="() => DeleteAttachment(att)" title="Delete">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          else
+          {
+            <div class="text-muted small">No attachments.</div>
+          }
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="mb-3">
+          <label class="form-label">Icon (also used as category)</label>
+          <IconSelect @bind-Value="task!.Icon" />
+          <small class="text-muted">Filters and grouping use the icon's category.</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Priority</label>
+          <InputSelect TValue="Priority" class="form-select" @bind-Value="task!.Priority">
+            <option value="@Priority.Low">Low</option>
+            <option value="@Priority.Mid">Mid</option>
+            <option value="@Priority.High">High</option>
+          </InputSelect>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Due Date</label>
+          <InputDate TValue="DateTime?" class="form-control" @bind-Value="task!.DueDate" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Assign to Team Members</label>
+          <div class="row">
+            @foreach (var user in Users.Where(u => u.Id != (Auth.GetCurrentUserId() ?? string.Empty)))
+            {
+              <div class="col-md-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox"
+                         id="user-@user.Id"
+                         checked="@selectedAssignees.Contains(user.Id)"
+                         @onchange="@((e) => ToggleAssignee(user.Id, (bool)e.Value!))" />
+                  <label class="form-check-label" for="user-@user.Id">
+                    @user.DisplayName <small class="text-muted">(@user.Email)</small>
+                  </label>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" disabled="@saving">Save</button>
+      <button type="button" class="btn btn-secondary" @onclick="Back">Cancel</button>
+    </div>
+  </EditForm>
+}
+
+<ConfirmDialog @ref="confirmDialog" />
+
+@code {
+  [Parameter] public Guid Id { get; set; }
+  private TaskItem? task;
+  private bool isLoading = true;
+  private bool saving = false;
+  private string? errorMsg;
+  private List<string> selectedTags = new();
+  private string tagInput = string.Empty;
+  private List<UserProfile> Users = new();
+  private List<string> selectedAssignees = new();
+  private string? currentTenantId;
+  private string? currentUserId;
+  private bool uploading = false;
+  private ConfirmDialog? confirmDialog;
+
+  protected override async Task OnInitializedAsync()
+  {
+    currentTenantId = Auth.GetCurrentTenantId();
+    currentUserId = Auth.GetCurrentUserId();
+    if (string.IsNullOrEmpty(currentTenantId))
+    {
+      Nav.NavigateTo("/login");
+      return;
+    }
+    var item = await Cosmos.GetTaskAsync(Id, currentTenantId);
+    if (item != null)
+    {
+      task = item;
+      selectedTags = item.TagNames?.ToList() ?? new List<string>();
+      selectedAssignees = item.AssigneeUserIds?.ToList() ?? new List<string>();
+    }
+    // Load team members for assignment
+    try { Users = (await Cosmos.GetTenantUsersAsync(currentTenantId)).ToList(); } catch { Users = new(); }
+    isLoading = false;
+  }
+
+  private async Task SaveAsync()
+  {
+    if (task == null) return;
+    saving = true;
+    errorMsg = null;
+    try
+    {
+  var tenantId = Auth.GetCurrentTenantId();
+  if (string.IsNullOrEmpty(tenantId))
+      {
+        errorMsg = "No tenant in context. Please re-login.";
+        return;
+      }
+      // Ensure tenant context matches the task's partition key; do not change partition keys
+      if (!string.Equals(task.TenantId, tenantId, StringComparison.Ordinal))
+      {
+        errorMsg = "This task belongs to a different tenant and cannot be saved in the current context.";
+        return;
+      }
+      // Ensure other required fields
+      if (task.Id == Guid.Empty)
+      {
+        task.Id = Guid.NewGuid();
+      }
+      if (string.IsNullOrWhiteSpace(task.CreatedByUserId))
+      {
+        task.CreatedByUserId = Auth.GetCurrentUserId() ?? "unknown";
+      }
+  task.AssigneeUserIds = selectedAssignees.ToList();
+  task.TagNames = selectedTags.ToList();
+
+      task = await Cosmos.UpdateTaskAsync(task);
+      Back();
+    }
+    catch (Exception ex)
+    {
+      errorMsg = $"Failed to save task: {ex.Message}";
+    }
+    finally
+    {
+      saving = false;
+    }
+  }
+
+  private void Back()
+  {
+    Nav.NavigateTo("/");
+  }
+
+  private List<string> GetTagSuggestions()
+  {
+    if (string.IsNullOrEmpty(tagInput) || tagInput.Length < 2)
+      return new List<string>();
+
+    var commonTags = new[]
+    {
+      "urgent", "bug", "feature", "documentation", "testing", "review",
+      "deployment", "meeting", "planning", "research", "design"
+    };
+
+    return commonTags
+      .Where(tag => tag.Contains(tagInput.ToLower()) && !selectedTags.Contains(tag))
+      .Take(5)
+      .ToList();
+  }
+
+  private async Task HandleTagKeyPress(KeyboardEventArgs e)
+  {
+    if (e.Key == "Enter")
+    {
+      await AddTag();
+    }
+  }
+
+  private async Task AddTag()
+  {
+    if (!string.IsNullOrWhiteSpace(tagInput)
+        && !selectedTags.Contains(tagInput.Trim())
+        && selectedTags.Count < 10)
+    {
+      selectedTags.Add(tagInput.Trim().ToLower());
+      tagInput = string.Empty;
+    }
+    await Task.CompletedTask;
+  }
+
+  private void RemoveTag(string tag)
+  {
+    selectedTags.Remove(tag);
+  }
+
+  // Icon options now provided by shared IconSelect component
+
+  private void ToggleAssignee(string userId, bool isSelected)
+  {
+    if (isSelected && !selectedAssignees.Contains(userId))
+    {
+      selectedAssignees.Add(userId);
+    }
+    else if (!isSelected && selectedAssignees.Contains(userId))
+    {
+      selectedAssignees.Remove(userId);
+    }
+  }
+
+  private async Task UploadFiles(InputFileChangeEventArgs e)
+  {
+    if (task is null || string.IsNullOrEmpty(currentTenantId) || e.FileCount == 0) return;
+    uploading = true;
+    try
+    {
+      foreach (var file in e.GetMultipleFiles())
+      {
+        await using var stream = file.OpenReadStream(10 * 1024 * 1024);
+        var blobUri = await BlobService.UploadAsync(currentTenantId!, task.Id, file.Name, file.ContentType ?? "application/octet-stream", stream);
+        task.Attachments ??= new List<Attachment>();
+        task.Attachments.Add(new Attachment
+        {
+          BlobUri = blobUri,
+          FileName = file.Name,
+          ContentType = file.ContentType ?? "application/octet-stream",
+          SizeBytes = file.Size,
+          UploadedByUserId = currentUserId ?? string.Empty,
+          UploadedAtUtc = DateTime.UtcNow
+        });
+      }
+      await Cosmos.UpdateTaskAsync(task);
+    }
+    catch (Exception ex)
+    {
+      errorMsg = $"Upload failed: {ex.Message}";
+    }
+    finally
+    {
+      uploading = false;
+    }
+  }
+
+  private async Task DownloadAttachment(Attachment att)
+  {
+    try
+    {
+      var url = await BlobService.GenerateDownloadSasAsync(att.BlobUri, TimeSpan.FromMinutes(10));
+      await JS.InvokeVoidAsync("open", url, "_blank");
+    }
+    catch (Exception ex)
+    {
+      errorMsg = $"Open failed: {ex.Message}";
+    }
+  }
+
+  private async Task DeleteAttachment(Attachment att)
+  {
+    var ok = confirmDialog != null
+      ? await confirmDialog.ShowAsync("Delete Attachment", $"Delete {att.FileName}?", "Delete", "Cancel")
+      : await JS.InvokeAsync<bool>("confirm", $"Delete {att.FileName}?");
+    if (!ok || task is null) return;
+    try
+    {
+      await BlobService.DeleteBlobAsync(att.BlobUri);
+      task.Attachments?.Remove(att);
+      await Cosmos.UpdateTaskAsync(task);
+    }
+    catch (Exception ex)
+    {
+      errorMsg = $"Delete failed: {ex.Message}";
+    }
+  }
+
+  private static string FormatSize(long bytes)
+  {
+    if (bytes <= 0) return "0 B";
+    string[] sizes = { "B", "KB", "MB", "GB" };
+    var order = (int)Math.Floor(Math.Log(bytes, 1024));
+    order = Math.Clamp(order, 0, sizes.Length - 1);
+    var value = bytes / Math.Pow(1024, order);
+    return $"{value:0.#} {sizes[order]}";
+  }
+}

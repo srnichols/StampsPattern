@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>TaskTracker.Blazor</RootNamespace>
+    <AssemblyName>TaskTracker.Blazor</AssemblyName>
+    <UserSecretsId>tasktracker-blazor-12345</UserSecretsId>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapr.AspNetCore" Version="1.15.4" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="13.7.0" />
+  <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.5" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.21.2" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.42.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.CosmosDb" Version="8.0.1" />
+  <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="7.0.0" />
+  <PackageReference Include="Dapr.Client" Version="1.15.4" />
+    
+  <!-- OpenTelemetry -->
+  <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+  <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
+  <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.1" />
+  <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.8.1" />
+  <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.8.1" />
+    
+    <!-- GraphQL Client packages -->
+    <PackageReference Include="GraphQL.Client" Version="6.1.0" />
+    <PackageReference Include="GraphQL.Client.Abstractions" Version="6.1.0" />
+    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" Version="6.1.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    
+  </ItemGroup>
+
+  <!-- No longer need exclusions since Aspire folder is removed -->
+  <!-- <ItemGroup>
+    <Compile Remove="Aspire/**/*.cs" />
+    <Compile Remove="TestAspire/**/*.cs" />
+    <None Remove="Aspire/**" />
+    <None Remove="TestAspire/**" />
+    <Content Remove="Aspire/**" />
+    <Content Remove="TestAspire/**" />
+  </ItemGroup> -->
+
+  <ItemGroup>
+    <Content Include="schema.graphql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

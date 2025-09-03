@@ -1,0 +1,122 @@
+@page "/settings"
+@using Microsoft.AspNetCore.Components.Forms
+@using TaskTracker.Blazor.Models
+@inject ICosmosDbService CosmosService
+@inject IAuthenticationService Auth
+@inject NavigationManager Nav
+@inject ThemeState Theme
+
+<h4 class="mb-3"><span class="me-2">⚙️</span>Site Settings</h4>
+
+@if (isLoading)
+{
+    <div class="text-muted">Loading...</div>
+}
+else
+{
+    <EditForm Model="model" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label">Dashboard Title</label>
+                <InputText class="form-control" @bind-Value="model.DashboardTitle" placeholder="e.g. Contoso Task Dashboard" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Tenant ID</label>
+                <InputText class="form-control" @bind-Value="model.TenantId" placeholder="e.g. tenant-contoso" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Domain (tenant subdomain)</label>
+                <InputText class="form-control" @bind-Value="model.Domain" placeholder="e.g. contoso" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Theme Color</label>
+                <div>
+                    @foreach (var opt in ThemeOptions)
+                    {
+                        var isSelected = string.Equals(model.ThemeColor, opt.Hex, StringComparison.OrdinalIgnoreCase);
+                        <button type="button"
+                                class="btn w-100 text-white mb-2"
+                                style="background-color:@opt.Hex; border: 1px solid rgba(0,0,0,.1);"
+                                @onclick="(() => OnThemeSelected(opt.Hex))">
+                            @opt.Name (@opt.Hex) @(isSelected ? "✓" : string.Empty)
+                        </button>
+                    }
+                </div>
+                <small class="text-muted">Optimized for white text.</small>
+            </div>
+        </div>
+        <div class="mt-3">
+            <button class="btn btn-primary" type="submit" disabled="@saving">
+                @if (saving) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                Save Settings
+            </button>
+            <button type="button" class="btn btn-outline-secondary ms-2" @onclick="Back">Back</button>
+        </div>
+    </EditForm>
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-info mt-3">@message</div>
+    }
+}
+
+@code {
+    private SiteSettings model = new();
+    private bool isLoading = true;
+    private bool saving = false;
+    private string? message;
+
+    private readonly (string Name, string Hex)[] ThemeOptions = new[]
+    {
+        ("Blue", "#0d6efd"),
+        ("Green", "#198754"),
+        ("Purple", "#6f42c1"),
+        ("Red", "#dc3545"),
+        ("Teal", "#20c997"),
+        ("Orange", "#fd7e14"),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tenantId = Auth.GetCurrentTenantId();
+        var existing = !string.IsNullOrEmpty(tenantId) ? await CosmosService.GetSiteSettingsAsync(tenantId!) : null;
+        model = existing ?? new SiteSettings { TenantId = tenantId ?? string.Empty };
+        isLoading = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        saving = true;
+        message = null;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(model.TenantId))
+            {
+                model.TenantId = Auth.GetCurrentTenantId() ?? string.Empty;
+            }
+            model = await CosmosService.UpsertSiteSettingsAsync(model);
+            Theme.SetColor(Auth.GetCurrentTenantId(), model.ThemeColor);
+            message = "Settings saved. Refresh Home to see changes.";
+        }
+        catch (Exception ex)
+        {
+            message = $"Failed to save: {ex.Message}";
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private void Back()
+    {
+        Nav.NavigateTo("/");
+    }
+
+    private void OnThemeSelected(string hex)
+    {
+        model.ThemeColor = hex;
+        Theme.SetColor(Auth.GetCurrentTenantId(), hex);
+        StateHasChanged();
+    }
+}

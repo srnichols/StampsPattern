@@ -1,0 +1,385 @@
+@namespace TaskTracker.Blazor.Components.Shared
+@using TaskTracker.Blazor.Models
+@using TaskTracker.Blazor.Services
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@using TaskTracker.Blazor.Components.Shared
+@inject IIconService IconService
+@inject ICosmosDbService CosmosService
+@inject IAuthenticationService AuthService
+@inject IJSRuntime JS
+@inject IBlobStorageService BlobService
+@inject ILogger<TaskCard> Logger
+
+<div class="card mb-3 @GetCardClasses()">
+    <div class="card-body">
+        <div class="d-flex align-items-start">
+            <div class="me-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @onchange="ToggleComplete" 
+                           checked="@Task.IsArchived" id="task-@Task.Id">
+                </div>
+            </div>
+
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="me-2" style="font-size: 1.2em;" title="@IconService.GetIconTooltip(Task.Icon)">
+                        @IconService.GetIconGlyph(Task.Icon)
+                    </span>
+                    
+                    <span class="badge @GetPriorityBadgeClass() me-2">
+                        @Task.Priority
+                    </span>
+                    
+                    <h6 class="card-title mb-0 me-auto @(Task.IsArchived ? "text-decoration-line-through text-muted" : "")">
+                        @Task.Title
+                    </h6>
+
+                    @if (Task.DueDate.HasValue)
+                    {
+                        <small class="@GetDueDateClass()">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            @GetDueDateText()
+                        </small>
+                    }
+
+                    <button class="btn btn-sm btn-outline-secondary ms-2" @onclick="ToggleAttachments" title="Attachments">
+                        <i class="bi bi-paperclip me-1"></i>@Task.Attachments.Count
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Task.Description))
+                {
+                    <p class="card-text text-muted small mb-2">@Task.Description</p>
+                }
+
+                @if (Task.TagNames.Any())
+                {
+                    <div class="mb-2">
+                        @foreach (var tag in Task.TagNames)
+                        {
+                            <span class="badge bg-light text-dark border me-1">#@tag</span>
+                        }
+                    </div>
+                }
+
+                @if (Task.AssigneeUserIds.Any())
+                {
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <i class="bi bi-people me-1"></i>
+                            Shared with: @string.Join(", ", GetAssigneeNames())
+                        </small>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        @IconService.GetIconCategory(Task.Icon) • @Task.UpdatedAtUtc.ToString("MMM dd, yyyy")
+                    </small>
+                    
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-sm" @onclick="EditTask" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        
+                        @if (Task.IsArchived)
+                        {
+                            <button class="btn btn-outline-success btn-sm" @onclick="UnarchiveTask" title="Unarchive">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-warning btn-sm" @onclick="ArchiveTask" title="Archive">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                        }
+                        
+                        <button class="btn btn-outline-danger btn-sm" @onclick="DeleteTask" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                @if (showAttachments)
+                {
+                    <hr class="my-3" />
+                    <div class="attachment-list">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <strong class="me-2">Attachments</strong>
+                            <div class="ms-2">
+                                <InputFile OnChange="UploadFiles" multiple="true" />
+                            </div>
+                        </div>
+
+                        @if (isUploading)
+                        {
+                            <div class="text-muted small mb-2">
+                                <span class="spinner-border spinner-border-sm me-2"></span>Uploading...
+                            </div>
+                        }
+
+                        @if (Task.Attachments?.Any() == true)
+                        {
+                            @foreach (var att in Task.Attachments)
+                            {
+                                <div class="attachment-item d-flex align-items-center justify-content-between py-1">
+                                    <div class="text-truncate me-2">
+                                        <i class="bi bi-file-earmark me-1"></i>
+                                        @att.FileName
+                                        <small class="text-muted ms-2">(@FormatSize(att.SizeBytes))</small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary" @onclick="() => DownloadAttachment(att)" title="Open">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" @onclick="() => DeleteAttachment(att)" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-muted small">No attachments yet.</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<ConfirmDialog @ref="confirmDialog" />
+
+@code {
+    [Parameter] public required TaskItem Task { get; set; }
+    [Parameter] public List<Category> Categories { get; set; } = new();
+    [Parameter] public List<UserProfile> Users { get; set; } = new();
+    [Parameter] public EventCallback OnTaskUpdated { get; set; }
+    [Parameter] public EventCallback OnTaskDeleted { get; set; }
+    [Parameter] public EventCallback<TaskItem> OnEditRequested { get; set; }
+    private ConfirmDialog? confirmDialog;
+    private bool showAttachments = false;
+    private bool isUploading = false;
+    private const long MaxFileSize = 10 * 1024 * 1024; // 10 MB
+
+    private string GetCardClasses()
+    {
+        var classes = new List<string>();
+        
+        if (Task.IsArchived)
+            classes.Add("border-secondary");
+        else if (IsOverdue())
+            classes.Add("border-danger");
+        else if (Task.Priority == Priority.High)
+            classes.Add("border-warning");
+            
+        return string.Join(" ", classes);
+    }
+
+    private string GetPriorityBadgeClass()
+    {
+        return Task.Priority switch
+        {
+            Priority.High => "bg-danger",
+            Priority.Mid => "bg-warning text-dark",
+            Priority.Low => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetDueDateClass()
+    {
+        if (!Task.DueDate.HasValue) return "text-muted";
+        
+        if (IsOverdue()) return "text-danger fw-bold";
+        if (IsDueToday()) return "text-warning fw-bold";
+        if (IsDueThisWeek()) return "text-info";
+        
+        return "text-muted";
+    }
+
+    private string GetDueDateText()
+    {
+        if (!Task.DueDate.HasValue) return "";
+        
+        var dueDate = Task.DueDate.Value.Date;
+        var today = DateTime.Today;
+        
+        if (dueDate == today) return "Today";
+        if (dueDate == today.AddDays(1)) return "Tomorrow";
+        if (dueDate < today) return $"Overdue ({dueDate:MMM dd})";
+        if (dueDate <= today.AddDays(7)) return dueDate.ToString("MMM dd");
+        
+        return dueDate.ToString("MMM dd, yyyy");
+    }
+
+    private bool IsOverdue() => Task.DueDate?.Date < DateTime.Today;
+    private bool IsDueToday() => Task.DueDate?.Date == DateTime.Today;
+    private bool IsDueThisWeek() => Task.DueDate?.Date <= DateTime.Today.AddDays(7);
+
+    // Category display now derives from icon metadata; legacy CategoryId kept for backward compatibility
+
+    private List<string> GetAssigneeNames()
+    {
+        return Task.AssigneeUserIds
+            .Select(userId => Users.FirstOrDefault(u => u.Id == userId)?.DisplayName ?? "Unknown User")
+            .ToList();
+    }
+
+    private async Task ToggleComplete()
+    {
+        Task.IsArchived = !Task.IsArchived;
+        await UpdateTask();
+    }
+
+    private async Task ArchiveTask()
+    {
+        var ok = confirmDialog != null
+            ? await confirmDialog.ShowAsync("Archive Task", "Archive this task? You can unarchive it later.", "Archive", "Cancel")
+            : await JS.InvokeAsync<bool>("confirm", "Archive this task? You can unarchive it later.");
+        if (!ok) return;
+        Task.IsArchived = true;
+        await UpdateTask();
+    }
+
+    private async Task UnarchiveTask()
+    {
+        var ok = confirmDialog != null
+            ? await confirmDialog.ShowAsync("Unarchive Task", "Unarchive this task?", "Unarchive", "Cancel")
+            : await JS.InvokeAsync<bool>("confirm", "Unarchive this task?");
+        if (!ok) return;
+        Task.IsArchived = false;
+        await UpdateTask();
+    }
+
+    private async Task UpdateTask()
+    {
+        try
+        {
+            await CosmosService.UpdateTaskAsync(Task);
+            await OnTaskUpdated.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error updating task {TaskId} for tenant {TenantId}", Task.Id, Task.TenantId);
+        }
+    }
+
+    private async Task EditTask()
+    {
+        if (OnEditRequested.HasDelegate)
+        {
+            await OnEditRequested.InvokeAsync(Task);
+        }
+    }
+
+    private async Task DeleteTask()
+    {
+        try
+        {
+            var confirmDelete = confirmDialog != null
+                ? await confirmDialog.ShowAsync("Delete Task", "Delete this task? This action cannot be undone.", "Delete", "Cancel")
+                : await JS.InvokeAsync<bool>("confirm", "Delete this task? This action cannot be undone.");
+            if (!confirmDelete) return;
+            var tenantId = AuthService.GetCurrentTenantId();
+            if (!string.IsNullOrEmpty(tenantId))
+            {
+                await CosmosService.DeleteTaskAsync(Task.Id, tenantId);
+                await OnTaskDeleted.InvokeAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting task {TaskId} (tenant {TenantId})", Task.Id, Task.TenantId);
+        }
+    }
+
+    private void ToggleAttachments()
+    {
+        showAttachments = !showAttachments;
+    }
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount == 0) return;
+        var tenantId = AuthService.GetCurrentTenantId();
+        if (string.IsNullOrEmpty(tenantId)) return;
+        isUploading = true;
+        try
+        {
+            foreach (var file in e.GetMultipleFiles())
+            {
+                await using var stream = file.OpenReadStream(MaxFileSize);
+                var blobUri = await BlobService.UploadAsync(tenantId, Task.Id, file.Name, file.ContentType ?? "application/octet-stream", stream);
+                // Add to task
+                Task.Attachments ??= new List<Attachment>();
+                Task.Attachments.Add(new Attachment
+                {
+                    BlobUri = blobUri,
+                    FileName = file.Name,
+                    ContentType = file.ContentType ?? "application/octet-stream",
+                    SizeBytes = file.Size,
+                    UploadedByUserId = AuthService.GetCurrentUserId() ?? "",
+                    UploadedAtUtc = DateTime.UtcNow
+                });
+            }
+            await UpdateTask();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Upload failed for task {TaskId} (tenant {TenantId})", Task.Id, Task.TenantId);
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task DownloadAttachment(Attachment att)
+    {
+        try
+        {
+            var url = await BlobService.GenerateDownloadSasAsync(att.BlobUri, TimeSpan.FromMinutes(10));
+            await JS.InvokeVoidAsync("open", url, "_blank");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Download link failed for task {TaskId}", Task.Id);
+        }
+    }
+
+    private async Task DeleteAttachment(Attachment att)
+    {
+        var ok = confirmDialog != null
+            ? await confirmDialog.ShowAsync("Delete Attachment", $"Delete {att.FileName}?", "Delete", "Cancel")
+            : await JS.InvokeAsync<bool>("confirm", $"Delete {att.FileName}?");
+        if (!ok) return;
+        try
+        {
+            await BlobService.DeleteBlobAsync(att.BlobUri);
+            Task.Attachments.Remove(att);
+            await UpdateTask();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Delete failed for task {TaskId} (tenant {TenantId})", Task.Id, Task.TenantId);
+        }
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes <= 0) return "0 B";
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        var order = (int)Math.Floor(Math.Log(bytes, 1024));
+        order = Math.Clamp(order, 0, sizes.Length - 1);
+        var value = bytes / Math.Pow(1024, order);
+        return $"{value:0.#} {sizes[order]}";
+    }
+}

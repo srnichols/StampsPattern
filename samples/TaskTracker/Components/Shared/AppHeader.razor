@@ -1,0 +1,153 @@
+@using TaskTracker.Blazor.Models
+@using TaskTracker.Blazor.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@inject IAuthenticationService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ICosmosDbService CosmosService
+@inject NavigationManager Navigation
+
+@code {
+    private Tenant? tenant;
+    private SiteSettings? siteSettings;
+    private string? currentTenantId;
+    private bool isAuthenticated;
+
+    private bool IsHome => string.IsNullOrWhiteSpace(Navigation.ToBaseRelativePath(Navigation.Uri).Trim('/'));
+
+    private string DisplayTitle => !string.IsNullOrWhiteSpace(siteSettings?.DashboardTitle)
+        ? siteSettings!.DashboardTitle!
+        : (tenant?.Name ?? "TaskTracker");
+
+    protected override Task OnInitializedAsync()
+    {
+        currentTenantId = AuthService.GetCurrentTenantId();
+        // Defer loading to OnAfterRender to avoid prerender issues
+        return Task.CompletedTask;
+    }
+
+    protected override void OnInitialized()
+    {
+        // Re-render header on URL changes so IsHome updates immediately
+        Navigation.LocationChanged += HandleLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadHeaderDataAsync();
+        }
+    }
+
+    private async Task LoadHeaderDataAsync()
+    {
+        try
+        {
+            try { isAuthenticated = await AuthService.IsAuthenticatedAsync(); } catch { isAuthenticated = false; }
+            currentTenantId = AuthService.GetCurrentTenantId();
+            try { siteSettings = await CosmosService.GetSiteSettingsAsync(currentTenantId ?? string.Empty); } catch { siteSettings = null; }
+            if (!string.IsNullOrEmpty(currentTenantId))
+            {
+                try { tenant = await CosmosService.GetTenantAsync(currentTenantId!); } catch { tenant = null; }
+            }
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // Header color is controlled by Bootstrap var --bs-primary via ThemeProvider
+    private string HeaderStyle() => string.Empty;
+
+    private void GoHome() => Navigation.NavigateTo("/");
+    private void GoToSettings() => Navigation.NavigateTo("/settings");
+    private void GoToLogin() { Navigation.NavigateTo("/login"); }
+    private async Task LogoutAsync()
+    {
+        try
+        {
+            await AuthService.LogoutAsync();
+            if (AuthStateProvider is CustomAuthenticationStateProvider custom)
+            {
+                custom.MarkUserAsLoggedOut();
+            }
+        }
+        finally
+        {
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Trigger re-render so IsHome and any nav-aware UI updates instantly
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Subscribe once to auth changes if not already (safe to add repeatedly in this simple case)
+        AuthStateProvider.AuthenticationStateChanged -= HandleAuthChanged;
+        AuthStateProvider.AuthenticationStateChanged += HandleAuthChanged;
+    }
+
+    private async void HandleAuthChanged(Task<AuthenticationState> task)
+    {
+        // When user logs in or out, reload header state (auth flag, tenant, settings)
+        await LoadHeaderDataAsync();
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= HandleLocationChanged;
+    AuthStateProvider.AuthenticationStateChanged -= HandleAuthChanged;
+    }
+}
+
+<div class="container-fluid">
+    <div class="row bg-primary text-white py-3 mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    @if (!string.IsNullOrEmpty(tenant?.LogoUrl))
+                    {
+                        <img src="@tenant.LogoUrl" alt="@tenant.Name" class="me-3" style="height: 40px;">
+                    }
+                    <div>
+                        <h4 class="mb-0">@DisplayTitle</h4>
+                        <small class="opacity-75">Task Management Dashboard</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    @if (!IsHome)
+                    {
+                        <button class="btn btn-outline-light" title="Home" @onclick="GoHome">
+                            <i class="bi bi-house"></i>
+                            <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </button>
+                    }
+                    <button class="btn btn-outline-light" title="Settings" @onclick="GoToSettings">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                    @if (isAuthenticated)
+                    {
+                        <button class="btn btn-outline-light" title="Sign out" @onclick="LogoutAsync">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span class="ms-1 d-none d-sm-inline">Sign out</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-light" title="Sign in" @onclick="GoToLogin">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            <span class="ms-1 d-none d-sm-inline">Sign in</span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,502 @@
+# TaskTracker GraphQL Schema (HotChocolate)
+# This file defines the complete schema for the multi-tenant task management system
+
+scalar DateTime
+scalar UUID
+
+# Enums
+enum Priority {
+  LOW
+  MID 
+  HIGH
+}
+
+# Core Types
+type Task {
+  id: ID!
+  tenantId: String!
+  title: String!
+  description: String
+  categoryId: UUID
+  priority: Priority!
+  isArchived: Boolean!
+  dueDate: DateTime
+  icon: String
+  attachments: [Attachment!]!
+  assigneeUserIds: [String!]!
+  createdByUserId: String!
+  createdAtUtc: DateTime!
+  updatedAtUtc: DateTime!
+  tagNames: [String!]!
+  
+  # Computed fields
+  category: Category
+  assignees: [User!]!
+  createdBy: User
+  isOverdue: Boolean!
+  daysToDue: Int
+}
+
+type Category {
+  id: ID!
+  tenantId: String!
+  name: String!
+  sortOrder: Int!
+  createdAtUtc: DateTime!
+  
+  # Computed fields
+  taskCount: Int!
+  tasks: [Task!]!
+}
+
+type Tag {
+  id: ID!
+  tenantId: String!
+  name: String!
+  createdAtUtc: DateTime!
+  
+  # Computed fields
+  usage: Int!
+}
+
+type Tenant {
+  id: ID!
+  name: String!
+  logoUrl: String
+  subdomain: String
+  primaryColor: String
+  isActive: Boolean!
+  createdAtUtc: DateTime!
+  
+  # Computed fields
+  userCount: Int!
+  taskCount: Int!
+  categoryCount: Int!
+}
+
+type User {
+  id: ID!
+  tenantId: String!
+  displayName: String!
+  email: String!
+  createdAtUtc: DateTime!
+  lastLoginUtc: DateTime!
+  
+  # Computed fields
+  createdTasks: [Task!]!
+  assignedTasks: [Task!]!
+  taskCount: Int!
+}
+
+type Attachment {
+  id: ID!
+  blobUri: String!
+  fileName: String!
+  contentType: String!
+  sizeBytes: Int!
+  uploadedByUserId: String!
+  uploadedAtUtc: DateTime!
+  
+  # Computed fields
+  uploadedBy: User
+  downloadUrl: String!
+  isImage: Boolean!
+  humanReadableSize: String!
+}
+
+# Input Types
+input TaskInput {
+  tenantId: String!
+  title: String!
+  description: String
+  categoryId: UUID
+  priority: Priority!
+  isArchived: Boolean
+  dueDate: DateTime
+  icon: String
+  assigneeUserIds: [String!]
+  createdByUserId: String!
+  tagNames: [String!]
+}
+
+input CategoryInput {
+  tenantId: String!
+  name: String!
+  sortOrder: Int
+}
+
+input TagInput {
+  tenantId: String!
+  name: String!
+}
+
+input AttachmentInput {
+  blobUri: String!
+  fileName: String!
+  contentType: String!
+  sizeBytes: Int!
+  uploadedByUserId: String!
+}
+
+# Filter Types
+input TaskFilter {
+  tenantId: StringFilter
+  title: StringFilter
+  description: StringFilter
+  categoryId: UUIDFilter
+  priority: PriorityFilter
+  isArchived: BooleanFilter
+  dueDate: DateTimeFilter
+  createdByUserId: StringFilter
+  assigneeUserIds: StringArrayFilter
+  tagNames: StringArrayFilter
+  isOverdue: BooleanFilter
+}
+
+input CategoryFilter {
+  tenantId: StringFilter
+  name: StringFilter
+}
+
+input TagFilter {
+  tenantId: StringFilter
+  name: StringFilter
+}
+
+input UserFilter {
+  tenantId: StringFilter
+  displayName: StringFilter
+  email: StringFilter
+}
+
+# Generic filter types
+input StringFilter {
+  eq: String
+  ne: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  in: [String!]
+  notIn: [String!]
+}
+
+input BooleanFilter {
+  eq: Boolean
+  ne: Boolean
+}
+
+input DateTimeFilter {
+  eq: DateTime
+  ne: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+}
+
+input UUIDFilter {
+  eq: UUID
+  ne: UUID
+  in: [UUID!]
+  notIn: [UUID!]
+}
+
+input PriorityFilter {
+  eq: Priority
+  ne: Priority
+  in: [Priority!]
+  notIn: [Priority!]
+}
+
+input StringArrayFilter {
+  contains: String
+  containsAny: [String!]
+  containsAll: [String!]
+}
+
+# Sort Types
+input TaskSort {
+  title: SortDirection
+  priority: SortDirection
+  dueDate: SortDirection
+  createdAtUtc: SortDirection
+  updatedAtUtc: SortDirection
+}
+
+input CategorySort {
+  name: SortDirection
+  sortOrder: SortDirection
+  createdAtUtc: SortDirection
+}
+
+input TagSort {
+  name: SortDirection
+  createdAtUtc: SortDirection
+}
+
+input UserSort {
+  displayName: SortDirection
+  email: SortDirection
+  lastLoginUtc: SortDirection
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+# Pagination Types
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type TaskConnection {
+  items: [Task!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CategoryConnection {
+  items: [Category!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TagConnection {
+  items: [Tag!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserConnection {
+  items: [User!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+# Analytics Types
+type TaskAnalytics {
+  totalTasks: Int!
+  completedTasks: Int!
+  overdueTasks: Int!
+  tasksByPriority: [PriorityCount!]!
+  tasksByCategory: [CategoryCount!]!
+  tasksByUser: [UserTaskCount!]!
+  tasksCreatedThisWeek: Int!
+  tasksCompletedThisWeek: Int!
+}
+
+type PriorityCount {
+  priority: Priority!
+  count: Int!
+}
+
+type CategoryCount {
+  category: Category!
+  count: Int!
+}
+
+type UserTaskCount {
+  user: User!
+  created: Int!
+  assigned: Int!
+  completed: Int!
+}
+
+# Upload Types
+type UploadResponse {
+  uploadUrl: String!
+  blobPath: String!
+  expiresAt: DateTime!
+}
+
+# Root Query Type
+type Query {
+  # Tasks
+  tasks(
+    filter: TaskFilter
+    sort: TaskSort
+    first: Int
+    after: String
+    last: Int
+    before: String
+  ): TaskConnection!
+  
+  task(id: ID!): Task
+  
+  # Categories
+  categories(
+    filter: CategoryFilter
+    sort: CategorySort
+    first: Int
+    after: String
+  ): CategoryConnection!
+  
+  category(id: ID!): Category
+  
+  # Tags
+  tags(
+    filter: TagFilter
+    sort: TagSort
+    first: Int
+    after: String
+  ): TagConnection!
+  
+  tag(id: ID!): Tag
+  
+  # Users
+  users(
+    filter: UserFilter
+    sort: UserSort
+    first: Int
+    after: String
+  ): UserConnection!
+  
+  user(id: ID!): User
+  
+  # Current user context
+  me: User
+  
+  # Tenant
+  tenant(id: ID!): Tenant
+  myTenant: Tenant
+  
+  # Analytics
+  taskAnalytics(
+    tenantId: String!
+    dateRange: DateRange
+  ): TaskAnalytics!
+  
+  # Search
+  searchTasks(
+    tenantId: String!
+    query: String!
+    filters: TaskFilter
+    first: Int
+    after: String
+  ): TaskConnection!
+  
+  # Suggestions
+  tagSuggestions(
+    tenantId: String!
+    query: String!
+    limit: Int = 10
+  ): [String!]!
+}
+
+# Root Mutation Type
+type Mutation {
+  # Task mutations
+  createTask(input: TaskInput!): Task!
+  updateTask(id: ID!, input: TaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+  archiveTask(id: ID!): Task!
+  unarchiveTask(id: ID!): Task!
+  duplicateTask(id: ID!): Task!
+  
+  # Task attachments
+  addAttachment(taskId: ID!, attachment: AttachmentInput!): Task!
+  removeAttachment(taskId: ID!, attachmentId: ID!): Task!
+  
+  # Task assignments
+  assignTask(taskId: ID!, userIds: [String!]!): Task!
+  unassignTask(taskId: ID!, userIds: [String!]!): Task!
+  
+  # Task tags
+  addTaskTags(taskId: ID!, tagNames: [String!]!): Task!
+  removeTaskTags(taskId: ID!, tagNames: [String!]!): Task!
+  
+  # Category mutations
+  createCategory(input: CategoryInput!): Category!
+  updateCategory(id: ID!, input: CategoryInput!): Category!
+  deleteCategory(id: ID!): Boolean!
+  reorderCategories(tenantId: String!, categoryIds: [ID!]!): [Category!]!
+  
+  # Tag mutations
+  createTag(input: TagInput!): Tag!
+  deleteTag(id: ID!): Boolean!
+  mergeTag(sourceId: ID!, targetId: ID!): Tag!
+  
+  # File upload
+  generateUploadUrl(
+    tenantId: String!
+    taskId: ID!
+    fileName: String!
+    contentType: String!
+  ): UploadResponse!
+  
+  # Bulk operations
+  bulkUpdateTasks(
+    taskIds: [ID!]!
+    updates: TaskBulkUpdate!
+  ): [Task!]!
+  
+  bulkDeleteTasks(taskIds: [ID!]!): Boolean!
+  bulkArchiveTasks(taskIds: [ID!]!): [Task!]!
+}
+
+# Subscription Type (for real-time updates)
+type Subscription {
+  # Task subscriptions
+  taskUpdated(tenantId: String!): Task!
+  taskCreated(tenantId: String!): Task!
+  taskDeleted(tenantId: String!): ID!
+  
+  # Category subscriptions
+  categoryUpdated(tenantId: String!): Category!
+  
+  # User activity
+  userActivity(tenantId: String!): UserActivity!
+}
+
+# Additional Input Types
+input DateRange {
+  start: DateTime!
+  end: DateTime!
+}
+
+input TaskBulkUpdate {
+  categoryId: UUID
+  priority: Priority
+  isArchived: Boolean
+  assigneeUserIds: [String!]
+  tagNames: [String!]
+}
+
+# Subscription payload types
+type UserActivity {
+  userId: String!
+  action: String!
+  entityType: String!
+  entityId: String!
+  timestamp: DateTime!
+}
+
+# Custom directives for authorization and caching
+directive @auth(
+  requires: UserRole = USER
+) on FIELD_DEFINITION | OBJECT
+
+directive @cache(
+  maxAge: Int
+  scope: CacheScope = PRIVATE
+) on FIELD_DEFINITION
+
+directive @rateLimit(
+  max: Int!
+  window: Int!
+) on FIELD_DEFINITION
+
+enum UserRole {
+  USER
+  ADMIN
+  SYSTEM
+}
+
+enum CacheScope {
+  PUBLIC
+  PRIVATE
+}

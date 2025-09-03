@@ -1,0 +1,433 @@
+@inject IAuthenticationService AuthService
+@inject NavigationManager Navigation
+@page "/"
+@using TaskTracker.Blazor.Models
+@using TaskTracker.Blazor.Services
+@inject ICosmosDbService CosmosService
+@inject IIconService IconService
+@using TaskTracker.Blazor.Components.Shared
+@using Microsoft.AspNetCore.Components.Web
+
+<!-- PageTitle is not available in Blazor Server by default. For best practice, set the page title in _Host.cshtml using <title> or HeadOutlet. -->
+
+<div class="container-fluid">
+    <!-- Toolbar: Search + New Task (branding header moved to shared AppHeader) -->
+    <div class="row mb-3">
+        <div class="col d-flex justify-content-between align-items-center gap-3 flex-wrap">
+            <div class="input-group" style="width: 320px; max-width: 100%;">
+                <input type="text" class="form-control" placeholder="Search tasks & tags..." 
+                       @bind="searchQuery" @bind:event="oninput" @onkeypress="HandleSearchKeyPress">
+                <button class="btn btn-outline-secondary" type="button" @onclick="PerformSearch">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+
+            <div class="ms-auto">
+                <button class="btn btn-primary" @onclick="ShowNewTaskModal">
+                    <i class="bi bi-plus-circle me-1"></i> New Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation and Filters -->
+    <div class="row mb-3">
+        <div class="col">
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <button class="nav-link @(activeTab == "all" ? "active" : "")" @onclick="@(() => SetActiveTab("all"))">
+                        All (@allTasksCount)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link @(activeTab == "my" ? "active" : "")" @onclick="@(() => SetActiveTab("my"))">
+                        My Tasks (@myTasksCount)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link @(activeTab == "shared" ? "active" : "")" @onclick="@(() => SetActiveTab("shared"))">
+                        Shared (@sharedTasksCount)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link @(activeTab == "archived" ? "active" : "")" @onclick="@(() => SetActiveTab("archived"))">
+                        Archived (@archivedTasksCount)
+                    </button>
+                </li>
+            </ul>
+
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <IconSelect CssClass="form-select form-select-sm w-auto" IncludeDefaultOption="true" DefaultLabel="All Categories"
+                                    Value="@iconFilterValue" ValueChanged="OnIconFilterChanged" />
+
+                        <select class="form-select" style="width: auto;" @bind="SelectedPriority">
+                            <option value="">All Priorities</option>
+                            <option value="High">High</option>
+                            <option value="Mid">Mid</option>
+                            <option value="Low">Low</option>
+                        </select>
+
+                        <select class="form-select" style="width: auto;" @bind="SelectedDueFilter">
+                            <option value="">All Due Dates</option>
+                            <option value="today">Today</option>
+                            <option value="thisweek">This Week</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+
+                        @if (hasActiveFilters)
+                        {
+                            <button class="btn btn-outline-secondary" @onclick="ClearFilters">
+                                <i class="bi bi-x-circle me-1"></i> Clear
+                            </button>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="form-check form-switch d-inline-block">
+                        <input class="form-check-input" type="checkbox" id="groupByCategory" @bind="groupByCategory">
+                        <label class="form-check-label" for="groupByCategory">
+                            Group by Category
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div class="row">
+        <div class="col">
+            @if (isLoading)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Loading tasks...</p>
+                </div>
+            }
+            else if (!filteredTasks.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #dee2e6;"></i>
+                    <h5 class="mt-3 text-muted">No tasks found</h5>
+                    <p class="text-muted">@GetEmptyStateMessage()</p>
+                    @if (activeTab != "archived")
+                    {
+                        <button class="btn btn-primary" @onclick="ShowNewTaskModal">
+                            <i class="bi bi-plus-circle me-1"></i> Create your first task
+                        </button>
+                    }
+                </div>
+            }
+            else
+            {
+                @if (groupByCategory)
+                {
+                    @foreach (var group in GetGroupedTasks())
+                    {
+                        <div class="mb-4">
+                            <h6 class="text-muted border-bottom pb-2">
+                                @group.Key (@group.Count())
+                            </h6>
+                            @foreach (var task in group)
+                            {
+                                <TaskCard Task="@task" Categories="@categories" Users="@users" 
+                                          OnTaskUpdated="@LoadTasks" OnTaskDeleted="@LoadTasks"
+                                          OnEditRequested="@HandleEditRequested" />
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    @foreach (var task in filteredTasks)
+                    {
+                        <TaskCard Task="@task" Categories="@categories" Users="@users" 
+                                  OnTaskUpdated="@LoadTasks" OnTaskDeleted="@LoadTasks"
+                                  OnEditRequested="@HandleEditRequested" />
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- New Task Modal Component would go here -->
+<NewTaskModal @ref="newTaskModal" Categories="@categories" Users="@users" OnTaskCreated="@LoadTasks" />
+
+@code {
+    private List<TaskItem> allTasks = new();
+    private List<TaskItem> filteredTasks = new();
+    private List<Category> categories = new();
+    private List<UserProfile> users = new();
+    private List<string> iconCategories = new();
+    private Tenant? tenant;
+    private SiteSettings? siteSettings;
+    private NewTaskModal? newTaskModal;
+
+    private string activeTab = "all";
+    private string searchQuery = string.Empty;
+    private string? selectedPriority;
+    private string? selectedDueFilter;
+    private bool groupByCategory = false;
+    private bool isLoading = true;
+    private string? iconFilterValue;
+
+    private string? currentTenantId;
+    private string? currentUserId;
+
+    // Task counts for tab badges
+    private int allTasksCount => allTasks.Count(t => !t.IsArchived);
+    private int myTasksCount => allTasks.Count(t => !t.IsArchived && t.CreatedByUserId == currentUserId);
+    private int sharedTasksCount => allTasks.Count(t => !t.IsArchived && t.AssigneeUserIds.Contains(currentUserId != null ? currentUserId : ""));
+    private int archivedTasksCount => allTasks.Count(t => t.IsArchived);
+
+    private bool hasActiveFilters => !string.IsNullOrEmpty(selectedIconCategory) || 
+                                    !string.IsNullOrEmpty(selectedPriority) || 
+                                    !string.IsNullOrEmpty(selectedDueFilter) ||
+                                    !string.IsNullOrEmpty(searchQuery);
+
+    protected override Task OnInitializedAsync()
+    {
+        currentTenantId = AuthService.GetCurrentTenantId();
+        currentUserId = AuthService.GetCurrentUserId();
+
+        if (string.IsNullOrEmpty(currentTenantId))
+        {
+            Navigation.NavigateTo("/login");
+            return Task.CompletedTask;
+        }
+
+        // Defer data loading until after first render to avoid prerender-time failures
+        isLoading = true;
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(currentTenantId))
+        {
+            try
+            {
+                try { siteSettings = await CosmosService.GetSiteSettingsAsync(currentTenantId!); } catch { siteSettings = null; }
+                await LoadData();
+            }
+            catch
+            {
+                // Swallow to avoid breaking initial render if backend is unavailable
+            }
+            finally
+            {
+                isLoading = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        else
+        {
+            // Yield once to keep an await in the method and avoid CS1998
+            await Task.Yield();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        
+        try
+        {
+            var tasks = await LoadTasks();
+            try { categories = (await CosmosService.GetCategoriesAsync(currentTenantId!)).ToList(); } catch { categories = new(); }
+            try { users = (await CosmosService.GetTenantUsersAsync(currentTenantId!)).ToList(); } catch { users = new(); }
+            try { tenant = await CosmosService.GetTenantAsync(currentTenantId!); } catch { tenant = null; }
+            // Build icon category list from icon service
+            iconCategories = IconService.GetAvailableIcons().Values
+                .Select(i => i.Category)
+                .Distinct()
+                .OrderBy(s => s)
+                .ToList();
+            
+            FilterTasks();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<List<TaskItem>> LoadTasks()
+    {
+        // Always load both archived and non-archived to keep counts and quick tab switches accurate
+        allTasks = (await CosmosService.GetTasksAsync(currentTenantId!, includeArchived: true)).ToList();
+        FilterTasks();
+        return allTasks;
+    }
+
+    private Task SetActiveTab(string tab)
+    {
+        activeTab = tab;
+        // No need to reload from backend; allTasks already contains archived + active
+        FilterTasks();
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private void FilterTasks()
+    {
+        var query = allTasks.AsQueryable();
+
+        // Filter by tab
+        switch (activeTab)
+        {
+            case "my":
+                query = query.Where(t => !t.IsArchived && t.CreatedByUserId == (currentUserId != null ? currentUserId : ""));
+                break;
+            case "shared":
+                var userId = currentUserId != null ? currentUserId : "";
+                query = query.Where(t => !t.IsArchived && t.AssigneeUserIds.Contains(userId));
+                break;
+            case "archived":
+                query = query.Where(t => t.IsArchived);
+                break;
+            default: // "all"
+                query = query.Where(t => !t.IsArchived);
+                break;
+        }
+
+        // Apply filters
+        // Filter by icon category (using icon metadata)
+        if (!string.IsNullOrEmpty(selectedIconCategory))
+        {
+            query = query.Where(t => string.Equals(IconService.GetIconCategory(t.Icon), selectedIconCategory, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrEmpty(selectedPriority) && Enum.TryParse<Priority>(selectedPriority, out var priority))
+        {
+            query = query.Where(t => t.Priority == priority);
+        }
+
+        if (!string.IsNullOrEmpty(selectedDueFilter))
+        {
+            var today = DateTime.Today;
+            switch (selectedDueFilter)
+            {
+                case "today":
+                    query = query.Where(t => t.DueDate.HasValue && t.DueDate.Value.Date == today);
+                    break;
+                case "thisweek":
+                    query = query.Where(t => t.DueDate.HasValue && t.DueDate.Value.Date >= today && t.DueDate.Value.Date <= today.AddDays(7));
+                    break;
+                case "overdue":
+                    query = query.Where(t => t.DueDate.HasValue && t.DueDate.Value.Date < today);
+                    break;
+            }
+        }
+
+        // Search
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            var searchLower = searchQuery.ToLower();
+            query = query.Where(t => 
+                t.Title.ToLower().Contains(searchLower) ||
+                (t.Description ?? "").ToLower().Contains(searchLower) ||
+                t.TagNames.Any(tag => tag.ToLower().Contains(searchLower))
+            );
+        }
+
+        filteredTasks = query.OrderByDescending(t => t.UpdatedAtUtc).ToList();
+    }
+
+    private IEnumerable<IGrouping<string, TaskItem>> GetGroupedTasks()
+    {
+        return filteredTasks.GroupBy(t => IconService.GetIconCategory(t.Icon));
+    }
+
+    private void ShowNewTaskModal()
+    {
+        newTaskModal?.Show();
+    }
+
+    private void GoToSettings()
+    {
+        Navigation.NavigateTo("/settings");
+    }
+
+    private Task HandleEditRequested(TaskItem task)
+    {
+        Navigation.NavigateTo($"/tasks/{task.Id}/edit");
+        return Task.CompletedTask;
+    }
+
+    private void ClearFilters()
+    {
+    selectedIconCategory = null;
+        selectedPriority = null;
+        selectedDueFilter = null;
+        searchQuery = string.Empty;
+        FilterTasks();
+    }
+
+    private async Task HandleSearchKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await PerformSearch();
+        }
+    }
+
+    private async Task PerformSearch()
+    {
+        FilterTasks();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetEmptyStateMessage()
+    {
+        return activeTab switch
+        {
+            "my" => "You haven't created any tasks yet.",
+            "shared" => "No tasks have been shared with you.",
+            "archived" => "No archived tasks found.",
+            _ => hasActiveFilters ? "No tasks match your current filters." : "No tasks found. Create your first task to get started!"
+        };
+    }
+
+    private string? selectedIconCategory;
+    private string? SelectedIconCategory
+    {
+        get => selectedIconCategory;
+        set
+        {
+            selectedIconCategory = value;
+            FilterTasks();
+        }
+    }
+
+    private Task OnIconFilterChanged(string? iconKey)
+    {
+        iconFilterValue = iconKey;
+        SelectedIconCategory = string.IsNullOrEmpty(iconKey) ? null : IconService.GetIconCategory(iconKey);
+        return Task.CompletedTask;
+    }
+
+    private string? SelectedPriority
+    {
+        get => selectedPriority;
+        set
+        {
+            selectedPriority = value;
+            FilterTasks();
+        }
+    }
+
+    private string? SelectedDueFilter
+    {
+        get => selectedDueFilter;
+        set
+        {
+            selectedDueFilter = value;
+            FilterTasks();
+        }
+    }
+}

@@ -1,0 +1,120 @@
+@page "/login"
+@using TaskTracker.Blazor.Services
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@inject IAuthenticationService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="row w-100">
+        <div class="col-md-6 col-lg-4 mx-auto">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold text-primary">TaskTracker</h2>
+                        <p class="text-muted">Azure Stamp Pattern Demo</p>
+                    </div>
+
+                    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <InputText id="email" class="form-control" @bind-value="loginModel.Email" placeholder="Enter your email" />
+                            <ValidationMessage For="@(() => loginModel.Email)" class="text-danger" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <InputText id="password" type="password" class="form-control" @bind-value="loginModel.Password" placeholder="Enter your password" />
+                            <ValidationMessage For="@(() => loginModel.Password)" class="text-danger" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3" disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            Sign In
+                        </button>
+                    </EditForm>
+
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Demo accounts:<br>
+                            <strong>john.doe@contoso.com</strong> (Contoso North)<br>
+                            <strong>jane.smith@fabrikam.com</strong> (Fabrikam Corp)<br>
+                            <strong>admin@adventure-works.com</strong> (Adventure Works)<br>
+                            Password: <strong>demo123</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            // Simple validation for demo
+            if (loginModel.Password == "demo123")
+            {
+                var token = await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
+
+                // Update authentication state
+                if (AuthStateProvider is CustomAuthenticationStateProvider customAuth)
+                {
+                    customAuth.MarkUserAsAuthenticated(token);
+                }
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid credentials. Use password 'demo123' for demo accounts.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public class LoginModel
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+}

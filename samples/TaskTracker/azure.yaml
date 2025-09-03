@@ -1,0 +1,30 @@
+# Azure Developer CLI (azd) configuration
+name: tasktracker-stamp-pattern
+metadata:
+  template: tasktracker-stamp-pattern@0.0.1-beta
+  
+services:
+  api:
+    project: .
+    language: dotnet
+    host: containerapp
+
+hooks:
+  postprovision:
+    shell: pwsh
+    run: |
+      Write-Host "Setting up Cosmos DB containers..."
+      # This would be replaced with actual Azure CLI commands to set up Cosmos DB
+      
+  predeploy:
+    shell: pwsh
+    run: |
+      Write-Host "Building application..."
+      dotnet build --configuration Release
+
+  postdeploy:
+    shell: pwsh
+    run: |
+      Write-Host "Deployment completed successfully!"
+      Write-Host "Seeding initial data..."
+      # This would call your data seeding endpoints
