@@ -9,7 +9,10 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Added
 - TaskTracker Blazor sample app + docs; Dapr/GraphQL/Cosmos/Blob integrations
-## [1.6.3] - 2025-09-03
+ 
+### Changed
+- Documentation footers and release metadata updated to 1.6.3 across docs.
+## [1.6.2] - 2025-09-02
 
 ### Added
 - `scripts/configure-entra-auth.ps1` — helper to create an Entra ID app registration, generate a policy-compliant client secret, and wire the secret/env vars into the Management Portal Container App.
