@@ -22,12 +22,8 @@ function Ensure-Network($name) {
 }
 
 function Ensure-DabTool() {
-    if (-not (Get-Command dab -ErrorAction SilentlyContinue)) {
-        Write-Host 'Installing Data API Builder (dab) dotnet tool...'
-        dotnet tool install -g microsoft.dataapibuilder | Write-Host
-        $toolsPath = Join-Path $env:USERPROFILE '.dotnet\\tools'
-        if ($env:PATH -notlike "*${toolsPath}*") { $env:PATH += ";${toolsPath}" }
-    }
+    # Data API Builder (dab) is no longer started automatically by the local scripts.
+    return
 }
 
 function Start-CosmosEmulator($network, $containerName, $hostPort) {
@@ -79,13 +75,7 @@ function Import-EmulatorCert() {
 }
 
 function Start-DabHost($dabPort, $dabConfigPath, $cosmosConn) {
-    Ensure-DabTool
-    $configAbs = Resolve-Path $dabConfigPath
-    $env:COSMOS_CONNECTION_STRING = $cosmosConn
-    $pidFile = Join-Path $PSScriptRoot '..\\.dab.pid'
-    if (Test-Path $pidFile) { Remove-Item $pidFile -Force }
-    $p = Start-Process -FilePath "dab" -ArgumentList @("start","--host","0.0.0.0","--port","${dabPort}","--config","$configAbs") -PassThru -WindowStyle Minimized
-    Set-Content -Path $pidFile -Value $p.Id
+    Write-Host 'Skipping automatic DAB startup: use an external DAB instance or the built-in Hot Chocolate endpoint.'
 }
 
 function Run-Seeder($cosmosHostConn) {
@@ -125,12 +115,7 @@ $cosmosConnForHost = "AccountEndpoint=https://localhost:${CosmosHostPort}/;Accou
 # Import emulator certificate to Windows trust so host DAB can connect
 Import-EmulatorCert
 
-# Start DAB on host
-Start-DabHost -dabPort $DabPort -dabConfigPath '.\management-portal\dab\dab-config.json' -cosmosConn $cosmosConnForHost
-
-# Wait for DAB GraphQL
-Wait-Http -url "http://localhost:${DabPort}/graphql" -timeoutSec 120
-
+# NOTE: DAB is no longer started by this script. The portal hosts a Hot Chocolate GraphQL endpoint.
 Run-Seeder -cosmosHostConn $cosmosConnForHost
 
 Run-Portal -dabPort $DabPort -portalPort $PortalPort

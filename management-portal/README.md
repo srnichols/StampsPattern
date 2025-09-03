@@ -28,25 +28,17 @@ For detailed authentication setup, see the main documentation: [DEPLOYMENT_GUIDE
 - GraphQL: <http://localhost:8082/graphql>
 - Cosmos Emulator: <https://localhost:8085>
 
-## Local Run (AppHost)
+Local Run (AppHost)
 
 - Build AppHost: dotnet build management-portal/AppHost
 - Run AppHost: dotnet run --project management-portal/AppHost
 - Portal URL: <http://localhost:8081>
 
-Prereqs for Aspire run (CLI)
-
-- .NET 9 SDK installed (9.0.4xx or newer)
-- .NET Aspire 9 workload and tools installed
- 	- dotnet workload install aspire
- 	- Ensure Aspire Hosting SDK pack is 9.x under C:\Program Files\dotnet\packs\Aspire.Hosting.Sdk
- 	- Install Aspire Distributed Control Plane (DCP) and Aspire Dashboard (via Visual Studio Installer > Individual components > .NET Aspire 9)
-- CLI: aspire --version should show 9.x
+Note: AppHost is no longer dependent on the .NET Aspire runtime for local runs. The portal hosts a built-in Hot Chocolate GraphQL endpoint and local scripts now rely on that endpoint.
 
 Troubleshooting
 
-- If aspire run says "not an Aspire app host project" or AppHost complains about missing DCP/Dashboard, install the Aspire 9 SDK pack and DCP/Dashboard as above.
-- Use the one-command local scripts as a fallback while you set up Aspire.
+- If you encounter issues running the portal locally, use the one-command local scripts `pwsh -File .\scripts\run-local.ps1` and `pwsh -File .\scripts\stop-local.ps1` which no longer start DAB automatically.
 
 ## Config
 

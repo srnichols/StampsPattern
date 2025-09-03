@@ -12,31 +12,16 @@ spec:
         duration: 2s
         maxRetries: 3
         maxInterval: 30s
-      dab-service-retry:
-        policy: linear
-        duration: 1s
-        maxRetries: 5
-        maxInterval: 10s
     circuitBreakers:
       azure-api-cb:
         maxRequests: 5
         timeout: 30s
         trip: consecutiveFailures >= 3
         resetInterval: 60s
-      dab-service-cb:
-        maxRequests: 10
-        timeout: 15s
-        trip: consecutiveFailures >= 5
-        resetInterval: 30s
     timeouts:
       azure-api-timeout: 45s
-      dab-service-timeout: 20s
   targets:
     apps:
-      dab:
-        retry: dab-service-retry
-        circuitBreaker: dab-service-cb
-        timeout: dab-service-timeout
     components:
       cache-store:
         retry: azure-api-retry

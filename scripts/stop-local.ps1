@@ -2,18 +2,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# Stop DAB host process if running
-$pidFile = Join-Path $PSScriptRoot '..\.dab.pid'
-if (Test-Path $pidFile) {
-  try {
-    $pid = Get-Content $pidFile | Select-Object -First 1
-    if ($pid) {
-      Write-Host "Stopping DAB process PID $pid"
-      Stop-Process -Id $pid -ErrorAction SilentlyContinue
-    }
-  } catch {}
-  Remove-Item $pidFile -Force -ErrorAction SilentlyContinue
-}
+# DAB is not managed by this script. If you started DAB manually, stop it separately.
 
 # Stop containers
 $containers = @('stamps-cosmos')
