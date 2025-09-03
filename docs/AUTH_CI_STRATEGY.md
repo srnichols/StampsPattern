@@ -90,7 +90,7 @@ Purpose: consolidate authentication and CI notes for implementers and reviewers.
 ---
 
 **📝 Document Version Information**
--- **Version**: 1.6.2
-- **Last Updated**: 2025-08-21 14:41:41 UTC  
+- **Version**: 1.6.3
+- **Last Updated**: 2025-09-03 13:23:48 UTC  
 - **Status**: Current
 - **Next Review**: 2025-11
