@@ -56,3 +56,4 @@ Thumbs.db
 
 # Deprecated files
 *.deprecated
+\n# Ignore build outputs\n**/bin/\n**/obj/\n# Ignore Aspire generated outputs\nmanagement-portal/Aspire/**/bin/\nmanagement-portal/Aspire/**/obj/
