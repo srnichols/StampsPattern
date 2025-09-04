@@ -7,8 +7,10 @@ Keep secrets out of source control. Use Azure Key Vault (recommended) for produc
 ## Quick reference — key secrets & env vars
 
 - COSMOS_CONN: Cosmos DB connection string (Key Vault secret: `secrets/cosmos-conn`)
-- DAB_GRAPHQL_URL: Data API Builder GraphQL endpoint (set as app config / container env)
-- DAB_CONFIG_BLOB or DAB_CONFIG_FILE: path to DAB configuration (if in-image)
+ - DAB_GRAPHQL_URL: GraphQL endpoint for the portal's backend (Hot Chocolate). Note: this env var name is kept for backwards compatibility with legacy deployments.
+
+Note: The repository's active GraphQL implementation uses Hot Chocolate. References prefixed with `DAB_*` are legacy artifacts and will be rebaselined across the docs. If you need to rename or remove live Key Vault secrets or production environment variables (for example `DAB_GRAPHQL_URL`), perform a staged verification and migration to avoid breaking deployments.
+ - DAB_CONFIG_BLOB or DAB_CONFIG_FILE: path to backend configuration (if in-image)
 - ACR_SERVER: ACR login server (e.g. `cr<...>.azurecr.io`)
 - ACR_USERNAME / ACR_PASSWORD: use Managed Identity or service principal instead; prefer `az acr login` with MI
 - KEY_VAULT_NAME: Key Vault which stores secrets for apps
@@ -17,7 +19,7 @@ Keep secrets out of source control. Use Azure Key Vault (recommended) for produc
 
 ## Local development
 
-Use `local.settings.json` for Functions + DAB when running locally. Example minimal `local.settings.json`:
+Use `local.settings.json` for Functions + the GraphQL backend when running locally. Example minimal `local.settings.json`:
 
 ```json
 {
@@ -26,7 +28,7 @@ Use `local.settings.json` for Functions + DAB when running locally. Example mini
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "COSMOS_CONN": "AccountEndpoint=https://<your-cosmos>.documents.azure.com:443/;AccountKey=<key>;",
-    "DAB_GRAPHQL_URL": "http://localhost:5000/graphql"
+  "DAB_GRAPHQL_URL": "http://localhost:5000/graphql"
   }
 }
 ```
@@ -39,7 +41,7 @@ Use `local.settings.json` for Functions + DAB when running locally. Example mini
 - Recommended Key Vault secret naming convention:
   - `secrets/cosmos-conn` — Cosmos DB connection string
   - `secrets/acr-credentials` — if you must store registry creds (avoid if using MI)
-  - `secrets/dab-config-json` — optional: DAB config if not baked into image
+  - `secrets/dab-config-json` — optional: backend config if not baked into image (legacy DAB config; Hot Chocolate backend keeps its own config)
   - `secrets/jwt-signing-key` — if using app-specific signing keys
 
 ## DefaultAzureCredential and Managed Identity notes
@@ -84,7 +86,7 @@ az role assignment create --assignee $principalId --role "Cosmos DB Built-in Dat
 ## Troubleshooting
 
 - If apps can't read secrets in Azure: verify Key Vault access policies or RBAC, and that the managed identity is enabled and has GET permission for secrets (or is granted Key Vault Secrets User role via RBAC).
-- If DAB/Portal can't pull image: confirm ACR role assignment and that the container host has network access to the registry.
+ - If the portal/backend can't pull image: confirm ACR role assignment and that the container host has network access to the registry.
 
 ---
 
@@ -94,15 +96,15 @@ A compact mapping of environment variables used by each service, their purpose, 
 
 | Env var | Purpose | Service(s) | Where to set |
 |---|---|---|---|
-| COSMOS_CONN | Cosmos DB connection string (read-only for queries or read-write for seeder) | DAB, Functions, Seeder | Key Vault secret (`secrets/cosmos-conn`) or platform env |
-| DAB_GRAPHQL_URL | GraphQL endpoint for the Data API Builder | Management Portal (frontend/back-end integrations), Tests | Platform env for deployed portal; `local.settings.json` for local dev |
-| DAB_CONFIG_FILE / DAB_CONFIG_BLOB | Path or blob name for DAB config JSON (if not baked into image) | DAB (container) | Mount/secret reference or baked into image |
-| ASPNETCORE_URLS | Container binding URL (e.g. `http://+:5000`) | DAB | Container env / image Dockerfile |
+| COSMOS_CONN | Cosmos DB connection string (read-only for queries or read-write for seeder) | GraphQL backend / Functions / Seeder | Key Vault secret (`secrets/cosmos-conn`) or platform env |
+| DAB_GRAPHQL_URL | GraphQL endpoint for the portal backend (Hot Chocolate). Name retained for backwards compatibility | Management Portal (frontend/back-end integrations), Tests | Platform env for deployed portal; `local.settings.json` for local dev |
+| DAB_CONFIG_FILE / DAB_CONFIG_BLOB | Path or blob name for backend config JSON (if not baked into image) | Backend container | Mount/secret reference or baked into image |
+| ASPNETCORE_URLS | Container binding URL (e.g. `http://+:5000`) | GraphQL backend (or legacy DAB images) | Container env / image Dockerfile |
 | ACR_SERVER | ACR login server (for image pulls) | Container hosting infra | Platform env / container registry setting |
 | KEY_VAULT_NAME | Name of Key Vault storing secrets | All services that read secrets | Platform env / deployment parameter |
 | AzureWebJobsStorage | Functions storage account connection | Azure Functions | Key Vault or platform env |
 | FUNCTIONS_WORKER_RUNTIME | Worker runtime for Functions | Azure Functions (local/dev) | `local.settings.json` or platform env |
-| APPINSIGHTS_CONNECTION_STRING | Application Insights ingestion | Portal, Functions, DAB (optional) | Key Vault or platform env |
+| APPINSIGHTS_CONNECTION_STRING | Application Insights ingestion | Portal, Functions, GraphQL backend (DAB optional/legacy) | Key Vault or platform env |
 | AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_CLIENT_SECRET | Service principal credentials (only for SP-based auth; prefer MI) | Seeder (if not using DefaultAzureCredential) | CI secret or Key Vault (avoid committing) |
 | SEEDER_CLIENT_ID / SEEDER_TENANT_ID / SEEDER_CLIENT_SECRET | Optional separate SP used by seeder automation | Seeder | Key Vault / pipeline secret |
 | JWT_SIGNING_KEY | App-specific JWT signing secret (if used) | Portal / API | Key Vault secret |

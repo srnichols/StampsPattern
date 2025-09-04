@@ -1,9 +1,9 @@
 ---
-# Live Data Path — Portal → DAB → Cosmos (quick guide)
+# Live Data Path — Portal → GraphQL → Cosmos (quick guide)
 
 Purpose
 
-- One-page smoke path and quick checks to validate the Management Portal consumes live data from Data API Builder (DAB) backed by Cosmos DB.
+- One-page smoke path and quick checks to validate the Management Portal consumes live data from the GraphQL backend (Hot Chocolate) backed by Cosmos DB.
 
 Who this is for
 
@@ -11,40 +11,40 @@ Who this is for
 
 Overview
 
-- Path: Management Portal (UI) → DAB (GraphQL) → Cosmos DB (control-plane containers: tenants, cells, operations)
-- Secrets and identity: Portal authenticates users via AAD; Portal calls DAB over internal network; DAB uses MI or connection string to read Cosmos.
+- Path: Management Portal (UI) → GraphQL backend (Hot Chocolate) → Cosmos DB (control-plane containers: tenants, cells, operations)
+- Secrets and identity: Portal authenticates users via AAD; Portal calls the GraphQL backend over the internal network; the GraphQL backend uses a managed identity or connection string to read Cosmos.
 
 Quick diagram
 
 ```mermaid
 flowchart LR
   Portal[Management Portal]
-  DAB[Data API Builder (Container App)]
+  GraphQL[GraphQL (Hot Chocolate) (Container App)]
   Cosmos[Cosmos DB - stamps-control-plane]
 
-  Portal -->|HTTP GraphQL POST| DAB
-  DAB -->|Cosmos SDK / REST| Cosmos
+  Portal -->|HTTP GraphQL POST| GraphQL
+  GraphQL -->|Cosmos SDK / REST| Cosmos
 ```mermaid
 
 Essential variables
 
-- DAB GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql
-- Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault
+ - GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql (kept for backwards compatibility)
+ - Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault. Note: the portal uses Hot Chocolate as the GraphQL implementation; `DAB_*` runtime names are retained for compatibility and should not be renamed without an infra/secret migration plan.
+
+Note: The GraphQL backend used in this project is Hot Chocolate. `DAB_*` names and references in this document are legacy compatibility artifacts. Runtime identifiers such as `DAB_GRAPHQL_URL` and `ca-stamps-dab` are intentionally preserved — do not rename them without a coordinated infra/secrets migration.
 - Seeder location: `AzureArchitecture/Seeder` (uses DefaultAzureCredential)
 
 Smoke checks (fast)
 
-1) Validate DAB is healthy (Container Apps)
+1) Validate GraphQL backend is healthy (Container Apps)
 
-# ```powershell
 # List revisions and health
-az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
+az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table  # resource name retained for compatibility
 
 # Show ingress configuration (confirm targetPort matches container)
 az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
-```bash
 
-2) Tail DAB logs (look for startup errors and GraphQL listening)
+2) Tail GraphQL backend logs (look for startup errors and GraphQL listening). The Container App resource may still be named `ca-stamps-dab` for backward compatibility.
 
 ```powershell
 az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
@@ -52,10 +52,10 @@ az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --t
 
 1) Quick GraphQL introspection / simple query
 
-Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the DAB GraphQL URL (from secret/outputs):
+Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the GraphQL backend URL (from secret/outputs). Legacy secret names like `DAB_GRAPHQL_URL` may still be used:
 
 ```powershell
-$DAB = 'https://<dab-fqdn>/graphql'
+$DAB = 'https://<graphql-backend-fqdn>/graphql'
 $body = @{ query = 'query { __schema { queryType { name } } }' } | ConvertTo-Json
 
 # Use -UseBasicParsing if needed in older PowerShell

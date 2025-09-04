@@ -2,7 +2,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# DAB is not managed by this script. If you started DAB manually, stop it separately.
+# DAB (Data API Builder) is not managed by this script. If you started it manually, stop it separately. Note: the portal now hosts a Hot Chocolate GraphQL endpoint by default.
 
 # Stop containers
 $containers = @('stamps-cosmos')

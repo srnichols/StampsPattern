@@ -1,8 +1,8 @@
-# Smoke tests for Stamps management portal and DAB
+# Smoke tests for Stamps management portal and GraphQL backend
 # Usage: .\smoke-test.ps1
 
 $portalUrl = 'https://ca-stamps-portal.whitetree-24b33d85.westus2.azurecontainerapps.io/'
-# Note: DAB has internal URL, not accessible from external tests. We'll check portal redirect instead.
+# Note: the GraphQL backend has an internal URL and is not accessible from external tests. We'll check portal redirect instead.
 
 Write-Host "Testing portal root: $portalUrl"
 try {
@@ -26,5 +26,5 @@ try {
 }
 
 Write-Host "✓ Portal authentication flow appears to be working"
-Write-Host "Note: DAB endpoint is internal-only and not testable from external scripts."
+Write-Host "Note: the GraphQL endpoint is internal-only and not testable from external scripts."
 Write-Host "Done."

@@ -22,7 +22,8 @@ For detailed authentication setup, see the main documentation: [DEPLOYMENT_GUIDE
 
 ## Local Run (one command)
 
-- Start: pwsh -File .\scripts\run-local.ps1
+- Start (legacy script removed): the previous helper `scripts/run-local.ps1` has been removed as it was out-of-date.
+  Use the portal's modern local startup: `dotnet run --project ./management-portal/src/Portal/Portal.csproj` and run the seeder with `dotnet run --project ./management-portal/Seeder/Seeder.csproj` as needed.
 - Stop: pwsh -File .\scripts\stop-local.ps1
 - Portal: <http://localhost:8081>
 - GraphQL: <http://localhost:8082/graphql>
@@ -38,7 +39,7 @@ Note: AppHost is no longer dependent on the .NET Aspire runtime for local runs. 
 
 Troubleshooting
 
-- If you encounter issues running the portal locally, use the one-command local scripts `pwsh -File .\scripts\run-local.ps1` and `pwsh -File .\scripts\stop-local.ps1` which no longer start DAB automatically.
+- If you encounter issues running the portal locally, run the portal directly with `dotnet run --project ./management-portal/src/Portal/Portal.csproj` and follow the guidance in `docs/DEVELOPER_QUICKSTART.md` for emulator seeding and cert trust. The old one-command helper was removed because it referenced deleted DAB code.
 
 ## Config
 

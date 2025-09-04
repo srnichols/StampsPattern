@@ -2,7 +2,7 @@
 diagnostics.ps1 - lightweight diagnostics for StampsPattern operator
 
 Purpose:
-- Run a small set of non-destructive checks to surface common issues (Portal↔DAB, container app health, ACR, Cosmos, and managed identities)
+- Run a small set of non-destructive checks to surface common issues (Portal↔GraphQL, container app health, ACR, Cosmos, and managed identities)
 - Meant to be run from a workstation with Azure CLI signed-in (az) and PowerShell 7+
 
 Usage (example):
@@ -13,7 +13,10 @@ This script is intentionally read-only; it will not change role assignments or s
 [CmdletBinding()]
 param(
     [string]$ResourceGroup = 'rg-stamps-mgmt',
-    [string]$DabName = 'ca-stamps-dab',
+    # GraphQL backend container name or resource name. Defaults to legacy value for compatibility.
+    [string]$GraphqlName = 'ca-stamps-dab',
+    # Legacy name kept for scripts that still use it; GraphqlName is preferred.
+    [string]$DabName = $GraphqlName,
     [string]$PortalName = 'ca-stamps-portal',
     [string]$AcrName = 'crxgjwtecm3g5pi',
     [string]$CosmosName = 'cosmos-xgjwtecm3g5pi',
@@ -41,17 +44,17 @@ try{
 }
 
 # Container App checks
-Write-Section "Container App: DAB ($DabName)"
+Write-Section "Container App: GraphQL backend ($GraphqlName)"
 try{
-    az containerapp show --name $DabName --resource-group $ResourceGroup --output json | ConvertFrom-Json | Select-Object -Property name,location,@{Name='Ingress';Expression={($_.properties.configuration.ingress)}},@{Name='Identity';Expression={$_.identity}} | Format-List
+    az containerapp show --name $GraphqlName --resource-group $ResourceGroup --output json | ConvertFrom-Json | Select-Object -Property name,location,@{Name='Ingress';Expression={($_.properties.configuration.ingress)}},@{Name='Identity';Expression={$_.identity}} | Format-List
     Write-Host "Revisions:"
-    az containerapp revision list --name $DabName --resource-group $ResourceGroup --output table
+    az containerapp revision list --name $GraphqlName --resource-group $ResourceGroup --output table
     Write-Host "Template containers and env vars:"
-    az containerapp show --name $DabName --resource-group $ResourceGroup --query properties.template.containers -o json | ConvertFrom-Json | ForEach-Object { $_ | Select-Object name, image, @{Name='EnvCount';Expression={$_.env.Count}} } | Format-Table -AutoSize
+    az containerapp show --name $GraphqlName --resource-group $ResourceGroup --query properties.template.containers -o json | ConvertFrom-Json | ForEach-Object { $_ | Select-Object name, image, @{Name='EnvCount';Expression={$_.env.Count}} } | Format-Table -AutoSize
     Write-Host "Secrets (names):"
-    az containerapp secret list --name $DabName --resource-group $ResourceGroup -o table
+    az containerapp secret list --name $GraphqlName --resource-group $ResourceGroup -o table
 } catch {
-    Write-Warning ("Failed to query Container App {0} in {1}: {2}" -f $DabName, $ResourceGroup, $_)
+    Write-Warning ("Failed to query Container App {0} in {1}: {2}" -f $GraphqlName, $ResourceGroup, $_)
 }
 
 Write-Section "Container App: Portal ($PortalName)"
@@ -66,7 +69,7 @@ try{
 }
 
 if ($TailLogs) {
-    Write-Section "Tailing logs ($LogLines lines) for DAB container 'dab' (if present)"
+    Write-Section "Tailing logs ($LogLines lines) for GraphQL container 'dab' (if present)"
     try{
         az containerapp logs show -g $ResourceGroup -n $DabName --container dab --tail $LogLines
     } catch {
@@ -98,7 +101,7 @@ try{
 # Identity / role quick checks
 Write-Section "Quick identity and role hints"
 try{
-    # DAB identity
+    # GraphQL backend identity
     $dabIdentity = az containerapp show --name $DabName --resource-group $ResourceGroup --query identity -o json | ConvertFrom-Json
     if ($null -ne $dabIdentity) {
         if ($dabIdentity.type -eq 'UserAssigned'){
@@ -114,7 +117,7 @@ try{
 
 # Summary
 Write-Section "Summary (quick checks)"
-Write-Host "DAB: $DabName (resource group: $ResourceGroup)"
+Write-Host "GraphQL backend: $DabName (resource group: $ResourceGroup)"
 Write-Host "Portal: $PortalName (resource group: $ResourceGroup)"
 Write-Host "ACR: $AcrName"
 Write-Host "Cosmos: $CosmosName"

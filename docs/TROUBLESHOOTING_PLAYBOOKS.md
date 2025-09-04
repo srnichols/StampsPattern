@@ -6,16 +6,18 @@ Concise, operator-focused playbooks that expand the decision trees into step-by-
 
 ---
 
-## 1) Portal → DAB connectivity (playbook)
+## 1) Portal → GraphQL connectivity (playbook)
 
-Goal: confirm the portal can reach DAB GraphQL and diagnose where the failure sits (config, DNS, network, auth, or DAB itself).
+Goal: confirm the portal can reach the GraphQL backend (Hot Chocolate) and diagnose where the failure sits (config, DNS, network, auth, or the GraphQL backend itself).
+
+Note: Hot Chocolate is the actively maintained GraphQL backend. Legacy references to Data API Builder (DAB) may appear in scripts, CI, or archived docs; these are being rebaselined in documentation. Runtime identifiers such as `DAB_GRAPHQL_URL`, the container app name `ca-stamps-dab`, and deployment output keys like `dab-graphql-url` require a staged verification and migration before renaming in production.
 
 Checklist:
 
-- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct
-- [ ] Confirm DAB Container App revision is healthy
-- [ ] Tail DAB logs for GraphQL errors
-- [ ] Run an introspection query against DAB
+- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct (name retained for compatibility)
+- [ ] Confirm GraphQL Container App revision is healthy (resource may be named `ca-stamps-dab`)
+- [ ] Tail GraphQL backend logs for GraphQL errors
+- [ ] Run an introspection query against the GraphQL endpoint
 
 Step-by-step
 
@@ -32,7 +34,7 @@ az containerapp secret list --name ca-stamps-portal --resource-group rg-stamps-m
 2) Check the `DAB_GRAPHQL_URL` value and try a raw HTTP POST from your workstation
 
 ```powershell
-$dab = 'https://<dab-ingress-fqdn>/graphql'
+$dab = 'https://<graphql-backend-ingress-fqdn>/graphql'  # legacy secret names (DAB_GRAPHQL_URL) may still be used
 $body = '{"query":"{ __schema { types { name } } }"}'
 
 # Simple POST (PowerShell Invoke-RestMethod):
@@ -41,17 +43,17 @@ Invoke-RestMethod -Method POST -Uri $dab -Body $body -ContentType 'application/j
 # If Portal uses Key Vault/managed identity to fetch the URL, ensure Portal can read the secret (see AAD section below)
 ```
 
-3) Inspect Container App and revision status for DAB
+3) Inspect Container App and revision status for the GraphQL backend
 
 ```powershell
 az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
 az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress -o json
 
-# Tail logs (container name in the DAB image is usually 'dab')
+# Tail logs (container name in the GraphQL image is usually 'dab' for backwards compatibility)
 az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 300
 ```
 
-4) If you get 401/403 from the portal when it calls DAB
+4) If you get 401/403 from the portal when it calls the GraphQL backend (Hot Chocolate)
 
 ```powershell
 # Check Portal principal/secret access: ensure portal has KeyVault Get or the secret is present as a Container App secret
@@ -61,7 +63,7 @@ az keyvault secret show --vault-name <kv-name> --name DAB_GRAPHQL_URL
 az containerapp show --name ca-stamps-portal -g rg-stamps-mgmt --query properties.identity
 ```
 
-5) If DAB responds but GraphQL errors appear, run an introspection or specific query to see schema/status
+5) If the GraphQL backend responds but GraphQL errors appear, run an introspection or specific query to see schema/status
 
 ```powershell
 Invoke-RestMethod -Method POST -Uri $dab -Body '{"query":"{ __schema { queryType { name } } }"}' -ContentType 'application/json'
@@ -71,7 +73,7 @@ If the above shows schema, the portal should be able to fetch data; if not, cont
 
 ---
 
-## 2) DAB container startup (playbook)
+## 2) GraphQL backend container startup (playbook)
 
 Goal: diagnose container start failures, image pull problems, missing config files, or permission errors.
 
@@ -80,7 +82,7 @@ Checklist:
 - [ ] Confirm image exists in ACR
 - [ ] Confirm managed identity has AcrPull on ACR
 - [ ] Tail container logs for startup exceptions
-- [ ] Confirm /App/dab-config.json is present or mapped
+- [ ] Confirm `/App/dab-config.json` (legacy DAB config) is present or mapped, or verify the Hot Chocolate backend's configuration files
 
 Step-by-step
 

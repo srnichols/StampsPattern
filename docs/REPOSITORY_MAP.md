@@ -5,9 +5,9 @@ Quick map of the repository structure and where common tasks live. Use this when
 Top-level folders
 
 - `AzureArchitecture/` — Azure Functions app, Seeder, Bicep modules used by core infra; contains `AzureArchitecture.sln`, function classes, and examples.
-- `management-portal/` — Management Portal UI, DAB config, and portal infra (Container Apps bicep). Key files:
-  - `management-portal/infra/management-portal.bicep` — IaC for portal and DAB
-  - `management-portal/dab/` — DAB Dockerfile, `dab-config.json`, `schema.graphql`
+ - `management-portal/` — Management Portal UI, GraphQL backend, and portal infra (Container Apps bicep). Key files:
+  - `management-portal/infra/management-portal.bicep` — IaC for portal and GraphQL backend
+  - `management-portal/dab/` — (legacy) DAB Dockerfile and config; kept for reference if present. The primary GraphQL implementation now lives with the portal's Hot Chocolate code.
   - `management-portal/src/Portal/` — Blazor UI and GraphQL client wiring
 - `docs/` — Documentation hub and guides (this folder). Core docs include `DOCS.md`, `DEPLOYMENT_GUIDE.md`, `KNOWN_ISSUES.md`.
 - `scripts/` — Devops and deployment helper scripts (PowerShell and Bash), link-checker, smoke tests, and deploy helpers.
@@ -18,9 +18,9 @@ Top-level folders
 Where to look for common tasks
 
 - Deploy the platform (full): `scripts/deploy-stamps.ps1` + `traffic-routing.bicep`
-- Run local Functions & Emulator: `AzureArchitecture/` with `func start` and `./scripts/run-local.ps1`
+- Run local Functions & Emulator: `AzureArchitecture/` with `func start`. Local portal startup: `dotnet run --project ./management-portal/src/Portal/Portal.csproj` (the legacy `./scripts/run-local.ps1` helper was removed).
 - Seed baseline data: `AzureArchitecture/Seeder/` — uses `DefaultAzureCredential`
-- Fix DAB or Portal: `management-portal/dab/` and `management-portal/src/Portal/`
+ - Fix GraphQL backend or Portal: `management-portal/src/Portal/` (backend config may live under `management-portal/dab/` if legacy; prefer Hot Chocolate code paths)
 - CI/Build workflows: `.github/workflows/` (GitHub Actions)
 
 Quick file index

@@ -5,8 +5,8 @@ This matrix summarizes implemented, in-progress, and planned features across the
 | Capability | Status | Notes |
 |-----------:|:------:|:-----|
 | Core infra (Bicep) | Implemented | Global/hub/regional layers and sample deployments. |
-| Management Portal | Implemented | Blazor UI with DAB GraphQL; currently migrating from mock data to DAB-backed live data. |
-| DAB (Data API Builder) | Deployed | Custom image and schema present; monitor container app health and ensure IaC aligns targetPort and image config. |
+| Management Portal | Implemented | Blazor UI with GraphQL backend (Hot Chocolate); older DAB references may remain in the repo. |
+| Data API Builder (DAB) | Legacy | Custom image and schema may remain as a legacy artifact; prefer Hot Chocolate for new deployments. |
 | Seeder (Cosmos) | Implemented | Seeder with AAD auth; required RBAC adjustments to seed data. |
 | CI (image build & push) | Implemented (basic) | GitHub Actions with image build; recommend OIDC federation for minimal secrets. |
 | Key Vault integration | Implemented | Secrets used; recommend migration from container-app secrets to KV references for production. |

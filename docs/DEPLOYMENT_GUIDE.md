@@ -46,7 +46,9 @@ The template includes subscription-scope toggles to reduce Microsoft Defender fo
 These set Microsoft.Security/pricings resources to Free or Standard as appropriate. CSPM (Arm) remains Free to preserve secure score and policy evaluations.
 
 
-If you want the fastest, repeatable route to a working Management Portal backed by live Cosmos data, follow these steps. This path deploys the smoke sample, seeds representative baseline data using the Seeder (AAD RBAC), and verifies Portal ↔ DAB ↔ Cosmos connectivity.
+If you want the fastest, repeatable route to a working Management Portal backed by live Cosmos data, follow these steps. This path deploys the smoke sample, seeds representative baseline data using the Seeder (AAD RBAC), and verifies Portal ↔ GraphQL backend ↔ Cosmos connectivity. The GraphQL backend is implemented using Hot Chocolate.
+
+Note: Hot Chocolate is the actively supported GraphQL backend used throughout this repository. User-facing documentation has been rebaselined to focus on Hot Chocolate so new developers see the current, supported stack.
 
 1. Create a resource group and deploy the smoke sample (lab-friendly parameters):
 
@@ -75,7 +77,7 @@ dotnet run
 
 4. Verify the deployment and seeded data.
 
-- Retrieve deployment outputs to get the Portal and DAB endpoints:
+- Retrieve deployment outputs to get the Portal and GraphQL backend endpoints (note: some deployment outputs retain legacy names like `dab-graphql-url`):
 
 ```powershell
 pwsh -Command "az deployment group show --resource-group rg-stamps-smoke --name $(az deployment group list --resource-group rg-stamps-smoke --query '[0].name' -o tsv) --query properties.outputs"
@@ -84,7 +86,7 @@ pwsh -Command "az deployment group show --resource-group rg-stamps-smoke --name 
 - Open the Management Portal URL in a browser and confirm seeded tenants/cells are visible. Optionally test the GraphQL endpoint:
 
 ```powershell
-pwsh -Command "curl -s -X POST 'https://<DAB_GRAPHQL_URL>/graphql' -H 'Content-Type: application/json' -d '{\"query\":\"{ tenants { id name } }\"}'"
+pwsh -Command "curl -s -X POST 'https://<GRAPHQL_URL>/graphql' -H 'Content-Type: application/json' -d '{\"query\":\"{ tenants { id name } }\"}'"
 ```
 
 Notes:
@@ -153,7 +155,8 @@ Steps:
 1) Start local data stack (Cosmos Emulator, Portal, GraphQL API) [optional]
 
   - PowerShell (Windows):
-    - pwsh -File ./scripts/run-local.ps1
+    - Note: `scripts/run-local.ps1` has been removed. To run locally, start the portal directly:
+      `dotnet run --project ./management-portal/src/Portal/Portal.csproj`
   - Default ports: Cosmos Emulator 8085, Portal 8081, GraphQL API 8082
 
 2) Ensure local.settings.json
@@ -181,7 +184,7 @@ Steps:
 Tips:
 
 - Port busy? Run: func start --port 7072
-- Cosmos TLS trust: the run-local.ps1 script imports the emulator certificate into CurrentUser/Root; if calls fail, open <https://localhost:8085/_explorer/emulator.pem> once in a browser to trust the cert.
+-- Cosmos TLS trust: the legacy `run-local.ps1` previously imported the emulator certificate into CurrentUser/Root. If SSL calls fail, open <https://localhost:8085/_explorer/emulator.pem> in a browser and import/accept the cert manually, or run the sample import steps in `docs/DEVELOPER_QUICKSTART.md`.
 - Functions task in VS Code: use the default “build (functions)” task, then start with func start from the AzureArchitecture folder.
 
 ## 📖 Key Concepts Before You Start
@@ -1186,8 +1189,8 @@ Use this quick checklist before promoting a test deployment to production. Cross
 - Authentication and authorization
   - Enable built‑in auth for Azure Container Apps and Functions; require login for all endpoints.
   - Map Entra ID groups to application roles (e.g., platform.admin). Disable anonymous access and lock down CORS.
-  - Propagate platform roles to DAB; ensure non‑admins have read‑only or least‑privilege permissions.
-- API/DAB hardening
+  - Propagate platform roles to the GraphQL backend (or to legacy DAB deployments); ensure non‑admins have read‑only or least‑privilege permissions.
+  - API hardening for the GraphQL backend
   - Disable public schema mutation where not needed; restrict filters/projections; rate‑limit externally exposed routes via APIM/App Gateway.
   - Turn off development features in production (verbose errors, GraphQL introspection if policy requires).
 - Data and Cosmos DB settings

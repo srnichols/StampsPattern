@@ -6,7 +6,7 @@ A visual index of sample app galleries and the management portal. Click a thumbn
 
 | Management Portal | TaskTracker |
 |---|---|
-| [![Management Portal](management-portal/docs/thumbnails/ManagmentPortal-Dashboard-Screenshot-thumb.png)](management-portal/docs/SCREENSHOTS.md)<br>**Management Portal**<br>Overview dashboard, tenant and cell management screenshots. | [![TaskTracker](samples/tasktracker/docs/thumbnails/TaskTrack-HomePage-screenshot.png)](samples/tasktracker/docs/SCREENSHOTS.md)<br>**TaskTracker**<br>Home, New Task and Edit Task screenshots. |
+| [![Management Portal](management-portal/docs/thumbnails/ManagmentPortal-Dashboard-Screenshot-thumb.png)](management-portal/docs/SCREENSHOTS.md)<br>**Management Portal**<br>Overview dashboard, tenant and cell management screenshots. | [![TaskTracker](samples/TaskTracker/docs/thumbnails/TaskTrack-HomePage-screenshot-thumb.png)](samples/TaskTracker/docs/SCREENSHOTS.md)<br>**TaskTracker**<br>Home, New Task and Edit Task screenshots. |
 
 ---
 

@@ -22,8 +22,8 @@ Practical fixes and workarounds for common issues across development, deployment
 >
 > 1. Bicep/template errors — run `bicep build <file>.bicep` and `az deployment group what-if` → see [Deployment Issues](#-deployment-issues).
 > 2. Name conflicts — change `resourceToken` or use uniqueString(resourceGroup().id) → [Deployment Issues](#-deployment-issues).
-> 3. DAB crashing / port mismatch — confirm `ASPNETCORE_URLS` vs Container App `targetPort` → [Deployment Issues](#-deployment-issues).
-> 4. Portal timeouts to DAB — check `DAB_GRAPHQL_URL` secret and Container App logs → [Troubleshooting Playbooks](#portal-→-dab-connectivity-decision-tree).
+> 3. GraphQL backend crashing / port mismatch — confirm `ASPNETCORE_URLS` vs Container App `targetPort` → [Deployment Issues](#-deployment-issues).  # note: env var names like `ASPNETCORE_URLS` are still used by the image
+> 4. Portal timeouts to the GraphQL backend — check `DAB_GRAPHQL_URL` secret and Container App logs → [Troubleshooting Playbooks](#portal-→-dab-connectivity-decision-tree).
 > 5. Seeder 401/403 — grant Cosmos DB Data Contributor to the identity and use DefaultAzureCredential locally → [Development Issues](#-development-issues).
 > 6. Key Vault access denied — grant `get`/`list` or Key Vault Secrets User RBAC to the principal → [Security Issues](#-security-issues).
 > 7. Cosmos 429 throttling — implement retries/backoff and scale RU/s or enable autoscale → [Performance Issues](#-performance-issues).
@@ -150,7 +150,7 @@ flowchart LR
 
 ## 🔁 Troubleshooting Playbooks (decision trees)
 
-Below are three focused decision trees that operators reach for frequently: Portal → DAB connectivity, DAB container startup, and AAD/authentication issues. Use these as quick visual playbooks during incidents.
+Below are three focused decision trees that operators reach for frequently: Portal → GraphQL backend connectivity, GraphQL container startup, and AAD/authentication issues. Use these as quick visual playbooks during incidents. Note: runtime names and secrets like `DAB_GRAPHQL_URL` may still be used for compatibility.
 
 ### 1) Portal → DAB connectivity decision tree
 
@@ -166,7 +166,7 @@ flowchart TD
     P2 --> P4{Is DAB endpoint configured (DAB_GRAPHQL_URL)?}
     P3 --> P4
 
-    P4 -->|No| P5[Set secret `DAB_GRAPHQL_URL` to Container App ingress FQDN + /graphql]
+    P4 -->|No| P5[Set secret `DAB_GRAPHQL_URL` (or GraphQL backend URL secret) to Container App ingress FQDN + /graphql]
     P4 -->|Yes| P6[Ping DAB endpoint from Portal (curl/postman) using managed identity header if required]
 
     P6 -->|Connection refused / DNS| P7[Check Container App ingress FQDN, DNS CNAME, and firewall / private endpoint settings]
@@ -180,7 +180,7 @@ flowchart TD
     P10 --> P12
     P11 --> P12
 
-    P12 --> P13[If still failing: redeploy DAB with corrected targetPort and validate ACR pull permissions]
+    P12 --> P13[If still failing: redeploy the GraphQL backend (or legacy DAB image) with corrected targetPort and validate ACR pull permissions]
     P13 --> P14[If redeploy fails: capture logs, open issue, escalate to infra on-call]
 ```
 
@@ -465,7 +465,7 @@ func start --port 7072
 
 # 5) Ensure local.settings.json points to the emulator
 #   - CosmosDbConnection: https://localhost:8085/
-#   - The run-local.ps1 script imports the emulator cert; if SSL errors persist,
+#   - The old `run-local.ps1` helper previously imported the emulator cert; it has been removed. If SSL errors persist,
 #     open https://localhost:8085/_explorer/emulator.pem in a browser once to trust it.
 
 # 6) Avoid overlapping builds/hosts

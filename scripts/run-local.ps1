@@ -22,7 +22,7 @@ function Ensure-Network($name) {
 }
 
 function Ensure-DabTool() {
-    # Data API Builder (dab) is no longer started automatically by the local scripts.
+    # The Data API Builder (DAB) is no longer started automatically by the local scripts; the portal hosts a Hot Chocolate GraphQL endpoint by default.
     return
 }
 
@@ -75,7 +75,7 @@ function Import-EmulatorCert() {
 }
 
 function Start-DabHost($dabPort, $dabConfigPath, $cosmosConn) {
-    Write-Host 'Skipping automatic DAB startup: use an external DAB instance or the built-in Hot Chocolate endpoint.'
+    Write-Host 'Skipping automatic DAB startup: use an external GraphQL instance or the built-in Hot Chocolate endpoint hosted by the portal.'
 }
 
 function Run-Seeder($cosmosHostConn) {
@@ -86,7 +86,9 @@ function Run-Seeder($cosmosHostConn) {
 
 function Run-Portal($dabPort, $portalPort) {
     Write-Host "Starting Portal on http://localhost:$portalPort ..."
-    $env:DAB_GRAPHQL_URL = "http://localhost:${dabPort}/graphql"
+    # Portal hosts Hot Chocolate GraphQL. Use the portal's endpoint as the canonical GRAPHQL_URL.
+    # Legacy DAB-specific env vars are removed to avoid referencing deleted DAB code.
+    $env:GRAPHQL_URL = "http://localhost:${portalPort}/graphql"
     $env:ASPNETCORE_URLS = "http://+:${portalPort}"
     dotnet run --project .\management-portal\src\Portal\Portal.csproj
 }

@@ -6,6 +6,6 @@ using System;
 
 Console.WriteLine("AppHost shim: Aspire AppHost usage removed.");
 Console.WriteLine("Run the Portal directly with: dotnet run --project ..\\src\\Portal\\Portal.csproj");
-Console.WriteLine("Or use the one-command local script: pwsh -File ..\\..\\scripts\\run-local.ps1");
+Console.WriteLine("Start the portal locally with: dotnet run --project ..\\..\\src\\Portal\\Portal.csproj (legacy run-local.ps1 removed)");
 
 return 0;

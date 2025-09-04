@@ -3,9 +3,10 @@
 This AppHost composes:
 
 - Portal (<http://localhost:8081>)
-- Data API Builder (<http://localhost:8082>)
+- Portal (<http://localhost:8081>)
+- GraphQL backend (Hot Chocolate) (<http://localhost:8082>)
 
-Provide a Cosmos connection string for DAB:
+Provide a Cosmos connection string for the GraphQL backend:
 
 - Set COSMOS_CONNECTION_STRING in your environment
 - Example (emulator): AccountEndpoint=<https://localhost:8081/;AccountKey=>...;

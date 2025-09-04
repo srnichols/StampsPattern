@@ -1,0 +1,74 @@
+file,path,line,match
+.github/workflows/deploy-management-portal.yml,.github/workflows/deploy-management-portal.yml,212,echo "| Data API Builder | ${{ needs.deploy-infrastructure.outputs.dabUrl }} |"
+docs/CAPABILITIES_MATRIX.md,docs/CAPABILITIES_MATRIX.md,9,| Data API Builder (DAB) | Legacy | Custom image and schema may remain as a legacy artifact; prefer Hot Chocolate for new deployments. |
+docs/DEVELOPER_QUICKSTART.md,docs/DEVELOPER_QUICKSTART.md,26,The portal hosts a Hot Chocolate GraphQL endpoint by default; starting Data API Builder (DAB) is optional and only needed for legacy compatibility testing.
+docs/DEVELOPER_QUICKSTART.md,docs/DEVELOPER_QUICKSTART.md,28,Note: Hot Chocolate is the active GraphQL backend. References and legacy names (for example `DAB_GRAPHQL_URL` or `ca-stamps-dab`) are being rebaselined across the documentation; before renaming or removing production secrets or resource identifiers, follow a staged verification and migration procedure to avoid service disruptions.
+management-portal/AppHost/Program.cs,management-portal/AppHost/Program.cs,7,Console.WriteLine("AppHost shim: Aspire AppHost usage removed.")
+docs/DEPLOYMENT_GUIDE.md,docs/DEPLOYMENT_GUIDE.md,80,- Retrieve deployment outputs to get the Portal and GraphQL backend endpoints (note: some deployment outputs retain legacy names like `dab-graphql-url`):
+docs/GLOSSARY.md,docs/GLOSSARY.md,136,### **GraphQL backend (Hot Chocolate) — Data API Builder (DAB) (legacy)**
+docs/GLOSSARY.md,docs/GLOSSARY.md,141,The Management Portal exposes a GraphQL API for control-plane data. The primary, actively maintained implementation uses Hot Chocolate (a .NET GraphQL server). Older references to Data API Builder (DAB) still exist in archive material and some operational scripts.
+docs/GLOSSARY.md,docs/GLOSSARY.md,141,- **Notes**: Hot Chocolate is the recommended GraphQL backend. References to Data API Builder (DAB) in the repo are legacy; we are rebaselining docs and examples to prefer Hot Chocolate. Some runtime names and secrets still include "DAB"; follow a staged verification and migration plan before renaming live secrets or resources.
+.github/workflows/deploy-management-portal.yml,.github/workflows/deploy-management-portal.yml,post-deployment,echo "| Data API Builder | ${{ needs.deploy-infrastructure.outputs.dabUrl }} |"
+docs/KNOWN_ISSUES.md,docs/KNOWN_ISSUES.md,26,check `DAB_GRAPHQL_URL` secret and Container App logs → [Troubleshooting Playbooks](#portal-→-dab-connectivity-decision-tree)
+docs/KNOWN_ISSUES.md,docs/KNOWN_ISSUES.md,40,check DAB ingress FQDN/secret and Container App logs; validate `DAB_GRAPHQL_URL` secret
+docs/KNOWN_ISSUES.md,docs/KNOWN_ISSUES.md,153,Note: runtime names and secrets like `DAB_GRAPHQL_URL` may still be used for compatibility.
+docs/KNOWN_ISSUES.md,docs/KNOWN_ISSUES.md,166,P4{Is DAB endpoint configured (DAB_GRAPHQL_URL)?}
+docs/KNOWN_ISSUES.md,docs/KNOWN_ISSUES.md,169,P5[Set secret `DAB_GRAPHQL_URL` (or GraphQL backend URL secret) to Container App ingress FQDN + /graphql]
+docs/KNOWN_ISSUES.md,docs/KNOWN_ISSUES.md,199,D5[Verify /App/dab-config.json is present in image or passed as secret]
+management-portal/infra/management-portal.bicep,management-portal/infra/management-portal.bicep,262,// Data API Builder Container App
+management-portal/infra/management-portal.bicep,management-portal/infra/management-portal.bicep,313,// appinsights-connection-string, dab-graphql-url) in the Key Vault and
+management-portal/infra/management-portal.bicep,management-portal/infra/management-portal.bicep,338,// DAB_GRAPHQL_URL removed
+samples/TaskTracker/TaskTracker.Blazor.csproj,samples/TaskTracker/TaskTracker.Blazor.csproj,51,<!-- No longer need exclusions since Aspire folder is removed -->
+scripts/stop-local.ps1,scripts/stop-local.ps1,5,# DAB (Data API Builder) is not managed by this script. If you started it manually, stop it separately. Note: the portal now hosts a Hot Chocolate GraphQL endpoint by default.
+docs/archive/MANAGEMENT_PORTAL_DEMO.md,docs/archive/MANAGEMENT_PORTAL_DEMO.md,46,- Data API Builder (GraphQL/REST)
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,31,GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql (kept for backwards compatibility)
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,32,Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault. Note: the portal uses Hot Chocolate as the GraphQL implementation; `DAB_*` runtime names are retained for compatibility and should not be renamed without an infra/secret migration plan.
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,34,Note: The GraphQL backend used in this project is Hot Chocolate. `DAB_*` names and references in this document are legacy compatibility artifacts. Runtime identifiers such as `DAB_GRAPHQL_URL` and `ca-stamps-dab` are intentionally preserved — do not rename them without a coordinated infra/secrets migration.
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,42,az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table  # resource name retained for compatibility
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,45,az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,47,2) Tail GraphQL backend logs (look for startup errors and GraphQL listening). The Container App resource may still be named `ca-stamps-dab` for backward compatibility.
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,50,az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,55,Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the GraphQL backend URL (from secret/outputs). Legacy secret names like `DAB_GRAPHQL_URL` may still be used:
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,90,If DAB responds but returns schema errors, validate `dab-config.json` and `schema.graphql` in the image; confirm the image entrypoint points to `/App/dab-config.json`
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,96,Portal timeouts: check Portal secret `DAB_GRAPHQL_URL`, ensure it points to the internal FQDN/proxy, and confirm network egress/ingress rules.
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,137,az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mgmt --output table
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,138,az containerapp logs show --name ca-stamps-dab --resource-group rg-stamps-mgmt --revision <revision-name>
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,143,If DAB responds but returns schema errors, validate `dab-config.json` and `schema.graphql` in the image; confirm the image entrypoint points to `/App/dab-config.json`
+docs/LIVE_DATA_PATH.md,docs/LIVE_DATA_PATH.md,166,The Portal's `DAB_GRAPHQL_URL` is the correct internal FQDN (and secret matches)
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1009,Note: Hot Chocolate is the primary, supported GraphQL backend. Operational runbooks and older scripts may still reference Data API Builder (DAB); documentation is being rebaselined to reflect this. Runtime resource names and secrets such as `ca-stamps-dab` and `DAB_GRAPHQL_URL` must be migrated using a staged verification plan — see the remediation plan for steps to safely rename or remove infra artifacts.
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1013,- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct (legacy name retained for compatibility)
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1014,- [ ] Confirm GraphQL backend Container App revision is healthy (resource name may be `ca-stamps-dab` for compatibility)
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1030,Check the `DAB_GRAPHQL_URL` value (or the GraphQL backend URL) and try a raw HTTP POST from your workstation
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1045,az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1046,az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress -o json
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1049,az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 300
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1056,az keyvault secret show --vault-name <kv-name> --name DAB_GRAPHQL_URL
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1081,- [ ] Confirm /App/dab-config.json is present or mapped
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1088,az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mgmt --output table
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1089,az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers -o json
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1105,az containerapp revision restart --name ca-stamps-dab --resource-group rg-stamps-mgmt
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1111,az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 500
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1113,# If logs show missing file errors, confirm the image contains /App/dab-config.json or that the containerapp mounts it via secret
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1120,az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1121,az containerapp secret set --name ca-stamps-dab --resource-group rg-stamps-mgmt --secrets dab-config='{"key":"value"}'
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1124,az containerapp update --name ca-stamps-dab --resource-group rg-stamps-mgmt --set properties.template.containers[0].env[?name=='DAB_CONFIG'].value='secretref:dab-config'
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1131,az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+docs/OPERATIONS_GUIDE.md,docs/OPERATIONS_GUIDE.md,1169,az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.identity -o json
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,13,Note: Hot Chocolate is the actively maintained GraphQL backend. Legacy references to Data API Builder (DAB) may appear in scripts, CI, or archived docs; these are being rebaselined in documentation. Runtime identifiers such as `DAB_GRAPHQL_URL`, the container app name `ca-stamps-dab`, and deployment output keys like `dab-graphql-url` require a staged verification and migration before renaming in production.
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,17,- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct (name retained for compatibility)
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,18,- [ ] Confirm GraphQL Container App revision is healthy (resource may be named `ca-stamps-dab`)
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,34,Check the `DAB_GRAPHQL_URL` value and try a raw HTTP POST from your workstation
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,37,$dab = 'https://<graphql-backend-ingress-fqdn>/graphql'  # legacy secret names (DAB_GRAPHQL_URL) may still be used
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,49,az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,50,az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress -o json
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,53,az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 300
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,60,az keyvault secret show --vault-name <kv-name> --name DAB_GRAPHQL_URL
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,85,- [ ] Confirm `/App/dab-config.json` (legacy DAB config) is present or mapped, or verify the Hot Chocolate backend's configuration files
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,92,az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mgmt --output table
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,93,az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers -o json
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,109,az containerapp revision restart --name ca-stamps-dab --resource-group rg-stamps-mgmt
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,115,az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 500
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,117,# If logs show missing file errors, confirm the image contains /App/dab-config.json or that the containerapp mounts it via secret
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,118,az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,124,az containerapp secret set --name ca-stamps-dab --resource-group rg-stamps-mgmt --secrets dab-config='{"key":"value"}'
+docs/TROUBLESHOOTING_PLAYBOOKS.md,docs/TROUBLESHOOTING_PLAYBOOKS.md,128,az containerapp update --name ca-stamps-dab --resource-group rg-stamps-mgmt --set properties.template.containers[0].env[?name=='DAB_CONFIG'].value='secretref:dab-config'

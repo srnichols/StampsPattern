@@ -23,13 +23,18 @@ cd StampsPattern
 
 ## 2) Start local data stack (scripted)
 
-Recommended: use the helper to start Cosmos Emulator, DAB, and the portal.
+Recommended: use the helper to start Cosmos Emulator and the portal. The portal hosts a Hot Chocolate GraphQL endpoint by default; starting Data API Builder (DAB) is optional and only needed for legacy compatibility testing.
+
+Note: Hot Chocolate is the active GraphQL backend. References and legacy names (for example `DAB_GRAPHQL_URL` or `ca-stamps-dab`) are being rebaselined across the documentation; before renaming or removing production secrets or resource identifiers, follow a staged verification and migration procedure to avoid service disruptions.
 
 ```powershell
-pwsh -File ./scripts/run-local.ps1
+Note: `scripts/run-local.ps1` has been removed. Start the portal locally with:
+`dotnet run --project ./management-portal/src/Portal/Portal.csproj`
+Seed sample data with:
+`dotnet run --project ./management-portal/Seeder/Seeder.csproj`
 ```
 
-Default ports: Cosmos 8085, DAB 8082, Portal 8081. The script also helps trust the emulator cert.
+Default ports: Cosmos 8085, Portal 8081. (Legacy DAB port: 8082) The script also helps trust the emulator cert.
 
 Manual alternative (optional):
 
@@ -64,7 +69,7 @@ At minimum set Cosmos and identity settings:
     // "B2C_POLICY": "your-policy"
   }
 }
-```jsonc
+```
 
 Tip: The emulator account key shown above is the standard sample key; adjust if your emulator differs.
 
@@ -80,10 +85,9 @@ If `func` isn’t found, ensure your npm global bin is on PATH.
 ## 5) Build and run the Functions app
 
 ```powershell
-```powershell
 cd ./AzureArchitecture
- dotnet build
- func start
+dotnet build
+func start
 ```
 
 If the default port is busy, try `func start --port 7072`.
@@ -110,7 +114,7 @@ func start --verbose
 
 # Check port conflicts, try another port
 func start --port 7072
-```bash
+```
 
 See also: Known Issues → Functions host exits on startup or endpoints not reachable locally.
 

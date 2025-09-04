@@ -49,7 +49,8 @@ Practical guide to operating the Azure Stamps Management Portal, sign‑in and r
 **Portal Architecture:**
 The Management Portal is a control-plane application for administering tenants and cells. It provides:
 
-- Role-scoped CRUD operations over Cosmos DB via Data API Builder (DAB)
+- Role-scoped CRUD operations over Cosmos DB via the GraphQL backend (Hot Chocolate) — legacy DAB artifacts may remain in the repo
+ - Role-scoped CRUD operations over Cosmos DB via GraphQL (Hot Chocolate)
 - Integration with Azure Functions for complex operational workflows
 - Real-time monitoring and alerting through Application Insights integration
 
@@ -57,14 +58,14 @@ The Management Portal is a control-plane application for administering tenants a
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 flowchart LR
   U[👤 Operator/Admin] -->|OIDC (Entra ID)| P[🖥️ Blazor Server Portal]
-  P -->|HTTP + headers| DAB[(🔧 Data API Builder)]
-  DAB -->|GraphQL/REST| C[(🌌 Cosmos DB\ncontrol-plane)]
+  P -->|HTTP + headers| GraphQL[(🔧 GraphQL (Hot Chocolate))]
+  GraphQL -->|GraphQL/REST| C[(🌌 Cosmos DB\ncontrol-plane)]
   P -->|Commands| F[⚙️ Azure Functions]
   F -->|Automation| AZ[☁️ Azure Resources\n(CELL infra)]
 
   subgraph Hosting
   ACA[🐳 Azure Container Apps] --- P
-  ACA --- DAB
+  ACA --- GraphQL
   KV[🔐 Key Vault]:::kv
   AI[📈 App Insights]:::ai
   end
@@ -73,10 +74,10 @@ flowchart LR
   classDef ai fill:#F3F4F6,stroke:#94A3B8,color:#1F2937
 ```
 
-Key points:
+- Key points:
 
-- Hosting: Azure Container Apps for Portal and DAB; Azure Functions for ops
-- Auth: Built‑in auth (Easy Auth model) emits headers that DAB consumes
+- Hosting: Azure Container Apps for the Portal and the GraphQL backend (Hot Chocolate); Azure Functions for ops
+- Auth: Built‑in auth (Easy Auth model) emits headers that the GraphQL backend consumes
 - Data: Cosmos (NoSQL) with explicit partition keys and TTL for operations
 - Observability: App Insights + Log Analytics wired across components
 
@@ -86,9 +87,9 @@ Key points:
 
 - Sign‑in: Entra ID via built‑in auth on Azure Container Apps and Functions
 - Role mapping: Entra ID groups → application roles (platform.admin, operator, reader)
-- DAB auth: Provider is set to accept Easy Auth compatible headers
+-- GraphQL auth: Provider is set to accept Easy Auth compatible headers
   - Example headers: `X-MS-CLIENT-PRINCIPAL`, `X-MS-CLIENT-PRINCIPAL-IDP`
-  - DAB authorizes mutations to admins only; readers/operators are scoped
+  - The GraphQL endpoint authorizes mutations to admins only; readers/operators are scoped
 - CORS: Restrict to trusted origins in production
 
 Tip (local testing): The `scripts/graphql-smoke-test.ps1` simulates roles by injecting Easy Auth headers; use `-AsAdmin` for admin flows.
@@ -97,9 +98,9 @@ Tip (local testing): The `scripts/graphql-smoke-test.ps1` simulates roles by inj
 
 ## 🧪 Local Development
 
-- Prereqs: PowerShell 7+, Cosmos DB Emulator (or live), Node (for DAB if needed)
+-- Prereqs: PowerShell 7+, Cosmos DB Emulator (or live), Node (if required for dev tooling)
 - Start locally:
-  - `scripts/run-local.ps1` spins up the portal, DAB, and points to your emulator/instance
+  - The previous `scripts/run-local.ps1` helper was removed. Start the portal with `dotnet run --project ./management-portal/src/Portal/Portal.csproj` and point it to your emulator as described elsewhere in this guide.
   - `scripts/graphql-smoke-test.ps1` validates list/create/delete paths; `-AsAdmin` sets platform.admin
 - Seeder: The management data seeder aligns with current partition keys; run it to bootstrap sample cells/tenants.
 
@@ -123,7 +124,7 @@ Current implementation (MVP):
 
 - Containers: `tenants`, `cells`, `operations`
 - Partition key path: `/pk` in each container (value mapped per-item)
-- Access: GraphQL and REST via Data API Builder (DAB) configuration in `management-portal/dab/dab-config.json`
+- Access: GraphQL and REST via the portal's GraphQL API (implemented using Hot Chocolate)
 
 Proposed target schema (based on implemented portal design):
 
@@ -333,7 +334,7 @@ sequenceDiagram
 
 ## 🔌 API (GraphQL) Quick Reference
 
-Headers (Easy Auth compatible) used by DAB for auth:
+Headers (Easy Auth compatible) used by the GraphQL endpoint for auth:
 
 - `X-MS-CLIENT-PRINCIPAL` (base64 JSON with claims/roles)
 - `X-MS-CLIENT-PRINCIPAL-IDP`
@@ -400,7 +401,7 @@ Tip: Use `scripts/graphql-smoke-test.ps1 -AsAdmin` to simulate admin role locall
 
 ## 🛠️ Troubleshooting
 
-- 401/403 on mutations: Check role headers and that DAB maps your roles correctly
+- 401/403 on mutations: Check role headers and that the GraphQL backend maps your roles correctly (legacy DAB mappings may be present)
 - GraphQL errors mentioning partition keys: Ensure required key fields (e.g., tenantId) are present in variables
 - Domain conflict in production: Verify reservation exists or clear stale reservation on tenant delete
 - Cosmos throttling (429): Review RU settings/auto‑scale and indexes; watch App Insights logs

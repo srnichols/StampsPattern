@@ -1000,17 +1000,19 @@ echo "✅ CELL $CELL_NAME successfully isolated"
 
 ## 🚑 Incident Playbooks (step-by-step)
 
-This section consolidates concise, runnable playbooks for common incidents (Portal→DAB connectivity, DAB startup, and AAD/auth). They are direct conversions of the troubleshooting playbooks so operators can run them from a PowerShell console with Azure CLI available.
+This section consolidates concise, runnable playbooks for common incidents (Portal→GraphQL backend connectivity, GraphQL startup, and AAD/auth). They are direct conversions of the troubleshooting playbooks so operators can run them from a PowerShell console with Azure CLI available.
 
-### 1) Portal → DAB connectivity (playbook)
+### 1) Portal → GraphQL backend connectivity (playbook)
 
-Goal: confirm the portal can reach DAB GraphQL and diagnose where the failure sits (config, DNS, network, auth, or DAB itself).
+Goal: confirm the portal can reach the GraphQL backend (Hot Chocolate) and diagnose where the failure sits (config, DNS, network, auth, or the GraphQL backend itself).
+
+Note: Hot Chocolate is the primary, supported GraphQL backend. Operational runbooks and older scripts may still reference Data API Builder (DAB); documentation is being rebaselined to reflect this. Runtime resource names and secrets such as `ca-stamps-dab` and `DAB_GRAPHQL_URL` must be migrated using a staged verification plan — see the remediation plan for steps to safely rename or remove infra artifacts.
 
 Checklist:
 
-- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct
-- [ ] Confirm DAB Container App revision is healthy
-- [ ] Tail DAB logs for GraphQL errors
+- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct (legacy name retained for compatibility)
+- [ ] Confirm GraphQL backend Container App revision is healthy (resource name may be `ca-stamps-dab` for compatibility)
+- [ ] Tail GraphQL backend logs for GraphQL or startup errors (container name in the image may still be 'dab')
 - [ ] Run an introspection query against DAB
 
 Step-by-step
@@ -1025,7 +1027,7 @@ az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --q
 az containerapp secret list --name ca-stamps-portal --resource-group rg-stamps-mgmt -o table
 ```
 
-2) Check the `DAB_GRAPHQL_URL` value and try a raw HTTP POST from your workstation
+2) Check the `DAB_GRAPHQL_URL` value (or the GraphQL backend URL) and try a raw HTTP POST from your workstation
 
 ```powershell
 $dab = 'https://<dab-ingress-fqdn>/graphql'
