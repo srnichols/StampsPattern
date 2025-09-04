@@ -74,22 +74,18 @@ graph TD
 ### High-Level Request Flow (Illustrative)
 
 ```mermaid
-flowchart TD
-    User[User Request] --> FD[Front Door / Traffic Manager]
+flowchart LR
+    User[User] --> FD[Front Door / Traffic Manager]
     FD --> APIM[API Management]
     APIM --> TL[Tenant Lookup Fn]
-    TL --> GDB[Global Cosmos (Directory)]
-    GDB --> TL
+    TL --> GDB[Global Cosmos Directory]
+    TL --> APIM
     APIM --> AG[Regional Ingress (App Gateway)]
     AG --> Shared[Shared CELL]
     AG --> Dedicated[Dedicated CELL]
-    Shared --> SData[Shared Data (SQL/Cosmos)]
-    Dedicated --> DData[Dedicated Data]
-    Shared --> AG
-    Dedicated --> AG
-    AG --> APIM
-    APIM --> FD
-    FD --> User
+    Shared --> SData[(Shared Data: SQL/Cosmos)]
+    Dedicated --> DData[(Dedicated Data Stores)]
+    %% (Return paths and response arrows omitted for clarity)
 ```
 
 ### End-to-End Runtime (Operator View)
