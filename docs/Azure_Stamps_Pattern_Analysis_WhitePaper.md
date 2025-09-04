@@ -41,8 +41,8 @@ This pattern is not a one-size-fits-all solution but an Azure-optimized approach
 
 The pattern's structure ensures modularity:
 
-- **Global Layer**: Handles cross-region traffic (e.g., Azure Front Door, Traffic Manager) and centralized data (e.g., Global Cosmos DB for tenant routing).
-- **Regional Layer**: Manages zone-redundant resources (e.g., Application Gateway for WAF, Key Vault for secrets).
+- **Global Layer**: Handles cross-region traffic (e.g., Azure Front Door, Traffic Manager) and centralized data (e.g., Global Cosmos DB for tenant routing). May optionally front **API Management** for global policy.
+- **Regional Layer**: Manages zone-redundant resources (e.g., Application Gateway for WAF, API Management if deployed regionally, Key Vault for secrets).
 - **CELL Layer**: The "stamp" unit, containing compute (for example, Functions, App Service, Container Apps, or AKS), storage (Azure Storage), and databases (Azure SQL with shared schemas or dedicated instances). CELLs can span 0-3 AZs for varying SLAs (e.g., 99.99% with 3 zones).
 
 The following diagram illustrates the hierarchical structure:
@@ -58,14 +58,18 @@ graph TD
     subgraph Global Layer
     H[Azure Front Door]
     I[Global Cosmos DB]
+    AP[API Management (global optional)]
     end
     subgraph Regional Layer
     J[Application Gateway]
+    RAPI[API Management (regional optional)]
     K[Key Vault]
     end
     A --> H
     A --> I
+    A --> AP
     B --> J
+    B --> RAPI
     B --> K
 ```
 
