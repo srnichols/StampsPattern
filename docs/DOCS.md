@@ -25,7 +25,6 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 #### Main Documentation (docs/)
 - [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) - Core architecture and design patterns
 - [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md) - Authentication and CI/CD strategy
-- [Azure_Stamp_Pattern_Sample_App_Plan.md](./Azure_Stamp_Pattern_Sample_App_Plan.md) - Sample application development plan
 - [Azure_Stamps_Pattern_Analysis_WhitePaper.md](./Azure_Stamps_Pattern_Analysis_WhitePaper.md) - Technical analysis whitepaper
 - [CAF_WAF_COMPLIANCE_ANALYSIS.md](./CAF_WAF_COMPLIANCE_ANALYSIS.md) - Compliance framework analysis
 - [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md) - Feature capabilities matrix
@@ -36,7 +35,6 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - [DEVELOPER_QUICKSTART.md](./DEVELOPER_QUICKSTART.md) - Quick start for developers
 - [DEVELOPER_SECURITY_GUIDE.md](./DEVELOPER_SECURITY_GUIDE.md) - Security implementation guide
 - [DOCS.md](./DOCS.md) - This documentation hub
-- [DOCUMENTATION_IMPROVEMENTS.md](./DOCUMENTATION_IMPROVEMENTS.md) - Documentation enhancement guide
 - [GLOSSARY.md](./GLOSSARY.md) - Terminology and definitions
 - [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) - Common issues and solutions
 - [LANDING_ZONES_GUIDE.md](./LANDING_ZONES_GUIDE.md) - Azure Landing Zones integration
