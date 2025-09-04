@@ -167,6 +167,7 @@ Note: See [CAF/WAF Compliance Analysis](./docs/CAF_WAF_COMPLIANCE_ANALYSIS.md) f
 
 - [📈 Documentation Hub](./docs/DOCS.md)
 - [🚀 Three-Step Single-Subscription Deployment](./docs/THREE_STEP_DEPLOYMENT_GUIDE.md)
+ - [🖼️ Sample Galleries Index](./SAMPLE_GALLERIES.md)
 
 ## 💡 Why This Project?
 

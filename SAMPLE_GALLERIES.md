@@ -4,13 +4,17 @@ This page links to screenshot galleries for sample apps and the management porta
 
 ## Galleries
 
-- Management Portal
-  - `management-portal/docs/SCREENSHOTS.md` — screenshots and thumbnails for the Management Portal sample app.
-  - Link: [Management Portal screenshots](management-portal/docs/SCREENSHOTS.md)
+### Management Portal
 
-- TaskTracker Sample
-  - `samples/tasktracker/docs/SCREENSHOTS.md` — screenshots and thumbnails for the TaskTracker sample app.
-  - Link: [TaskTracker screenshots](samples/tasktracker/docs/SCREENSHOTS.md)
+[![Management Portal thumbnail](management-portal/docs/thumbnails/ManagmentPortal-Dashboard-Screenshot-thumb.png)](management-portal/docs/SCREENSHOTS.md)
+
+- Link: [Management Portal screenshots](management-portal/docs/SCREENSHOTS.md)
+
+### TaskTracker Sample
+
+[![TaskTracker thumbnail](samples/tasktracker/docs/thumbnails/TaskTrack-HomePage-screenshot-thumb.png)](samples/tasktracker/docs/SCREENSHOTS.md)
+
+- Link: [TaskTracker screenshots](samples/tasktracker/docs/SCREENSHOTS.md)
 
 
 ## How to add a gallery
