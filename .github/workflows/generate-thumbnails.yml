@@ -1,0 +1,33 @@
+name: Generate Thumbnails
+
+on:
+  push:
+    paths:
+      - 'management-portal/docs/**'
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup ImageMagick
+        run: choco install imagemagick -y
+
+      - name: Generate thumbnails
+        working-directory: management-portal/docs
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File .\generate-thumbnails.ps1 -Width 300 -Force
+
+      - name: Commit thumbnails
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add management-portal/docs/thumbnails || true
+          git commit -m "chore(docs): add/update thumbnails" || echo "No changes to commit"
+          git push origin HEAD:main || echo "Push failed"
