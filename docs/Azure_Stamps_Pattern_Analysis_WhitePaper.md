@@ -58,19 +58,60 @@ graph TD
     subgraph Global Layer
     H[Azure Front Door]
     I[Global Cosmos DB]
-    AP[API Management (global optional)]
+    AP[API Management]
     end
     subgraph Regional Layer
     J[Application Gateway]
-    RAPI[API Management (regional optional)]
     K[Key Vault]
     end
     A --> H
     A --> I
     A --> AP
     B --> J
-    B --> RAPI
     B --> K
+```
+
+### High-Level Request Flow (Illustrative)
+
+```mermaid
+flowchart TD
+    User[User Request] --> FD[Azure Front Door / Traffic Manager]
+    FD --> APIM[API Management]
+    APIM --> GFunc[Tenant Lookup Function]
+    GFunc --> GDB[Global Cosmos (Directory)]
+    GDB --> GFunc
+    APIM --> AG[Application Gateway / Regional Ingress]
+    AG --> Shared[Shared CELL]
+    AG --> Dedicated[Dedicated CELL]
+    Shared --> SQL[Shared SQL / Cosmos]
+    Dedicated --> DSQL[Dedicated SQL / Cosmos]
+    Shared --> AG
+    Dedicated --> AG
+    AG --> APIM --> FD --> User
+```
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant User as User
+  participant FD as FrontDoor/TM
+  participant APIM as APIM
+  participant GFunc as TenantFn
+  participant GDB as GlobalDir
+  participant AG as Ingress
+  participant CELL as CELL Backend
+  User->>FD: HTTPS request
+  FD->>APIM: Forward
+  APIM->>GFunc: Resolve tenant
+  GFunc->>GDB: Lookup
+  GDB-->>GFunc: CELL info
+  GFunc-->>APIM: Result
+  APIM->>AG: Route
+  AG->>CELL: Invoke app
+  CELL-->>AG: Response
+  AG-->>APIM: Response
+  APIM-->>FD: Response
+  FD-->>User: Final response
 ```
 
 ## Choosing Compute for a CELL
