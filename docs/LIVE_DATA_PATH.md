@@ -28,10 +28,10 @@ flowchart LR
 
 Essential variables
 
- - GraphQL URL (secret): DAB_GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql (kept for backwards compatibility)
- - Portal secret/setting: ensure Portal reads `DAB_GRAPHQL_URL` from container-app secrets or Key Vault. Note: the portal uses Hot Chocolate as the GraphQL implementation; `DAB_*` runtime names are retained for compatibility and should not be renamed without an infra/secret migration plan.
+ - GraphQL URL (secret): GRAPHQL_URL — e.g. https://<internal-fqdn>/graphql
+ - Portal secret/setting: ensure Portal reads the GraphQL URL from container-app secrets or Key Vault
 
-Note: The GraphQL backend used in this project is Hot Chocolate. `DAB_*` names and references in this document are legacy compatibility artifacts. Runtime identifiers such as `DAB_GRAPHQL_URL` and `ca-stamps-dab` are intentionally preserved — do not rename them without a coordinated infra/secrets migration.
+Note: The GraphQL backend used in this project is Hot Chocolate.
 - Seeder location: `AzureArchitecture/Seeder` (uses DefaultAzureCredential)
 
 Smoke checks (fast)
@@ -39,39 +39,39 @@ Smoke checks (fast)
 1) Validate GraphQL backend is healthy (Container Apps)
 
 # List revisions and health
-az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table  # resource name retained for compatibility
+az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-graphql -o table
 
 # Show ingress configuration (confirm targetPort matches container)
-az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress
+az containerapp show -g rg-stamps-mgmt -n ca-stamps-graphql --query properties.configuration.ingress
 
-2) Tail GraphQL backend logs (look for startup errors and GraphQL listening). The Container App resource may still be named `ca-stamps-dab` for backward compatibility.
+2) Tail GraphQL backend logs (look for startup errors and GraphQL listening)
 
 ```powershell
-az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 200
+az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-graphql --container dab --tail 200
 ```
 
 1) Quick GraphQL introspection / simple query
 
-Using PowerShell (Invoke-RestMethod) — replace `$DAB` with the GraphQL backend URL (from secret/outputs). Legacy secret names like `DAB_GRAPHQL_URL` may still be used:
+Using PowerShell (Invoke-RestMethod) — replace `$graphql` with the GraphQL backend URL:
 
 ```powershell
-$DAB = 'https://<graphql-backend-fqdn>/graphql'
+$graphql = 'https://<graphql-backend-fqdn>/graphql'
 $body = @{ query = 'query { __schema { queryType { name } } }' } | ConvertTo-Json
 
 # Use -UseBasicParsing if needed in older PowerShell
-Invoke-RestMethod -Uri $DAB -Method Post -ContentType 'application/json' -Body $body
+Invoke-RestMethod -Uri $graphql -Method Post -ContentType 'application/json' -Body $body
 ```
 
 Or curl (if available):
 
 ```powershell
 ```bash
-curl -s -X POST $DAB -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
+curl -s -X POST $graphql -H "Content-Type: application/json" -d '{"query":"{ tenants { tenantId name } }"}' | jq
 ```
 
 Expected results
 
-- Introspection returns a schema object (or tenants query returns a JSON list). If requests time out, DAB is not responding — check container logs and ingress.
+- Introspection returns a schema object (or tenants query returns a JSON list). If requests time out, the GraphQL backend is not responding — check container logs and ingress.
 
 Seeder (run locally or in CI)
 
@@ -87,26 +87,26 @@ dotnet run --project ./AzureArchitecture/Seeder/Seeder.csproj -- --environment d
 Notes
 
 - If the seeder receives 401/403, ensure the principal (local user/service principal/managed identity) has the Cosmos DB Data Contributor role and firewall rules allow access.
-- If DAB responds but returns schema errors, validate `dab-config.json` and `schema.graphql` in the image; confirm the image entrypoint points to `/App/dab-config.json`.
+- If the GraphQL backend responds but returns schema errors, validate the Hot Chocolate backend configuration.
 
 Troubleshooting quick hits
 
-- Container crashing: tail DAB logs and search for missing files, permission errors, or command not found.
+- Container crashing: tail GraphQL backend logs and search for missing files, permission errors, or command not found.
 - Port mismatch: confirm Dockerfile exposes the same port referenced by container app `targetPort` (common mismatch: 5000 vs 80).
-- Portal timeouts: check Portal secret `DAB_GRAPHQL_URL`, ensure it points to the internal FQDN/proxy, and confirm network egress/ingress rules.
+- Portal timeouts: check Portal GraphQL URL secret, ensure it points to the internal FQDN/proxy, and confirm network egress/ingress rules.
 
 Related docs
 
 - `docs/AUTH_CI_STRATEGY.md` — authentication and CI notes
-- `management-portal/infra/management-portal.bicep` — IaC for DAB and Portal
+- `management-portal/infra/management-portal.bicep` — IaC for GraphQL backend and Portal
 
 1) Quick smoke checks
 
-- Test DAB health (replace host):
+- Test GraphQL backend health (replace host):
 
 ```powershell
 # PowerShell: introspection (may be disabled in prod)
-Invoke-RestMethod -Method Post -Uri "https://<dab-fqdn>/graphql" -Body '{"query":"{ __schema { types { name } } }"}' -ContentType 'application/json'
+Invoke-RestMethod -Method Post -Uri "https://<graphql-backend-fqdn>/graphql" -Body '{"query":"{ __schema { types { name } } }"}' -ContentType 'application/json'
 ```
 
 - Basic GraphQL query (Tenants):
@@ -114,13 +114,13 @@ Invoke-RestMethod -Method Post -Uri "https://<dab-fqdn>/graphql" -Body '{"query"
 ```powershell
 # Tenants query (PowerShell)
 $q = '{"query":"query { tenants { tenantId displayName } }"}';
-Invoke-RestMethod -Method Post -Uri "https://<dab-fqdn>/graphql" -Body $q -ContentType 'application/json'
+Invoke-RestMethod -Method Post -Uri "https://<graphql-backend-fqdn>/graphql" -Body $q -ContentType 'application/json'
 ```
 
   # curl (Linux/macOS or WSL)
 
 ```powershell
-curl -s -X POST https://<dab-fqdn>/graphql \
+curl -s -X POST https://<graphql-backend-fqdn>/graphql \
   -H "Content-Type: application/json" \
   -d '{"query":"query { tenants { tenantId displayName } }"}'
 ```
@@ -134,14 +134,14 @@ curl -s -X POST https://<dab-fqdn>/graphql \
 - If the portal times out, check Container App logs:
 
 ```powershell
-az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mgmt --output table
-az containerapp logs show --name ca-stamps-dab --resource-group rg-stamps-mgmt --revision <revision-name>
+az containerapp revision list --name ca-stamps-graphql --resource-group rg-stamps-mgmt --output table
+az containerapp logs show --name ca-stamps-graphql --resource-group rg-stamps-mgmt --revision <revision-name>
 ```
 
 1) Common failures & where to look
 
-- DAB returns 502/502: check DAB container health (port mismatch, missing config file `dab-config.json`, or schema errors).
-- GraphQL errors about types/fields: confirm `schema.graphql` aligns with portal queries and that DAB config maps containers correctly.
+- GraphQL backend returns 502/503: check container health (port mismatch, missing configuration, or startup errors).
+- GraphQL errors about types/fields: confirm the Hot Chocolate backend schema aligns with portal queries.
 - Cosmos permission errors: verify the identity (managed identity or service principal) has the Cosmos DB Data Contributor role on the database.
 
 1) GraphQL mutations the portal may call (examples)

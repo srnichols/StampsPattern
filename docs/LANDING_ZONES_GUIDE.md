@@ -118,7 +118,7 @@ Caption: CAF-aligned management group hierarchy and subscription layout.
 | Geodes/Global Control Plane (globalLayer.bicep) | APIM (global), External ID (customers), Control Plane Cosmos (if shared) | Platform/Shared-Services (or dedicated ControlPlane workload sub) | Central governance & reuse |
 | Regional Layer (regionalLayer.bicep) | App Gateway, Key Vault, Automation | Platform/Connectivity (shared) or per-workload if required | Regional entry, shared networking |
 | CELL Layer (deploymentStampLayer.bicep, geodesLayer.bicep) | Container Apps Env and apps, Redis, SQL/Storage, KV, Private Endpoints | Application/Workload LZ (per-CELL subscription) | Isolation, quotas, billing |
-| Management Portal (management-portal) | Blazor Server app, DAB GraphQL, control-plane Cosmos DB | Platform/Shared-Services or dedicated ControlPlane workload sub | Org-wide mgmt or app autonomy |
+| Management Portal (management-portal) | Blazor Server app, Hot Chocolate GraphQL, control-plane Cosmos DB | Platform/Shared-Services or dedicated ControlPlane workload sub | Org-wide mgmt or app autonomy |
 | Monitoring (monitoringLayer.bicep, monitoringDashboards.bicep) | Log Analytics, Dashboards, alerts | Platform/Management (central) + per-CELL in workload subs | Central visibility + local SLOs |
 | Security/Policy (policyAsCode.bicep, zeroTrustSecurity.bicep) | Policy assignments, Defender, Sentinel | MG scopes (Platform, Landing Zones) | Inheritance and guardrails |
 
@@ -376,7 +376,7 @@ module cell './AzureArchitecture/deploymentStampLayer.bicep' = {
 
 - Global: Front Door/Traffic Manager (active-active across regions).
 - Regional: duplicate CELLs across at least two regions; align data replication (SQL/Cosmos) to RPO/RTO.
-- Control Plane: geo-replicate Cosmos DB (if used centrally) and deploy portal/DAB in two regions.
+- Control Plane: geo-replicate Cosmos DB (if used centrally) and deploy portal/GraphQL backend in two regions.
 
 ---
 

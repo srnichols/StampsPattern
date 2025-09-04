@@ -23,9 +23,9 @@ cd StampsPattern
 
 ## 2) Start local data stack (scripted)
 
-Recommended: use the helper to start Cosmos Emulator and the portal. The portal hosts a Hot Chocolate GraphQL endpoint by default; starting Data API Builder (DAB) is optional and only needed for legacy compatibility testing.
+Recommended: use the helper to start Cosmos Emulator and the portal. The portal hosts a Hot Chocolate GraphQL endpoint by default.
 
-Note: Hot Chocolate is the active GraphQL backend. References and legacy names (for example `DAB_GRAPHQL_URL` or `ca-stamps-dab`) are being rebaselined across the documentation; before renaming or removing production secrets or resource identifiers, follow a staged verification and migration procedure to avoid service disruptions.
+Note: Hot Chocolate is the GraphQL backend used in this project. For production deployments, verify that environment variables point to the correct GraphQL endpoint.
 
 ```powershell
 Note: `scripts/run-local.ps1` has been removed. Start the portal locally with:
@@ -34,7 +34,7 @@ Seed sample data with:
 `dotnet run --project ./management-portal/Seeder/Seeder.csproj`
 ```
 
-Default ports: Cosmos 8085, Portal 8081. (Legacy DAB port: 8082) The script also helps trust the emulator cert.
+Default ports: Cosmos 8085, Portal 8081. The script also helps trust the emulator cert.
 
 Manual alternative (optional):
 

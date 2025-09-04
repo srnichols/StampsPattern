@@ -10,12 +10,12 @@ Concise, operator-focused playbooks that expand the decision trees into step-by-
 
 Goal: confirm the portal can reach the GraphQL backend (Hot Chocolate) and diagnose where the failure sits (config, DNS, network, auth, or the GraphQL backend itself).
 
-Note: Hot Chocolate is the actively maintained GraphQL backend. Legacy references to Data API Builder (DAB) may appear in scripts, CI, or archived docs; these are being rebaselined in documentation. Runtime identifiers such as `DAB_GRAPHQL_URL`, the container app name `ca-stamps-dab`, and deployment output keys like `dab-graphql-url` require a staged verification and migration before renaming in production.
+Note: Hot Chocolate is the GraphQL backend used in this project. Some legacy resource names and environment variables may still reference older naming conventions and require careful verification before changes in production environments.
 
 Checklist:
 
-- [ ] Confirm portal `DAB_GRAPHQL_URL` secret is correct (name retained for compatibility)
-- [ ] Confirm GraphQL Container App revision is healthy (resource may be named `ca-stamps-dab`)
+- [ ] Confirm portal GraphQL URL secret is correct
+- [ ] Confirm GraphQL backend Container App revision is healthy
 - [ ] Tail GraphQL backend logs for GraphQL errors
 - [ ] Run an introspection query against the GraphQL endpoint
 
@@ -31,14 +31,14 @@ az containerapp show --name ca-stamps-portal --resource-group rg-stamps-mgmt --q
 az containerapp secret list --name ca-stamps-portal --resource-group rg-stamps-mgmt -o table
 ```
 
-2) Check the `DAB_GRAPHQL_URL` value and try a raw HTTP POST from your workstation
+2) Check the GraphQL URL value and try a raw HTTP POST from your workstation
 
 ```powershell
-$dab = 'https://<graphql-backend-ingress-fqdn>/graphql'  # legacy secret names (DAB_GRAPHQL_URL) may still be used
+$graphql = 'https://<graphql-backend-ingress-fqdn>/graphql'
 $body = '{"query":"{ __schema { types { name } } }"}'
 
 # Simple POST (PowerShell Invoke-RestMethod):
-Invoke-RestMethod -Method POST -Uri $dab -Body $body -ContentType 'application/json' -ErrorAction Stop
+Invoke-RestMethod -Method POST -Uri $graphql -Body $body -ContentType 'application/json' -ErrorAction Stop
 
 # If Portal uses Key Vault/managed identity to fetch the URL, ensure Portal can read the secret (see AAD section below)
 ```
@@ -46,18 +46,18 @@ Invoke-RestMethod -Method POST -Uri $dab -Body $body -ContentType 'application/j
 3) Inspect Container App and revision status for the GraphQL backend
 
 ```powershell
-az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-dab -o table
-az containerapp show -g rg-stamps-mgmt -n ca-stamps-dab --query properties.configuration.ingress -o json
+az containerapp revision list -g rg-stamps-mgmt -n ca-stamps-graphql -o table
+az containerapp show -g rg-stamps-mgmt -n ca-stamps-graphql --query properties.configuration.ingress -o json
 
-# Tail logs (container name in the GraphQL image is usually 'dab' for backwards compatibility)
-az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 300
+# Tail logs (container name may still be 'dab' for compatibility)
+az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-graphql --container dab --tail 300
 ```
 
 4) If you get 401/403 from the portal when it calls the GraphQL backend (Hot Chocolate)
 
 ```powershell
 # Check Portal principal/secret access: ensure portal has KeyVault Get or the secret is present as a Container App secret
-az keyvault secret show --vault-name <kv-name> --name DAB_GRAPHQL_URL
+az keyvault secret show --vault-name <kv-name> --name GRAPHQL_URL
 
 # If Portal relies on managed identity to fetch an endpoint, ensure the identity is assigned and has appropriate Key Vault or role assignments
 az containerapp show --name ca-stamps-portal -g rg-stamps-mgmt --query properties.identity
@@ -66,10 +66,10 @@ az containerapp show --name ca-stamps-portal -g rg-stamps-mgmt --query propertie
 5) If the GraphQL backend responds but GraphQL errors appear, run an introspection or specific query to see schema/status
 
 ```powershell
-Invoke-RestMethod -Method POST -Uri $dab -Body '{"query":"{ __schema { queryType { name } } }"}' -ContentType 'application/json'
+Invoke-RestMethod -Method POST -Uri $graphql -Body '{"query":"{ __schema { queryType { name } } }"}' -ContentType 'application/json'
 ```
 
-If the above shows schema, the portal should be able to fetch data; if not, continue with the DAB startup playbook below.
+If the above shows schema, the portal should be able to fetch data; if not, continue with the GraphQL startup playbook below.
 
 ---
 
@@ -82,15 +82,15 @@ Checklist:
 - [ ] Confirm image exists in ACR
 - [ ] Confirm managed identity has AcrPull on ACR
 - [ ] Tail container logs for startup exceptions
-- [ ] Confirm `/App/dab-config.json` (legacy DAB config) is present or mapped, or verify the Hot Chocolate backend's configuration files
+- [ ] Confirm Hot Chocolate backend's configuration files are present and properly mapped
 
 Step-by-step
 
 1) Check container app revision state and recent events
 
 ```powershell
-az containerapp revision list --name ca-stamps-dab --resource-group rg-stamps-mgmt --output table
-az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers -o json
+az containerapp revision list --name ca-stamps-graphql --resource-group rg-stamps-mgmt --output table
+az containerapp show --name ca-stamps-graphql --resource-group rg-stamps-mgmt --query properties.template.containers -o json
 ```
 
 2) If the revision failed to pull the image, validate ACR and managed identity
@@ -106,33 +106,33 @@ $acrId = az acr show --name <acrName> --resource-group <acrRg> --query id -o tsv
 az role assignment create --assignee <principalId-or-objectId> --role AcrPull --scope $acrId
 
 # After assigning role, restart the containerapp revision or create a new revision
-az containerapp revision restart --name ca-stamps-dab --resource-group rg-stamps-mgmt
+az containerapp revision restart --name ca-stamps-graphql --resource-group rg-stamps-mgmt
 ```
 
 3) Tail logs and inspect startup stacktraces
 
 ```powershell
-az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-dab --container dab --tail 500
+az containerapp logs show -g rg-stamps-mgmt -n ca-stamps-graphql --container dab --tail 500
 
-# If logs show missing file errors, confirm the image contains /App/dab-config.json or that the containerapp mounts it via secret
-az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+# If logs show missing file errors, confirm the Hot Chocolate backend configuration is properly set
+az containerapp show --name ca-stamps-graphql --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
 ```
 
-4) If config is missing, either rebuild the image to include the file or inject config via secret/file mount
+4) If configuration is missing, ensure Hot Chocolate backend configuration is properly set through environment variables or secrets
 
 ```powershell
-# Example: store dab-config.json as a secret (if small) and set env to secretref
-az containerapp secret set --name ca-stamps-dab --resource-group rg-stamps-mgmt --secrets dab-config='{"key":"value"}'
+# Example: store configuration as a secret and set env to secretref
+az containerapp secret set --name ca-stamps-graphql --resource-group rg-stamps-mgmt --secrets graphql-config='{"key":"value"}'
 
-# Update container app environment variables to reference secretref if code supports it
-az containerapp update --name ca-stamps-dab --resource-group rg-stamps-mgmt --set properties.template.containers[0].env[?name=='DAB_CONFIG'].value='secretref:dab-config'
+# Update container app environment variables to reference secretref
+az containerapp update --name ca-stamps-graphql --resource-group rg-stamps-mgmt --set properties.template.containers[0].env[?name=='GRAPHQL_CONFIG'].value='secretref:graphql-config'
 ```
 
 5) If the container starts but GraphQL endpoints return 500s, inspect logs for unhandled exceptions and missing connection strings (Cosmos/KeyVault)
 
 ```powershell
 # Check environment variables for missing values
-az containerapp show --name ca-stamps-dab --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
+az containerapp show --name ca-stamps-graphql --resource-group rg-stamps-mgmt --query properties.template.containers[0].env -o table
 
 # Verify Cosmos DB connection string or use managed identity; if using system/user assigned MI, check role assignment
 az role assignment list --assignee <principalId> --scope $(az cosmosdb show --name <cosmosName> --resource-group <rg> --query id -o tsv)

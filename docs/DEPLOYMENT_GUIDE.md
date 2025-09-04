@@ -77,7 +77,7 @@ dotnet run
 
 4. Verify the deployment and seeded data.
 
-- Retrieve deployment outputs to get the Portal and GraphQL backend endpoints (note: some deployment outputs retain legacy names like `dab-graphql-url`):
+- Retrieve deployment outputs to get the Portal and GraphQL backend endpoints:
 
 ```powershell
 pwsh -Command "az deployment group show --resource-group rg-stamps-smoke --name $(az deployment group list --resource-group rg-stamps-smoke --query '[0].name' -o tsv) --query properties.outputs"
@@ -1189,7 +1189,7 @@ Use this quick checklist before promoting a test deployment to production. Cross
 - Authentication and authorization
   - Enable built‑in auth for Azure Container Apps and Functions; require login for all endpoints.
   - Map Entra ID groups to application roles (e.g., platform.admin). Disable anonymous access and lock down CORS.
-  - Propagate platform roles to the GraphQL backend (or to legacy DAB deployments); ensure non‑admins have read‑only or least‑privilege permissions.
+  - Propagate platform roles to the GraphQL backend; ensure non‑admins have read‑only or least‑privilege permissions.
   - API hardening for the GraphQL backend
   - Disable public schema mutation where not needed; restrict filters/projections; rate‑limit externally exposed routes via APIM/App Gateway.
   - Turn off development features in production (verbose errors, GraphQL introspection if policy requires).
@@ -1313,7 +1313,7 @@ az resource delete --ids $(az resource list --resource-group $RESOURCE_GROUP_NAM
 ### 🧪 Local Dev Cleanup
 
 ```powershell
-# Stop local stack (Cosmos Emulator/DAB/Portal) if you started it
+# Stop local stack (Cosmos Emulator/Portal) if you started it
 pwsh -File ./scripts/stop-local.ps1
 
 # Optional: Clear Azurite local data used during functions development

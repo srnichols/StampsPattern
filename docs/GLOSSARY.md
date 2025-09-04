@@ -133,13 +133,13 @@ Secure store for secrets, keys, and certificates.
 - **Integration**: Managed identity; reference secrets in app settings and Bicep
 - **Docs**: <a href="https://learn.microsoft.com/azure/key-vault/general/overview" target="_blank" rel="noopener" title="Opens in a new tab">Key Vault overview</a>&nbsp;<sup>↗</sup>
 
-### **GraphQL backend (Hot Chocolate) — Data API Builder (DAB) (legacy)**
+### **GraphQL backend (Hot Chocolate)**
 
-The Management Portal exposes a GraphQL API for control-plane data. The primary, actively maintained implementation uses Hot Chocolate (a .NET GraphQL server). Older references to Data API Builder (DAB) still exist in archive material and some operational scripts.
+The Management Portal exposes a GraphQL API for control-plane data using Hot Chocolate, a .NET GraphQL server implementation.
 
 - **Use Cases**: Exposes control-plane data (tenants, cells, operations) via GraphQL with role-based access patterns
-- **Notes**: Hot Chocolate is the recommended GraphQL backend. References to Data API Builder (DAB) in the repo are legacy; we are rebaselining docs and examples to prefer Hot Chocolate. Some runtime names and secrets still include "DAB"; follow a staged verification and migration plan before renaming live secrets or resources.
-- **Docs**: Hot Chocolate: <https://chillicream.com/docs/hotchocolate> & DAB: <https://learn.microsoft.com/azure/data-api-builder/overview> (legacy)
+- **Notes**: Hot Chocolate is the GraphQL backend used throughout the portal for data access and API operations.
+- **Docs**: Hot Chocolate: <https://chillicream.com/docs/hotchocolate>
 
 ## 🏠 **Tenancy Models**
 

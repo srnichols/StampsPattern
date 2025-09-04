@@ -49,7 +49,7 @@ Practical guide to operating the Azure Stamps Management Portal, sign‑in and r
 **Portal Architecture:**
 The Management Portal is a control-plane application for administering tenants and cells. It provides:
 
-- Role-scoped CRUD operations over Cosmos DB via the GraphQL backend (Hot Chocolate) — legacy DAB artifacts may remain in the repo
+- Role-scoped CRUD operations over Cosmos DB via the Hot Chocolate GraphQL backend
  - Role-scoped CRUD operations over Cosmos DB via GraphQL (Hot Chocolate)
 - Integration with Azure Functions for complex operational workflows
 - Real-time monitoring and alerting through Application Insights integration
@@ -401,7 +401,7 @@ Tip: Use `scripts/graphql-smoke-test.ps1 -AsAdmin` to simulate admin role locall
 
 ## 🛠️ Troubleshooting
 
-- 401/403 on mutations: Check role headers and that the GraphQL backend maps your roles correctly (legacy DAB mappings may be present)
+- 401/403 on mutations: Check role headers and that the GraphQL backend maps your roles correctly
 - GraphQL errors mentioning partition keys: Ensure required key fields (e.g., tenantId) are present in variables
 - Domain conflict in production: Verify reservation exists or clear stale reservation on tenant delete
 - Cosmos throttling (429): Review RU settings/auto‑scale and indexes; watch App Insights logs
