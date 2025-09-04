@@ -73,48 +73,99 @@ graph TD
 
 ### High-Level Request Flow (Illustrative)
 
+Understanding how requests flow through the Azure Stamps Pattern is crucial for troubleshooting, performance optimization, and security analysis. This section explains the journey from user request to response with visual diagrams.
+
+At a glance: Global ingress (Front Door/Traffic Manager) enforces security and georouting, APIM applies policy and resolves tenant → the request is routed to the correct CELL (shared or dedicated) where business logic executes.
+
+### 🎯 **Traffic Flow Explained (For Beginners)**
+
+Think of the traffic flow like ordering food delivery:
+
+1. **You place an order** (User makes API request)
+2. **Delivery app routes to nearest restaurant** (Front Door + Traffic Manager)
+3. **Restaurant manager checks your account** (APIM + Tenant Resolution)
+4. **Order goes to correct kitchen** (Route to appropriate CELL)
+5. **Food is prepared and delivered** (Application processes request and returns response)
+
+### 🌐 **Visual: Complete Request Flow**
+
 ```mermaid
-flowchart LR
-    User[User] --> FD[Front Door / Traffic Manager]
-    FD --> APIM[API Management]
-    APIM --> TL[Tenant Lookup Fn]
-    TL --> GDB[Global Cosmos Directory]
-    TL --> APIM
-    APIM --> AG[Regional Ingress (App Gateway)]
-    AG --> Shared[Shared CELL]
-    AG --> Dedicated[Dedicated CELL]
-    Shared --> SData[(Shared Data: SQL/Cosmos)]
-    Dedicated --> DData[(Dedicated Data Stores)]
-    %% (Return paths and response arrows omitted for clarity)
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
+flowchart TD
+    User[👤 User Request<br/>api.myapp.com/v1/data] --> FD[🌍 Azure Front Door<br/>Global CDN + WAF]
+    
+    FD --> TM[🗺️ Traffic Manager<br/>DNS Geo-routing]
+    
+    TM -->|"Closest Region"| APIM[🏢 API Management<br/>Enterprise Gateway]
+    
+    APIM -->|"Tenant ID Extraction"| GTF[⚙️ Global Function<br/>GetTenantCellFunction]
+    
+    GTF -->|"Query Global DB"| GDB[(🌍 Global Cosmos DB<br/>Tenant Directory)]
+    
+    GDB --> GTF
+    GTF -->|"Return CELL Info"| APIM
+    
+    APIM -->|"Route Decision"| AG{🛡️ Application Gateway<br/>Regional Load Balancer}
+    
+    AG -->|"Shared Tenant"| SC[🏠 Shared CELL<br/>Multi-tenant App]
+    AG -->|"Enterprise Tenant"| DC[🏢 Dedicated CELL<br/>Single-tenant App]
+    
+    SC --> SDB[(📊 Shared SQL Database<br/>Schema Isolation)]
+    DC --> DDB[(🔒 Dedicated SQL Database<br/>Complete Isolation)]
+    
+    SDB --> SC
+    DDB --> DC
+    
+    SC --> AG
+    DC --> AG
+    AG --> APIM
+    APIM --> TM
+    TM --> FD
+    FD --> User
 ```
 
-### End-to-End Runtime (Operator View)
+### 🔁 End-to-end runtime diagram (operator view)
+
+The diagram below is a compact operator-focused runtime view you can use during incidents to quickly identify which component to check next (network, auth, app, or data).
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
 sequenceDiagram
-    autonumber
-    participant U as User
-    participant FD as FrontDoor/TM
-    participant APIM as APIM
-    participant TL as TenantFn
-    participant GDB as GlobalDir
-    participant AG as Ingress
-    participant CELL as CellApp
-    participant DATA as DataStore
-    U->>FD: HTTPS request
-    FD->>APIM: Forward
-    APIM->>TL: Resolve tenant
-    TL->>GDB: Lookup tenant
-    GDB-->>TL: Cell metadata
-    TL-->>APIM: Routing info
-    APIM->>AG: Route to region
-    AG->>CELL: Invoke workload
-    CELL->>DATA: Query / mutate
-    DATA-->>CELL: Result set
-    CELL-->>AG: Response
-    AG-->>APIM: Response
-    APIM-->>FD: Response
-    FD-->>U: Final response
+  autonumber
+  participant User as User
+  participant FD as FrontDoor
+  participant TM as TrafficManager
+  participant APIM as APIM
+  participant GFunc as GetTenantFunc
+  participant GDB as GlobalCosmosDB
+  participant AG as AppGateway
+  participant CA as ContainerApp(CELL)
+  participant DAB as DAB(ContainerApp)
+  participant COS as CosmosDB
+
+  User->>FD: HTTPS request (edge)
+  FD->>TM: Route to nearest region
+  TM->>APIM: Forward request
+  APIM->>GFunc: Tenant lookup call
+  GFunc->>GDB: Query tenant routing
+  GDB-->>GFunc: Tenant cell info
+  GFunc-->>APIM: Return cell info
+  APIM->>AG: Route to regional backend
+  AG->>CA: Forward to CELL app instance
+  CA->>COS: App queries tenant data
+  CA-->>AG: Response
+  AG-->>APIM: Response
+  APIM-->>TM: Response path back
+  TM-->>FD: Response
+  FD-->>User: Final response
+
+  Note over DAB,COS: DAB serves GraphQL for management portal and reads/writes to Cosmos
+  DAB->>COS: GraphQL queries/mutations
+  DAB-->>APIM: DAB may be behind APIM in some deployments
+
+```
+
+_Figure: End-to-end request path with tenant resolution. Note how APIM consults the global directory to select a CELL before regional routing occurs._
 ```
 
 ## Choosing Compute for a CELL
