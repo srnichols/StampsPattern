@@ -48,6 +48,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - [PARAMETERIZATION_GUIDE.md](./PARAMETERIZATION_GUIDE.md) - Configuration parameters
 - [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md) - Role-based access control reference
 - [REPOSITORY_MAP.md](./REPOSITORY_MAP.md) - Repository structure guide
+- [SAMPLE_GALLERIES.md](./SAMPLE_GALLERIES.md) - Sample app galleries and screenshots
 - [SECRETS_AND_CONFIG.md](./SECRETS_AND_CONFIG.md) - Configuration management
 - [SECURITY_GUIDE.md](./SECURITY_GUIDE.md) - Security implementation
 - [TROUBLESHOOTING_PLAYBOOKS.md](./TROUBLESHOOTING_PLAYBOOKS.md) - Operational playbooks

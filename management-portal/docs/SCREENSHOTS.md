@@ -64,22 +64,3 @@ Images live in `management-portal/docs` — you can link to them from other docs
 
 ---
 
-## How to regenerate thumbnails locally
-
-I included a PowerShell helper `generate-thumbnails.ps1` in this folder that uses ImageMagick to create thumbnails (300px wide by default). Run it from this folder like:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\generate-thumbnails.ps1 -Width 300
-```
-
-The script writes thumbnails to `management-portal/docs/thumbnails` with the `-thumb` suffix.
-
-## CI / automated generation
-
-A GitHub Actions workflow (.github/workflows/generate-thumbnails.yml) is included. It runs on push and on manual dispatch and will generate thumbnails and push them back to the repository automatically.
-
-## Notes and tips
-
-- If images are large, thumbnails speed up page rendering; clicking a thumbnail opens the full image.
-- For accessibility, edit the `alt` text and captions to be more descriptive if needed.
-- If you want different thumbnail sizes or a different filename convention, edit `generate-thumbnails.ps1` and the workflow accordingly.
