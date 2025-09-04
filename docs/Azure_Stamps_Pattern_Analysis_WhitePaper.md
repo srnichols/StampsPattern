@@ -140,7 +140,7 @@ sequenceDiagram
   participant GDB as GlobalCosmosDB
   participant AG as AppGateway
   participant CA as ContainerApp(CELL)
-  participant DAB as DAB(ContainerApp)
+  participant GraphQL as DAL(ContainerApp)
   participant COS as CosmosDB
 
   User->>FD: HTTPS request (edge)
@@ -159,27 +159,28 @@ sequenceDiagram
   TM-->>FD: Response
   FD-->>User: Final response
 
-  Note over DAB,COS: DAB serves GraphQL for management portal and reads/writes to Cosmos
-  DAB->>COS: GraphQL queries/mutations
-  DAB-->>APIM: DAB may be behind APIM in some deployments
+  Note over GraphQL,COS: GraphQL serves for management portal and reads/matches to Cosmos
+  GraphQL->>COS: GraphQL queries/mutations
+  GraphQL-->>APIM: GraphQL DAL may be behind APIM in some deployments
 
 ```
 
 _Figure: End-to-end request path with tenant resolution. Note how APIM consults the global directory to select a CELL before regional routing occurs._
-```
 
 ## Choosing Compute for a CELL
 
-- Event-driven, bursty, fastest iteration: Azure Functions
-- Web/API with steady traffic and simple ops: App Service
-- Polyglot microservices, scale-to-zero, Dapr/HTTP/gRPC: Container Apps
-- Advanced control, service mesh, GPU/stateful workloads: AKS
+Choose compute for a CELL based on workload characteristics and operational needs:
 
-Signals to switch:
+- Azure Functions — Event-driven and bursty workloads; fastest iteration and cost-effective when scale-to-zero is desirable.
+- App Service — Web/API workloads with steady traffic and simple operational needs.
+- Container Apps — Polyglot microservices, scale-to-zero, and support for Dapr, HTTP, and gRPC scenarios.
+- AKS — Advanced control, service mesh support, GPU or stateful workloads, and fine-grained operational control.
 
-- More tenants/noisy neighbors → isolate via dedicated plans or separate CELLs
-- Need pod-level ops/custom ingress/GPU → prefer AKS/Container Apps
-- Cost profile: steady → reserved plans/App Service; spiky → Functions/Container Apps
+#### Signals to switch
+
+- More tenants / noisy neighbors — isolate by moving tenants to dedicated plans or separate CELLs.
+- Need pod-level operations, custom ingress, or GPU support — prefer AKS (or Container Apps where appropriate).
+- Cost profile: steady traffic → reserved plans / App Service; spiky workloads → Functions or Container Apps.
 
 ### Scaling and Operations
 
