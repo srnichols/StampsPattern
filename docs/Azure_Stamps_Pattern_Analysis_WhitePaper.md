@@ -77,7 +77,7 @@ Understanding how requests flow through the Azure Stamps Pattern is crucial for 
 
 At a glance: Global ingress (Front Door/Traffic Manager) enforces security and georouting, APIM applies policy and resolves tenant → the request is routed to the correct CELL (shared or dedicated) where business logic executes.
 
-### 🎯 **Traffic Flow Explained (For Beginners)**
+### **Traffic Flow Explained (For Beginners)**
 
 Think of the traffic flow like ordering food delivery:
 
@@ -87,7 +87,7 @@ Think of the traffic flow like ordering food delivery:
 4. **Order goes to correct kitchen** (Route to appropriate CELL)
 5. **Food is prepared and delivered** (Application processes request and returns response)
 
-### 🌐 **Visual: Complete Request Flow**
+### **Visual: Complete Request Flow**
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
@@ -126,7 +126,7 @@ flowchart TD
 
 ### 🔁 End-to-end runtime diagram (operator view)
 
-The diagram below is a compact operator-focused runtime view you can use during incidents to quickly identify which component to check next (network, auth, app, or data).
+The diagram below is a compact operator-focused runtime view used to quickly identify the flow of operations between components (network, auth, app, or data).
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"background":"transparent","primaryColor":"#E6F0FF","primaryTextColor":"#1F2937","primaryBorderColor":"#94A3B8","lineColor":"#94A3B8","secondaryColor":"#F3F4F6","tertiaryColor":"#DBEAFE","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#F8FAFC","fontFamily":"Segoe UI, Roboto, Helvetica, Arial, sans-serif"}} }%%
