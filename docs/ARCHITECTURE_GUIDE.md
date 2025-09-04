@@ -535,7 +535,7 @@ sequenceDiagram
   participant GDB as GlobalCosmosDB
   participant AG as AppGateway
   participant CA as ContainerApp(CELL)
-  participant DAB as DAB(ContainerApp)
+  participant DAL as DataAccessLayer(ContainerApp)
   participant COS as CosmosDB
 
   User->>FD: HTTPS request (edge)
@@ -554,9 +554,9 @@ sequenceDiagram
   TM-->>FD: Response
   FD-->>User: Final response
 
-  Note over DAB,COS: DAB serves GraphQL for management portal and reads/writes to Cosmos
-  DAB->>COS: GraphQL queries/mutations
-  DAB-->>APIM: DAB may be behind APIM in some deployments
+  Note over DAL,COS: DAL serves GraphQL for management portal and reads/writes to Cosmos
+  DAL->>COS: GraphQL queries/mutations
+  DAL-->>APIM: DAL may be behind APIM in some deployments
 
 ```
 
