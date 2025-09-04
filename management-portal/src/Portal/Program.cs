@@ -130,7 +130,11 @@ if (app.Environment.IsProduction())
 }
 
 
-app.UseHttpsRedirection();
+// Only force HTTPS in production; local Docker dev image typically runs HTTP only
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 
 app.UseRouting();
