@@ -149,7 +149,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
-| ✅ Complete Single-Subscription Deployment (3 steps) | [THREE_STEP_DEPLOYMENT_GUIDE](./THREE_STEP_DEPLOYMENT_GUIDE.md) | 45–90 minutes |
+| ✅ Complete Single-Subscription<br/>Deployment (3 steps) | [THREE_STEP_DEPLOYMENT_GUIDE](./THREE_STEP_DEPLOYMENT_GUIDE.md) | 45–90 minutes |
 
 | Task | Documentation | Time Required |
 |------|---------------|---------------|
