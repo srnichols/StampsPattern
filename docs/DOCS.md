@@ -92,9 +92,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 - 🛂 RBAC Cheat Sheet: [RBAC_CHEATSHEET.md](./RBAC_CHEATSHEET.md)
 - 🗂️ Repository Map: [REPOSITORY_MAP.md](./REPOSITORY_MAP.md)
 - 🔧 Troubleshooting Playbooks: [TROUBLESHOOTING_PLAYBOOKS.md](./TROUBLESHOOTING_PLAYBOOKS.md)
-- 📚 Documentation Improvements: [DOCUMENTATION_IMPROVEMENTS.md](./DOCUMENTATION_IMPROVEMENTS.md)
-- 🏗️ Sample App Plan: [Azure_Stamp_Pattern_Sample_App_Plan.md](./Azure_Stamp_Pattern_Sample_App_Plan.md)
-- 📋 Capabilities Matrix: [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md)
+-  Capabilities Matrix: [CAPABILITIES_MATRIX.md](./CAPABILITIES_MATRIX.md)
 
 ### One-Pagers & Checklists
 
