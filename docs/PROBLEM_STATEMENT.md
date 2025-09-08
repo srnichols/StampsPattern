@@ -1,8 +1,8 @@
 # 🧩 Problem Statement: Azure Stamps Pattern
 
-> First Draft – foundational articulation of the business and technical problems this architecture addresses. Intended for Product, Engineering, Architecture, Compliance, and Finance stakeholders.
+> Foundational articulation of the business and technical problems this architecture addresses. Intended for Product, Engineering, Architecture, Compliance, and Finance stakeholders.
 >
-> Use this with: `ARCHITECTURE_GUIDE.md` (how it’s built) and the whitepaper (executive narrative).
+> Use this with: [Architecture Guide](./ARCHITECTURE_GUIDE.md) (how it’s built) and the [Whitepaper](./Azure_Stamps_Pattern_Analysis_WhitePaper.md) (executive narrative).
 
 ## 🧭 Quick Navigation
 | Section | Focus | Audience |
