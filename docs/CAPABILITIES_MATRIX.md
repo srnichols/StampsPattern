@@ -176,18 +176,41 @@ Comprehensive view of functional, operational, and governance capabilities in th
 
 ---
 ## 🧮 Summary Assessment
-Most core architectural pillars (multi-layer infra, routing, tenancy models, security baseline, observability scaffolding) are Implemented. Gaps center on automation hardening (drift, runbooks), deep data governance (Purview, RLS samples), resilience operations (DR playbooks), and FinOps (cost allocation automation). Identity and tenant lifecycle are solid at the control-plane function level but need migration/deletion automation. Governance guardrails (tag enforcement, policy breadth) remain partially realized.
+**Overall Posture:** Core architectural spine is strong and deployable; maturity gaps are concentrated in operational automation, deep data governance, and advanced resilience.
 
-## 🎯 Recommended Next 5 Priorities
-1. DR & Failover Runbooks (reduce recovery ambiguity)
-2. Tagging + Cost Allocation Standard (enable per-CELL chargeback)
-3. RLS & Data Schema Sample Pack (accelerate secure adoption)
-4. APIM Advanced Policies (tiered throttling, JWT cache, key rotation)
-5. Observability Deepening (OpenTelemetry trace pipeline)
+| Domain | Strengths | Gaps / Risks | Action Signal |
+|--------|-----------|--------------|---------------|
+| Architecture Core | Layered Bicep, tenancy mix, AZ support | Drift detection absent | Add infra validation pipeline |
+| Data | Partitioning guidance, directory model | No RLS sample pack; no backup runbook | Provide reference schema + RLS DDL |
+| Security | WAF, Defender plans, KV usage | Private endpoint enforcement partial | Expand policy set (deny public data endpoints) |
+| Operations | Dashboards + logging baseline | No DR/runbook automation | Author failover & recovery runbooks |
+| Identity | Managed identities wired | Broad RBAC scopes in places | Tighten least‑privilege roles |
+| Cost | Mixed tenancy model defined | No automated tagging enforcement | Tag governance & cost export script |
+| Resilience | Horizontal CELL scaling | Active/Active patterns not codified | Traffic policy examples + drills |
+| DevEx / Delivery | Basic CI/build working | No lint / policy gate in pipeline | Add Bicep linter + what-if stage |
+| Governance | Cross-linking & glossary stable | No ADRs / decision history | Introduce lightweight ADR template |
 
----
-**📝 Document Version Information**
-- **Version**: 1.7.1
-- **Last Updated**: 2025-09-08  
-- **Status**: Current
-- **Next Review**: 2025-11
+### ✅ Strength Anchors
+- Deployable multi-layer infra with clear geo/region/cell abstraction.
+- Tenancy flexibility (shared → dedicated) without redesign.
+- Observability scaffold (dashboards, workspaces, baseline metrics) in place.
+- Security baseline (WAF + Defender + managed identity) consistently applied.
+
+### ⚠️ Material Gaps
+- Disaster recovery and failover procedures undocumented (runbook debt).
+- Data governance depth (RLS, Purview, backup/restore) not yet implemented.
+- Cost allocation model lacks enforced tagging standard; opaque chargeback risk.
+- Active/Active multi-region strategy conceptual only—no executable policy examples.
+- RBAC and private endpoint enforcement require policy tightening for least privilege / zero trust.
+
+### 🧪 Emerging Risks (If Deferred)
+- Incident MTTR elongates without DR playbooks (operational fragility).
+- Compliance audit friction increases without data governance artifacts.
+- Cloud spend variance grows without tagging & RU autoscale defaults.
+- Performance regression risk if GraphQL/DAL optimizations (JWKS caching, batching) remain theoretical.
+
+### 📌 Near-Term Leverage Points
+- Add automated footer/version + tagging policy to drive consistency.
+- Ship a minimal DR exercise (tabletop + documented steps) before scaling regions.
+- Provide a reference SQL schema + RLS snippets to unblock secure shared tenancy adoption.
+- Introduce OpenTelemetry collector path to unify tracing early (avoids retrofit cost).
