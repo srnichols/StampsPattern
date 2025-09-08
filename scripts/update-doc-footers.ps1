@@ -75,7 +75,8 @@ $filesToUpdate = @(
     @{ Path = "docs\COST_OPTIMIZATION_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Cost Optimization Guide" },
     @{ Path = "docs\SECRETS_AND_CONFIG.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Secrets and Configuration" },
     @{ Path = "docs\TROUBLESHOOTING_PLAYBOOKS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Troubleshooting Playbooks" },
-    @{ Path = "docs\PROBLEM_STATEMENT.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Problem Statement" }
+    @{ Path = "docs\PROBLEM_STATEMENT.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Problem Statement" },
+    @{ Path = "docs\CAPABILITIES_MATRIX.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Capabilities Matrix" }
 )
 
 $updatedCount = 0
