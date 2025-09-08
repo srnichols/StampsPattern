@@ -5,6 +5,7 @@ Your single source of truth for the Azure Stamps Pattern - Architecture (ASPA), 
 ## 🎯 Start Here — 60 second checklist
 
 - Read `README.md` (project overview & prerequisites).
+- Read `docs/PROBLEM_STATEMENT.md` for business & architectural problem framing.
 - Run the Live Data Path: `docs/LIVE_DATA_PATH.md` to seed Cosmos and validate Management Portal ↔ Hot Chocolate (GraphQL) ↔ Cosmos.
 - For local development: follow `docs/DEVELOPER_QUICKSTART.md` (run Functions + Portal locally).
 - For deployments: open `docs/DEPLOYMENT_GUIDE.md` and use `scripts/deploy.ps1` or Bicep templates as documented.
@@ -23,6 +24,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 ### 📑 Complete Documentation Index
 
 #### Main Documentation (docs/)
+- [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md) - Foundational business & technical problem framing
 - [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md) - Core architecture and design patterns
 - [AUTH_CI_STRATEGY.md](./AUTH_CI_STRATEGY.md) - Authentication and CI/CD strategy
 - [Azure_Stamps_Pattern_Analysis_WhitePaper.md](./Azure_Stamps_Pattern_Analysis_WhitePaper.md) - Technical analysis whitepaper
@@ -62,6 +64,7 @@ A complete index of the documentation set. Use this as a quick catalog and to ve
 
 ### Core Guides
 
+- 🧩 Problem Framing: [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md)
 - 🏗️ Architecture: [ARCHITECTURE_GUIDE.md](./ARCHITECTURE_GUIDE.md)
 - 🚀 Deployment: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 - 📐 Deployment Architecture Patterns: [DEPLOYMENT_ARCHITECTURE_GUIDE.md](./DEPLOYMENT_ARCHITECTURE_GUIDE.md)
