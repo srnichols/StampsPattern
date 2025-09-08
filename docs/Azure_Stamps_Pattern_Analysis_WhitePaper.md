@@ -1,5 +1,7 @@
 # Understanding the Azure Stamps Pattern: A Scalable Architecture for SaaS on Azure
 
+> Companion docs: [Problem Statement](./PROBLEM_STATEMENT.md) • [Architecture Guide](./ARCHITECTURE_GUIDE.md) • [Capabilities Matrix](./CAPABILITIES_MATRIX.md)
+
 ## Executive Summary
 
 The Azure Stamps Pattern is an opinionated reference architecture designed to help SaaS providers build secure, compliant, and scalable multi-tenant solutions on Microsoft Azure. Drawing from real-world experiences in scaling customer workloads, it emphasizes a modular "stamp" deployment model that aligns closely with cell-based architecture principles. This white paper provides an in-depth analysis of the pattern, including its key components, pros and cons, and comparison to other cell-based architectures. By leveraging Azure-native services and flexible tenancy models, the pattern enables rapid deployment, global resilience, and cost efficiency while addressing common challenges in regulated industries like healthcare and finance.
