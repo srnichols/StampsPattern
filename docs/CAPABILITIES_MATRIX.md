@@ -1,8 +1,33 @@
 # Capabilities Matrix
 
+## 📘 Capability Readiness Guide
 Comprehensive view of functional, operational, and governance capabilities in the Azure Stamps Pattern. Use this to assess readiness, identify gaps, and prioritize roadmap work.
 
-## Status Legend
+---
+## 🧭 Quick Navigation
+
+| Section | Focus Area | Best for |
+|---------|------------|----------|
+| [📊 Status Legend](#-status-legend) | Status meaning & usage | All readers |
+| [🏗 Infrastructure & Orchestration](#-infrastructure--orchestration) | Core templates & provisioning | Cloud Engineers |
+| [🌐 Networking & Ingress](#-networking--ingress) | Global/regional routing & edge | Network / Platform |
+| [⚙️ Compute & Runtime](#️-compute--runtime) | Workload hosting options | Architects, Devs |
+| [🔐 Identity & Access](#-identity--access) | AuthN/AuthZ & secrets | Security, Platform |
+| [🧩 Tenant Lifecycle & Management](#-tenant-lifecycle--management) | Provisioning & migration | Product / Ops |
+| [🗄️ Data Layer & Strategy](#️-data-layer--strategy) | Partitioning & governance | Data / Architecture |
+| [🛡️ Security & Compliance](#️-security--compliance) | Controls & policy baseline | Security / Compliance |
+| [📈 Observability & Operations](#-observability--operations) | Monitoring & runbooks | SRE / Ops |
+| [♻️ Scalability & Resilience](#️-scalability--resilience) | HA / DR / scale patterns | Architects / SRE |
+| [💰 Cost Management & Optimization](#-cost-management--optimization) | FinOps & chargeback | Finance / Platform |
+| [🚀 DevOps & Delivery](#-devops--delivery) | CI/CD & release process | DevOps |
+| [🖥️ Application Layer (GraphQL & Portal)](#️-application-layer-graphql--portal) | Control-plane experience | App Teams |
+| [📏 Governance & Standards](#-governance--standards) | Conventions & consistency | Architecture Board |
+| [🔮 Future / Roadmap Themes](#-future--roadmap-themes) | Upcoming enhancements | Leadership |
+| [🧮 Summary Assessment](#-summary-assessment) | Overall posture | Executives |
+| [🎯 Recommended Next 5 Priorities](#-recommended-next-5-priorities) | Immediate focus | Steering Group |
+
+---
+## 📊 Status Legend
 
 | Status | Meaning |
 |--------|---------|
@@ -13,7 +38,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Deferred | Intentionally postponed |
 
 ---
-## 1. Infrastructure & Orchestration
+## 🏗 Infrastructure & Orchestration
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Multi-layer Bicep (global/regional/CELL) | Implemented | Core loops stable | `main.bicep`, `regionalLayer.bicep`, `deploymentStampLayer.bicep` |
@@ -23,7 +48,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Infrastructure drift detection | Planned | Consider deployment what-if + GitHub Action | (none) |
 | Infrastructure testing (preflight) | Planned | Add PS/Pester or Bicep linter gate | (none) |
 
-## 2. Networking & Ingress
+## 🌐 Networking & Ingress
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Global routing (Front Door / Traffic Manager) | Implemented | Both options described; sample wiring | `globalLayer.bicep` |
@@ -32,7 +57,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | DNS automation | Planned | Manual zones presently | (none) |
 | Cross-region failover routing playbook | Planned | Document partial; needs runbook | `DISASTER_RECOVERY_GUIDE.md` (if added later) |
 
-## 3. Compute & Runtime
+## ⚙️ Compute & Runtime
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | CELL compute abstraction (Functions/AppSvc/Container Apps/AKS options) | Implemented | Decision guidance included | `ARCHITECTURE_GUIDE.md` |
@@ -41,7 +66,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Background jobs / schedulers | Planned | Could use Functions timers | (none) |
 | Multi-runtime polyglot support | Partial | Conceptual; single language sample | (none) |
 
-## 4. Identity & Access
+## 🔐 Identity & Access
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Managed identities (system/user-assigned) | Implemented | Used in templates | `managedIdentity.bicep` |
@@ -50,7 +75,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Key Vault secret referencing | Implemented | Used; recommendation to replace inline secrets | `keyvault.bicep` |
 | JWT validation optimization (JWKS caching) | Planned | Mentioned in perf notes; code hook TBD | (none) |
 
-## 5. Tenant Lifecycle & Management
+## 🧩 Tenant Lifecycle & Management
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Tenant provisioning function | Implemented | `CreateTenantFunction` | `CreateTenantFunction.cs` |
@@ -60,7 +85,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Tenant deletion / deprovision | Planned | Needs data retention policy integration | (none) |
 | Tenant quota & throttling policy | Planned | Implement via APIM tier policies | `apimInstance.bicep` |
 
-## 6. Data Layer & Strategy
+## 🗄️ Data Layer & Strategy
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Global tenant directory (Cosmos DB) | Implemented | Index policy included | `cosmos-indexing-policy.json` |
@@ -71,7 +96,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Purview governance integration | Planned | Future compliance enhancement | (none) |
 | Backup & restore procedures | Planned | Need runbook + automation | (none) |
 
-## 7. Security & Compliance
+## 🛡️ Security & Compliance
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | CAF/WAF alignment scoring | Implemented | Score documented | `CAF_WAF_COMPLIANCE_ANALYSIS.md` |
@@ -84,7 +109,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Zero-trust conditional access articulation | Partial | Documented; not codified | Guides |
 | Audit logging completeness | Partial | Need matrix of log sources | (none) |
 
-## 8. Observability & Operations
+## 📈 Observability & Operations
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Log Analytics (global & regional workspaces) | Implemented | Wiring present | `monitoringLayer.bicep` |
@@ -94,7 +119,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Runbook automation | Planned | Target Automation Account | (none) |
 | Performance profiling guidance | Partial | Some latency tables; tooling missing | Whitepaper |
 
-## 9. Scalability & Resilience
+## ♻️ Scalability & Resilience
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Horizontal scaling by CELL addition | Implemented | Documented in guides | Guides |
@@ -105,7 +130,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Autoscale (Cosmos RU) | Planned | Add autoscale param defaults | (none) |
 | Caching layer (Redis) integration | Planned | Mentioned; not provisioned | (none) |
 
-## 10. Cost Management & Optimization
+## 💰 Cost Management & Optimization
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Mixed tenancy cost model | Implemented | Shared vs dedicated economics stated | Whitepaper |
@@ -113,7 +138,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Reserved capacity planning guidance | Planned | For SQL/Cosmos | (none) |
 | Autoscale cost impact modeling | Planned | Add FinOps appendix | (none) |
 
-## 11. DevOps & Delivery
+## 🚀 DevOps & Delivery
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | CI image build & push | Implemented | Basic workflow present | GitHub Actions (not in docs folder) |
@@ -122,7 +147,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Release versioning / tagging | Partial | Manual version metadata | CHANGELOG |
 | Infrastructure validation pipeline (lint) | Planned | Add Bicep linter action | (none) |
 
-## 12. Application Layer (GraphQL & Portal)
+## 🖥️ Application Layer (GraphQL & Portal)
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Hot Chocolate GraphQL layer | Implemented | Re-baselined from DAB | Portal repo section |
@@ -130,7 +155,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | DAL optimization (JWKS caching, batching) | Planned | Performance section notes only | (none) |
 | API Management policy set (tenant throttling) | Partial | Baseline; advanced tiering pending | `apimInstance.bicep` |
 
-## 13. Governance & Standards
+## 📏 Governance & Standards
 | Capability | Status | Notes / Gaps | Key Artifacts |
 |-----------|:------:|--------------|---------------|
 | Tagging strategy enforcement | Partial | Tag schema not fully listed | (none) |
@@ -139,7 +164,7 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Decision records (ADR style) | Deferred | Could add for major tradeoffs | (none) |
 | Compliance evidence packaging | Planned | Provide export script | (none) |
 
-## 14. Future / Roadmap Themes
+## 🔮 Future / Roadmap Themes
 | Theme | Intent | Status |
 |-------|--------|:------:|
 | AI Ops (predictive scaling, anomaly) | Integrate ML for proactive scaling | Planned |
@@ -150,10 +175,10 @@ Comprehensive view of functional, operational, and governance capabilities in th
 | Observability unification (OpenTelemetry) | Distributed tracing standard | Planned |
 
 ---
-### Summary Assessment
+## 🧮 Summary Assessment
 Most core architectural pillars (multi-layer infra, routing, tenancy models, security baseline, observability scaffolding) are Implemented. Gaps center on automation hardening (drift, runbooks), deep data governance (Purview, RLS samples), resilience operations (DR playbooks), and FinOps (cost allocation automation). Identity and tenant lifecycle are solid at the control-plane function level but need migration/deletion automation. Governance guardrails (tag enforcement, policy breadth) remain partially realized.
 
-### Recommended Next 5 Priorities
+## 🎯 Recommended Next 5 Priorities
 1. DR & Failover Runbooks (reduce recovery ambiguity)
 2. Tagging + Cost Allocation Standard (enable per-CELL chargeback)
 3. RLS & Data Schema Sample Pack (accelerate secure adoption)
@@ -162,7 +187,7 @@ Most core architectural pillars (multi-layer infra, routing, tenancy models, sec
 
 ---
 **📝 Document Version Information**
-- **Version**: 1.7.0
+- **Version**: 1.7.1
 - **Last Updated**: 2025-09-08  
 - **Status**: Current
 - **Next Review**: 2025-11
