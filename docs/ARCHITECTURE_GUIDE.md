@@ -885,25 +885,10 @@ az deployment group create \
 - [CAF/WAF Compliance Analysis](./CAF_WAF_COMPLIANCE_ANALYSIS.md)
 - [Azure Landing Zones Guide](./LANDING_ZONES_GUIDE.md)
 - [Data Strategy Guide](./DATA_STRATEGY_GUIDE.md)
-
----
-
-**📝 Document Version Information**
-- **Version**: 1.6.3
-- **Last Updated**: 2025-09-03 13:38:15 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
----
-
-**📝 Document Version Information**
-- **Version**: 1.3.0
-- **Last Updated**: 2025-09-08 11:23:05 UTC  
-- **Status**: Current
-- **Next Review**: 2025-12
 ---
 
 **📝 Document Version Information**
 - **Version**: 1.6.4
-- **Last Updated**: 2025-09-08 11:39:22 UTC  
+- **Last Updated**: 2025-09-08 11:45:17 UTC  
 - **Status**: Current
 - **Next Review**: 2025-12

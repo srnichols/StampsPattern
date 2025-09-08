@@ -380,18 +380,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **🌟 Made with ❤️ by the Azure community** | **⭐ Star this repo if it helped you!**
-
 ---
 
 **📝 Document Version Information**
- - **Version**: 1.6.3
-- **Last Updated**: 2025-09-03  
+- **Version**: 1.6.4
+- **Last Updated**: 2025-09-08 11:45:17 UTC  
 - **Status**: Current
-- **Next Review**: 2025-11
-
-
-
-
-
-
-
+- **Next Review**: 2025-12

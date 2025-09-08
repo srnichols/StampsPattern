@@ -428,25 +428,10 @@ flowchart LR
 - Azure CAF – Landing Zones: <a href="https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener">docs</a>
   <sup>↗</sup>
 - Azure Architecture Center: <a href="https://learn.microsoft.com/azure/architecture/" target="_blank" rel="noopener" title="Opens in a new tab">docs</a> <sup>↗</sup>
-
----
-
-**📝 Document Version Information**
-- **Version**: 1.6.3
-- **Last Updated**: 2025-09-03 13:38:15 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
----
-
-**📝 Document Version Information**
-- **Version**: 1.3.0
-- **Last Updated**: 2025-09-08 11:23:05 UTC  
-- **Status**: Current
-- **Next Review**: 2025-12
 ---
 
 **📝 Document Version Information**
 - **Version**: 1.6.4
-- **Last Updated**: 2025-09-08 11:39:22 UTC  
+- **Last Updated**: 2025-09-08 11:45:17 UTC  
 - **Status**: Current
 - **Next Review**: 2025-12

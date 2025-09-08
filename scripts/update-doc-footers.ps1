@@ -53,30 +53,30 @@ $readmeFooterTemplate = @"
 
 # Define files to update with their footer patterns
 $filesToUpdate = @(
-    @{ Path = "README.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $readmeFooterTemplate; Description = "Main README" },
-    @{ Path = "docs\DOCS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Documentation Hub" },
-    @{ Path = "docs\ARCHITECTURE_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Architecture Guide" },
-    @{ Path = "docs\DEPLOYMENT_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Deployment Guide" },
-    @{ Path = "docs\SECURITY_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Security Guide" },
-    @{ Path = "docs\OPERATIONS_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Operations Guide" },
-    @{ Path = "docs\MANAGEMENT_PORTAL_USER_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Management Portal User Guide" },
-    @{ Path = "docs\CAF_WAF_COMPLIANCE_ANALYSIS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "CAF/WAF Compliance Analysis" },
-    @{ Path = "docs\DEVELOPER_QUICKSTART.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Developer Quickstart" },
-    @{ Path = "docs\KNOWN_ISSUES.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Known Issues" },
-    @{ Path = "docs\LANDING_ZONES_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Landing Zones Guide" },
-    @{ Path = "docs\NAMING_CONVENTIONS_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Naming Conventions Guide" },
-    @{ Path = "docs\PARAMETERIZATION_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Parameterization Guide" },
-    @{ Path = "docs\GLOSSARY.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Glossary" },
-    @{ Path = "docs\Azure_Stamps_Pattern_Analysis_WhitePaper.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Azure Stamps Pattern Analysis WhitePaper" },
-    @{ Path = "docs\DEPLOYMENT_ARCHITECTURE_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Deployment Architecture Guide" },
-    @{ Path = "docs\DATA_STRATEGY_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Data Strategy Guide" },
-    @{ Path = "docs\DEVELOPER_SECURITY_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Developer Security Guide" },
-    @{ Path = "docs\LIVE_DATA_PATH.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Live Data Path" },
-    @{ Path = "docs\COST_OPTIMIZATION_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Cost Optimization Guide" },
-    @{ Path = "docs\SECRETS_AND_CONFIG.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Secrets and Configuration" },
-    @{ Path = "docs\TROUBLESHOOTING_PLAYBOOKS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Troubleshooting Playbooks" },
-    @{ Path = "docs\PROBLEM_STATEMENT.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Problem Statement" },
-    @{ Path = "docs\CAPABILITIES_MATRIX.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(\*Part of the.*?documentation suite\*\s*)*$"; NewFooter = $footerTemplate; Description = "Capabilities Matrix" }
+    @{ Path = "README.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $readmeFooterTemplate; Description = "Main README" },
+    @{ Path = "docs\DOCS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Documentation Hub" },
+    @{ Path = "docs\ARCHITECTURE_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Architecture Guide" },
+    @{ Path = "docs\DEPLOYMENT_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Deployment Guide" },
+    @{ Path = "docs\SECURITY_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Security Guide" },
+    @{ Path = "docs\OPERATIONS_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Operations Guide" },
+    @{ Path = "docs\MANAGEMENT_PORTAL_USER_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Management Portal User Guide" },
+    @{ Path = "docs\CAF_WAF_COMPLIANCE_ANALYSIS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "CAF/WAF Compliance Analysis" },
+    @{ Path = "docs\DEVELOPER_QUICKSTART.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Developer Quickstart" },
+    @{ Path = "docs\KNOWN_ISSUES.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Known Issues" },
+    @{ Path = "docs\LANDING_ZONES_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Landing Zones Guide" },
+    @{ Path = "docs\NAMING_CONVENTIONS_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Naming Conventions Guide" },
+    @{ Path = "docs\PARAMETERIZATION_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Parameterization Guide" },
+    @{ Path = "docs\GLOSSARY.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Glossary" },
+    @{ Path = "docs\Azure_Stamps_Pattern_Analysis_WhitePaper.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Azure Stamps Pattern Analysis WhitePaper" },
+    @{ Path = "docs\DEPLOYMENT_ARCHITECTURE_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Deployment Architecture Guide" },
+    @{ Path = "docs\DATA_STRATEGY_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Data Strategy Guide" },
+    @{ Path = "docs\DEVELOPER_SECURITY_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Developer Security Guide" },
+    @{ Path = "docs\LIVE_DATA_PATH.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Live Data Path" },
+    @{ Path = "docs\COST_OPTIMIZATION_GUIDE.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Cost Optimization Guide" },
+    @{ Path = "docs\SECRETS_AND_CONFIG.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Secrets and Configuration" },
+    @{ Path = "docs\TROUBLESHOOTING_PLAYBOOKS.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Troubleshooting Playbooks" },
+    @{ Path = "docs\PROBLEM_STATEMENT.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Problem Statement" },
+    @{ Path = "docs\CAPABILITIES_MATRIX.md"; OldPattern = "---\s*\*\*📝 Document (Version )?Information\*\*.*?(?=\s*$)"; NewFooter = $footerTemplate; Description = "Capabilities Matrix" }
 )
 
 $updatedCount = 0
@@ -98,19 +98,12 @@ foreach ($file in $filesToUpdate) {
     try {
         $content = Get-Content $fullPath -Raw -Encoding UTF8
         
-        # Check if footer already exists
-        if ($content -match $file.OldPattern) {
-            # Replace existing footer(s) - handle multiple footers
-            $newContent = $content -replace $file.OldPattern, $file.NewFooter.Trim()
-            Write-Host "✅ Updated existing footer: $($file.Description)" -ForegroundColor Green
-        } else {
-            # Check for any Document Information sections to remove duplicates
-            $newContent = $content -replace "---\s*\*\*📝 Document.*?Next Review.*?\d{4}-\d{2}[^-]*?---[^*]*\*Part of the.*?documentation suite\*", ""
-            $newContent = $newContent -replace "---\s*\*\*📝 Document.*?Next Review.*?\d{4}-\d{2}", ""
-            # Add new footer
-            $newContent = $newContent.TrimEnd() + $file.NewFooter
-            Write-Host "➕ Added new footer: $($file.Description)" -ForegroundColor Blue
-        }
+        # Remove any existing footer blocks (all versions) - use aggressive pattern
+        $newContent = $content -replace "(?s)---\s*\*\*📝 Document.*?Information\*\*.*", ""
+        
+        # Clean up any trailing whitespace and add new footer
+        $newContent = $newContent.TrimEnd() + $file.NewFooter
+        Write-Host "✅ Updated footer: $($file.Description)" -ForegroundColor Green
         
         # Write updated content
         $newContent | Set-Content $fullPath -Encoding UTF8 -NoNewline
