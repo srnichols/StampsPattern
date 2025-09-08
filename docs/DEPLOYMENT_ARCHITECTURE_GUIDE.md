@@ -193,16 +193,8 @@ Both patterns support the same features:
 
 ---
 
-
-- **Version**: 1.4.0
-- **Last Updated**: 2025-08-18 01:08:00 UTC  
-- **Status**: Current
-- **Next Review**: 2025-11
-
----
-
 **📝 Document Version Information**
-- **Version**: 1.6.3
-- **Last Updated**: 2025-09-03 13:38:15 UTC  
+- **Version**: 1.3.0
+- **Last Updated**: 2025-09-08 11:23:05 UTC  
 - **Status**: Current
-- **Next Review**: 2025-11
+- **Next Review**: 2025-12
