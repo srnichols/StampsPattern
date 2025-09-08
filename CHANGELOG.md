@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
  
+## [1.6.4] - 2025-09-08
+
+### Added
+- Release: version bump and documentation footer refresh across docs
+ 
+### Changed
+- Documentation footers and release metadata updated to 1.6.4 across docs.
 ## [1.6.3] - 2025-09-03
 
 ### Added
