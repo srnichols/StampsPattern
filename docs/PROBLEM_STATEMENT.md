@@ -19,7 +19,6 @@
 | [🔧 10. Dependencies & Assumptions](#-10-dependencies--assumptions) | Preconditions | Architecture |
 | [❓ 11. Open Questions](#-11-open-questions-track--resolve) | Pending decisions | Steering Group |
 | [📎 12. Related Documents](#-12-related-documents) | Reference set | All |
-| [📝 13. Revision Log](#-13-revision-log) | Change history | Doc Owners |
 
 ## 🎯 1. Executive Problem Summary
 Modern SaaS and regulated enterprise platforms often start on a single shared Azure deployment that cannot gracefully absorb rapid tenant growth, regional expansion, compliance isolation requirements, cost pressure, or SKU/capacity volatility. Scaling typically triggers either (a) expensive per‑tenant dedicated stacks too early (runaway spend & ops drag) or (b) oversubscribed multi‑tenant infrastructure (noisy neighbors, compliance & audit risk, unpredictable performance). The Azure Stamps Pattern introduces a modular GEO → Region → CELL model that enables incremental, repeatable capacity and isolation, mixing shared and dedicated CELLs, routing tenants intelligently, and migrating them without architecture rewrites—reducing blast radius, cost per unit of value, and time‑to‑enter new markets.
@@ -139,12 +138,6 @@ Modern SaaS and regulated enterprise platforms often start on a single shared Az
 - Cost: `COST_OPTIMIZATION_GUIDE.md`
 - Deployment: `DEPLOYMENT_GUIDE.md`
 - Capabilities index: `CAPABILITIES_MATRIX.md`
-
-## 📝 13. Revision Log
-| Version | Date | Author | Notes |
-|---------|------|--------|-------|
-| 0.1 | 2025-09-08 | Draft | Initial problem articulation |
-| 0.2 | 2025-09-08 | Style Sync | Added navigation + emoji styling to align with guide |
 
 ---
 *Feedback welcome—treat this as a living artifact to align stakeholders before deep solution branching.*
