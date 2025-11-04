@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Stamps Pattern: Cell Switching Latency Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            border-bottom: 4px solid #0078d4;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #0078d4;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+        
+        h2 {
+            color: #0078d4;
+            font-size: 1.6em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e1e1;
+        }
+        
+        h3 {
+            color: #005a9e;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .callout {
+            background: #e7f3ff;
+            border-left: 4px solid #0078d4;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .callout-success {
+            background: #dff6dd;
+            border-left-color: #107c10;
+        }
+        
+        .callout-warning {
+            background: #fff4ce;
+            border-left-color: #f7630c;
+        }
+        
+        .callout h3 {
+            margin-top: 0;
+            color: inherit;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+        }
+        
+        thead {
+            background: #0078d4;
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        tbody tr:hover {
+            background: #f0f7ff;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .metadata {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .diagram {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 0.9em;
+            line-height: 1.8;
+        }
+        
+        .arrow {
+            color: #0078d4;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            h2 {
+                page-break-after: avoid;
+            }
+            
+            table, .callout {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Azure Stamps Pattern: Cell Switching Latency Analysis</h1>
+            <p class="subtitle">Impact of Control Panel Tenant Reassignment on Application Availability</p>
+        </header>
+
+        <section>
+            <h2>Executive Summary</h2>
+            <div class="callout callout-success">
+                <h3>Quick Answer: Near-Instant Switching (&lt; 10 seconds)</h3>
+                <p><strong>Yes, your application will appear immediately</strong> after reassigning a tenant to a different CELL via the control panel. DNS caching is not a factor because the architecture uses <strong>application-level routing</strong>, not DNS-based per-tenant switching.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Why Cell Switching is Fast</h2>
+            
+            <h3>1. Application-Level Routing (Not DNS)</h3>
+            <p>When you update a tenant's CELL assignment in the Management Portal, the change is written to the <strong>Global Cosmos DB</strong> tenant directory. This is a database update, not a DNS change.</p>
+            
+            <div class="diagram">
+                Control Panel Update<br>
+                <span class="arrow">↓</span><br>
+                Global Cosmos DB (Tenant Directory)<br>
+                <span class="arrow">↓</span><br>
+                GetTenantCellFunction (live lookup)<br>
+                <span class="arrow">↓</span><br>
+                Request routed to new CELL
+            </div>
+
+            <h3>2. Live Lookup on Every Request</h3>
+            <p>The <code>GetTenantCellFunction</code> queries the Global Cosmos DB <strong>on every API request</strong> to resolve which CELL the tenant belongs to. There is no DNS propagation delay.</p>
+
+            <h3>3. Optional Caching with Fast Invalidation</h3>
+            <p>The architecture implements <strong>Redis caching</strong> to optimize repeated lookups (80-90% cache hit rate), but:</p>
+            <ul>
+                <li>Cache TTL is typically short (30-60 seconds)</li>
+                <li>Cache invalidation can be triggered immediately when updating tenant records</li>
+                <li>Worst case: wait for cache TTL to expire (&lt; 60 seconds)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Latency Breakdown</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Delay</th>
+                        <th>Explanation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Global Cosmos DB Update</strong></td>
+                        <td>&lt; 1 second</td>
+                        <td>Multi-region write with eventual consistency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Redis Cache Invalidation</strong></td>
+                        <td>0-60 seconds</td>
+                        <td>Depends on TTL or manual invalidation trigger</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Front Door / Traffic Manager</strong></td>
+                        <td>No delay</td>
+                        <td>Routes to regions, not CELLs (unchanged)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application Gateway</strong></td>
+                        <td>No delay</td>
+                        <td>Routes based on APIM decision (no caching)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DNS Propagation</strong></td>
+                        <td>N/A</td>
+                        <td>DNS only routes to regions, not per-tenant CELLs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Why DNS Caching Doesn't Apply</h2>
+            <div class="callout">
+                <h3>Key Architectural Distinction</h3>
+                <p><strong>DNS (Traffic Manager / Front Door)</strong> only routes users to geographic <strong>regions</strong>, not to specific CELLs within a region.</p>
+                <p>Once a request reaches a region:</p>
+                <ol>
+                    <li><strong>API Management (APIM)</strong> extracts tenant context</li>
+                    <li><strong>GetTenantCellFunction</strong> determines the target CELL</li>
+                    <li>Request is routed to the correct CELL backend</li>
+                </ol>
+                <p>Because CELL routing happens <strong>inside the region</strong> via application logic, DNS caching (which typically lasts hours or days) is irrelevant to per-tenant CELL switching.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Best Practice: Guaranteed Instant Switchover</h2>
+            <div class="callout callout-warning">
+                <h3>Recommended Implementation</h3>
+                <p>To ensure zero-delay switchover, your Management Portal control plane should:</p>
+                <ol>
+                    <li><strong>Update the Global Cosmos DB record</strong> with the new CELL assignment</li>
+                    <li><strong>Immediately invalidate the Redis cache entry</strong> for that specific tenant ID</li>
+                    <li>Next request will fetch fresh routing information from Cosmos DB</li>
+                </ol>
+                <p><strong>Result:</strong> Effective switchover time of 1-3 seconds (Cosmos replication + in-flight request completion)</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Edge Cases and Considerations</h2>
+            
+            <h3>In-Flight Requests</h3>
+            <p>Requests already routed to the old CELL will complete there. New requests will immediately use the new CELL routing.</p>
+
+            <h3>Session State</h3>
+            <p>If your application maintains server-side session state in the CELL, you may need to:</p>
+            <ul>
+                <li>Implement session draining before migration</li>
+                <li>Use distributed session stores (e.g., Redis) shared across CELLs</li>
+                <li>Design for stateless request handling</li>
+            </ul>
+
+            <h3>Database Connections</h3>
+            <p>If the tenant's data moves to a different SQL/Cosmos instance in the new CELL, ensure data migration completes before updating the routing record.</p>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>The Azure Stamps Pattern architecture is designed for <strong>dynamic tenant placement</strong> with minimal latency:</p>
+            <ul>
+                <li>✅ <strong>Application-level routing</strong> eliminates DNS caching concerns</li>
+                <li>✅ <strong>Live directory lookups</strong> ensure near-instant routing updates</li>
+                <li>✅ <strong>Cache invalidation</strong> provides sub-60-second worst-case latency</li>
+                <li>✅ <strong>No DNS propagation</strong> delays for per-tenant CELL changes</li>
+            </ul>
+            <p><strong>Bottom line:</strong> When you change a tenant's CELL assignment in the control panel and invalidate caches, the application appears in the new CELL within seconds—effectively instantaneous from a user perspective.</p>
+        </section>
+
+        <div class="metadata">
+            <strong>Document Information</strong><br>
+            Generated: October 31, 2025<br>
+            Architecture: Azure Stamps Pattern (Multi-Tenant CELL-based Isolation)<br>
+            Source: StampsPattern Repository Architecture Documentation<br>
+            Version: 1.6.4
+        </div>
+    </div>
+</body>
+</html>

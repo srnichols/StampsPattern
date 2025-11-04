@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCR Voyix Multi-Cloud Setup Guide: GCP Primary + Azure Secondary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            border-bottom: 4px solid #1565c0;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #1565c0;
+            font-size: 2.4em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .customer {
+            color: #1565c0;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        h2 {
+            color: #1565c0;
+            font-size: 1.8em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e1e1;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            color: #1976d2;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .callout {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            page-break-inside: avoid;
+        }
+        
+        .callout-success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        
+        .callout-warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        
+        .callout-info {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+        
+        .callout-danger {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        
+        .callout h3, .callout h4 {
+            margin-top: 0;
+            color: inherit;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            page-break-inside: avoid;
+        }
+        
+        thead {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        tbody tr:hover {
+            background: #fff3e0;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            page-break-inside: avoid;
+        }
+        
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .metadata {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #666;
+            page-break-before: always;
+        }
+        
+        .toc {
+            background: #fafafa;
+            padding: 25px;
+            border-radius: 4px;
+            margin: 30px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #d32f2f;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 8px;
+        }
+        
+        .toc a {
+            color: #d32f2f;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .diagram {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+        
+        .mermaid {
+            text-align: center;
+        }
+        
+        .phase-box {
+            background: #f5f5f5;
+            border-left: 4px solid #d32f2f;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            page-break-inside: avoid;
+        }
+        
+        .phase-box h4 {
+            color: #d32f2f;
+            margin-top: 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            h2 {
+                page-break-after: avoid;
+            }
+            
+            table, .callout, pre, .diagram, .phase-box {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Multi-Cloud Architecture Setup Guide</h1>
+            <p class="subtitle">GCP Primary + Azure Secondary Cell Deployment</p>
+            <p class="customer">Prepared for: NCR Voyix</p>
+        </header>
+
+        <section id="executive-summary">
+            <h2>Executive Summary</h2>
+            
+            <div class="callout callout-info">
+                <h3>Purpose of This Document</h3>
+                <p>This comprehensive guide provides NCR Voyix with a complete blueprint for implementing a <strong>multi-cloud stamps pattern architecture</strong> spanning Google Cloud Platform (GCP) as the primary cloud and Microsoft Azure as the secondary cloud.</p>
+                
+                <p><strong>Architecture Foundation:</strong> This design is a variation of the <strong>Microsoft Azure Stamps Pattern Architecture (ASPA)</strong> from the <a href="https://github.com/srnichols/StampsPattern" target="_blank" rel="noopener">StampsPattern repository</a>, adapted specifically for multi-cloud deployments with GCP and Azure. The original ASPA project provides detailed conceptual information, compliance analysis (CAF/WAF), and Azure-native implementation guidance. For comprehensive background, see the <a href="https://github.com/srnichols/StampsPattern/blob/main/docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md" target="_blank" rel="noopener">Azure Stamps Pattern Analysis White Paper</a>. This document extends those principles to support cross-cloud cell deployment while maintaining the core stamps pattern benefits: fault isolation, horizontal scalability, and flexible tenancy models.</p>
+
+                <p>The architecture enables:</p>
+                <ul>
+                    <li><strong>Customer Cloud Preference:</strong> Some NCR Voyix customers prefer to run workloads in Azure rather than GCP due to existing enterprise agreements, regional data sovereignty requirements, or organizational cloud strategies.</li>
+                    <li><strong>Disaster Recovery & Business Continuity:</strong> Azure serves as a warm standby environment, ensuring service continuity if GCP experiences regional outages or service disruptions.</li>
+                    <li><strong>Vendor Resilience:</strong> Multi-cloud reduces dependency on a single cloud provider, mitigating risks related to pricing changes, service deprecations, or geopolitical factors.</li>
+                    <li><strong>Geographic Expansion:</strong> Leverage Azure's presence in regions where GCP coverage is limited or non-existent.</li>
+                </ul>
+                
+                <p><em>For comprehensive background on the stamps pattern methodology, security frameworks, cost optimization strategies, and Azure-native deployments, please refer to the original <a href="https://github.com/srnichols/StampsPattern" target="_blank" rel="noopener">Azure Stamps Pattern Architecture project</a>.</em></p>
+            </div>
+
+            <h3>Business Drivers</h3>
+            <p><strong>NCR Voyix operates in a complex enterprise landscape</strong> where customers have diverse requirements and existing cloud commitments. By supporting both GCP and Azure, NCR Voyix can:</p>
+            <ul>
+                <li><strong>Increase Market Reach:</strong> Win deals with Azure-first customers who would otherwise be unable to adopt the platform.</li>
+                <li><strong>Improve SLA Guarantees:</strong> Offer 99.99% uptime SLAs backed by cross-cloud failover capabilities.</li>
+                <li><strong>Accelerate Regional Expansion:</strong> Deploy cells in Azure regions where GCP is not available (e.g., certain government clouds or country-specific data centers).</li>
+                <li><strong>Optimize Costs:</strong> Take advantage of Azure committed use discounts or reserved instances negotiated through existing enterprise agreements.</li>
+            </ul>
+
+            <h3>Architecture Overview</h3>
+            <p>The proposed architecture maintains a <strong>global control plane hosted in GCP</strong> (using Cloud Spanner for the tenant directory) while supporting <strong>regional cells in both GCP and Azure</strong>. Key characteristics include:</p>
+            <ul>
+                <li><strong>Unified Tenant Directory:</strong> A single source of truth (Cloud Spanner) tracks which cell (GCP or Azure) each tenant is assigned to.</li>
+                <li><strong>Cross-Cloud Routing:</strong> GCP Cloud Load Balancing + Cloud Functions intelligently route requests to the correct cell, regardless of cloud provider.</li>
+                <li><strong>Data Synchronization:</strong> Database and blob storage replicate from GCP primary cells to Azure secondary cells using CDC (Change Data Capture) pipelines or scheduled batch transfers.</li>
+                <li><strong>Identical Application Code:</strong> The same containerized application runs in both Cloud Run (GCP) and Azure Container Apps, ensuring consistency.</li>
+            </ul>
+
+            <div class="callout callout-success">
+                <h3>Key Benefits</h3>
+                <ul>
+                    <li>✅ <strong>Customer Choice:</strong> Tenants can choose their preferred cloud provider</li>
+                    <li>✅ <strong>High Availability:</strong> Cross-cloud redundancy for mission-critical workloads</li>
+                    <li>✅ <strong>Compliance:</strong> Meet data residency requirements in Azure-only regions</li>
+                    <li>✅ <strong>Cost Optimization:</strong> Leverage negotiated Azure EA pricing</li>
+                    <li>✅ <strong>Risk Mitigation:</strong> Reduce single-vendor lock-in</li>
+                    <li>✅ <strong>Near-Instant Cell Switching:</strong> Application-level routing enables tenant reassignment in &lt; 10 seconds with no DNS propagation delays</li>
+                </ul>
+            </div>
+
+            <div class="callout callout-info">
+                <h3>🚀 Low-Latency Cell Switching: A Critical Advantage</h3>
+                <p>One of the most significant operational benefits of this architecture is the ability to <strong>reassign tenants between cells instantly</strong>—a capability that directly addresses customer concerns about migration downtime and operational flexibility.</p>
+                
+                <h4>How It Works: Application-Level Routing (Not DNS)</h4>
+                <p>Unlike traditional architectures that rely on DNS for tenant routing, this pattern uses <strong>real-time database lookups</strong> to determine cell assignments:</p>
+                <ol>
+                    <li><strong>Cloud Spanner</strong> stores the tenant directory with current cell assignments</li>
+                    <li><strong>Cloud Functions (GetTenantCell)</strong> queries Spanner on every request to resolve the tenant's current cell</li>
+                    <li><strong>Load Balancer</strong> routes the request to the correct cell backend (GCP or Azure)</li>
+                    <li><strong>No DNS involved</strong> in per-tenant routing—DNS only routes to regions, not individual cells</li>
+                </ol>
+
+                <h4>Switchover Timeline</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Time</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Update tenant record in Cloud Spanner</td>
+                            <td>&lt; 1 second</td>
+                            <td>Multi-region write with strong consistency</td>
+                        </tr>
+                        <tr>
+                            <td>Invalidate cache (if enabled)</td>
+                            <td>0-60 seconds</td>
+                            <td>Optional Redis cache TTL; manual invalidation = instant</td>
+                        </tr>
+                        <tr>
+                            <td>New requests route to new cell</td>
+                            <td>Immediate</td>
+                            <td>Next API call uses updated routing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total effective switchover</strong></td>
+                            <td><strong>1-10 seconds</strong></td>
+                            <td>Near-instantaneous from user perspective</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Use Cases Enabled by Fast Switching</h4>
+                <ul>
+                    <li><strong>Zero-Downtime Migrations:</strong> Move tenants from shared to dedicated cells (or GCP to Azure) without maintenance windows</li>
+                    <li><strong>Load Balancing:</strong> Dynamically rebalance tenants across cells when capacity thresholds are reached</li>
+                    <li><strong>Emergency Failover:</strong> Instantly redirect tenants from failing cells to healthy ones</li>
+                    <li><strong>A/B Testing:</strong> Route specific tenants to new feature cells for controlled rollouts</li>
+                    <li><strong>Cost Optimization:</strong> Move low-activity tenants to shared cells, high-volume tenants to dedicated cells</li>
+                    <li><strong>Cloud Preference Changes:</strong> Customer requests Azure hosting instead of GCP—reassign in seconds, not days</li>
+                </ul>
+
+                <h4>Why This Matters for NCR Voyix</h4>
+                <p>Traditional multi-tenant architectures require careful planning and lengthy migration windows when moving tenants between infrastructure. This architecture eliminates that constraint, providing operational agility that directly translates to:</p>
+                <ul>
+                    <li>✅ <strong>Reduced operational risk</strong> (no scheduled downtime for tenant moves)</li>
+                    <li>✅ <strong>Faster customer onboarding</strong> (provision in optimal cell, adjust later if needed)</li>
+                    <li>✅ <strong>Improved SLAs</strong> (instant failover capabilities)</li>
+                    <li>✅ <strong>Competitive advantage</strong> (offer cloud flexibility without operational penalty)</li>
+                </ul>
+
+                <p><strong>Note:</strong> For detailed technical analysis of the cell switching mechanism, see the companion document: <em>Azure Stamps Pattern: Cell Switching Latency Analysis</em></p>
+            </div>
+
+            <div class="callout callout-warning">
+                <h3>Trade-offs to Consider</h3>
+                <ul>
+                    <li>⚠️ <strong>Increased Complexity:</strong> Managing two cloud platforms requires specialized expertise and tooling.</li>
+                    <li>⚠️ <strong>Cross-Cloud Latency:</strong> Requests routed from GCP control plane to Azure cells incur additional 50-200ms latency.</li>
+                    <li>⚠️ <strong>Data Egress Costs:</strong> Transferring data from GCP to Azure costs $0.12-0.23 per GB, which can be significant at scale.</li>
+                    <li>⚠️ <strong>Operational Overhead:</strong> Monitoring, security, and compliance must be managed across both clouds.</li>
+                    <li>⚠️ <strong>Synchronization Lag:</strong> Database replication introduces 5-60 second delays depending on the chosen strategy.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="architecture-diagram">
+            <h2>Multi-Cloud Architecture Diagram</h2>
+            
+            <p>The following diagram illustrates the complete multi-cloud architecture with one region in each cloud, showing the global control plane, regional cells, and data synchronization flows.</p>
+
+            <div class="diagram">
+                <div class="mermaid">
+graph TB
+    subgraph "Global Control Plane (GCP Multi-Region)"
+        LB[Cloud Load Balancing<br/>Global HTTPS LB]
+        CF[Cloud Functions<br/>GetTenantCell<br/>CreateTenant<br/>HealthCheck]
+        SPANNER[(Cloud Spanner<br/>Global Tenant Directory<br/>nam-eur-asia3)]
+        DNS[Cloud DNS<br/>Traffic Director]
+    end
+
+    subgraph "GCP Primary Region: us-central1"
+        subgraph "CELL-001 (Shared - 50 Tenants)"
+            GCP_C1_RUN1[Cloud Run<br/>API/App]
+            GCP_C1_SQL1[(Cloud SQL<br/>PostgreSQL)]
+            GCP_C1_STORE1[Cloud Storage<br/>Blobs]
+            GCP_C1_REDIS1[Memorystore Redis<br/>Cache]
+        end
+        
+        subgraph "CELL-002 (Dedicated - Enterprise)"
+            GCP_C2_RUN2[Cloud Run<br/>API/App]
+            GCP_C2_SQL2[(Cloud SQL<br/>PostgreSQL)]
+            GCP_C2_STORE2[Cloud Storage<br/>Blobs]
+            GCP_C2_REDIS2[Memorystore Redis<br/>Cache]
+        end
+        
+        GCP_ARMOR[Cloud Armor<br/>WAF]
+        GCP_VPC[VPC Network<br/>Private Service Connect]
+    end
+
+    subgraph "Azure Secondary Region: East US"
+        subgraph "CELL-003 (Shared - 30 Tenants)"
+            AZ_C3_ACA1[Container Apps<br/>API/App]
+            AZ_C3_SQL1[(Azure Database for PostgreSQL<br/>Flexible Server)]
+            AZ_C3_BLOB1[Blob Storage<br/>Blobs]
+            AZ_C3_REDIS1[Azure Cache<br/>Redis]
+        end
+        
+        subgraph "CELL-004 (Dedicated - Enterprise)"
+            AZ_C4_ACA2[Container Apps<br/>API/App]
+            AZ_C4_SQL2[(Azure Database for PostgreSQL<br/>Flexible Server)]
+            AZ_C4_BLOB2[Blob Storage<br/>Blobs]
+            AZ_C4_REDIS2[Azure Cache<br/>Redis]
+        end
+        
+        AZ_APPGW[Application Gateway<br/>WAF v2]
+        AZ_VNET[Virtual Network<br/>Private Link]
+    end
+
+    subgraph "Data Sync Layer"
+        DATASTREAM[GCP Datastream<br/>CDC Capture]
+        PUBSUB[Cloud Pub/Sub<br/>Change Events]
+        ADF[Azure Data Factory<br/>CDC Consumer]
+        EVENTHUB[Azure Event Hubs<br/>Change Stream]
+    end
+
+    DNS --> LB
+    LB --> CF
+    CF --> SPANNER
+    
+    CF -->|Route to GCP CELL| GCP_ARMOR
+    GCP_ARMOR --> GCP_C1_RUN1
+    GCP_ARMOR --> GCP_C2_RUN2
+    
+    CF -->|Route to Azure CELL| AZ_APPGW
+    AZ_APPGW --> AZ_C3_ACA1
+    AZ_APPGW --> AZ_C4_ACA2
+    
+    GCP_C1_RUN1 --> GCP_C1_SQL1
+    GCP_C1_RUN1 --> GCP_C1_STORE1
+    GCP_C1_RUN1 --> GCP_C1_REDIS1
+    
+    GCP_C2_RUN2 --> GCP_C2_SQL2
+    GCP_C2_RUN2 --> GCP_C2_STORE2
+    GCP_C2_RUN2 --> GCP_C2_REDIS2
+    
+    AZ_C3_ACA1 --> AZ_C3_SQL1
+    AZ_C3_ACA1 --> AZ_C3_BLOB1
+    AZ_C3_ACA1 --> AZ_C3_REDIS1
+    
+    AZ_C4_ACA2 --> AZ_C4_SQL2
+    AZ_C4_ACA2 --> AZ_C4_BLOB2
+    AZ_C4_ACA2 --> AZ_C4_REDIS2
+    
+    GCP_C1_SQL1 -.->|CDC Replication| DATASTREAM
+    GCP_C2_SQL2 -.->|CDC Replication| DATASTREAM
+    DATASTREAM --> PUBSUB
+    PUBSUB -.->|Cross-Cloud Sync| EVENTHUB
+    EVENTHUB --> ADF
+    ADF -.->|Apply Changes| AZ_C3_SQL1
+    ADF -.->|Apply Changes| AZ_C4_SQL2
+    
+    GCP_C1_STORE1 -.->|Batch Sync| AZ_C3_BLOB1
+    GCP_C2_STORE2 -.->|Batch Sync| AZ_C4_BLOB2
+
+    classDef gcpStyle fill:#4285f4,stroke:#1967d2,color:#fff
+    classDef azureStyle fill:#0078d4,stroke:#005a9e,color:#fff
+    classDef controlStyle fill:#34a853,stroke:#137333,color:#fff
+    classDef syncStyle fill:#fbbc04,stroke:#f9ab00,color:#000
+    
+    class LB,CF,SPANNER,DNS controlStyle
+    class GCP_C1_RUN1,GCP_C2_RUN2,GCP_C1_SQL1,GCP_C2_SQL2,GCP_ARMOR,GCP_VPC gcpStyle
+    class AZ_C3_ACA1,AZ_C4_ACA2,AZ_C3_SQL1,AZ_C4_SQL2,AZ_APPGW,AZ_VNET azureStyle
+    class DATASTREAM,PUBSUB,ADF,EVENTHUB syncStyle
+                </div>
+            </div>
+
+            <h3>Diagram Key</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Color</th>
+                        <th>Component Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="background: #34a853; color: white;"><strong>Green</strong></td>
+                        <td>Global Control Plane</td>
+                        <td>GCP-hosted services managing tenant routing and directory</td>
+                    </tr>
+                    <tr>
+                        <td style="background: #4285f4; color: white;"><strong>Blue (GCP)</strong></td>
+                        <td>GCP Regional Resources</td>
+                        <td>Primary cloud cells with compute, database, storage</td>
+                    </tr>
+                    <tr>
+                        <td style="background: #0078d4; color: white;"><strong>Blue (Azure)</strong></td>
+                        <td>Azure Regional Resources</td>
+                        <td>Secondary cloud cells with equivalent services</td>
+                    </tr>
+                    <tr>
+                        <td style="background: #fbbc04;"><strong>Yellow</strong></td>
+                        <td>Data Sync Layer</td>
+                        <td>CDC and batch replication infrastructure</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="hierarchy">
+            <h2>GCP Architectural Hierarchy</h2>
+            
+            <p>Understanding the hierarchical structure of the GCP-based control plane and regional cells is critical for operations, troubleshooting, and capacity planning. The following diagram illustrates how components are organized from the global layer down to individual cell resources, mirroring the Azure Stamps Pattern hierarchy adapted for GCP.</p>
+
+            <div class="diagram">
+                <div class="mermaid">
+graph TD
+    A[🌍 GEO: Global Control Plane] --> B[📍 Region: us-central1]
+    A --> B2[📍 Region: europe-west1]
+    A --> B3[📍 Region: asia-southeast1]
+    
+    B --> C1[🏢 CELL-001: Shared<br/>50 tenants max]
+    B --> C2[🏢 CELL-002: Dedicated<br/>Enterprise only]
+    
+    C1 --> E1[☁️ Cloud Run<br/>2-100 instances]
+    C1 --> F1[💾 Cloud Storage<br/>Standard tier]
+    C1 --> G1[🗄️ Cloud SQL PostgreSQL<br/>Shared schemas]
+    C1 --> R1[⚡ Memorystore Redis<br/>5GB cache]
+    
+    C2 --> E2[☁️ Cloud Run<br/>2-50 instances]
+    C2 --> F2[💾 Cloud Storage<br/>Standard tier]
+    C2 --> G2[🗄️ Cloud SQL PostgreSQL<br/>Dedicated instance]
+    C2 --> R2[⚡ Memorystore Redis<br/>5GB cache]
+    
+    subgraph Global Layer Components
+        H[🌐 Cloud Load Balancing<br/>Global HTTPS LB]
+        I[🗂️ Cloud Spanner<br/>nam-eur-asia3<br/>Tenant Directory]
+        J[⚙️ Cloud Functions<br/>GetTenantCell<br/>CreateTenant<br/>HealthCheck]
+        K[🌐 Cloud DNS<br/>api.ncr-voyix.com]
+        L[🛡️ Cloud Armor<br/>WAF + DDoS]
+    end
+    
+    subgraph Regional Layer: us-central1
+        M[🔐 VPC Network<br/>Private Service Connect]
+        N[🔑 Secret Manager<br/>DB passwords, API keys]
+        O[📊 Cloud Monitoring<br/>Metrics + Logs]
+    end
+    
+    A --> H
+    A --> I
+    A --> J
+    A --> K
+    A --> L
+    
+    B --> M
+    B --> N
+    B --> O
+    
+    H --> B
+    J --> I
+    M --> C1
+    M --> C2
+    
+    style A fill:#4285F4,stroke:#1967D2,stroke-width:3px,color:#fff
+    style B fill:#34A853,stroke:#188038,stroke-width:2px,color:#fff
+    style B2 fill:#34A853,stroke:#188038,stroke-width:2px,color:#fff
+    style B3 fill:#34A853,stroke:#188038,stroke-width:2px,color:#fff
+    style C1 fill:#FBBC04,stroke:#F29900,stroke-width:2px
+    style C2 fill:#FBBC04,stroke:#F29900,stroke-width:2px
+    style I fill:#EA4335,stroke:#C5221F,stroke-width:2px,color:#fff
+                </div>
+            </div>
+
+            <h3>Layer Breakdown</h3>
+            
+            <h4>🌍 Global Layer (GEO)</h4>
+            <p>The global layer is deployed once and serves all regions. It handles tenant routing, DNS resolution, and global security policies. This layer is the foundation of the multi-cloud architecture, providing centralized control while enabling distributed execution.</p>
+            <ul>
+                <li><strong>Cloud Load Balancing:</strong> Global HTTPS Load Balancer with anycast IP (e.g., 34.120.50.10) that automatically routes requests to the nearest healthy region using Geo-based DNS routing. Provides automatic DDoS protection and SSL termination.</li>
+                <li><strong>Cloud Spanner:</strong> Multi-region tenant directory database with <code>nam-eur-asia3</code> configuration for US + EU + Asia coverage. Stores tenant-to-cell mappings with strong consistency guarantees and 99.999% availability SLA.</li>
+                <li><strong>Cloud Functions:</strong> Serverless routing logic with three key functions:
+                    <ul>
+                        <li><code>GetTenantCell</code>: Resolves tenant ID to cell endpoint (p99 latency &lt; 50ms)</li>
+                        <li><code>CreateTenant</code>: Provisions new tenants and assigns to optimal cell</li>
+                        <li><code>HealthCheck</code>: Monitors cell availability every 60 seconds</li>
+                    </ul>
+                </li>
+                <li><strong>Cloud DNS:</strong> Authoritative DNS for <code>api.ncr-voyix.com</code>, resolves to Load Balancer IP with 100% uptime SLA and global anycast network.</li>
+                <li><strong>Cloud Armor:</strong> Global WAF (Web Application Firewall) and DDoS protection with OWASP Top 10 rules, rate limiting (1000 req/min per IP), and bot detection.</li>
+            </ul>
+
+            <h4>📍 Regional Layer (us-central1, europe-west1, asia-southeast1)</h4>
+            <p>Each region has its own set of cells and regional infrastructure. Regions are independent; failure in one region doesn't impact others. This regional isolation is a core principle of the stamps pattern, ensuring fault containment.</p>
+            <ul>
+                <li><strong>VPC Network:</strong> Private IP space (e.g., 10.0.0.0/16) for all cells in the region with Private Service Connect for secure Cloud SQL access without public IPs. Includes Cloud NAT for outbound internet access.</li>
+                <li><strong>Secret Manager:</strong> Regional secrets vault storing database passwords, API keys, and service account credentials with automatic rotation every 90 days and audit logging.</li>
+                <li><strong>Cloud Monitoring:</strong> Regional dashboards aggregating metrics from all cells, log-based alerting policies (PagerDuty integration), and custom SLI/SLO tracking.</li>
+            </ul>
+
+            <h4>🏢 CELL Layer (CELL-001, CELL-002, ...)</h4>
+            <p>The core stamp unit. Each cell is a self-contained application instance with its own compute, storage, and database. Cells can be shared (multi-tenant) or dedicated (single-tenant), providing the flexibility to balance cost efficiency with tenant isolation requirements.</p>
+            <ul>
+                <li><strong>Cloud Run:</strong> Serverless containers auto-scaling from 2 minimum instances (for warm start) to 100 maximum instances based on CPU utilization (&gt;80%) or request queue depth (&gt;10). Uses custom container images deployed from Artifact Registry. Each instance has 2 vCPU and 4 GB RAM.</li>
+                <li><strong>Cloud Storage:</strong> Object storage for tenant files with two tiers:
+                    <ul>
+                        <li><em>Standard tier:</em> Hot data accessed frequently (API uploads, user files) at $0.020/GB/month</li>
+                        <li><em>Nearline tier:</em> Archive data accessed &lt; 1x/month (backups, old reports) at $0.010/GB/month</li>
+                        <li>Lifecycle policies automatically transition objects after 90 days</li>
+                    </ul>
+                </li>
+                <li><strong>Cloud SQL PostgreSQL:</strong> Managed PostgreSQL 15 with automated daily backups (retained 7 days), point-in-time recovery, and automatic minor version upgrades. High availability configuration with failover replica in separate zone (99.95% SLA).
+                    <ul>
+                        <li><em>Shared cells:</em> Single database instance (db-custom-4-16384: 4 vCPU, 16 GB RAM) with schema-per-tenant isolation. Each tenant gets a dedicated schema named <code>tenant_{id}</code> (e.g., <code>tenant_acme_corp</code>). Row-level security (RLS) policies enforce data isolation.</li>
+                        <li><em>Dedicated cells:</em> Separate Cloud SQL instance per enterprise tenant with same machine type. Full database isolation ensures complete compliance and performance guarantees.</li>
+                    </ul>
+                </li>
+                <li><strong>Memorystore Redis:</strong> Managed Redis 7.0 with 5 GB capacity for in-memory caching. Caches session state (TTL 30 minutes), API responses (TTL 5 minutes), and database query results (TTL 10 minutes). Reduces database load by 60-70% for read-heavy workloads.</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <h4>Scaling the Hierarchy</h4>
+                <p>The stamps pattern provides three scaling dimensions to accommodate growth:</p>
+                <p><strong>Horizontal Scaling (Add Cells):</strong> When a region reaches 80% capacity (e.g., CELL-001 has 40 of 50 tenants), provision CELL-003, CELL-004, etc. Each new cell is independent and can be added without downtime. Target: &lt; 4 hours to deploy new cell using IaC templates.</p>
+                <p><strong>Geographic Expansion (Add Regions):</strong> Deploy new regions (e.g., <code>australia-southeast1</code>, <code>southamerica-east1</code>) with identical cell configurations when entering new markets or reducing latency for distant users. New regions connect to the same global control plane automatically.</p>
+                <p><strong>Vertical Scaling (Upgrade Resources):</strong> Upgrade Cloud Run CPU/memory (2 vCPU → 4 vCPU), Cloud SQL machine type (db-custom-4-16384 → db-custom-8-32768), or Redis tier (5GB → 10GB) within existing cells for tenants with growing resource demands. Typically performed during maintenance windows with blue-green deployment.</p>
+            </div>
+
+            <h3>Azure Parallel Architecture</h3>
+            <p>Azure cells follow the same hierarchical GEO → Region → CELL pattern but use Azure-native services. This parallel structure ensures operational consistency while leveraging cloud-specific optimizations.</p>
+            
+            <h4>Mapping: GCP Layer → Azure Layer</h4>
+            <ul>
+                <li><strong>Global Layer (Shared with GCP):</strong> Same Cloud Load Balancer routes to Azure backends via Internet NEG (Network Endpoint Group pointing to Azure Application Gateway public IP). Cloud Functions and Cloud Spanner remain in GCP, providing centralized control.</li>
+                <li><strong>Regional Layer (East US, West Europe, Southeast Asia):</strong>
+                    <ul>
+                        <li><strong>Azure VNet</strong> (instead of GCP VPC): 10.1.0.0/16 address space with subnets for Container Apps, SQL, and Application Gateway</li>
+                        <li><strong>Azure Key Vault</strong> (instead of Secret Manager): Premium tier with RBAC-based access control and HSM-backed key storage</li>
+                        <li><strong>Azure Monitor</strong> (instead of Cloud Monitoring): Log Analytics workspace with KQL queries and Application Insights integration</li>
+                    </ul>
+                </li>
+                <li><strong>CELL Layer (CELL-003, CELL-004, ...):</strong>
+                    <ul>
+                        <li><strong>Azure Container Apps</strong> (instead of Cloud Run): Serverless containers with KEDA-based autoscaling, same 2-100 replica range</li>
+                        <li><strong>Azure Blob Storage</strong> (instead of Cloud Storage): Hot tier for active data, Cool tier for archives (lifecycle policies after 90 days)</li>
+                        <li><strong>Azure Database for PostgreSQL Flexible Server</strong> (instead of Cloud SQL PostgreSQL): General Purpose tier (4 vCores, 128 GB storage) with geo-replication option. Same schema isolation pattern for shared cells, identical PostgreSQL 15 version for compatibility.</li>
+                        <li><strong>Azure Cache for Redis</strong> (instead of Memorystore): Standard C1 tier (1 GB) or C2 (2.5 GB) with same caching strategies</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <h4>Key Difference: Control Plane Location</h4>
+                <p>Unlike a pure Azure Stamps Pattern deployment where all global services would be Azure-native (e.g., Azure Front Door, Cosmos DB), this multi-cloud architecture <strong>keeps the control plane in GCP</strong> even when routing to Azure cells. This design decision simplifies tenant management and routing logic by maintaining a single source of truth.</p>
+                <p><strong>Trade-off:</strong> Cross-cloud routing from GCP Load Balancer to Azure cells adds 80-150ms latency compared to intra-GCP routing (10-30ms). However, this enables cloud portability and customer choice without duplicating control plane infrastructure.</p>
+                <p><strong>Alternative Design:</strong> For latency-critical workloads, consider deploying an Azure Front Door → Azure Functions → Cosmos DB control plane in Azure for Azure-hosted tenants, with eventual consistency sync back to GCP Spanner. This reduces latency to ~50ms but doubles operational complexity.</p>
+            </div>
+
+            <h3>Comparison to Pure Azure Stamps Pattern</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Azure Stamps Pattern (Single Cloud)</th>
+                        <th>NCR Voyix Multi-Cloud (GCP + Azure)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Global Control Plane</strong></td>
+                        <td>Azure Front Door + Cosmos DB + Azure Functions</td>
+                        <td>GCP Cloud Load Balancing + Cloud Spanner + Cloud Functions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Regional Cells</strong></td>
+                        <td>Azure only (Container Apps, Azure Database for PostgreSQL, Blob Storage)</td>
+                        <td>GCP cells (Cloud Run, Cloud SQL PostgreSQL, Cloud Storage) + Azure cells (Container Apps, Azure Database for PostgreSQL, Blob Storage)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Latency (p50)</strong></td>
+                        <td>50-100ms (intra-Azure)</td>
+                        <td>80ms (GCP cells) | 200ms (Azure cells, cross-cloud hop)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complexity</strong></td>
+                        <td>Low (single cloud, unified tooling)</td>
+                        <td>Medium-High (dual cloud, cross-platform monitoring)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Customer Flexibility</strong></td>
+                        <td>Limited (Azure only)</td>
+                        <td>High (GCP or Azure based on preference)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vendor Lock-In</strong></td>
+                        <td>High (Azure-dependent)</td>
+                        <td>Low (cloud-agnostic architecture)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cost (per tenant/month)</strong></td>
+                        <td>$49 (Azure shared cell)</td>
+                        <td>$27 (GCP shared) | $49 (Azure shared)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="technology-stack">
+            <h2>Technology Stack Mapping</h2>
+            
+            <p>The following table maps GCP services to their Azure equivalents across all layers of the architecture. This ensures feature parity and consistent behavior regardless of which cloud hosts a given cell.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>GCP Service</th>
+                        <th>Azure Equivalent</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="4"><strong>Global Control Plane</strong></td>
+                        <td>Cloud Spanner (multi-region)</td>
+                        <td>Cosmos DB (multi-region) or Azure SQL (geo-replicated)</td>
+                        <td>Spanner preferred for strong consistency; Cosmos if eventual consistency acceptable</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Functions (HTTP)</td>
+                        <td>Azure Functions (HTTP trigger)</td>
+                        <td>Both support Node.js, Python, Go; use same codebase</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Load Balancing (Global)</td>
+                        <td>Azure Front Door or Traffic Manager</td>
+                        <td>Front Door for L7, Traffic Manager for L4 DNS-based routing</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud DNS + Traffic Director</td>
+                        <td>Azure DNS + Traffic Manager</td>
+                        <td>Both support health checks and failover policies</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="6"><strong>Regional Cell (Compute)</strong></td>
+                        <td>Cloud Run</td>
+                        <td>Azure Container Apps</td>
+                        <td>Both are serverless containers; scale-to-zero supported</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Run Jobs</td>
+                        <td>Container Apps Jobs</td>
+                        <td>For batch processing and scheduled tasks</td>
+                    </tr>
+                    <tr>
+                        <td>GKE (optional)</td>
+                        <td>AKS (optional)</td>
+                        <td>Full Kubernetes if advanced orchestration needed</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Armor (WAF)</td>
+                        <td>Application Gateway WAF v2</td>
+                        <td>Both support OWASP Top 10 protection, custom rules</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud CDN</td>
+                        <td>Azure CDN or Front Door</td>
+                        <td>Edge caching for static assets</td>
+                    </tr>
+                    <tr>
+                        <td>Identity-Aware Proxy</td>
+                        <td>Azure AD Application Proxy</td>
+                        <td>Zero-trust access control</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>Regional Cell (Database)</strong></td>
+                        <td>Cloud SQL (PostgreSQL)</td>
+                        <td>Azure Database for PostgreSQL</td>
+                        <td>Both support same PostgreSQL versions; pg_dump for migration</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud SQL (MySQL)</td>
+                        <td>Azure Database for MySQL</td>
+                        <td>Alternative if MySQL preferred</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Spanner (regional)</td>
+                        <td>Azure SQL Database (zone-redundant)</td>
+                        <td>For high-throughput transactional workloads</td>
+                    </tr>
+                    <tr>
+                        <td>Firestore</td>
+                        <td>Cosmos DB (SQL API)</td>
+                        <td>Document-based NoSQL; similar query patterns</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Regional Cell (Storage)</strong></td>
+                        <td>Cloud Storage (Standard)</td>
+                        <td>Azure Blob Storage (Hot tier)</td>
+                        <td>Object storage; S3-compatible APIs available</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Storage (Nearline/Coldline)</td>
+                        <td>Azure Blob Storage (Cool/Archive)</td>
+                        <td>Cost-optimized tiers for infrequent access</td>
+                    </tr>
+                    <tr>
+                        <td>Persistent Disk</td>
+                        <td>Azure Managed Disks</td>
+                        <td>Block storage for VMs or persistent containers</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Regional Cell (Cache/Queue)</strong></td>
+                        <td>Memorystore (Redis)</td>
+                        <td>Azure Cache for Redis</td>
+                        <td>Both support Redis 6.x+; identical client libraries</td>
+                    </tr>
+                    <tr>
+                        <td>Memorystore (Memcached)</td>
+                        <td>Azure Cache for Redis (Memcached protocol)</td>
+                        <td>Alternative caching protocol</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Pub/Sub</td>
+                        <td>Azure Event Hubs or Service Bus</td>
+                        <td>Event Hubs for Kafka-compatible; Service Bus for AMQP</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>Data Sync</strong></td>
+                        <td>Datastream</td>
+                        <td>Azure Data Factory (CDC)</td>
+                        <td>Change data capture from databases</td>
+                    </tr>
+                    <tr>
+                        <td>Storage Transfer Service</td>
+                        <td>AzCopy or Data Factory</td>
+                        <td>Bulk object transfer between clouds</td>
+                    </tr>
+                    <tr>
+                        <td>Database Migration Service</td>
+                        <td>Azure Database Migration Service</td>
+                        <td>One-time or continuous database replication</td>
+                    </tr>
+                    <tr>
+                        <td>Dataflow</td>
+                        <td>Azure Stream Analytics</td>
+                        <td>Real-time stream processing</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>Networking</strong></td>
+                        <td>VPC Network</td>
+                        <td>Azure Virtual Network</td>
+                        <td>Private IP space, subnets, routing</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud VPN</td>
+                        <td>Azure VPN Gateway</td>
+                        <td>IPSec tunnels for cross-cloud connectivity</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Interconnect</td>
+                        <td>Azure ExpressRoute</td>
+                        <td>Dedicated private connection (10-100 Gbps)</td>
+                    </tr>
+                    <tr>
+                        <td>Private Service Connect</td>
+                        <td>Azure Private Link</td>
+                        <td>Private endpoints for PaaS services</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>Observability</strong></td>
+                        <td>Cloud Monitoring</td>
+                        <td>Azure Monitor</td>
+                        <td>Metrics, dashboards, alerting</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Logging</td>
+                        <td>Azure Log Analytics</td>
+                        <td>Centralized log aggregation and querying</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Trace</td>
+                        <td>Azure Application Insights</td>
+                        <td>Distributed tracing for microservices</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Profiler</td>
+                        <td>Application Insights Profiler</td>
+                        <td>CPU and memory profiling</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Security & Identity</strong></td>
+                        <td>Cloud IAM</td>
+                        <td>Azure RBAC + Azure AD</td>
+                        <td>Role-based access control</td>
+                    </tr>
+                    <tr>
+                        <td>Workload Identity Federation</td>
+                        <td>Azure AD Workload Identity</td>
+                        <td>Keyless authentication for cross-cloud services</td>
+                    </tr>
+                    <tr>
+                        <td>Secret Manager</td>
+                        <td>Azure Key Vault</td>
+                        <td>Secrets, keys, certificates management</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-info">
+                <h4>Container Image Strategy</h4>
+                <p><strong>Recommendation:</strong> Build application containers once and push to both Google Container Registry (GCR) and Azure Container Registry (ACR). This ensures:</p>
+                <ul>
+                    <li><strong>Consistency:</strong> Identical image SHA across clouds eliminates "works in GCP but fails in Azure" issues</li>
+                    <li><strong>Reduced Build Time:</strong> CI/CD pipeline builds once, pushes twice</li>
+                    <li><strong>Compliance:</strong> Both clouds pull from their respective registries (no cross-cloud image pulls)</li>
+                </ul>
+                <p><strong>Implementation:</strong> Use Docker multi-registry push or CI/CD tools (GitHub Actions, GitLab CI) with parallel push steps.</p>
+            </div>
+        </section>
+
+        <section id="identity-management">
+            <h2>Shared Identity Management</h2>
+            
+            <p>A multi-cloud architecture requires a unified identity and access management (IAM) strategy to ensure secure, seamless authentication and authorization across GCP and Azure environments. Without a shared identity system, you face:</p>
+            <ul>
+                <li>❌ Duplicate user accounts and credentials across clouds</li>
+                <li>❌ Inconsistent security policies and audit trails</li>
+                <li>❌ Complex service-to-service authentication for cross-cloud operations</li>
+                <li>❌ Poor user experience (multiple logins for the same application)</li>
+            </ul>
+
+            <h3>Recommended Architecture: Microsoft Entra ID (Azure AD) as Central IdP</h3>
+            
+            <div class="callout callout-success">
+                <h4>Why Entra ID for Multi-Cloud Identity?</h4>
+                <ul>
+                    <li>✅ <strong>Native Azure Integration:</strong> Zero-friction authentication for Azure resources (Container Apps, Key Vault, PostgreSQL)</li>
+                    <li>✅ <strong>GCP Federation Support:</strong> Workload Identity Federation enables keyless authentication from GCP to Entra ID</li>
+                    <li>✅ <strong>Enterprise SSO:</strong> SAML 2.0 and OpenID Connect for application authentication across both clouds</li>
+                    <li>✅ <strong>Centralized Governance:</strong> Conditional access policies, MFA, and Privileged Identity Management (PIM) apply universally</li>
+                    <li>✅ <strong>Unified Audit Trail:</strong> Single sign-in log for compliance (SOC2, ISO 27001, HIPAA)</li>
+                    <li>✅ <strong>B2B/B2C Support:</strong> External tenant access via Azure AD B2B or B2C for customer-facing applications</li>
+                </ul>
+            </div>
+
+            <h3>Identity Architecture Components</h3>
+
+            <h4>1. End-User Authentication (Application Access)</h4>
+            <p><strong>Use Case:</strong> NCR Voyix customers log in to the SaaS application regardless of which cloud hosts their tenant.</p>
+            
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant User as End User
+    participant App as NCR Voyix App<br/>(GCP or Azure Cell)
+    participant EntraID as Entra ID<br/>(Central IdP)
+    participant Spanner as Cloud Spanner<br/>(Tenant Routing)
+    
+    User->>App: Access app (api.ncr-voyix.com)
+    App->>EntraID: Redirect to /authorize (OIDC)
+    EntraID->>User: Login page (MFA if required)
+    User->>EntraID: Submit credentials + MFA
+    EntraID->>EntraID: Validate user, check conditional access policies
+    EntraID-->>App: Return ID token + access token (JWT)
+    App->>App: Validate JWT signature, extract tenant_id
+    App->>Spanner: Lookup tenant's cell assignment
+    Spanner-->>App: Return cell_id
+    App->>App: Verify user authorized for this tenant
+    App-->>User: Grant access to application
+                </div>
+            </div>
+
+            <p><strong>Implementation Details:</strong></p>
+            <ul>
+                <li><strong>Protocol:</strong> OpenID Connect (OIDC) for authentication, OAuth 2.0 for authorization</li>
+                <li><strong>Token Storage:</strong> JWT tokens cached in Redis (1-hour TTL) to reduce Entra ID round-trips</li>
+                <li><strong>Session Management:</strong> Refresh tokens stored securely, auto-refresh before expiry</li>
+                <li><strong>Multi-Tenancy:</strong> Tenant ID embedded in JWT claims (<code>tenant_id</code> custom claim), validated on every request</li>
+            </ul>
+
+            <h4>2. Service-to-Service Authentication (Cross-Cloud Operations)</h4>
+            <p><strong>Use Case:</strong> GCP Cloud Functions need to read Azure Key Vault secrets, or trigger Azure Container Apps for data sync jobs.</p>
+
+            <div class="callout callout-info">
+                <h4>Workload Identity Federation (GCP ↔ Entra ID)</h4>
+                <p>Enables GCP services to authenticate to Entra ID <strong>without storing credentials</strong>:</p>
+                <ol>
+                    <li>Configure Entra ID to trust GCP's OIDC provider (<code>https://accounts.google.com</code>)</li>
+                    <li>Create an Entra ID Application Registration with federated credentials (subject claim: GCP service account email)</li>
+                    <li>GCP Cloud Function requests a token from its metadata service (bound to service account)</li>
+                    <li>Function exchanges GCP token for Entra ID access token via token exchange endpoint</li>
+                    <li>Function uses Entra ID token to authenticate to Azure resources (Key Vault, Storage, PostgreSQL)</li>
+                </ol>
+                <p><strong>Security Benefit:</strong> No secrets stored in GCP (no service principal passwords, no API keys). Tokens are short-lived (1 hour) and scoped to specific Azure resources.</p>
+            </div>
+
+            <p><strong>Example: GCP Cloud Function Accessing Azure Key Vault</strong></p>
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant CF as GCP Cloud Function<br/>(GetTenantCell)
+    participant GCP_Meta as GCP Metadata Service
+    participant EntraID as Entra ID<br/>(Token Exchange)
+    participant KeyVault as Azure Key Vault
+    
+    CF->>GCP_Meta: Request identity token<br/>(audience: api://AzureADTokenExchange)
+    GCP_Meta-->>CF: Return GCP identity token (JWT)
+    CF->>EntraID: POST /token (grant_type=token_exchange)<br/>with GCP token
+    EntraID->>EntraID: Validate GCP token signature<br/>Check federated credential mapping
+    EntraID-->>CF: Return Azure access token (JWT)
+    CF->>KeyVault: GET /secrets/db-connection-string<br/>Authorization: Bearer {azure_token}
+    KeyVault->>KeyVault: Validate token, check RBAC
+    KeyVault-->>CF: Return secret value
+                </div>
+            </div>
+
+            <h4>3. Administrative Access (Operator/SRE Authentication)</h4>
+            <p><strong>Use Case:</strong> NCR Voyix operations team needs access to GCP and Azure consoles, CLI tools, and management APIs.</p>
+
+            <ul>
+                <li><strong>GCP:</strong> Configure Workforce Identity Federation to federate Entra ID to GCP IAM
+                    <ul>
+                        <li>Create Workforce Identity Pool in GCP (provider: Entra ID SAML endpoint)</li>
+                        <li>Map Entra ID groups to GCP IAM roles (e.g., <code>ops-team@ncr-voyix.com</code> → <code>roles/viewer</code>)</li>
+                        <li>Operators log in via <code>gcloud auth login --workforce-identity</code> (redirects to Entra ID)</li>
+                    </ul>
+                </li>
+                <li><strong>Azure:</strong> Native Entra ID integration (no additional configuration needed)
+                    <ul>
+                        <li>Assign Azure RBAC roles to Entra ID users/groups</li>
+                        <li>Operators log in via <code>az login</code> (redirects to Entra ID)</li>
+                    </ul>
+                </li>
+                <li><strong>Privileged Access Management (PIM):</strong> Enable just-in-time (JIT) elevation for production access (operators request temporary Owner role, auto-revoked after 2 hours)</li>
+            </ul>
+
+            <h3>Implementation Roadmap</h3>
+
+            <div class="phase-box">
+                <h4>Phase 0: Identity Foundation (Before Phase 1)</h4>
+                <p><strong>Timeline:</strong> 1-2 weeks (prerequisite for all other phases)</p>
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Provision Entra ID tenant (or use existing NCR Voyix tenant)</li>
+                    <li>Create Entra ID Application Registration for NCR Voyix SaaS app (OIDC/OAuth 2.0)</li>
+                    <li>Configure Workload Identity Federation: Entra ID ↔ GCP
+                        <ul>
+                            <li>Add GCP OIDC provider (<code>https://accounts.google.com</code>) as federated credential</li>
+                            <li>Create service principal for GCP-to-Azure service authentication</li>
+                        </ul>
+                    </li>
+                    <li>Configure Workforce Identity Federation: Entra ID ↔ GCP IAM
+                        <ul>
+                            <li>Create Workforce Identity Pool in GCP</li>
+                            <li>Map Entra ID groups to GCP IAM roles</li>
+                        </ul>
+                    </li>
+                    <li>Set up Conditional Access Policies:
+                        <ul>
+                            <li>Require MFA for all production access</li>
+                            <li>Restrict admin access to corporate VPN/office IPs</li>
+                            <li>Block legacy authentication protocols</li>
+                        </ul>
+                    </li>
+                    <li>Enable Entra ID audit logging (export to Azure Monitor + GCP Cloud Logging for unified observability)</li>
+                </ol>
+                <p><strong>Success Criteria:</strong></p>
+                <ul>
+                    <li>✅ Test user can authenticate to mock app via Entra ID OIDC</li>
+                    <li>✅ GCP Cloud Function can obtain Azure access token without stored credentials</li>
+                    <li>✅ Ops team can log in to both GCP and Azure consoles using Entra ID SSO</li>
+                </ul>
+            </div>
+
+            <h3>Security Best Practices</h3>
+
+            <div class="callout callout-warning">
+                <h4>Critical Identity Security Controls</h4>
+                <ul>
+                    <li>🔒 <strong>Enforce MFA:</strong> Require multi-factor authentication for all user and admin accounts (no exceptions)</li>
+                    <li>🔒 <strong>Least Privilege:</strong> Grant minimum necessary permissions (use Azure PIM for temporary elevation)</li>
+                    <li>🔒 <strong>Token Rotation:</strong> Rotate federated credential certificates annually, use short-lived tokens (1-hour max)</li>
+                    <li>🔒 <strong>Audit Logging:</strong> Stream Entra ID sign-in logs to SIEM (Azure Sentinel or Splunk) for anomaly detection</li>
+                    <li>🔒 <strong>Break-Glass Accounts:</strong> Create emergency admin accounts (stored offline) for Entra ID outages</li>
+                    <li>🔒 <strong>Conditional Access:</strong> Block sign-ins from untrusted locations, require compliant devices</li>
+                    <li>🔒 <strong>Identity Protection:</strong> Enable Entra ID Identity Protection for risk-based conditional access (block compromised credentials)</li>
+                </ul>
+            </div>
+
+            <h3>Alternative: Google Cloud Identity (Not Recommended)</h3>
+            <p>While technically possible to use Google Cloud Identity as the central IdP, it has significant limitations for this architecture:</p>
+            <ul>
+                <li>❌ <strong>Azure Integration:</strong> Requires manual SAML configuration (no native support)</li>
+                <li>❌ <strong>Federation Maturity:</strong> Azure AD Workload Identity for GCP is less mature than GCP's federation to Entra ID</li>
+                <li>❌ <strong>Enterprise Features:</strong> Cloud Identity lacks PIM, advanced conditional access, and risk-based authentication</li>
+                <li>❌ <strong>Audit/Compliance:</strong> Split audit logs (Cloud Identity + Azure AD) complicate compliance reporting</li>
+            </ul>
+            <p><strong>Verdict:</strong> Entra ID is the superior choice for multi-cloud identity management when Azure is a primary cloud.</p>
+        </section>
+
+        <section id="request-flows">
+            <h2>Request Flow Scenarios</h2>
+            
+            <p>Understanding how traffic flows through the multi-cloud architecture helps troubleshoot latency issues and optimize routing policies. This section provides both an operator-focused runtime view and detailed scenario breakdowns.</p>
+
+            <h3>End-to-End Runtime Diagram (Operator View)</h3>
+            <p>The following sequence diagram shows the complete request flow from user to application, including all major components in the control plane and data plane. This compact operator-focused view helps quickly identify the flow of operations between network, routing, application, and data layers.</p>
+
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant User as User
+    participant DNS as Cloud DNS
+    participant LB as Cloud Load Balancer
+    participant CF as Cloud Functions<br/>(GetTenantCell)
+    participant SPANNER as Cloud Spanner<br/>(Tenant Directory)
+    participant CELL as Cloud Run / Container Apps<br/>(CELL Instance)
+    participant SQL as Cloud SQL PostgreSQL / Azure PostgreSQL<br/>(Tenant Database)
+    participant STORAGE as Cloud Storage / Blob Storage<br/>(Tenant Files)
+
+    User->>DNS: 1. Resolve api.ncr-voyix.com
+    DNS-->>User: Return Load Balancer IP
+    
+    User->>LB: 2. HTTPS request (edge)
+    Note over LB: Global anycast routing
+    
+    LB->>CF: 3. Tenant lookup call
+    Note over CF: Extract tenant ID from<br/>header/JWT/path
+    
+    CF->>SPANNER: 4. Query tenant routing
+    Note over SPANNER: SELECT cell_id, cloud, endpoint<br/>FROM tenants WHERE id=?
+    
+    SPANNER-->>CF: 5. Return tenant cell info
+    Note over SPANNER: Result: cell-001 (GCP)<br/>or cell-003 (Azure)
+    
+    CF-->>LB: 6. Return routing decision
+    Note over CF: Cell endpoint URL +<br/>cloud provider metadata
+    
+    LB->>CELL: 7. Route to cell backend
+    Note over LB,CELL: If GCP: internal routing (10-30ms)<br/>If Azure: cross-cloud (80-150ms)
+    
+    CELL->>SQL: 8. Query/update tenant data
+    Note over SQL: Schema-isolated database<br/>(tenant_{id}.table)
+    
+    SQL-->>CELL: 9. Database response
+    
+    CELL->>STORAGE: 10. Optional: Read/write files
+    STORAGE-->>CELL: 11. File data
+    
+    CELL-->>LB: 12. Application response
+    LB-->>User: 13. Final response
+    
+    Note over User,STORAGE: Total latency: 80ms (GCP) | 200ms (Azure)
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <h4>Key Observations from Runtime Flow</h4>
+                <ul>
+                    <li><strong>Steps 1-2 (DNS + LB):</strong> Same for all tenants; DNS cached, LB anycast routing to nearest region</li>
+                    <li><strong>Steps 3-6 (Tenant Resolution):</strong> Critical path for routing decision; typically 10-50ms with caching</li>
+                    <li><strong>Step 7 (Cross-Cloud Hop):</strong> Main latency difference between GCP cells (internal) and Azure cells (internet/VPN)</li>
+                    <li><strong>Steps 8-11 (Application Logic):</strong> Standard cell execution; latency depends on query complexity and cache hits</li>
+                    <li><strong>Steps 12-13 (Response Path):</strong> Symmetric return through same load balancer</li>
+                </ul>
+                <p><strong>Bottleneck Analysis:</strong> The GetTenantCell function (steps 3-6) is the most frequent operation and benefits heavily from Redis caching. The cross-cloud hop (step 7) is the largest latency contributor for Azure-hosted tenants but enables cloud flexibility.</p>
+            </div>
+
+            <h3>Scenario 1: Tenant in GCP CELL</h3>
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant DNS as Cloud DNS
+    participant LB as Cloud Load Balancer
+    participant CF as Cloud Functions<br/>(GetTenantCell)
+    participant SPANNER as Cloud Spanner
+    participant RUN as Cloud Run<br/>(CELL-001)
+    participant SQL as Cloud SQL
+    
+    User->>DNS: Resolve api.ncr-voyix.com
+    DNS-->>User: 34.120.50.10 (LB IP)
+    User->>LB: POST /api/orders<br/>X-Tenant-ID: acme-corp
+    LB->>CF: Invoke GetTenantCell(acme-corp)
+    CF->>SPANNER: SELECT cell FROM tenants WHERE id=?
+    SPANNER-->>CF: cell_id=cell-001, endpoint=https://cell-001.run.app
+    CF-->>LB: Route to https://cell-001.run.app
+    LB->>RUN: Forward POST /api/orders
+    RUN->>SQL: INSERT INTO tenant_acme_corp.orders
+    SQL-->>RUN: Row inserted, ID=12345
+    RUN-->>LB: 201 Created {order_id: 12345}
+    LB-->>User: 201 Created {order_id: 12345}
+                </div>
+            </div>
+            <p><strong>Latency Breakdown:</strong></p>
+            <ul>
+                <li>DNS lookup: 10-50ms (cached after first request)</li>
+                <li>LB → Cloud Function: 5-15ms</li>
+                <li>Cloud Function → Spanner: 5-20ms (often served from cache)</li>
+                <li>LB → Cloud Run: 10-30ms (GCP internal network)</li>
+                <li>Cloud Run → Cloud SQL: 5-10ms (VPC internal)</li>
+                <li><strong>Total: 35-125ms</strong> (p50 typically ~80ms)</li>
+            </ul>
+
+            <h3>Scenario 2: Tenant in Azure CELL (Cross-Cloud)</h3>
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant LB as GCP Cloud Load Balancer
+    participant CF as Cloud Functions<br/>(GetTenantCell)
+    participant SPANNER as Cloud Spanner
+    participant APPGW as Azure App Gateway
+    participant ACA as Azure Container Apps<br/>(CELL-003)
+    participant AZURESQL as Azure PostgreSQL
+    
+    User->>LB: POST /api/orders<br/>X-Tenant-ID: contoso-ltd
+    LB->>CF: Invoke GetTenantCell(contoso-ltd)
+    CF->>SPANNER: SELECT cell FROM tenants WHERE id=?
+    SPANNER-->>CF: cell_id=cell-003, cloud=AZURE<br/>endpoint=https://cell-003-appgw.eastus.com
+    CF-->>LB: Route to Azure endpoint
+    LB->>APPGW: Forward POST (over internet)
+    APPGW->>ACA: Forward POST /api/orders
+    ACA->>AZURESQL: INSERT INTO tenant_contoso_ltd.orders
+    AZURESQL-->>ACA: Row inserted, ID=67890
+    ACA-->>APPGW: 201 Created {order_id: 67890}
+    APPGW-->>LB: 201 Created {order_id: 67890}
+    LB-->>User: 201 Created {order_id: 67890}
+                </div>
+            </div>
+            <p><strong>Latency Breakdown:</strong></p>
+            <ul>
+                <li>DNS + LB + Cloud Function + Spanner: same as Scenario 1 (~60ms)</li>
+                <li><strong>GCP → Azure cross-cloud hop: +80-150ms</strong> (internet traversal, TLS handshake)</li>
+                <li>Azure App Gateway → Container Apps: 15-30ms</li>
+                <li>Container Apps → Azure SQL: 5-10ms</li>
+                <li><strong>Total: 160-250ms</strong> (p50 typically ~200ms)</li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <h4>Optimization: Use Cloud VPN or Interconnect</h4>
+                <p>If cross-cloud latency is unacceptable (&gt; 200ms), consider:</p>
+                <ul>
+                    <li><strong>Cloud VPN:</strong> IPSec tunnel (GCP VPC ↔ Azure VNet) reduces latency to ~20-40ms, cost: $0.05/hour + egress</li>
+                    <li><strong>Cloud Interconnect + ExpressRoute:</strong> Dedicated 10 Gbps link, latency < 10ms, cost: ~$2000/month</li>
+                </ul>
+                <p><strong>Trade-off:</strong> Interconnect significantly increases cost and complexity. Only justified for high-volume, latency-sensitive workloads.</p>
+            </div>
+
+            <h3>Scenario 3: GCP Region Failure → Azure Failover</h3>
+            <div class="diagram">
+                <div class="mermaid">
+sequenceDiagram
+    participant Ops as Operations Team
+    participant SPANNER as Cloud Spanner
+    participant CF as Cloud Functions<br/>(HealthCheck)
+    participant LB as Cloud Load Balancer
+    participant AZURECELL as Azure CELL-003
+    
+    Note over CF: Cloud Scheduler triggers<br/>HealthCheck every 60s
+    CF->>CF: Probe CELL-001 health endpoint
+    CF--xCF: Timeout (GCP us-central1 down)
+    CF->>SPANNER: UPDATE cells SET status='offline'<br/>WHERE cell_id='cell-001'
+    CF->>Ops: Alert: CELL-001 offline (PagerDuty)
+    
+    Ops->>SPANNER: UPDATE tenants SET cell_id='cell-003'<br/>WHERE cell_id='cell-001'
+    Ops->>CF: Invalidate cache for all affected tenants
+    
+    Note over LB: Next user request
+    LB->>CF: GetTenantCell(acme-corp)
+    CF->>SPANNER: SELECT ... (fetches new cell_id)
+    SPANNER-->>CF: cell-003 (Azure)
+    CF-->>LB: Route to Azure
+    LB->>AZURECELL: Forward request
+    AZURECELL-->>LB: Response (using synced data)
+    LB-->>Ops: Request successful
+                </div>
+            </div>
+            <p><strong>Failover Timeline:</strong></p>
+            <ul>
+                <li><strong>t=0:</strong> GCP region failure occurs</li>
+                <li><strong>t=60s:</strong> HealthCheck detects failure, alerts operations</li>
+                <li><strong>t=90s:</strong> Operations updates Spanner (manually or via runbook script)</li>
+                <li><strong>t=120s:</strong> Cache invalidation complete, new requests route to Azure</li>
+                <li><strong>RTO: 2-3 minutes</strong> (from detection to full recovery)</li>
+            </ul>
+
+            <div class="callout callout-success">
+                <h4>Automatic Failover (Future Enhancement)</h4>
+                <p>Phase 6 (post-launch) can implement automatic failover:</p>
+                <ol>
+                    <li>HealthCheck function detects 3 consecutive failures (180 seconds)</li>
+                    <li>Automatically updates Spanner to reassign tenants to healthy cells</li>
+                    <li>Publishes to Pub/Sub → triggers cache invalidation across all regions</li>
+                    <li>Sends Slack/PagerDuty notification for human validation</li>
+                </ol>
+                <p><strong>Benefit:</strong> RTO reduced to ~3 minutes without manual intervention</p>
+                <p><strong>Risk:</strong> Must carefully tune health check thresholds to avoid false positives (flapping)</p>
+            </div>
+        </section>
+
+        <section id="control-plane">
+            <h2>Global Control Plane Components (GCP-Hosted)</h2>
+            
+            <p>The global control plane runs exclusively in GCP and serves as the single source of truth for all tenant routing decisions. This centralized architecture simplifies management and ensures consistency regardless of where cells are deployed.</p>
+
+            <h3>1. Cloud Spanner (Tenant Directory)</h3>
+            <p><strong>Purpose:</strong> Cloud Spanner is a globally distributed, strongly consistent database that stores the authoritative tenant-to-cell mapping. It is the heart of the routing system.</p>
+            
+            <h4>Schema Design</h4>
+            <pre><code>-- Tenants table
+CREATE TABLE tenants (
+    tenant_id STRING(36) NOT NULL,
+    tenant_name STRING(255) NOT NULL,
+    cell_id STRING(36) NOT NULL,
+    cloud_provider STRING(10) NOT NULL,  -- 'GCP' or 'AZURE'
+    region STRING(50) NOT NULL,          -- e.g., 'us-central1' or 'eastus'
+    tier STRING(20) NOT NULL,            -- 'shared' or 'dedicated'
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+) PRIMARY KEY (tenant_id);
+
+-- Cells table
+CREATE TABLE cells (
+    cell_id STRING(36) NOT NULL,
+    cell_name STRING(100) NOT NULL,
+    cloud_provider STRING(10) NOT NULL,
+    region STRING(50) NOT NULL,
+    endpoint_url STRING(500) NOT NULL,  -- Backend URL for this cell
+    capacity_max INT64 NOT NULL,        -- Max tenant count for shared cells
+    capacity_current INT64 NOT NULL,    -- Current tenant count
+    health_status STRING(20) NOT NULL,  -- 'healthy', 'degraded', 'offline'
+    last_health_check TIMESTAMP NOT NULL,
+) PRIMARY KEY (cell_id);
+
+-- Indexes
+CREATE INDEX idx_tenants_cell ON tenants(cell_id);
+CREATE INDEX idx_cells_provider ON cells(cloud_provider, region);
+</code></pre>
+
+            <h4>Multi-Region Configuration</h4>
+            <p><strong>Recommended Instance Config:</strong> <code>nam-eur-asia3</code> (3 read-write regions spanning North America, Europe, Asia)</p>
+            <p><strong>Why This Matters:</strong></p>
+            <ul>
+                <li><strong>Low Latency Reads:</strong> Cloud Functions deployed in any region can read from the nearest Spanner replica with < 10ms latency.</li>
+                <li><strong>Strong Consistency:</strong> Tenant updates (e.g., migrating a tenant to a new cell) are immediately visible globally, eliminating race conditions.</li>
+                <li><strong>High Availability:</strong> Survives complete failure of any single region without data loss or downtime.</li>
+            </ul>
+
+            <h3>2. Cloud Functions (Routing Logic)</h3>
+            <p><strong>Purpose:</strong> Lightweight serverless functions handle tenant lookups and administrative operations. These functions are invoked by the Cloud Load Balancer for every incoming request.</p>
+
+            <h4>Function: GetTenantCell</h4>
+            <p><strong>Trigger:</strong> HTTP (invoked by load balancer for every API request)</p>
+            <p><strong>Logic Flow:</strong></p>
+            <ol>
+                <li>Extract tenant ID from request header (<code>X-Tenant-ID</code>) or JWT claim</li>
+                <li>Query Cloud Spanner: <code>SELECT cell_id, cloud_provider, region, endpoint_url FROM tenants JOIN cells USING(cell_id) WHERE tenant_id = ?</code></li>
+                <li>Return JSON response: <code>{"cell_endpoint": "https://cell-003-azure.eastus.example.com", "cloud": "AZURE"}</code></li>
+                <li>Load balancer uses this endpoint to route the request</li>
+            </ol>
+
+            <h4>Function: CreateTenant</h4>
+            <p><strong>Purpose:</strong> Administrative function to provision new tenants and assign them to cells based on capacity and customer preferences.</p>
+            <p><strong>Logic:</strong></p>
+            <ol>
+                <li>Accept parameters: <code>tenant_name</code>, <code>preferred_cloud</code> (GCP/AZURE), <code>tier</code> (shared/dedicated), <code>region</code></li>
+                <li>Query available cells: <code>SELECT cell_id FROM cells WHERE cloud_provider = ? AND region = ? AND tier = ? AND capacity_current < capacity_max</code></li>
+                <li>If no capacity in preferred cloud/region, suggest alternatives or provision new cell</li>
+                <li>Insert tenant record and increment cell capacity counter (using Spanner transaction)</li>
+                <li>Return tenant credentials and cell assignment</li>
+            </ol>
+
+            <h4>Function: HealthCheck</h4>
+            <p><strong>Purpose:</strong> Periodically probe all cells (GCP and Azure) to update health status in Spanner.</p>
+            <p><strong>Trigger:</strong> Cloud Scheduler (runs every 60 seconds)</p>
+            <p><strong>Logic:</strong></p>
+            <ul>
+                <li>Query all cells from Spanner</li>
+                <li>Send HTTP GET to each cell's <code>/health</code> endpoint (with 5-second timeout)</li>
+                <li>Update <code>health_status</code> and <code>last_health_check</code> in Spanner</li>
+                <li>If cell goes offline, trigger alerts (Cloud Monitoring or PagerDuty)</li>
+            </ul>
+
+            <h3>3. Cloud Load Balancing (Global HTTPS LB)</h3>
+            <p><strong>Purpose:</strong> The global load balancer is the single entry point for all API traffic. It intelligently routes requests to the correct cell based on the Cloud Functions response.</p>
+
+            <h4>Configuration</h4>
+            <ul>
+                <li><strong>Frontend:</strong> Global anycast IP (e.g., <code>api.ncr-voyix.com</code>)</li>
+                <li><strong>SSL Certificate:</strong> Google-managed certificate with auto-renewal</li>
+                <li><strong>Backend Services:</strong>
+                    <ul>
+                        <li>Cloud Functions backend (for tenant lookup)</li>
+                        <li>GCP cell backend group (Cloud Run services in us-central1)</li>
+                        <li>Azure cell backend group (Internet NEG pointing to Azure Application Gateway)</li>
+                    </ul>
+                </li>
+                <li><strong>URL Map:</strong> Route based on <code>GetTenantCell</code> response (using header-based routing or URL rewrite)</li>
+            </ul>
+
+            <div class="callout callout-warning">
+                <h4>Cross-Cloud Routing Challenge</h4>
+                <p><strong>Problem:</strong> GCP Cloud Load Balancing cannot natively route to Azure backends as if they were GCP resources.</p>
+                <p><strong>Solution:</strong> Use Internet NEGs (Network Endpoint Groups) to represent Azure endpoints. The load balancer treats Azure Application Gateway's public IP as an external backend.</p>
+                <p><strong>Trade-off:</strong> This adds 20-50ms latency due to additional TLS handshakes and internet traversal. For sensitive workloads, consider Cloud VPN or Interconnect for private connectivity.</p>
+            </div>
+
+            <h3>4. Cloud DNS + Traffic Director</h3>
+            <p><strong>Purpose:</strong> DNS provides the initial entry point (<code>api.ncr-voyix.com</code> → Cloud Load Balancing IP). Traffic Director (optional) enables more advanced service mesh routing if using GKE.</p>
+
+            <h4>DNS Provider Options: GCP vs. Cloudflare vs. Azure</h4>
+            
+            <div class="callout callout-info">
+                <h4>DNS Provider Decision Matrix</h4>
+                <p>NCR Voyix has three primary options for authoritative DNS hosting:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Pros</th>
+                            <th>Cons</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>GCP Cloud DNS</strong><br/>(Current)</td>
+                            <td>
+                                • Native integration with GCP Load Balancer<br/>
+                                • 100% SLA with anycast network<br/>
+                                • Automatic DNSSEC support<br/>
+                                • Simple A record → LB IP mapping<br/>
+                                • No additional vendor management<br/>
+                                • Low cost ($0.40/million queries)
+                            </td>
+                            <td>
+                                • Basic feature set (no advanced WAF)<br/>
+                                • Limited DDoS protection (relies on GCP Cloud Armor)<br/>
+                                • No global traffic steering (manual DNS updates for failover)
+                            </td>
+                            <td>Simple deployments where control plane is already in GCP</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cloudflare</strong><br/>(Recommended)</td>
+                            <td>
+                                • <strong>Best-in-class DDoS protection</strong> (20+ Tbps capacity)<br/>
+                                • Advanced WAF with managed rulesets<br/>
+                                • <strong>Global traffic steering:</strong> Geo-routing, health checks, automatic failover<br/>
+                                • CDN included (cache static assets at edge)<br/>
+                                • Rate limiting and bot management<br/>
+                                • Brand protection (registrar lock, DNSSEC)<br/>
+                                • Excellent observability (real-time analytics)
+                            </td>
+                            <td>
+                                • Additional vendor to manage<br/>
+                                • Extra cost (~$200/month for Pro plan)<br/>
+                                • Requires NS delegation from domain registrar
+                            </td>
+                            <td><strong>Production workloads requiring enterprise-grade security, DDoS protection, and intelligent traffic routing</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Azure DNS</strong></td>
+                            <td>
+                                • Native Azure integration<br/>
+                                • Anycast network with 100% SLA<br/>
+                                • Azure Private DNS zones for internal resolution<br/>
+                                • Integrated with Azure Front Door
+                            </td>
+                            <td>
+                                • <strong>Poor fit:</strong> Control plane is in GCP, not Azure<br/>
+                                • Requires cross-cloud DNS delegation complexity<br/>
+                                • No advantage over GCP Cloud DNS in this architecture
+                            </td>
+                            <td>Azure-native architectures (not this one)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>Recommended: Cloudflare for Production</h4>
+            <p><strong>Why Cloudflare is the best choice for NCR Voyix:</strong></p>
+            <ol>
+                <li><strong>True Multi-Cloud Independence:</strong> No cloud vendor lock-in—Cloudflare sits above GCP and Azure, providing a neutral control point for DNS and security.</li>
+                <li><strong>Enterprise DDoS Protection:</strong> NCR Voyix handles sensitive retail/payment data; Cloudflare's network can absorb attacks that would overwhelm GCP Cloud Armor alone.</li>
+                <li><strong>Intelligent Failover:</strong> Cloudflare health checks can automatically fail over from GCP to Azure cells without manual intervention (reduce RTO from 3 minutes to <30 seconds).</li>
+                <li><strong>Global Traffic Steering:</strong> Route users to nearest healthy cell (Europe users → europe-west1, US users → us-central1) with latency-based routing.</li>
+                <li><strong>CDN + Edge Compute:</strong> Cache static assets (images, JS/CSS) at 300+ edge locations, reducing load on Cloud Run/Container Apps.</li>
+                <li><strong>Security Layer:</strong> WAF blocks OWASP Top 10 attacks before they reach your cells, saving Cloud Armor costs and reducing attack surface.</li>
+            </ol>
+
+            <h4>Implementation: Cloudflare + GCP Hybrid</h4>
+            <p>Use Cloudflare as the authoritative DNS and edge security layer, while keeping GCP as the control plane backend:</p>
+
+            <div class="diagram">
+                <div class="mermaid">
+graph TB
+    User[👤 User] -->|1. DNS Query<br/>api.ncr-voyix.com| Cloudflare[☁️ Cloudflare DNS<br/>Authoritative Nameserver]
+    Cloudflare -->|2. Health Check| GCPLB[GCP Load Balancer<br/>IP: 34.107.x.x]
+    Cloudflare -->|2. Health Check| AzureLB[Azure App Gateway<br/>IP: 20.62.x.x]
+    Cloudflare -->|3. Return healthy IP| User
+    User -->|4. HTTPS Request| GCPLB
+    GCPLB --> GCPCell[GCP Cell<br/>Cloud Run]
+    
+    style Cloudflare fill:#f96,stroke:#333,stroke-width:3px
+    style User fill:#lightblue
+                </div>
+            </div>
+
+            <p><strong>Configuration Steps:</strong></p>
+            <ol>
+                <li><strong>Domain Setup:</strong> Change nameservers at domain registrar (e.g., GoDaddy) to Cloudflare's NS (e.g., <code>emma.ns.cloudflare.com</code>)</li>
+                <li><strong>DNS Records:</strong> Create A record in Cloudflare: <code>api.ncr-voyix.com → 34.107.x.x</code> (GCP Load Balancer IP) with Cloudflare proxy enabled (orange cloud ☁️)</li>
+                <li><strong>Health Checks:</strong> Configure Cloudflare health monitors:
+                    <ul>
+                        <li>Primary: <code>https://api.ncr-voyix.com/health</code> every 60 seconds</li>
+                        <li>Failover: <code>https://azure-api.ncr-voyix.com/health</code> (Azure App Gateway)</li>
+                    </ul>
+                </li>
+                <li><strong>Load Balancing:</strong> Set up Cloudflare Load Balancer with pools:
+                    <ul>
+                        <li>Pool 1 (Primary): GCP us-central1 (weight: 100)</li>
+                        <li>Pool 2 (Failover): Azure eastus (weight: 0, activated on primary failure)</li>
+                    </ul>
+                </li>
+                <li><strong>WAF Rules:</strong> Enable Cloudflare WAF Managed Ruleset (OWASP Core, rate limiting: 100 req/sec per IP)</li>
+                <li><strong>SSL/TLS:</strong> Set to "Full (Strict)" mode (Cloudflare verifies GCP/Azure origin certificates)</li>
+            </ol>
+
+            <h4>Cost Comparison</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>Monthly Cost (Estimate)</th>
+                        <th>Included Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GCP Cloud DNS</td>
+                        <td>~$20/month</td>
+                        <td>DNS only, basic DNSSEC</td>
+                    </tr>
+                    <tr>
+                        <td>Cloudflare Pro</td>
+                        <td>$200/month + $5/month per additional domain</td>
+                        <td>DNS + DDoS + WAF + CDN + Load Balancing + Health Checks + Analytics</td>
+                    </tr>
+                    <tr>
+                        <td>GCP Cloud Armor (if using Cloud DNS)</td>
+                        <td>~$150/month (rules + traffic)</td>
+                        <td>WAF and DDoS (but less capable than Cloudflare)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><strong>Verdict:</strong> Cloudflare Pro ($200/month) is cost-competitive with GCP Cloud DNS + Cloud Armor (~$170/month) while providing superior security, global failover, and CDN capabilities.</p>
+
+            <h4>Alternative: Stick with GCP Cloud DNS (PoC Only)</h4>
+            <p>For the initial PoC (Phase 1-5), you can use GCP Cloud DNS to reduce complexity:</p>
+            <ul>
+                <li>✅ Faster setup (no third-party vendor onboarding)</li>
+                <li>✅ Lower initial cost ($20/month vs. $200/month)</li>
+                <li>❌ Manual failover required (ops team must update DNS during outages)</li>
+                <li>❌ No built-in DDoS protection (must rely on Cloud Armor alone)</li>
+                <li>❌ No CDN (higher latency for global users)</li>
+            </ul>
+            <p><strong>Recommendation:</strong> Use GCP Cloud DNS for PoC, migrate to Cloudflare before production launch (add as Phase 5b: +1 week).</p>
+
+            <div class="callout callout-success">
+                <h4>Why GCP for Control Plane?</h4>
+                <p>NCR Voyix chose GCP to host the global control plane for several strategic reasons:</p>
+                <ul>
+                    <li><strong>Cloud Spanner's Unique Capabilities:</strong> No Azure equivalent offers globally distributed strong consistency at this scale.</li>
+                    <li><strong>Existing Expertise:</strong> NCR Voyix engineering team has deep GCP experience.</li>
+                    <li><strong>Cost Efficiency:</strong> Centralized control plane in one cloud avoids duplicating infrastructure.</li>
+                    <li><strong>Operational Simplicity:</strong> Single pane of glass for tenant management rather than split control across clouds.</li>
+                </ul>
+                <p><strong>Alternative:</strong> If Azure was preferred for control plane, use Cosmos DB (with eventual consistency trade-off) and Azure Front Door.</p>
+            </div>
+        </section>
+
+        <section id="data-sync">
+            <h2>Data Synchronization Strategy</h2>
+            
+            <p>Keeping data consistent between GCP primary cells and Azure secondary cells is critical for disaster recovery and customer data portability. NCR Voyix has two primary strategies depending on workload requirements:</p>
+
+            <h3>Strategy A: Active-Passive (Recommended for Most Workloads)</h3>
+            
+            <p><strong>Use Case:</strong> Azure serves as a warm standby for DR, or customers explicitly choose Azure and data is synced from GCP golden source.</p>
+            
+            <h4>Architecture</h4>
+            <ul>
+                <li><strong>Primary:</strong> GCP Cloud SQL + Cloud Storage (actively serving traffic)</li>
+                <li><strong>Secondary:</strong> Azure SQL + Blob Storage (replicated data, minimal writes)</li>
+                <li><strong>Sync Frequency:</strong> Every 5-15 minutes (configurable based on RPO requirements)</li>
+                <li><strong>RPO:</strong> 5-15 minutes (worst-case data loss window)</li>
+                <li><strong>RTO:</strong> 2-5 minutes (time to failover DNS and validate Azure cell health)</li>
+            </ul>
+
+            <h4>Database Replication: Cloud SQL PostgreSQL → Azure Database for PostgreSQL</h4>
+            <p><strong>Method 1: Scheduled pg_dump/restore</strong> (simplest, higher latency)</p>
+            <p>Both clouds use PostgreSQL 15, ensuring full compatibility for pg_dump/restore operations. A scheduled script runs every 15 minutes via Cloud Scheduler to export from Cloud SQL, transfer to Azure Blob Storage, and import into Azure Database for PostgreSQL Flexible Server.</p>
+
+            <p><strong>Method 2: Cloud SQL Cross-Region Read Replicas + Azure DMS</strong> (lower latency)</p>
+            <ol>
+                <li>Enable Cloud SQL PostgreSQL replication from us-central1 → us-east1 (GCP read replica)</li>
+                <li>Use Azure Database Migration Service (DMS) in "continuous sync" mode to stream from GCP replica → Azure Database for PostgreSQL</li>
+                <li>DMS reads PostgreSQL WAL (Write-Ahead Log) and applies changes to Azure PostgreSQL in near real-time</li>
+                <li>Sync lag: typically 30-60 seconds (both systems use PostgreSQL 15 for seamless replication)</li>
+            </ol>
+
+            <h4>Blob Storage Replication: Cloud Storage → Azure Blob</h4>
+            <p><strong>Method: Storage Transfer Service + AzCopy</strong></p>
+            <p>Storage Transfer Service copies files from source Cloud Storage buckets to a staging bucket every 15 minutes. A Cloud Function is triggered on new files in the staging bucket, downloads each file, and uploads to Azure Blob Storage using AzCopy with MD5 integrity verification.</p>
+
+            <h3>Strategy B: Active-Active with Bi-Directional Sync</h3>
+            
+            <p><strong>Use Case:</strong> Customers actively writing data in both GCP and Azure cells (e.g., global application with users in both clouds).</p>
+            
+            <div class="callout callout-danger">
+                <h4>⚠️ Complexity Warning</h4>
+                <p>Active-active replication is significantly more complex than active-passive due to conflict resolution, eventual consistency windows, and operational overhead. Only use if business requirements mandate it.</p>
+            </div>
+
+            <h4>Architecture</h4>
+            <ul>
+                <li><strong>Database:</strong> Cloud SQL (GCP) ↔ Azure SQL (bidirectional CDC replication)</li>
+                <li><strong>Conflict Resolution:</strong> Last-write-wins based on timestamp, or custom business logic</li>
+                <li><strong>Tools:</strong> Datastream (GCP) + Azure Data Factory CDC + Event Hubs</li>
+            </ul>
+
+            <h4>Implementation: GCP → Azure Direction</h4>
+            <ol>
+                <li><strong>Enable Datastream on Cloud SQL:</strong>
+                    <ul>
+                        <li>Captures insert/update/delete operations from PostgreSQL WAL</li>
+                        <li>Streams changes to Cloud Pub/Sub topics</li>
+                        <li>Example: <code>projects/ncr-voyix/topics/db-changes-cell-001</code></li>
+                    </ul>
+                </li>
+                <li><strong>Cross-Cloud Event Bridge:</strong>
+                    <ul>
+                        <li>Cloud Function subscribes to Pub/Sub topic</li>
+                        <li>Transforms CDC events into Azure-compatible format</li>
+                        <li>Publishes to Azure Event Hubs (Kafka-compatible)</li>
+                    </ul>
+                </li>
+                <li><strong>Azure Data Factory Consumes Events:</strong>
+                    <ul>
+                        <li>Reads from Event Hubs</li>
+                        <li>Applies changes to Azure SQL using stored procedures</li>
+                        <li>Handles deduplication and ordering</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h4>Implementation: Azure → GCP Direction</h4>
+            <ol>
+                <li><strong>Enable CDC on Azure Database for PostgreSQL:</strong> Enable logical replication to capture insert/update/delete operations from the WAL.</li>
+                <li><strong>Azure Function Captures Changes:</strong> Polls CDC change tables every 5 seconds and publishes to Azure Event Hubs.</li>
+                <li><strong>GCP Cloud Function Consumes Events:</strong> Reads from Event Hubs using Kafka client and applies changes to Cloud SQL via PostgreSQL connection.</li>
+            </ol>
+
+            <h4>Conflict Resolution</h4>
+            <p>The system implements last-write-wins conflict resolution by comparing timestamps. When an UPDATE event arrives, if the local database row has a newer timestamp than the incoming event, the event is ignored. Otherwise, the change is applied. This ensures eventual consistency while respecting the most recent modification.</p>
+
+            <h3>Cost Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Monthly Cost (per Cell)</th>
+                        <th>Latency</th>
+                        <th>Complexity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Active-Passive (pg_dump batch)</td>
+                        <td>$50-100</td>
+                        <td>5-15 min</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Active-Passive (DMS continuous)</td>
+                        <td>$200-400</td>
+                        <td>30-60 sec</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td>Active-Active (Datastream + Event Hubs)</td>
+                        <td>$800-1500</td>
+                        <td>5-15 sec</td>
+                        <td>High</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-info">
+                <h4>NCR Voyix Recommendation</h4>
+                <p><strong>Start with Active-Passive using scheduled pg_dump/restore.</strong> This provides:</p>
+                <ul>
+                    <li>✅ Adequate RPO for most workloads (15 minutes acceptable for DR)</li>
+                    <li>✅ Low operational complexity (standard backup/restore tooling)</li>
+                    <li>✅ Cost-effective ($50-100/month vs $800-1500 for real-time)</li>
+                    <li>✅ Easy to test and validate (run restore manually to verify)</li>
+                </ul>
+                <p><strong>Upgrade to Active-Passive DMS</strong> if customers demand < 2 minute RPO for compliance.</p>
+                <p><strong>Upgrade to Active-Active</strong> only if customers require true multi-cloud write capabilities (rare).</p>
+            </div>
+        </section>
+
+        <section id="gcp-cells">
+            <h2>GCP Regional Cell Configuration</h2>
+            
+            <p>GCP cells serve as the primary hosting environment for most NCR Voyix tenants. Each regional cell is self-contained with compute, database, storage, and caching layers.</p>
+
+            <h3>Cell Architecture Components</h3>
+
+            <h4>1. Cloud Run (Compute Layer)</h4>
+            <p><strong>Why Cloud Run:</strong> Serverless containers provide automatic scaling, pay-per-use pricing, and zero operational overhead for container orchestration.</p>
+            
+            <p><strong>Configuration:</strong> Deploy Cloud Run service with 2-100 instances (2 minimum for low-latency), 2 vCPU and 4GB memory per container, handling 80 concurrent requests each. The service connects to VPC resources via a VPC connector, accepts traffic only from Cloud Load Balancing (blocking direct internet access), and uses a dedicated service account with minimal permissions. Timeout is set to 60 seconds for long-running API operations.</p>
+
+            <h4>2. Cloud SQL for PostgreSQL (Database Layer)</h4>
+            <p><strong>Configuration for Shared Cell (CELL-001):</strong> Cloud SQL PostgreSQL 15 instance with 4 vCPU, 16GB RAM, regional high availability (automatic failover), daily backups at 3:00 AM retained for 30 days, maintenance window on Sunday at 4:00 AM, 500 max connections, 4GB shared buffers, private IP only (no public endpoint), connected to VPC network.</p>
+
+            <p><strong>Schema Isolation Strategy:</strong></p>
+            <p>For shared cells hosting multiple tenants, use PostgreSQL schemas (not separate databases) for tenant isolation. Each tenant gets a dedicated schema with access granted only to the owning tenant's application user. Row-Level Security (RLS) provides an additional safety layer by filtering queries based on tenant_id.</p>
+
+            <p><strong>Backup Strategy:</strong></p>
+            <ul>
+                <li><strong>Automated Daily Backups:</strong> Retained for 30 days</li>
+                <li><strong>Transaction Logs:</strong> Point-in-time recovery (PITR) up to 7 days</li>
+                <li><strong>Cross-Region Backup:</strong> Copy backups to <code>us-east1</code> for geo-redundancy</li>
+                <li><strong>Export to Cloud Storage:</strong> Weekly full exports to GCS for long-term archival</li>
+            </ul>
+
+            <h4>3. Cloud Storage (Blob Storage Layer)</h4>
+            <p><strong>Bucket Configuration:</strong> Create regional Standard Storage bucket with versioning enabled (allows rollback of overwritten files). Implement lifecycle policy to automatically transition files to Nearline storage class after 90 days in archive/ prefix, and delete temp/ files after 365 days.</p>
+
+            <p><strong>Access Control:</strong></p>
+            <ul>
+                <li><strong>IAM Permissions:</strong> Cell service account has <code>roles/storage.objectAdmin</code> on its bucket only</li>
+                <li><strong>Signed URLs:</strong> Generate time-limited URLs for customer file downloads (avoids exposing bucket directly)</li>
+                <li><strong>CMEK (Customer-Managed Encryption Keys):</strong> For enterprise customers requiring their own encryption keys</li>
+            </ul>
+
+            <h4>4. Memorystore for Redis (Caching Layer)</h4>
+            <p><strong>Purpose:</strong> Cache tenant metadata, session tokens, and frequently accessed database queries to reduce Cloud SQL load by 70-90%.</p>
+            
+            <p><strong>Configuration:</strong> Deploy Redis 6.x Standard tier with 5GB capacity, high availability enabled, private IP only (no public endpoint), connected to VPC network.</p>
+
+            <p><strong>Caching Strategy:</strong></p>
+            <ul>
+                <li><strong>Tenant Routing Cache:</strong> Key: <code>tenant:{tenant_id}:cell</code>, TTL: 300s (5 minutes)</li>
+                <li><strong>Session Tokens:</strong> Key: <code>session:{token}</code>, TTL: 3600s (1 hour)</li>
+                <li><strong>Query Results:</strong> Key: <code>query:{hash}</code>, TTL: 60s (1 minute for frequently changing data)</li>
+            </ul>
+
+            <p><strong>Cache Invalidation:</strong> When tenant moves to a different cell, Management Portal publishes to Pub/Sub topic <code>cache-invalidations</code> → Cloud Function deletes Redis key.</p>
+
+            <h4>5. Cloud Armor (WAF Layer)</h4>
+            <p><strong>Purpose:</strong> Protect Cloud Run endpoints from DDoS, SQL injection, XSS, and bot traffic.</p>
+            
+            <p><strong>Configuration:</strong> Create security policy with three tiers of protection: (1) Block known bad IP addresses and CIDR ranges, (2) Rate limiting of 100 requests per minute per IP address with 10-minute ban for violations, (3) OWASP Top 10 protection using preconfigured rules for SQL injection, XSS, and other common attacks.</p>
+
+            <h3>Networking Configuration</h3>
+            <p><strong>VPC Setup:</strong> Create custom-mode VPC with regional subnets (e.g., 10.1.0.0/20 for us-central1) with Private Google Access enabled. Deploy Serverless VPC Connector (10.1.16.0/28, 2-10 instances) to allow Cloud Run to access VPC resources.</p>
+
+            <p><strong>Private Service Connect:</strong></p>
+            <ul>
+                <li>Cloud SQL uses private IP (10.1.0.5) within VPC</li>
+                <li>Memorystore uses private IP (10.1.0.10) within VPC</li>
+                <li>No public internet exposure for data services</li>
+            </ul>
+
+            <div class="callout callout-success">
+                <h4>GCP Cell Cost Estimate (Shared Cell - 50 Tenants)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Configuration</th>
+                            <th>Monthly Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cloud Run</td>
+                            <td>2 min instances, avg 10 instances, 4GB RAM</td>
+                            <td>$400</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud SQL</td>
+                            <td>db-custom-4-16384, 500GB storage, backups</td>
+                            <td>$600</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Storage</td>
+                            <td>2TB Standard, 500GB Nearline</td>
+                            <td>$70</td>
+                        </tr>
+                        <tr>
+                            <td>Memorystore Redis</td>
+                            <td>5GB Standard tier</td>
+                            <td>$180</td>
+                        </tr>
+                        <tr>
+                            <td>Cloud Load Balancing</td>
+                            <td>Shared with other cells (prorated)</td>
+                            <td>$50</td>
+                        </tr>
+                        <tr>
+                            <td>Networking (egress)</td>
+                            <td>500GB/month to internet</td>
+                            <td>$60</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total per Cell</strong></td>
+                            <td></td>
+                            <td><strong>$1,360/month</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Per Tenant</strong></td>
+                            <td>50 tenants</td>
+                            <td><strong>$27.20/month</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="azure-cells">
+            <h2>Azure Regional Cell Configuration</h2>
+            
+            <p>Azure cells mirror the GCP architecture using equivalent Azure services. The goal is functional parity so tenants experience identical behavior regardless of cloud.</p>
+
+            <h3>Cell Architecture Components</h3>
+
+            <h4>1. Azure Container Apps (Compute Layer)</h4>
+            <p><strong>Why Container Apps:</strong> Azure's serverless container platform (similar to Cloud Run) with built-in Dapr integration for microservices patterns.</p>
+            
+            <p><strong>Configuration:</strong> Create Container Apps environment with Log Analytics integration for monitoring. Deploy container app with 2-100 replicas, 2 vCPU and 4GB memory per container, internal ingress only (no public access). Configure HTTP scaling rule (80 requests concurrency) and CPU scaling rule (70% utilization threshold). Container pulls from Azure Container Registry using credentials.</p>
+
+            <h4>2. Azure Database for PostgreSQL Flexible Server (Database Layer)</h4>
+            <p><strong>Using PostgreSQL 15 for compatibility with GCP Cloud SQL PostgreSQL 15</strong></p>
+            <p><strong>Configuration:</strong> Deploy PostgreSQL 15 Flexible Server with GeneralPurpose tier (Standard_D4s_v3: 4 vCPU, 16GB RAM), 128GB storage, zone-redundant high availability, 7-day backup retention, no public access (VNet integration only). Enable extensions: pgcrypto, uuid-ossp, pg_stat_statements. Create private endpoint in VNet database subnet for secure connectivity.</p>
+
+            <p><strong>Connection Security:</strong></p>
+            <ul>
+                <li><strong>Private Endpoint:</strong> Database accessible only from VNet (no public IP)</li>
+                <li><strong>Azure AD Authentication:</strong> Container Apps use managed identity for PostgreSQL authentication</li>
+                <li><strong>TLS 1.2 Enforced:</strong> SSL required for all connections</li>
+                <li><strong>Schema Isolation:</strong> Each tenant gets dedicated schema (<code>tenant_acmecorp</code>, <code>tenant_contoso</code>) with Row-Level Security (RLS) policies</li>
+            </ul>
+
+            <p><strong>Schema Isolation:</strong> Each tenant gets a dedicated PostgreSQL schema with tables, grants limited to specific application roles, and Row-Level Security policies enforcing tenant_id filtering. This matches the GCP pattern for consistency.</p>
+
+            <h4>3. Azure Blob Storage (Blob Storage Layer)</h4>
+            <p><strong>Configuration:</strong> Create zone-redundant storage (ZRS) account with HTTPS-only access, TLS 1.2 minimum. Enable blob versioning for rollback capability. Configure lifecycle management policy to automatically move blobs in archive/ prefix to Cool tier after 90 days, reducing storage costs while maintaining access.</p>
+
+            <h4>4. Azure Cache for Redis (Caching Layer)</h4>
+            <p><strong>Configuration:</strong> Deploy Redis 6 Standard tier (5GB capacity with SLA), SSL-only connections (non-SSL port disabled), firewall configured to accept traffic only from VNet address range (10.2.0.0/16). Cache strategy matches GCP pattern: tenant routing data (5 min TTL), session tokens (1 hour TTL), query results (1 min TTL).</p>
+
+            <h4>5. Application Gateway with WAF v2 (WAF Layer)</h4>
+            <p><strong>Configuration:</strong> Deploy Application Gateway with WAF_v2 SKU in dedicated subnet, capacity 2 for high availability. Enable WAF in Prevention mode with OWASP 3.2 ruleset for protection against SQL injection, XSS, and other common attacks. Backend pool routes traffic to Container Apps endpoints (internal ingress only).</p>
+
+            <h3>Networking Configuration</h3>
+            <p><strong>VNet Setup:</strong> Create VNet with 10.2.0.0/16 address space. Define subnets: container-apps-subnet (10.2.0.0/23), database-subnet (10.2.2.0/24), appgw-subnet (10.2.3.0/24). All data services (PostgreSQL, Redis) use private endpoints within VNet—no public internet exposure.</p>
+
+            <div class="callout callout-info">
+                <h4>Azure Cell Cost Estimate (Shared Cell - 30 Tenants)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Configuration</th>
+                            <th>Monthly Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Container Apps</td>
+                            <td>2 min replicas, avg 8 replicas, 4GB RAM</td>
+                            <td>$350</td>
+                        </tr>
+                        <tr>
+                            <td>Azure Database for PostgreSQL 15</td>
+                            <td>Standard_D4s_v3 (4 vCores), 128GB storage, zone-redundant</td>
+                            <td>$650</td>
+                        </tr>
+                        <tr>
+                            <td>Blob Storage</td>
+                            <td>1.5TB Hot, 300GB Cool</td>
+                            <td>$50</td>
+                        </tr>
+                        <tr>
+                            <td>Azure Cache for Redis</td>
+                            <td>Standard C1 (1GB)</td>
+                            <td>$80</td>
+                        </tr>
+                        <tr>
+                            <td>Application Gateway WAF v2</td>
+                            <td>2 capacity units, 500GB processed</td>
+                            <td>$250</td>
+                        </tr>
+                        <tr>
+                            <td>Networking (egress)</td>
+                            <td>300GB/month to internet</td>
+                            <td>$30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total per Cell</strong></td>
+                            <td></td>
+                            <td><strong>$1,410/month</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Per Tenant</strong></td>
+                            <td>30 tenants</td>
+                            <td><strong>$47/month</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><strong>Note:</strong> Azure Database for PostgreSQL Flexible Server provides excellent price/performance for multi-tenant workloads. Using the same database engine (PostgreSQL 15) across both clouds simplifies application code, eliminates SQL dialect differences, and enables seamless data replication with pg_dump or logical replication.</p>
+            </div>
+        </section>
+
+        <section id="implementation">
+            <h2>Implementation Phases</h2>
+            
+            <p>NCR Voyix should roll out the multi-cloud architecture in phases to manage risk and validate each component before proceeding to the next.</p>
+
+            <div class="callout callout-warning">
+                <h4>⚠️ Important: Proof-of-Concept Timeline</h4>
+                <p><strong>These estimates are for an early functional PoC, not production-ready deployment.</strong></p>
+                <p><strong>Assumes dedicated Microsoft Azure and Google Cloud SME support</strong> with direct access to specialized engineering resources, solution architects, and expedited technical support channels throughout the implementation.</p>
+                <p>The timeline below (13-21 weeks / 3-5 months) delivers a working prototype that demonstrates:</p>
+                <ul>
+                    <li>✅ Core routing functionality (Spanner + Cloud Functions)</li>
+                    <li>✅ Basic GCP and Azure cell deployment</li>
+                    <li>✅ Cross-cloud data synchronization</li>
+                    <li>✅ Monitoring and observability foundations</li>
+                </ul>
+                <p><strong>Production-ready deployment requires additional work:</strong></p>
+                <ul>
+                    <li>🔧 <strong>Security hardening:</strong> +4-6 weeks (penetration testing, compliance audits, WAF tuning, secrets management)</li>
+                    <li>🔧 <strong>Performance optimization:</strong> +3-4 weeks (load testing, query optimization, caching strategy refinement)</li>
+                    <li>🔧 <strong>DR/HA validation:</strong> +2-3 weeks (failover testing, backup/restore procedures, chaos engineering)</li>
+                    <li>🔧 <strong>Production runbooks:</strong> +2-3 weeks (incident response procedures, on-call training, escalation paths)</li>
+                    <li>🔧 <strong>Compliance certification:</strong> +6-12 weeks (SOC2, HIPAA, PCI-DSS depending on requirements)</li>
+                </ul>
+                <p><strong>Total production timeline: 6-9 months including PoC</strong> (timeline includes 50% buffer for unforeseen delays, vendor support wait times, and additional testing cycles)</p>
+            </div>
+
+            <div class="phase-box">
+                <h4>Phase 1: Global Control Plane (3-5 weeks)</h4>
+                <p><strong>Objective:</strong> Establish the foundation for tenant routing and management.</p>
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Deploy Cloud Spanner instance (<code>nam-eur-asia3</code> multi-region config)</li>
+                    <li>Create database schema (tenants, cells tables with indexes)</li>
+                    <li>Implement Cloud Functions (<code>GetTenantCell</code>, <code>CreateTenant</code>, <code>HealthCheck</code>)</li>
+                    <li>Deploy Cloud Load Balancing with placeholder backend (test health checks)</li>
+                    <li>Configure Cloud DNS (<code>api.ncr-voyix.com</code> pointing to LB)</li>
+                    <li>Set up monitoring dashboards (Cloud Monitoring for Spanner queries, Function latency)</li>
+                </ol>
+                <p><strong>Success Criteria:</strong></p>
+                <ul>
+                    <li>✅ Tenant lookup via Cloud Function completes in < 50ms (p99)</li>
+                    <li>✅ Load balancer health checks pass for all regions</li>
+                    <li>✅ Spanner replication lag < 500ms globally</li>
+                </ul>
+                <p><strong>Rollback Plan:</strong> Keep existing monolithic control plane active; test in parallel using <code>api-staging.ncr-voyix.com</code></p>
+            </div>
+
+            <div class="phase-box">
+                <h4>Phase 2: GCP Regional CELLs (3-5 weeks)</h4>
+                <p><strong>Objective:</strong> Deploy production-ready cells in GCP as the primary hosting environment.</p>
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Create VPC network, subnets, and VPC connector (us-central1)</li>
+                    <li>Deploy Cloud Run services (CELL-001 shared, CELL-002 dedicated)</li>
+                    <li>Provision Cloud SQL instances with sample schemas</li>
+                    <li>Create Cloud Storage buckets with lifecycle policies</li>
+                    <li>Deploy Memorystore Redis instances</li>
+                    <li>Configure Cloud Armor WAF policies</li>
+                    <li>Update Load Balancer backend to include GCP cell URLs</li>
+                    <li>Migrate 5 pilot tenants to CELL-001</li>
+                </ol>
+                <p><strong>Success Criteria:</strong></p>
+                <ul>
+                    <li>✅ End-to-end request (DNS → LB → Cloud Function → Cloud Run → Cloud SQL) completes in < 200ms (p50)</li>
+                    <li>✅ Pilot tenants report no functional regressions vs. old system</li>
+                    <li>✅ Cloud Run auto-scales from 2 → 20 instances under synthetic load test (500 req/s)</li>
+                </ul>
+                <p><strong>Rollback Plan:</strong> Update Spanner to route pilot tenants back to legacy infrastructure; Cloud Functions support "override" flag</p>
+            </div>
+
+            <div class="phase-box">
+                <h4>Phase 3: Azure Regional CELLs (3-5 weeks)</h4>
+                <p><strong>Objective:</strong> Establish Azure as a viable secondary cloud for customer choice and DR.</p>
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Create Azure VNet, subnets, NSGs (East US)</li>
+                    <li>Deploy Container Apps (CELL-003 shared, CELL-004 dedicated)</li>
+                    <li>Provision Azure Database for PostgreSQL Flexible Server instances with identical schema (PostgreSQL 15)</li>
+                    <li>Create Blob Storage accounts with lifecycle rules</li>
+                    <li>Deploy Azure Cache for Redis</li>
+                    <li>Configure Application Gateway WAF</li>
+                    <li>Set up Internet NEG in GCP Load Balancer pointing to Azure App Gateway</li>
+                    <li>Test cross-cloud routing: GCP LB → Azure Container Apps</li>
+                    <li>Migrate 2 pilot tenants to CELL-003 (customers who requested Azure)</li>
+                </ol>
+                <p><strong>Success Criteria:</strong></p>
+                <ul>
+                    <li>✅ Cross-cloud request (GCP LB → Azure CELL) completes in < 350ms (p50) — acceptable given extra network hop</li>
+                    <li>✅ Azure pilot tenants report identical functionality vs. GCP cells</li>
+                    <li>✅ Container Apps auto-scale and scale-to-zero working correctly</li>
+                </ul>
+                <p><strong>Rollback Plan:</strong> Remove Azure backend from Load Balancer; route affected tenants to GCP cells temporarily</p>
+            </div>
+
+            <div class="phase-box">
+                <h4>Phase 4: Data Sync Infrastructure (2-3 weeks)</h4>
+                <p><strong>Objective:</strong> Enable DR capabilities and warm standby for Azure cells.</p>
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Deploy Cloud Functions for scheduled pg_dump/restore (GCP → Azure)</li>
+                    <li>Set up Cloud Scheduler (run every 15 minutes)</li>
+                    <li>Configure AzCopy for blob replication (GCS → Azure Blob)</li>
+                    <li>Test restore procedure: manually failover a tenant from GCP CELL-001 → Azure CELL-003</li>
+                    <li>Validate data integrity (row counts, checksums)</li>
+                    <li>Document runbooks for failover and rollback</li>
+                </ol>
+                <p><strong>Success Criteria:</strong></p>
+                <ul>
+                    <li>✅ Database sync completes within 5-minute window (RPO = 15 minutes including lag)</li>
+                    <li>✅ Blob sync has < 1% failure rate (retries handle transient errors)</li>
+                    <li>✅ Manual failover test takes < 10 minutes (update Spanner + clear cache + validate)</li>
+                </ul>
+                <p><strong>Optional Enhancement:</strong> If 15-minute RPO is insufficient, deploy Datastream + Azure Data Factory for near-real-time sync (Phase 4b)</p>
+            </div>
+
+            <div class="phase-box">
+                <h4>Phase 5: Testing & Production Cutover (2-3 weeks)</h4>
+                <p><strong>Objective:</strong> Validate system stability and migrate remaining tenants.</p>
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Load testing: simulate 10,000 req/s across all cells (GCP + Azure)</li>
+                    <li>Chaos engineering: kill Cloud Run instances, fail Cloud SQL replicas, block Azure region in firewall</li>
+                    <li>Disaster recovery drill: simulate complete GCP us-central1 outage, failover to Azure</li>
+                    <li>Security review: penetration testing, OWASP Top 10 validation</li>
+                    <li>Compliance review: GDPR data residency, SOC 2 controls</li>
+                    <li>Migrate remaining tenants in batches (10% per day)</li>
+                    <li>Monitor error rates, latency, and cost during migration</li>
+                </ol>
+                <p><strong>Success Criteria:</strong></p>
+                <ul>
+                    <li>✅ System handles 10,000 req/s with p99 latency < 500ms</li>
+                    <li>✅ Zero data loss during simulated GCP region failure</li>
+                    <li>✅ No customer-reported issues for 7 consecutive days post-migration</li>
+                </ul>
+                <p><strong>Go-Live Decision:</strong> Executive approval required after all criteria met + cost analysis vs. budget</p>
+            </div>
+
+            <div class="callout callout-info">
+                <h4>Total Timeline: 13-21 weeks (3-5 months)</h4>
+                <p>Phases can overlap if resources allow. For example, Phase 3 (Azure) can start while Phase 2 (GCP) pilots are still stabilizing. Timeline includes 50% buffer for unforeseen delays, vendor support wait times, and additional testing cycles.</p>
+            </div>
+        </section>
+
+        <section id="monitoring">
+            <h2>Monitoring & Operations</h2>
+            
+            <h3>Key Metrics to Track</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Threshold</th>
+                        <th>Alert Severity</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cloud Function latency (GetTenantCell)</td>
+                        <td>p99 &gt; 200ms</td>
+                        <td>Warning</td>
+                        <td>Cloud Monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Spanner read latency</td>
+                        <td>p99 &gt; 100ms</td>
+                        <td>Warning</td>
+                        <td>Cloud Monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Run error rate</td>
+                        <td>&gt; 1%</td>
+                        <td>Critical</td>
+                        <td>Cloud Monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Container Apps error rate</td>
+                        <td>&gt; 1%</td>
+                        <td>Critical</td>
+                        <td>Azure Monitor</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud SQL CPU utilization</td>
+                        <td>&gt; 80%</td>
+                        <td>Warning</td>
+                        <td>Cloud Monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Azure SQL DTU percentage</td>
+                        <td>&gt; 80%</td>
+                        <td>Warning</td>
+                        <td>Azure Monitor</td>
+                    </tr>
+                    <tr>
+                        <td>Redis cache hit rate</td>
+                        <td>&lt; 70%</td>
+                        <td>Warning</td>
+                        <td>Both clouds</td>
+                    </tr>
+                    <tr>
+                        <td>Data sync lag (GCP → Azure)</td>
+                        <td>&gt; 20 minutes</td>
+                        <td>Critical</td>
+                        <td>Custom metric</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-cloud request latency</td>
+                        <td>p99 &gt; 500ms</td>
+                        <td>Warning</td>
+                        <td>Load balancer logs</td>
+                    </tr>
+                    <tr>
+                        <td>Cell health check failures</td>
+                        <td>&gt; 3 consecutive</td>
+                        <td>Critical</td>
+                        <td>Cloud Functions</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Unified Dashboard (Grafana)</h3>
+            <p>Since monitoring data is split across GCP Cloud Monitoring and Azure Monitor, NCR Voyix should deploy a centralized Grafana instance to aggregate metrics. Deploy Grafana on GKE or Cloud Run with data source plugins for GCP Cloud Monitoring, Azure Monitor, and custom Prometheus exporters (Spanner, data sync lag). Create unified dashboard panels showing: global request rate across all cells, latency heatmap comparing GCP vs Azure cells, cell capacity utilization (current tenant count vs maximum), and data sync health metrics (lag time, failure rate).</p>
+
+            <h3>Alerting Strategy</h3>
+            <ul>
+                <li><strong>PagerDuty Integration:</strong> Critical alerts (cell offline, high error rate) page on-call engineer immediately</li>
+                <li><strong>Slack Notifications:</strong> Warning alerts (high latency, cache miss rate) post to #ops-alerts channel</li>
+                <li><strong>Email Digests:</strong> Daily summary of cost anomalies, capacity trends sent to management</li>
+            </ul>
+
+            <h3>Cost Monitoring</h3>
+            <p>Multi-cloud environments have complex cost profiles. Implement:</p>
+            <ul>
+                <li><strong>GCP:</strong> Export billing data to BigQuery, run weekly cost attribution queries (by cell, by tenant)</li>
+                <li><strong>Azure:</strong> Use Cost Management + Billing, export to Blob Storage, import into BigQuery for unified reporting</li>
+                <li><strong>Dashboard:</strong> Show cost per tenant, identify outliers (tenants consuming excessive storage/egress)</li>
+                <li><strong>Budget Alerts:</strong> Alert if monthly spend exceeds $50k (adjustable threshold)</li>
+            </ul>
+        </section>
+
+        <section id="best-practices">
+            <h2>Best Practices & Recommendations</h2>
+            
+            <h3>1. Tenant Placement Policy</h3>
+            
+            <h4>Cloud and Region Selection</h4>
+            <p><strong>Decision Criteria:</strong> When provisioning a new tenant, choose cloud/region based on:</p>
+            <ul>
+                <li><strong>Customer Preference:</strong> If customer has Azure EA, default to Azure cells (unless performance concerns)</li>
+                <li><strong>Data Residency:</strong> EU customers → GCP europe-west1 or Azure West Europe (GDPR compliance)</li>
+                <li><strong>Latency:</strong> Place tenant in region closest to majority of their users</li>
+                <li><strong>Capacity:</strong> If preferred cloud/region is at capacity, offer alternative or provision new cell</li>
+                <li><strong>Cost Optimization:</strong> Fill shared cells to 80% capacity before creating new cells</li>
+            </ul>
+
+            <h4>Shared vs. Dedicated Cell Decision Matrix</h4>
+            <p>NCR Voyix deployments use a mix of shared (multi-tenant) and dedicated (single-tenant) cells based on customer profile, compliance requirements, and growth trajectory. Use this matrix to determine the appropriate deployment model for each tenant:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tenant Profile</th>
+                        <th>Recommended Model</th>
+                        <th>Primary Benefits</th>
+                        <th>Use Cases</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Startups/SMB</strong></td>
+                        <td>Shared CELL</td>
+                        <td>Lower cost ($27-47/month), shared infrastructure, rapid provisioning</td>
+                        <td>Cost-sensitive customers, standard feature set, &lt; 1000 transactions/day</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mid-Market</strong></td>
+                        <td>Shared or Dedicated</td>
+                        <td>Flexible scaling options, upgrade path as they grow</td>
+                        <td>Growing businesses, mixed workload needs, 1k-10k transactions/day</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enterprise</strong></td>
+                        <td>Dedicated CELL</td>
+                        <td>Performance guarantees (dedicated vCPUs), custom configurations, SLA commitments</td>
+                        <td>High volume (&gt; 10k transactions/day), custom integrations, predictable performance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Regulated Industries</strong></td>
+                        <td>Dedicated CELL</td>
+                        <td>Complete data isolation, audit trails, compliance certifications (HIPAA, PCI-DSS, FedRAMP)</td>
+                        <td>Healthcare (PHI data), finance (PCI compliance), government (FedRAMP required)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>High-Growth Startups</strong></td>
+                        <td>Start Shared → Migrate to Dedicated</td>
+                        <td>Cost optimization early, seamless upgrade as they scale without downtime</td>
+                        <td>Venture-backed companies, scaling rapidly, proving business model before committing to dedicated infrastructure</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-info">
+                <h4>Migration Strategy: Shared to Dedicated</h4>
+                <p>NCR Voyix supports zero-downtime migrations from shared to dedicated cells using the Spanner-based routing layer:</p>
+                <ol>
+                    <li><strong>Provision dedicated cell</strong> with identical configuration to shared cell</li>
+                    <li><strong>Replicate tenant data</strong> from shared cell database to dedicated cell (pg_dump + restore, typically 15-60 minutes depending on data size)</li>
+                    <li><strong>Enable dual-write mode</strong> (optional): Application writes to both cells during cutover window to ensure data consistency</li>
+                    <li><strong>Update Spanner routing</strong>: Change <code>cell_id</code> in tenants table to point to new dedicated cell</li>
+                    <li><strong>Invalidate cache</strong>: Clear Redis cache for tenant routing (5-second propagation)</li>
+                    <li><strong>Verify and decommission</strong>: Monitor new cell for 24 hours, then remove tenant schema from shared cell</li>
+                </ol>
+                <p><strong>Typical Downtime:</strong> &lt; 10 seconds (time for cache invalidation + DNS propagation). Most customers experience zero user-visible downtime.</p>
+            </div>
+
+            <h4>Mixed Deployment Example</h4>
+            <p>A realistic NCR Voyix production deployment spans multiple regions and clouds, with a mix of shared and dedicated cells tailored to different customer segments:</p>
+
+            <div class="callout callout-success">
+                <h4>Example: Multi-Cloud Cell Layout</h4>
+                <p><strong>GCP - North America (us-central1):</strong></p>
+                <ul>
+                    <li><code>cell-001-shared-smb</code>: 100 small business tenants (retail POS systems, restaurants)</li>
+                    <li><code>cell-002-shared-midmarket</code>: 25 mid-market tenants (regional chains, franchises)</li>
+                    <li><code>cell-003-dedicated-bank</code>: 1 enterprise tenant (major bank, PCI-DSS compliant)</li>
+                    <li><code>cell-004-dedicated-healthcare</code>: 1 healthcare system (HIPAA-compliant, PHI data)</li>
+                </ul>
+
+                <p><strong>Azure - North America (eastus):</strong></p>
+                <ul>
+                    <li><code>cell-005-shared-smb</code>: 50 startup tenants (early-stage SaaS companies)</li>
+                    <li><code>cell-006-dedicated-government</code>: 1 government agency (FedRAMP requirements, Azure Gov Cloud)</li>
+                </ul>
+
+                <p><strong>GCP - Europe (europe-west1):</strong></p>
+                <ul>
+                    <li><code>cell-007-shared-eu</code>: 75 EU SMB tenants (GDPR data residency)</li>
+                    <li><code>cell-008-dedicated-fintech</code>: 1 European fintech enterprise (real-time payments, high volume)</li>
+                </ul>
+
+                <p><strong>Azure - Europe (northeurope):</strong></p>
+                <ul>
+                    <li><code>cell-009-dedicated-bank-dr</code>: 1 enterprise tenant (DR replica for cell-003, cross-cloud resilience)</li>
+                </ul>
+
+                <p><strong>Capacity Summary:</strong> 251 total tenants across 9 cells (4 shared cells hosting 250 tenants, 5 dedicated cells hosting 1 tenant each). Monthly infrastructure cost: ~$18,000 ($6,800 for shared cells, $11,200 for dedicated cells). Revenue per tenant: Shared tenants at $149/month ($37,250/month), dedicated tenants at $2,500/month ($12,500/month). Total monthly revenue: $49,750, gross margin: 64%.</p>
+            </div>
+
+            <h3>2. Data Synchronization Best Practices</h3>
+            <ul>
+                <li><strong>Idempotency:</strong> Ensure sync scripts can be re-run safely (use UPSERT, check for existing data)</li>
+                <li><strong>Integrity Checks:</strong> After each sync, compare row counts, checksums, sample queries between GCP and Azure</li>
+                <li><strong>Incremental Sync:</strong> Only replicate changed data (track <code>last_synced_at</code> timestamp) to reduce egress costs</li>
+                <li><strong>Monitoring:</strong> Alert if sync lag &gt; 2x expected window (e.g., 30 minutes when expecting 15)</li>
+                <li><strong>Testing:</strong> Monthly DR drills: force failover to Azure, validate all tenants' data is accessible</li>
+            </ul>
+
+            <h3>3. Security Hardening</h3>
+            <ul>
+                <li><strong>Zero Trust Network:</strong> All services use private IPs, no public database endpoints</li>
+                <li><strong>Least Privilege IAM:</strong> Each cell's service account has access only to its own resources</li>
+                <li><strong>Secrets Management:</strong> Store database passwords, API keys in Secret Manager (GCP) / Key Vault (Azure)</li>
+                <li><strong>Encryption at Rest:</strong> Enable CMEK for sensitive customers (bring your own encryption keys)</li>
+                <li><strong>Audit Logging:</strong> Enable Cloud Audit Logs (GCP) and Activity Logs (Azure), retain for 1 year</li>
+            </ul>
+
+            <h3>4. Cost Optimization</h3>
+            <ul>
+                <li><strong>Reserved Capacity:</strong> Purchase 1-year committed use discounts for predictable workloads (saves 30-40%)</li>
+                <li><strong>Scale-to-Zero:</strong> For dev/test cells, enable Container Apps scale-to-zero (Azure) and min-instances=0 (GCP)</li>
+                <li><strong>Storage Lifecycle:</strong> Move blobs to Cool/Nearline tiers after 90 days, Archive after 1 year</li>
+                <li><strong>Egress Optimization:</strong> Minimize cross-cloud data transfer (batch sync instead of real-time when acceptable)</li>
+                <li><strong>Right-Sizing:</strong> Monthly review of compute resources (are 4 vCores needed or can we drop to 2?)</li>
+            </ul>
+
+            <h3>5. Testing & Validation</h3>
+            <ul>
+                <li><strong>Load Testing:</strong> Use tools like Locust, k6, or JMeter to simulate 10x expected peak traffic</li>
+                <li><strong>Chaos Engineering:</strong> Randomly kill instances, block network paths, simulate cloud API failures</li>
+                <li><strong>DR Drills:</strong> Quarterly exercises where entire GCP region is "failed" and recovery is timed</li>
+                <li><strong>Penetration Testing:</strong> Annual third-party security assessment (OWASP Top 10, network scanning)</li>
+            </ul>
+        </section>
+
+        <section id="risks">
+            <h2>Risks & Mitigation Strategies</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Risk</th>
+                        <th>Impact</th>
+                        <th>Likelihood</th>
+                        <th>Mitigation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cross-Cloud Latency Unacceptable</strong></td>
+                        <td>High (customer complaints)</td>
+                        <td>Medium</td>
+                        <td>Deploy Cloud VPN or Interconnect for low-latency private path; set SLAs appropriately (200ms for Azure-hosted tenants)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Sync Failure</strong></td>
+                        <td>Critical (data loss in DR scenario)</td>
+                        <td>Low</td>
+                        <td>Dual sync paths (batch + CDC), alerting on lag &gt; 20min, monthly DR drills to validate restore</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cost Overruns</strong></td>
+                        <td>Medium (budget exceeded)</td>
+                        <td>High</td>
+                        <td>Weekly cost reviews, budget alerts, right-sizing automation, reserved capacity purchases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Skill Gap (Azure Expertise)</strong></td>
+                        <td>Medium (slow incident response)</td>
+                        <td>High</td>
+                        <td>Train 3-5 engineers on Azure fundamentals, maintain cross-cloud runbooks, vendor support contracts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Compliance Violations</strong></td>
+                        <td>Critical (fines, customer churn)</td>
+                        <td>Low</td>
+                        <td>Data residency validation (EU tenants stay in EU), encryption at rest/in transit enforced, SOC 2 audit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Partition (Split-Brain)</strong></td>
+                        <td>High (data inconsistency)</td>
+                        <td>Very Low</td>
+                        <td>Cloud Spanner provides strong consistency; active-passive sync avoids write conflicts; monitoring detects partition</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Egress Cost Explosion</strong></td>
+                        <td>Medium (unexpected bills)</td>
+                        <td>Medium</td>
+                        <td>Monitor egress per cell, optimize sync frequency, consider dedicated Interconnect if &gt; 50TB/month</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            
+            <p>The proposed multi-cloud architecture enables NCR Voyix to serve diverse customer requirements while maintaining operational excellence across both GCP and Azure. By centralizing the control plane in GCP Cloud Spanner and deploying cells in both clouds, NCR Voyix achieves:</p>
+
+            <div class="callout callout-success">
+                <h3>Strategic Benefits</h3>
+                <ul>
+                    <li>✅ <strong>Customer Flexibility:</strong> Customers choose GCP or Azure based on their preferences and existing contracts</li>
+                    <li>✅ <strong>High Availability:</strong> Warm standby in Azure ensures &lt; 3 minute RTO for GCP region failures</li>
+                    <li>✅ <strong>Geographic Expansion:</strong> Deploy cells in Azure-only regions (e.g., government clouds) to win new markets</li>
+                    <li>✅ <strong>Vendor Resilience:</strong> Reduce dependency on single cloud provider for long-term strategic flexibility</li>
+                    <li>✅ <strong>Compliance:</strong> Meet data residency requirements by placing tenants in specific regions/clouds</li>
+                </ul>
+            </div>
+
+            <h3>Implementation Summary</h3>
+            <p>Over 2-3 months, NCR Voyix will:</p>
+            <ol>
+                <li>Deploy Cloud Spanner-based global control plane (routing foundation)</li>
+                <li>Migrate tenants to GCP cells (primary hosting)</li>
+                <li>Stand up Azure cells (secondary/customer choice)</li>
+                <li>Implement data sync (DR readiness)</li>
+                <li>Validate with load testing, chaos engineering, and DR drills</li>
+            </ol>
+
+            <h3>Next Steps</h3>
+            <p>NCR Voyix engineering leadership should:</p>
+            <ol>
+                <li><strong>Week 1:</strong> Approve architecture, allocate budget ($150k estimated for 6 months), assign project team</li>
+                <li><strong>Week 2-3:</strong> Set up GCP and Azure projects, networking (VPC, VNet, VPN), IAM roles</li>
+                <li><strong>Week 4:</strong> Begin Phase 1 (Control Plane deployment)</li>
+                <li><strong>Month 2:</strong> Phase 2-3 (GCP + Azure cells)</li>
+                <li><strong>Month 3:</strong> Phase 4-5 (Data sync + testing)</li>
+                <li><strong>Month 4:</strong> Production cutover, post-launch optimization</li>
+            </ol>
+
+        </section>
+
+        <div class="metadata">
+            <strong>Document Information</strong><br>
+            Prepared for: NCR Voyix<br>
+            Date: October 31, 2025<br>
+            Architecture: Multi-Cloud Stamps Pattern (GCP Primary + Azure Secondary)<br>
+            Version: 1.0<br>
+            Classification: Confidential - Internal Use Only<br>
+            <br>
+            <strong>Authors:</strong> Azure Stamps Pattern Team<br>
+            <strong>Primary Contact:</strong> Scott Nichols (scott.nichols@microsoft.com)<br>
+            <strong>Reviewers:</strong> NCR Voyix Engineering Leadership<br>
+            <strong>Next Review:</strong> Post-Phase 3 completion (estimated February 2026)
+        </div>
+    </div>
+</body>
+</html>
+
+            <strong>Document Information</strong><br>
+            Prepared for: NCR Voyix<br>
+            Date: October 31, 2025<br>
+            Architecture: Multi-Cloud Stamps Pattern (GCP Primary + Azure Secondary)<br>
+            Version: 1.0<br>
+            Classification: Confidential - Internal Use Only
+        </div>
+    </div>
+</body>
+</html>
