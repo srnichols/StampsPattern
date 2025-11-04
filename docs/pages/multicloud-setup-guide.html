@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCR Voyix Multi-Cloud Setup Guide: GCP Primary + Azure Secondary</title>
+    <title>Customer Multi-Cloud Setup Guide: GCP Primary + Azure Secondary</title>
     <style>
         * {
             margin: 0;
@@ -278,7 +278,7 @@
         <header>
             <h1>Multi-Cloud Architecture Setup Guide</h1>
             <p class="subtitle">GCP Primary + Azure Secondary Cell Deployment</p>
-            <p class="customer">Prepared for: NCR Voyix</p>
+            <p class="customer">Prepared for: Customer</p>
         </header>
 
         <section id="executive-summary">
@@ -286,13 +286,13 @@
             
             <div class="callout callout-info">
                 <h3>Purpose of This Document</h3>
-                <p>This comprehensive guide provides NCR Voyix with a complete blueprint for implementing a <strong>multi-cloud stamps pattern architecture</strong> spanning Google Cloud Platform (GCP) as the primary cloud and Microsoft Azure as the secondary cloud.</p>
+                <p>This comprehensive guide provides Customer with a complete blueprint for implementing a <strong>multi-cloud stamps pattern architecture</strong> spanning Google Cloud Platform (GCP) as the primary cloud and Microsoft Azure as the secondary cloud.</p>
                 
                 <p><strong>Architecture Foundation:</strong> This design is a variation of the <strong>Microsoft Azure Stamps Pattern Architecture (ASPA)</strong> from the <a href="https://github.com/srnichols/StampsPattern" target="_blank" rel="noopener">StampsPattern repository</a>, adapted specifically for multi-cloud deployments with GCP and Azure. The original ASPA project provides detailed conceptual information, compliance analysis (CAF/WAF), and Azure-native implementation guidance. For comprehensive background, see the <a href="https://github.com/srnichols/StampsPattern/blob/main/docs/Azure_Stamps_Pattern_Analysis_WhitePaper.md" target="_blank" rel="noopener">Azure Stamps Pattern Analysis White Paper</a>. This document extends those principles to support cross-cloud cell deployment while maintaining the core stamps pattern benefits: fault isolation, horizontal scalability, and flexible tenancy models.</p>
 
                 <p>The architecture enables:</p>
                 <ul>
-                    <li><strong>Customer Cloud Preference:</strong> Some NCR Voyix customers prefer to run workloads in Azure rather than GCP due to existing enterprise agreements, regional data sovereignty requirements, or organizational cloud strategies.</li>
+                    <li><strong>Customer Cloud Preference:</strong> Some Customer customers prefer to run workloads in Azure rather than GCP due to existing enterprise agreements, regional data sovereignty requirements, or organizational cloud strategies.</li>
                     <li><strong>Disaster Recovery & Business Continuity:</strong> Azure serves as a warm standby environment, ensuring service continuity if GCP experiences regional outages or service disruptions.</li>
                     <li><strong>Vendor Resilience:</strong> Multi-cloud reduces dependency on a single cloud provider, mitigating risks related to pricing changes, service deprecations, or geopolitical factors.</li>
                     <li><strong>Geographic Expansion:</strong> Leverage Azure's presence in regions where GCP coverage is limited or non-existent.</li>
@@ -302,7 +302,7 @@
             </div>
 
             <h3>Business Drivers</h3>
-            <p><strong>NCR Voyix operates in a complex enterprise landscape</strong> where customers have diverse requirements and existing cloud commitments. By supporting both GCP and Azure, NCR Voyix can:</p>
+            <p><strong>Customer operates in a complex enterprise landscape</strong> where customers have diverse requirements and existing cloud commitments. By supporting both GCP and Azure, Customer can:</p>
             <ul>
                 <li><strong>Increase Market Reach:</strong> Win deals with Azure-first customers who would otherwise be unable to adopt the platform.</li>
                 <li><strong>Improve SLA Guarantees:</strong> Offer 99.99% uptime SLAs backed by cross-cloud failover capabilities.</li>
@@ -387,7 +387,7 @@
                     <li><strong>Cloud Preference Changes:</strong> Customer requests Azure hosting instead of GCP—reassign in seconds, not days</li>
                 </ul>
 
-                <h4>Why This Matters for NCR Voyix</h4>
+                <h4>Why This Matters for Customer</h4>
                 <p>Traditional multi-tenant architectures require careful planning and lengthy migration windows when moving tenants between infrastructure. This architecture eliminates that constraint, providing operational agility that directly translates to:</p>
                 <ul>
                     <li>✅ <strong>Reduced operational risk</strong> (no scheduled downtime for tenant moves)</li>
@@ -585,7 +585,7 @@ graph TD
         H[🌐 Cloud Load Balancing<br/>Global HTTPS LB]
         I[🗂️ Cloud Spanner<br/>nam-eur-asia3<br/>Tenant Directory]
         J[⚙️ Cloud Functions<br/>GetTenantCell<br/>CreateTenant<br/>HealthCheck]
-        K[🌐 Cloud DNS<br/>api.ncr-voyix.com]
+        K[🌐 Cloud DNS<br/>api.customer.com]
         L[🛡️ Cloud Armor<br/>WAF + DDoS]
     end
     
@@ -634,7 +634,7 @@ graph TD
                         <li><code>HealthCheck</code>: Monitors cell availability every 60 seconds</li>
                     </ul>
                 </li>
-                <li><strong>Cloud DNS:</strong> Authoritative DNS for <code>api.ncr-voyix.com</code>, resolves to Load Balancer IP with 100% uptime SLA and global anycast network.</li>
+                <li><strong>Cloud DNS:</strong> Authoritative DNS for <code>api.customer.com</code>, resolves to Load Balancer IP with 100% uptime SLA and global anycast network.</li>
                 <li><strong>Cloud Armor:</strong> Global WAF (Web Application Firewall) and DDoS protection with OWASP Top 10 rules, rate limiting (1000 req/min per IP), and bot detection.</li>
             </ul>
 
@@ -710,7 +710,7 @@ graph TD
                     <tr>
                         <th>Aspect</th>
                         <th>Azure Stamps Pattern (Single Cloud)</th>
-                        <th>NCR Voyix Multi-Cloud (GCP + Azure)</th>
+                        <th>Customer Multi-Cloud (GCP + Azure)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -995,18 +995,18 @@ graph TD
             <h3>Identity Architecture Components</h3>
 
             <h4>1. End-User Authentication (Application Access)</h4>
-            <p><strong>Use Case:</strong> NCR Voyix customers log in to the SaaS application regardless of which cloud hosts their tenant.</p>
+            <p><strong>Use Case:</strong> Customer customers log in to the SaaS application regardless of which cloud hosts their tenant.</p>
             
             <div class="diagram">
                 <div class="mermaid">
 sequenceDiagram
     autonumber
     participant User as End User
-    participant App as NCR Voyix App<br/>(GCP or Azure Cell)
+    participant App as Customer App<br/>(GCP or Azure Cell)
     participant EntraID as Entra ID<br/>(Central IdP)
     participant Spanner as Cloud Spanner<br/>(Tenant Routing)
     
-    User->>App: Access app (api.ncr-voyix.com)
+    User->>App: Access app (api.customer.com)
     App->>EntraID: Redirect to /authorize (OIDC)
     EntraID->>User: Login page (MFA if required)
     User->>EntraID: Submit credentials + MFA
@@ -1066,13 +1066,13 @@ sequenceDiagram
             </div>
 
             <h4>3. Administrative Access (Operator/SRE Authentication)</h4>
-            <p><strong>Use Case:</strong> NCR Voyix operations team needs access to GCP and Azure consoles, CLI tools, and management APIs.</p>
+            <p><strong>Use Case:</strong> Customer operations team needs access to GCP and Azure consoles, CLI tools, and management APIs.</p>
 
             <ul>
                 <li><strong>GCP:</strong> Configure Workforce Identity Federation to federate Entra ID to GCP IAM
                     <ul>
                         <li>Create Workforce Identity Pool in GCP (provider: Entra ID SAML endpoint)</li>
-                        <li>Map Entra ID groups to GCP IAM roles (e.g., <code>ops-team@ncr-voyix.com</code> → <code>roles/viewer</code>)</li>
+                        <li>Map Entra ID groups to GCP IAM roles (e.g., <code>ops-team@customer.com</code> → <code>roles/viewer</code>)</li>
                         <li>Operators log in via <code>gcloud auth login --workforce-identity</code> (redirects to Entra ID)</li>
                     </ul>
                 </li>
@@ -1092,8 +1092,8 @@ sequenceDiagram
                 <p><strong>Timeline:</strong> 1-2 weeks (prerequisite for all other phases)</p>
                 <p><strong>Tasks:</strong></p>
                 <ol>
-                    <li>Provision Entra ID tenant (or use existing NCR Voyix tenant)</li>
-                    <li>Create Entra ID Application Registration for NCR Voyix SaaS app (OIDC/OAuth 2.0)</li>
+                    <li>Provision Entra ID tenant (or use existing Customer tenant)</li>
+                    <li>Create Entra ID Application Registration for Customer SaaS app (OIDC/OAuth 2.0)</li>
                     <li>Configure Workload Identity Federation: Entra ID ↔ GCP
                         <ul>
                             <li>Add GCP OIDC provider (<code>https://accounts.google.com</code>) as federated credential</li>
@@ -1170,7 +1170,7 @@ sequenceDiagram
     participant SQL as Cloud SQL PostgreSQL / Azure PostgreSQL<br/>(Tenant Database)
     participant STORAGE as Cloud Storage / Blob Storage<br/>(Tenant Files)
 
-    User->>DNS: 1. Resolve api.ncr-voyix.com
+    User->>DNS: 1. Resolve api.customer.com
     DNS-->>User: Return Load Balancer IP
     
     User->>LB: 2. HTTPS request (edge)
@@ -1230,7 +1230,7 @@ sequenceDiagram
     participant RUN as Cloud Run<br/>(CELL-001)
     participant SQL as Cloud SQL
     
-    User->>DNS: Resolve api.ncr-voyix.com
+    User->>DNS: Resolve api.customer.com
     DNS-->>User: 34.120.50.10 (LB IP)
     User->>LB: POST /api/orders<br/>X-Tenant-ID: acme-corp
     LB->>CF: Invoke GetTenantCell(acme-corp)
@@ -1439,7 +1439,7 @@ CREATE INDEX idx_cells_provider ON cells(cloud_provider, region);
 
             <h4>Configuration</h4>
             <ul>
-                <li><strong>Frontend:</strong> Global anycast IP (e.g., <code>api.ncr-voyix.com</code>)</li>
+                <li><strong>Frontend:</strong> Global anycast IP (e.g., <code>api.customer.com</code>)</li>
                 <li><strong>SSL Certificate:</strong> Google-managed certificate with auto-renewal</li>
                 <li><strong>Backend Services:</strong>
                     <ul>
@@ -1459,13 +1459,13 @@ CREATE INDEX idx_cells_provider ON cells(cloud_provider, region);
             </div>
 
             <h3>4. Cloud DNS + Traffic Director</h3>
-            <p><strong>Purpose:</strong> DNS provides the initial entry point (<code>api.ncr-voyix.com</code> → Cloud Load Balancing IP). Traffic Director (optional) enables more advanced service mesh routing if using GKE.</p>
+            <p><strong>Purpose:</strong> DNS provides the initial entry point (<code>api.customer.com</code> → Cloud Load Balancing IP). Traffic Director (optional) enables more advanced service mesh routing if using GKE.</p>
 
             <h4>DNS Provider Options: GCP vs. Cloudflare vs. Azure</h4>
             
             <div class="callout callout-info">
                 <h4>DNS Provider Decision Matrix</h4>
-                <p>NCR Voyix has three primary options for authoritative DNS hosting:</p>
+                <p>Customer has three primary options for authoritative DNS hosting:</p>
 
                 <table>
                     <thead>
@@ -1532,10 +1532,10 @@ CREATE INDEX idx_cells_provider ON cells(cloud_provider, region);
             </div>
 
             <h4>Recommended: Cloudflare for Production</h4>
-            <p><strong>Why Cloudflare is the best choice for NCR Voyix:</strong></p>
+            <p><strong>Why Cloudflare is the best choice for Customer:</strong></p>
             <ol>
                 <li><strong>True Multi-Cloud Independence:</strong> No cloud vendor lock-in—Cloudflare sits above GCP and Azure, providing a neutral control point for DNS and security.</li>
-                <li><strong>Enterprise DDoS Protection:</strong> NCR Voyix handles sensitive retail/payment data; Cloudflare's network can absorb attacks that would overwhelm GCP Cloud Armor alone.</li>
+                <li><strong>Enterprise DDoS Protection:</strong> Customer handles sensitive retail/payment data; Cloudflare's network can absorb attacks that would overwhelm GCP Cloud Armor alone.</li>
                 <li><strong>Intelligent Failover:</strong> Cloudflare health checks can automatically fail over from GCP to Azure cells without manual intervention (reduce RTO from 3 minutes to <30 seconds).</li>
                 <li><strong>Global Traffic Steering:</strong> Route users to nearest healthy cell (Europe users → europe-west1, US users → us-central1) with latency-based routing.</li>
                 <li><strong>CDN + Edge Compute:</strong> Cache static assets (images, JS/CSS) at 300+ edge locations, reducing load on Cloud Run/Container Apps.</li>
@@ -1548,7 +1548,7 @@ CREATE INDEX idx_cells_provider ON cells(cloud_provider, region);
             <div class="diagram">
                 <div class="mermaid">
 graph TB
-    User[👤 User] -->|1. DNS Query<br/>api.ncr-voyix.com| Cloudflare[☁️ Cloudflare DNS<br/>Authoritative Nameserver]
+    User[👤 User] -->|1. DNS Query<br/>api.customer.com| Cloudflare[☁️ Cloudflare DNS<br/>Authoritative Nameserver]
     Cloudflare -->|2. Health Check| GCPLB[GCP Load Balancer<br/>IP: 34.107.x.x]
     Cloudflare -->|2. Health Check| AzureLB[Azure App Gateway<br/>IP: 20.62.x.x]
     Cloudflare -->|3. Return healthy IP| User
@@ -1563,11 +1563,11 @@ graph TB
             <p><strong>Configuration Steps:</strong></p>
             <ol>
                 <li><strong>Domain Setup:</strong> Change nameservers at domain registrar (e.g., GoDaddy) to Cloudflare's NS (e.g., <code>emma.ns.cloudflare.com</code>)</li>
-                <li><strong>DNS Records:</strong> Create A record in Cloudflare: <code>api.ncr-voyix.com → 34.107.x.x</code> (GCP Load Balancer IP) with Cloudflare proxy enabled (orange cloud ☁️)</li>
+                <li><strong>DNS Records:</strong> Create A record in Cloudflare: <code>api.customer.com → 34.107.x.x</code> (GCP Load Balancer IP) with Cloudflare proxy enabled (orange cloud ☁️)</li>
                 <li><strong>Health Checks:</strong> Configure Cloudflare health monitors:
                     <ul>
-                        <li>Primary: <code>https://api.ncr-voyix.com/health</code> every 60 seconds</li>
-                        <li>Failover: <code>https://azure-api.ncr-voyix.com/health</code> (Azure App Gateway)</li>
+                        <li>Primary: <code>https://api.customer.com/health</code> every 60 seconds</li>
+                        <li>Failover: <code>https://azure-api.customer.com/health</code> (Azure App Gateway)</li>
                     </ul>
                 </li>
                 <li><strong>Load Balancing:</strong> Set up Cloudflare Load Balancer with pools:
@@ -1622,10 +1622,10 @@ graph TB
 
             <div class="callout callout-success">
                 <h4>Why GCP for Control Plane?</h4>
-                <p>NCR Voyix chose GCP to host the global control plane for several strategic reasons:</p>
+                <p>Customer chose GCP to host the global control plane for several strategic reasons:</p>
                 <ul>
                     <li><strong>Cloud Spanner's Unique Capabilities:</strong> No Azure equivalent offers globally distributed strong consistency at this scale.</li>
-                    <li><strong>Existing Expertise:</strong> NCR Voyix engineering team has deep GCP experience.</li>
+                    <li><strong>Existing Expertise:</strong> Customer engineering team has deep GCP experience.</li>
                     <li><strong>Cost Efficiency:</strong> Centralized control plane in one cloud avoids duplicating infrastructure.</li>
                     <li><strong>Operational Simplicity:</strong> Single pane of glass for tenant management rather than split control across clouds.</li>
                 </ul>
@@ -1636,7 +1636,7 @@ graph TB
         <section id="data-sync">
             <h2>Data Synchronization Strategy</h2>
             
-            <p>Keeping data consistent between GCP primary cells and Azure secondary cells is critical for disaster recovery and customer data portability. NCR Voyix has two primary strategies depending on workload requirements:</p>
+            <p>Keeping data consistent between GCP primary cells and Azure secondary cells is critical for disaster recovery and customer data portability. Customer has two primary strategies depending on workload requirements:</p>
 
             <h3>Strategy A: Active-Passive (Recommended for Most Workloads)</h3>
             
@@ -1689,7 +1689,7 @@ graph TB
                     <ul>
                         <li>Captures insert/update/delete operations from PostgreSQL WAL</li>
                         <li>Streams changes to Cloud Pub/Sub topics</li>
-                        <li>Example: <code>projects/ncr-voyix/topics/db-changes-cell-001</code></li>
+                        <li>Example: <code>projects/customer/topics/db-changes-cell-001</code></li>
                     </ul>
                 </li>
                 <li><strong>Cross-Cloud Event Bridge:</strong>
@@ -1751,7 +1751,7 @@ graph TB
             </table>
 
             <div class="callout callout-info">
-                <h4>NCR Voyix Recommendation</h4>
+                <h4>Customer Recommendation</h4>
                 <p><strong>Start with Active-Passive using scheduled pg_dump/restore.</strong> This provides:</p>
                 <ul>
                     <li>✅ Adequate RPO for most workloads (15 minutes acceptable for DR)</li>
@@ -1767,7 +1767,7 @@ graph TB
         <section id="gcp-cells">
             <h2>GCP Regional Cell Configuration</h2>
             
-            <p>GCP cells serve as the primary hosting environment for most NCR Voyix tenants. Each regional cell is self-contained with compute, database, storage, and caching layers.</p>
+            <p>GCP cells serve as the primary hosting environment for most Customer tenants. Each regional cell is self-contained with compute, database, storage, and caching layers.</p>
 
             <h3>Cell Architecture Components</h3>
 
@@ -1983,7 +1983,7 @@ graph TB
         <section id="implementation">
             <h2>Implementation Phases</h2>
             
-            <p>NCR Voyix should roll out the multi-cloud architecture in phases to manage risk and validate each component before proceeding to the next.</p>
+            <p>Customer should roll out the multi-cloud architecture in phases to manage risk and validate each component before proceeding to the next.</p>
 
             <div class="callout callout-warning">
                 <h4>⚠️ Important: Proof-of-Concept Timeline</h4>
@@ -2016,7 +2016,7 @@ graph TB
                     <li>Create database schema (tenants, cells tables with indexes)</li>
                     <li>Implement Cloud Functions (<code>GetTenantCell</code>, <code>CreateTenant</code>, <code>HealthCheck</code>)</li>
                     <li>Deploy Cloud Load Balancing with placeholder backend (test health checks)</li>
-                    <li>Configure Cloud DNS (<code>api.ncr-voyix.com</code> pointing to LB)</li>
+                    <li>Configure Cloud DNS (<code>api.customer.com</code> pointing to LB)</li>
                     <li>Set up monitoring dashboards (Cloud Monitoring for Spanner queries, Function latency)</li>
                 </ol>
                 <p><strong>Success Criteria:</strong></p>
@@ -2025,7 +2025,7 @@ graph TB
                     <li>✅ Load balancer health checks pass for all regions</li>
                     <li>✅ Spanner replication lag < 500ms globally</li>
                 </ul>
-                <p><strong>Rollback Plan:</strong> Keep existing monolithic control plane active; test in parallel using <code>api-staging.ncr-voyix.com</code></p>
+                <p><strong>Rollback Plan:</strong> Keep existing monolithic control plane active; test in parallel using <code>api-staging.customer.com</code></p>
             </div>
 
             <div class="phase-box">
@@ -2202,7 +2202,7 @@ graph TB
             </table>
 
             <h3>Unified Dashboard (Grafana)</h3>
-            <p>Since monitoring data is split across GCP Cloud Monitoring and Azure Monitor, NCR Voyix should deploy a centralized Grafana instance to aggregate metrics. Deploy Grafana on GKE or Cloud Run with data source plugins for GCP Cloud Monitoring, Azure Monitor, and custom Prometheus exporters (Spanner, data sync lag). Create unified dashboard panels showing: global request rate across all cells, latency heatmap comparing GCP vs Azure cells, cell capacity utilization (current tenant count vs maximum), and data sync health metrics (lag time, failure rate).</p>
+            <p>Since monitoring data is split across GCP Cloud Monitoring and Azure Monitor, Customer should deploy a centralized Grafana instance to aggregate metrics. Deploy Grafana on GKE or Cloud Run with data source plugins for GCP Cloud Monitoring, Azure Monitor, and custom Prometheus exporters (Spanner, data sync lag). Create unified dashboard panels showing: global request rate across all cells, latency heatmap comparing GCP vs Azure cells, cell capacity utilization (current tenant count vs maximum), and data sync health metrics (lag time, failure rate).</p>
 
             <h3>Alerting Strategy</h3>
             <ul>
@@ -2237,7 +2237,7 @@ graph TB
             </ul>
 
             <h4>Shared vs. Dedicated Cell Decision Matrix</h4>
-            <p>NCR Voyix deployments use a mix of shared (multi-tenant) and dedicated (single-tenant) cells based on customer profile, compliance requirements, and growth trajectory. Use this matrix to determine the appropriate deployment model for each tenant:</p>
+            <p>Customer deployments use a mix of shared (multi-tenant) and dedicated (single-tenant) cells based on customer profile, compliance requirements, and growth trajectory. Use this matrix to determine the appropriate deployment model for each tenant:</p>
             
             <table>
                 <thead>
@@ -2284,7 +2284,7 @@ graph TB
 
             <div class="callout callout-info">
                 <h4>Migration Strategy: Shared to Dedicated</h4>
-                <p>NCR Voyix supports zero-downtime migrations from shared to dedicated cells using the Spanner-based routing layer:</p>
+                <p>Customer supports zero-downtime migrations from shared to dedicated cells using the Spanner-based routing layer:</p>
                 <ol>
                     <li><strong>Provision dedicated cell</strong> with identical configuration to shared cell</li>
                     <li><strong>Replicate tenant data</strong> from shared cell database to dedicated cell (pg_dump + restore, typically 15-60 minutes depending on data size)</li>
@@ -2297,7 +2297,7 @@ graph TB
             </div>
 
             <h4>Mixed Deployment Example</h4>
-            <p>A realistic NCR Voyix production deployment spans multiple regions and clouds, with a mix of shared and dedicated cells tailored to different customer segments:</p>
+            <p>A realistic Customer production deployment spans multiple regions and clouds, with a mix of shared and dedicated cells tailored to different customer segments:</p>
 
             <div class="callout callout-success">
                 <h4>Example: Multi-Cloud Cell Layout</h4>
@@ -2427,7 +2427,7 @@ graph TB
         <section id="conclusion">
             <h2>Conclusion</h2>
             
-            <p>The proposed multi-cloud architecture enables NCR Voyix to serve diverse customer requirements while maintaining operational excellence across both GCP and Azure. By centralizing the control plane in GCP Cloud Spanner and deploying cells in both clouds, NCR Voyix achieves:</p>
+            <p>The proposed multi-cloud architecture enables Customer to serve diverse customer requirements while maintaining operational excellence across both GCP and Azure. By centralizing the control plane in GCP Cloud Spanner and deploying cells in both clouds, Customer achieves:</p>
 
             <div class="callout callout-success">
                 <h3>Strategic Benefits</h3>
@@ -2441,7 +2441,7 @@ graph TB
             </div>
 
             <h3>Implementation Summary</h3>
-            <p>Over 2-3 months, NCR Voyix will:</p>
+            <p>Over 2-3 months, Customer will:</p>
             <ol>
                 <li>Deploy Cloud Spanner-based global control plane (routing foundation)</li>
                 <li>Migrate tenants to GCP cells (primary hosting)</li>
@@ -2451,7 +2451,7 @@ graph TB
             </ol>
 
             <h3>Next Steps</h3>
-            <p>NCR Voyix engineering leadership should:</p>
+            <p>Customer engineering leadership should:</p>
             <ol>
                 <li><strong>Week 1:</strong> Approve architecture, allocate budget ($150k estimated for 6 months), assign project team</li>
                 <li><strong>Week 2-3:</strong> Set up GCP and Azure projects, networking (VPC, VNet, VPN), IAM roles</li>
@@ -2465,7 +2465,7 @@ graph TB
 
         <div class="metadata">
             <strong>Document Information</strong><br>
-            Prepared for: NCR Voyix<br>
+            Prepared for: Customer<br>
             Date: October 31, 2025<br>
             Architecture: Multi-Cloud Stamps Pattern (GCP Primary + Azure Secondary)<br>
             Version: 1.0<br>
@@ -2473,7 +2473,7 @@ graph TB
             <br>
             <strong>Authors:</strong> Azure Stamps Pattern Team<br>
             <strong>Primary Contact:</strong> Scott Nichols (scott.nichols@microsoft.com)<br>
-            <strong>Reviewers:</strong> NCR Voyix Engineering Leadership<br>
+            <strong>Reviewers:</strong> Customer Engineering Leadership<br>
             <strong>Next Review:</strong> Post-Phase 3 completion (estimated February 2026)
         </div>
     </div>
@@ -2481,7 +2481,7 @@ graph TB
 </html>
 
             <strong>Document Information</strong><br>
-            Prepared for: NCR Voyix<br>
+            Prepared for: Customer<br>
             Date: October 31, 2025<br>
             Architecture: Multi-Cloud Stamps Pattern (GCP Primary + Azure Secondary)<br>
             Version: 1.0<br>
