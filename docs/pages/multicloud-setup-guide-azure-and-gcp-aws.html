@@ -248,6 +248,64 @@
             margin-top: 0;
         }
         
+        .doc-info-box {
+            background: #f0f8ff;
+            border: 2px solid #1565c0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .doc-info-text {
+            margin: 0;
+            font-size: 0.9em;
+        }
+        
+        .exec-brief {
+            background: #e3f2fd;
+            border-left-color: #1565c0;
+            padding: 25px;
+            font-size: 1.1em;
+        }
+        
+        .exec-brief h3 {
+            margin-top: 0;
+            color: #1565c0;
+        }
+        
+        .exec-brief p {
+            margin: 0;
+        }
+        
+        .exec-brief p:not(:first-of-type) {
+            margin: 5px 0 0 0;
+        }
+        
+        .color-green {
+            background: #7FBA00;
+            color: white;
+        }
+        
+        .color-azure {
+            background: #0078D4;
+            color: white;
+        }
+        
+        .color-gcp {
+            background: #FBBC04;
+            color: black;
+        }
+        
+        .color-aws {
+            background: #FF9900;
+            color: white;
+        }
+        
+        .color-cyan {
+            background: #00BCF2;
+            color: white;
+        }
+        
         @media print {
             body {
                 background: white;
@@ -278,20 +336,20 @@
         <header>
             <h1>Multi-Cloud Architecture Setup Guide</h1>
             <p class="subtitle">Azure Primary + GCP/AWS Secondary Cell Deployment</p>
-            <div style="background: #f0f8ff; border: 2px solid #1565c0; padding: 15px; margin: 20px 0; border-radius: 5px;">
-                <p style="margin: 0; font-size: 0.9em;"><strong>📄 Document Type:</strong> Technical Architecture & Implementation Guide | <strong>🎯 Audience:</strong> C-Level Executives, Engineering Leadership, Cloud Architects | <strong>📄 Quick Start:</strong> See Section 1 below for Executive Summary</p>
+            <div class="doc-info-box">
+                <p class="doc-info-text"><strong>📄 Document Type:</strong> Technical Architecture & Implementation Guide | <strong>🎯 Audience:</strong> C-Level Executives, Engineering Leadership, Cloud Architects | <strong>📄 Quick Start:</strong> See Section 1 below for Executive Summary</p>
             </div>
         </header>
 
         <section id="executive-summary">
             <h2>Executive Summary</h2>
 
-            <div class="callout callout-info" style="background: #e3f2fd; border-left-color: #1565c0; padding: 25px; font-size: 1.1em;">
-                <h3 style="margin-top: 0; color: #1565c0;">⚡ Executive Brief</h3>
-                <p style="margin: 0;"><strong>Architecture:</strong> Multi-cloud stamps pattern – Azure primary (control plane) + GCP/AWS secondary (regional cells)</p>
-                <p style="margin: 5px 0 0 0;"><strong>Timeline:</strong> 3-5 months (PoC to production)</p>
-                <p style="margin: 5px 0 0 0;"><strong>Unit Economics:</strong> $8-16/tenant (shared) | $3,200-5,000/tenant (dedicated) | <strong>Target Availability:</strong> 99.99% (multi-cloud)</p>
-                <p style="margin: 5px 0 0 0;"><strong>Business Impact:</strong> Cloud choice wins enterprise deals | Fast regional expansion (< 48 hours) | Vendor resilience across 3 clouds</p>
+            <div class="callout callout-info exec-brief">
+                <h3>⚡ Executive Brief</h3>
+                <p><strong>Architecture:</strong> Multi-cloud stamps pattern – Azure primary (control plane) + GCP/AWS secondary (regional cells)</p>
+                <p><strong>Timeline:</strong> 3-5 months (PoC to production)</p>
+                <p><strong>Unit Economics:</strong> $8-16/tenant (shared) | $3,200-5,000/tenant (dedicated) | <strong>Target Availability:</strong> 99.99% (multi-cloud)</p>
+                <p><strong>Business Impact:</strong> Cloud choice wins enterprise deals | Fast regional expansion (< 48 hours) | Vendor resilience across 3 clouds</p>
             </div>
             
             <div class="callout callout-success">
@@ -722,27 +780,27 @@ graph TB
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="background: #7FBA00; color: white;"><strong>Green</strong></td>
+                        <td class="color-green"><strong>Green</strong></td>
                         <td>Global Control Plane</td>
                         <td>Azure-hosted services managing tenant routing and directory (Cloudflare, Front Door, Functions, Cosmos DB)</td>
                     </tr>
                     <tr>
-                        <td style="background: #0078D4; color: white;"><strong>Azure Blue</strong></td>
+                        <td class="color-azure"><strong>Azure Blue</strong></td>
                         <td>Azure Regional Resources</td>
                         <td>Primary cloud cells with Container Apps, PostgreSQL, Blob Storage, Redis Cache</td>
                     </tr>
                     <tr>
-                        <td style="background: #FBBC04; color: black;"><strong>GCP Yellow</strong></td>
+                        <td class="color-gcp"><strong>GCP Yellow</strong></td>
                         <td>GCP Regional Resources</td>
                         <td>Secondary cloud cells with Cloud Run, Cloud SQL, Cloud Storage, Memorystore</td>
                     </tr>
                     <tr>
-                        <td style="background: #FF9900; color: white;"><strong>AWS Orange</strong></td>
+                        <td class="color-aws"><strong>AWS Orange</strong></td>
                         <td>AWS Regional Resources</td>
                         <td>Secondary cloud cells with ECS Fargate, RDS Aurora, S3, ElastiCache</td>
                     </tr>
                     <tr>
-                        <td style="background: #00BCF2; color: white;"><strong>Cyan</strong></td>
+                        <td class="color-cyan"><strong>Cyan</strong></td>
                         <td>Data Sync Layer</td>
                         <td>Cross-cloud CDC and batch replication (Azure Data Factory)</td>
                     </tr>

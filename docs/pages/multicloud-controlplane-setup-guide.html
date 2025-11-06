@@ -202,6 +202,42 @@
         .toc a:hover {
             text-decoration: underline;
         }
+        
+        .doc-info-box {
+            background: #f0f8ff;
+            border: 2px solid #1565c0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .doc-info-text {
+            margin: 0;
+            font-size: 0.9em;
+        }
+        
+        .info-para-no-margin {
+            margin: 0;
+        }
+        
+        .info-para-top-margin {
+            margin: 10px 0 0 0;
+        }
+        
+        .color-azure {
+            background: #0078D4;
+            color: white;
+        }
+        
+        .color-gcp {
+            background: #FBBC04;
+            color: #000;
+        }
+        
+        .color-aws {
+            background: #FF9900;
+            color: white;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script>
@@ -217,8 +253,8 @@
         <header>
             <h1>Multi-Control-Plane Architecture Setup Guide</h1>
             <p class="subtitle">Distributed Control Planes Across Azure, GCP, and AWS</p>
-            <div style="background: #f0f8ff; border: 2px solid #1565c0; padding: 15px; margin: 20px 0; border-radius: 5px;">
-                <p style="margin: 0; font-size: 0.9em;"><strong>📄 Document Type:</strong> Advanced Architecture Implementation Guide | <strong>🎯 Audience:</strong> Cloud Architects, Platform Engineers, SREs</p>
+            <div class="doc-info-box">
+                <p class="doc-info-text"><strong>📄 Document Type:</strong> Advanced Architecture Implementation Guide | <strong>🎯 Audience:</strong> Cloud Architects, Platform Engineers, SREs</p>
             </div>
         </header>
 
@@ -227,9 +263,9 @@
 
             <div class="callout callout-info">
                 <h3>⚡ Architecture Overview</h3>
-                <p style="margin: 0;"><strong>Purpose:</strong> Deploy separate control planes in Azure, GCP, and AWS to reduce latency from 80-150ms to 50-80ms for global tenant routing</p>
-                <p style="margin: 10px 0 0 0;"><strong>Key Benefit:</strong> Within-cloud routing eliminates cross-cloud latency penalty while maintaining unified tenant directory</p>
-                <p style="margin: 10px 0 0 0;"><strong>Trade-off:</strong> 2-3x operational complexity and ~2x cost increase for 40-50% latency reduction</p>
+                <p class="info-para-no-margin"><strong>Purpose:</strong> Deploy separate control planes in Azure, GCP, and AWS to reduce latency from 80-150ms to 50-80ms for global tenant routing</p>
+                <p class="info-para-top-margin"><strong>Key Benefit:</strong> Within-cloud routing eliminates cross-cloud latency penalty while maintaining unified tenant directory</p>
+                <p class="info-para-top-margin"><strong>Trade-off:</strong> 2-3x operational complexity and ~2x cost increase for 40-50% latency reduction</p>
             </div>
 
             <h3>Why Multi-Control-Plane?</h3>

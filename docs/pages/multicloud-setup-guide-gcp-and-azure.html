@@ -248,6 +248,25 @@
             margin-top: 0;
         }
         
+        .color-green {
+            background: #34a853;
+            color: white;
+        }
+        
+        .color-gcp-blue {
+            background: #4285f4;
+            color: white;
+        }
+        
+        .color-azure-blue {
+            background: #0078d4;
+            color: white;
+        }
+        
+        .color-yellow {
+            background: #fbbc04;
+        }
+        
         @media print {
             body {
                 background: white;
@@ -532,22 +551,22 @@ graph TB
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="background: #34a853; color: white;"><strong>Green</strong></td>
+                        <td class="color-green"><strong>Green</strong></td>
                         <td>Global Control Plane</td>
                         <td>GCP-hosted services managing tenant routing and directory</td>
                     </tr>
                     <tr>
-                        <td style="background: #4285f4; color: white;"><strong>Blue (GCP)</strong></td>
+                        <td class="color-gcp-blue"><strong>Blue (GCP)</strong></td>
                         <td>GCP Regional Resources</td>
                         <td>Primary cloud cells with compute, database, storage</td>
                     </tr>
                     <tr>
-                        <td style="background: #0078d4; color: white;"><strong>Blue (Azure)</strong></td>
+                        <td class="color-azure-blue"><strong>Blue (Azure)</strong></td>
                         <td>Azure Regional Resources</td>
                         <td>Secondary cloud cells with equivalent services</td>
                     </tr>
                     <tr>
-                        <td style="background: #fbbc04;"><strong>Yellow</strong></td>
+                        <td class="color-yellow"><strong>Yellow</strong></td>
                         <td>Data Sync Layer</td>
                         <td>CDC and batch replication infrastructure</td>
                     </tr>
