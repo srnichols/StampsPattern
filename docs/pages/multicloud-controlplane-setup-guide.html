@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Control-Plane Architecture Setup Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            border-bottom: 4px solid #1565c0;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #1565c0;
+            font-size: 2.4em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        h2 {
+            color: #1565c0;
+            font-size: 1.8em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e1e1;
+        }
+        
+        h3 {
+            color: #1976d2;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin-bottom: 20px;
+            margin-left: 30px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .callout {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .callout-success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        
+        .callout-warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        
+        .callout-danger {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        
+        .callout-info {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #1565c0;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        pre code {
+            padding: 0;
+            background: none;
+        }
+        
+        .diagram {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .metadata {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e1e1e1;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            border: 1px solid #dee2e6;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #1565c0;
+        }
+        
+        .toc ul {
+            margin-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 8px;
+        }
+        
+        .toc a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: { useMaxWidth: true }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Multi-Control-Plane Architecture Setup Guide</h1>
+            <p class="subtitle">Distributed Control Planes Across Azure, GCP, and AWS</p>
+            <div style="background: #f0f8ff; border: 2px solid #1565c0; padding: 15px; margin: 20px 0; border-radius: 5px;">
+                <p style="margin: 0; font-size: 0.9em;"><strong>📄 Document Type:</strong> Advanced Architecture Implementation Guide | <strong>🎯 Audience:</strong> Cloud Architects, Platform Engineers, SREs</p>
+            </div>
+        </header>
+
+        <section id="executive-summary">
+            <h2>Executive Summary</h2>
+
+            <div class="callout callout-info">
+                <h3>⚡ Architecture Overview</h3>
+                <p style="margin: 0;"><strong>Purpose:</strong> Deploy separate control planes in Azure, GCP, and AWS to reduce latency from 80-150ms to 50-80ms for global tenant routing</p>
+                <p style="margin: 10px 0 0 0;"><strong>Key Benefit:</strong> Within-cloud routing eliminates cross-cloud latency penalty while maintaining unified tenant directory</p>
+                <p style="margin: 10px 0 0 0;"><strong>Trade-off:</strong> 2-3x operational complexity and ~2x cost increase for 40-50% latency reduction</p>
+            </div>
+
+            <h3>Why Multi-Control-Plane?</h3>
+            <p>The standard single-control-plane architecture (Azure-hosted) introduces latency when routing requests from GCP/AWS tenants:</p>
+            <ul>
+                <li><strong>Single Control Plane (Azure):</strong> GCP tenant request → Azure control plane (Cosmos DB lookup) → GCP cell = 80-150ms cross-cloud overhead</li>
+                <li><strong>Multi Control Plane:</strong> GCP tenant request → GCP control plane (Cloud Spanner lookup) → GCP cell = 50-80ms (stays within GCP network)</li>
+            </ul>
+
+            <div class="callout callout-info">
+                <h3>🔍 Critical Design Principle: Control Plane Routes to Cells, Not Cells Themselves</h3>
+                <p><strong>Important:</strong> Cloudflare DNS does NOT route directly to cells or perform cell-level failover. Instead:</p>
+                <ol>
+                    <li><strong>Cloudflare routes user to nearest control plane</strong> based on geographic proximity:
+                        <ul>
+                            <li>User in Americas → Azure control plane (East US)</li>
+                            <li>User in Europe → GCP control plane (europe-west1)</li>
+                            <li>User in Asia → AWS control plane (ap-southeast-1)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Control plane looks up tenant → cell mapping</strong> in its local database:
+                        <ul>
+                            <li>Azure control plane queries <strong>Azure Cosmos DB</strong></li>
+                            <li>GCP control plane queries <strong>GCP Cloud Spanner</strong> (or Firestore)</li>
+                            <li>AWS control plane queries <strong>AWS DynamoDB</strong></li>
+                        </ul>
+                    </li>
+                    <li><strong>Control plane routes request to the cell</strong> (which may be in a different cloud):
+                        <ul>
+                            <li>Example: User → AWS control plane → <strong>Azure cell</strong> (cross-cloud routing)</li>
+                            <li>Example: User → GCP control plane → <strong>GCP cell</strong> (same-cloud routing)</li>
+                            <li>Example: User → Azure control plane → <strong>AWS cell</strong> (cross-cloud routing)</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p><strong>Key Point:</strong> The cell mapping metadata (tenant_id → cell_url) is replicated across all three databases (Cosmos DB, Cloud Spanner, DynamoDB) to ensure each control plane has the complete global tenant directory regardless of where cells are deployed.</p>
+            </div>
+
+            <div class="callout callout-success">
+                <h3>✅ Example Request Flows</h3>
+                <h4>Scenario 1: User in New York, Tenant in Azure East US (Same Cloud)</h4>
+                <ol>
+                    <li>User DNS query → Cloudflare (geo-routes to nearest control plane)</li>
+                    <li>Cloudflare → <strong>Azure control plane</strong> (East US) - closest to user</li>
+                    <li>Azure Functions queries Cosmos DB: <code>tenant_abc → https://azure-eastus-cell-001.com</code></li>
+                    <li>Azure control plane → <strong>Azure cell (East US)</strong> - 50ms total latency</li>
+                </ol>
+
+                <h4>Scenario 2: User in London, Tenant in Azure East US (Cross-Cloud Routing)</h4>
+                <ol>
+                    <li>User DNS query → Cloudflare (geo-routes to nearest control plane)</li>
+                    <li>Cloudflare → <strong>GCP control plane</strong> (europe-west1) - closest to user</li>
+                    <li>GCP Cloud Functions queries Cloud Spanner: <code>tenant_abc → https://azure-eastus-cell-001.com</code></li>
+                    <li>GCP control plane → <strong>Azure cell (East US)</strong> - 150ms total latency (GCP→Azure penalty)</li>
+                </ol>
+
+                <h4>Scenario 3: AWS Control Plane Failure - Cloudflare Failover</h4>
+                <ol>
+                    <li>User in Singapore → Cloudflare attempts AWS control plane (ap-southeast-1)</li>
+                    <li>Cloudflare health check detects <strong>AWS control plane DOWN</strong></li>
+                    <li>Cloudflare automatically fails over → <strong>GCP control plane</strong> (asia-southeast1) - next closest</li>
+                    <li>GCP Cloud Functions queries Cloud Spanner: <code>tenant_xyz → https://aws-singapore-cell-003.com</code></li>
+                    <li>GCP control plane → <strong>AWS cell (ap-southeast-1)</strong> - cell still healthy, just control plane failed</li>
+                </ol>
+                <p><strong>Result:</strong> User reaches their AWS cell via GCP control plane. Latency increases slightly (GCP control plane overhead) but service continues.</p>
+
+                <h4>Scenario 4: Azure to Azure (Optimal Path)</h4>
+                <ol>
+                    <li>User in Virginia → Cloudflare → <strong>Azure control plane</strong> (East US)</li>
+                    <li>Azure Functions queries Cosmos DB: <code>tenant_def → https://azure-eastus-cell-002.com</code></li>
+                    <li>Azure control plane → <strong>Azure cell (East US)</strong> - 40ms total (all within Azure network)</li>
+                </ol>
+            </div>
+
+            <div class="callout callout-warning">
+                <h3>⚠️ Key Insight: Control Plane Location ≠ Cell Location</h3>
+                <p><strong>Critical Understanding:</strong> The control plane that handles the lookup does NOT have to be in the same cloud as the cell.</p>
+                <ul>
+                    <li>✅ AWS control plane can route to Azure cells</li>
+                    <li>✅ GCP control plane can route to AWS cells</li>
+                    <li>✅ Azure control plane can route to GCP cells</li>
+                </ul>
+                <p><strong>Why this works:</strong> All three control plane databases (Cosmos DB, Cloud Spanner, DynamoDB) contain the <strong>complete global tenant directory</strong>, including cell URLs for all clouds. Data synchronization keeps them in sync.</p>
+                <p><strong>Latency Impact:</strong></p>
+                <ul>
+                    <li>Same-cloud routing: 40-80ms (optimal)</li>
+                    <li>Cross-cloud routing: 100-200ms (control plane in one cloud, cell in another)</li>
+                </ul>
+            </div>
+
+            <div class="callout callout-success">
+                <h3>✅ When to Use This Architecture</h3>
+                <ul>
+                    <li>Global SLA requirements < 100ms latency for all regions</li>
+                    <li>Customer contracts mandate in-cloud control plane (data sovereignty)</li>
+                    <li>Each cloud processes > 1,000 requests/second (justifies dedicated infrastructure)</li>
+                    <li>Multi-region compliance requires control plane data residency</li>
+                </ul>
+            </div>
+
+            <div class="callout callout-warning">
+                <h3>⚠️ Operational Complexity Increase</h3>
+                <ul>
+                    <li>Deploy and maintain 3 separate control planes (Azure Functions + Cloud Functions + Lambda)</li>
+                    <li>Configure bi-directional data sync between Azure Cosmos DB + GCP Firestore + AWS DynamoDB</li>
+                    <li>Monitor 3x endpoints, manage 3x deployments, troubleshoot cross-cloud sync issues</li>
+                    <li>Handle conflict resolution when tenant updates occur simultaneously across clouds</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="table-of-contents">
+            <div class="toc">
+                <h3>📑 Table of Contents</h3>
+                <ul>
+                    <li><a href="#executive-summary">1. Executive Summary</a></li>
+                    <li><a href="#architecture">2. Architecture Diagram</a></li>
+                    <li><a href="#cloudflare-routing">3. Cloudflare Geo-Routing Configuration</a></li>
+                    <li><a href="#azure-control-plane">4. Azure Control Plane Setup</a></li>
+                    <li><a href="#gcp-control-plane">5. GCP Control Plane Setup</a></li>
+                    <li><a href="#aws-control-plane">6. AWS Control Plane Setup</a></li>
+                    <li><a href="#data-sync">7. Data Synchronization Strategy</a></li>
+                    <li><a href="#conflict-resolution">8. Conflict Resolution</a></li>
+                    <li><a href="#monitoring">9. Monitoring & Observability</a></li>
+                    <li><a href="#deployment">10. Deployment Checklist</a></li>
+                    <li><a href="#cost-analysis">11. Cost Analysis</a></li>
+                    <li><a href="#conclusion">12. Conclusion</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="data-sync">
+            <h2>Data Synchronization Strategy: Cosmos DB ↔ Cloud Spanner ↔ DynamoDB</h2>
+
+            <div class="callout callout-warning">
+                <h3>🎯 The Challenge</h3>
+                <p>These three databases use different APIs, data models, and consistency guarantees:</p>
+                <ul>
+                    <li><strong>Azure Cosmos DB:</strong> NoSQL (SQL API, MongoDB API, Cassandra API), multi-region writes, strong consistency</li>
+                    <li><strong>GCP Cloud Spanner:</strong> Relational SQL, horizontally scalable, external consistency (TrueTime)</li>
+                    <li><strong>AWS DynamoDB:</strong> NoSQL key-value/document store, Global Tables, eventual consistency</li>
+                </ul>
+                <p><strong>Goal:</strong> Keep tenant directory synchronized across all three so each control plane has complete global view of tenant→cell mappings.</p>
+            </div>
+
+            <h3>Recommended Approach: Event-Driven Change Data Capture (CDC)</h3>
+            <p>The best practice is to use each cloud's native change feed mechanism to propagate updates across clouds in near real-time.</p>
+
+            <div class="callout callout-success">
+                <h3>✅ Architecture: Event-Driven Bi-Directional Sync</h3>
+                <div class="diagram">
+                    <div class="mermaid">
+graph TB
+    subgraph Azure
+        COSMOS[(Cosmos DB<br/>Tenant Directory)]
+        COSMOS_CHANGE[Cosmos DB<br/>Change Feed]
+        AZ_FUNC[Azure Functions<br/>Sync Handler]
+    end
+    
+    subgraph GCP
+        SPANNER[(Cloud Spanner<br/>Tenant Directory)]
+        SPANNER_CHANGE[Cloud Spanner<br/>Change Streams]
+        GCP_FUNC[Cloud Functions<br/>Sync Handler]
+    end
+    
+    subgraph AWS
+        DYNAMO[(DynamoDB<br/>Tenant Directory)]
+        DYNAMO_CHANGE[DynamoDB Streams]
+        AWS_LAMBDA[Lambda<br/>Sync Handler]
+    end
+    
+    COSMOS --> COSMOS_CHANGE
+    COSMOS_CHANGE --> AZ_FUNC
+    AZ_FUNC -->|Write to Spanner| SPANNER
+    AZ_FUNC -->|Write to DynamoDB| DYNAMO
+    
+    SPANNER --> SPANNER_CHANGE
+    SPANNER_CHANGE --> GCP_FUNC
+    GCP_FUNC -->|Write to Cosmos| COSMOS
+    GCP_FUNC -->|Write to DynamoDB| DYNAMO
+    
+    DYNAMO --> DYNAMO_CHANGE
+    DYNAMO_CHANGE --> AWS_LAMBDA
+    AWS_LAMBDA -->|Write to Cosmos| COSMOS
+    AWS_LAMBDA -->|Write to Spanner| SPANNER
+    
+    style COSMOS fill:#0078D4,stroke:#0078D4,color:#fff
+    style SPANNER fill:#FBBC04,stroke:#F29900,color:#000
+    style DYNAMO fill:#FF9900,stroke:#FF9900,color:#fff
+                    </div>
+                </div>
+            </div>
+
+            <h3>Implementation Details by Database</h3>
+
+            <h4>1. Azure Cosmos DB Change Feed → Sync to Spanner & DynamoDB</h4>
+            <pre><code>// Azure Functions (C#) - Listen to Cosmos DB Change Feed
+[FunctionName("CosmosChangeFeedSync")]
+public static async Task Run(
+    [CosmosDBTrigger(
+        databaseName: "TenantDirectory",
+        containerName: "Tenants",
+        Connection = "CosmosDBConnection",
+        LeaseContainerName = "leases",
+        CreateLeaseContainerIfNotExists = true)]
+    IReadOnlyList&lt;Document&gt; changedDocuments,
+    ILogger log)
+{
+    foreach (var doc in changedDocuments)
+    {
+        var tenant = JsonConvert.DeserializeObject&lt;Tenant&gt;(doc.ToString());
+        
+        // Sync to GCP Cloud Spanner
+        await SyncToSpanner(tenant);
+        
+        // Sync to AWS DynamoDB
+        await SyncToDynamoDB(tenant);
+        
+        log.LogInformation($"Synced tenant {tenant.Id} to Spanner and DynamoDB");
+    }
+}
+
+private static async Task SyncToSpanner(Tenant tenant)
+{
+    var spannerClient = await SpannerClient.CreateAsync();
+    var mutation = new Mutation
+    {
+        InsertOrUpdate = new Mutation.Types.Write
+        {
+            Table = "Tenants",
+            Columns = { "TenantId", "CellUrl", "Cloud", "Region", "UpdatedAt" },
+            Values = { 
+                tenant.Id, 
+                tenant.CellUrl, 
+                tenant.Cloud, 
+                tenant.Region,
+                tenant.UpdatedAt.ToString("o")
+            }
+        }
+    };
+    await spannerClient.CommitAsync(tenant.SpannerDatabaseName, new[] { mutation });
+}
+
+private static async Task SyncToDynamoDB(Tenant tenant)
+{
+    var dynamoClient = new AmazonDynamoDBClient();
+    var request = new PutItemRequest
+    {
+        TableName = "Tenants",
+        Item = new Dictionary&lt;string, AttributeValue&gt;
+        {
+            { "TenantId", new AttributeValue { S = tenant.Id } },
+            { "CellUrl", new AttributeValue { S = tenant.CellUrl } },
+            { "Cloud", new AttributeValue { S = tenant.Cloud } },
+            { "Region", new AttributeValue { S = tenant.Region } },
+            { "UpdatedAt", new AttributeValue { S = tenant.UpdatedAt.ToString("o") } }
+        }
+    };
+    await dynamoClient.PutItemAsync(request);
+}
+</code></pre>
+
+            <h4>2. GCP Cloud Spanner Change Streams → Sync to Cosmos & DynamoDB</h4>
+            <pre><code>// Cloud Functions (Node.js) - Listen to Spanner Change Streams
+const { Spanner } = require('@google-cloud/spanner');
+const { CosmosClient } = require('@azure/cosmos');
+const AWS = require('aws-sdk');
+
+const spanner = new Spanner();
+const cosmosClient = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY });
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+
+exports.spannerChangeStreamSync = async (req, res) => {
+    const instance = spanner.instance('tenant-directory');
+    const database = instance.database('tenant-db');
+    
+    // Create change stream query
+    const query = {
+        sql: `SELECT * FROM STREAM(Tenants) WHERE commit_timestamp > @lastSyncTime`,
+        params: { lastSyncTime: getLastSyncTimestamp() }
+    };
+    
+    const [rows] = await database.run(query);
+    
+    for (const row of rows) {
+        const tenant = {
+            id: row.TenantId,
+            cellUrl: row.CellUrl,
+            cloud: row.Cloud,
+            region: row.Region,
+            updatedAt: row.UpdatedAt
+        };
+        
+        // Sync to Azure Cosmos DB
+        await syncToCosmos(tenant);
+        
+        // Sync to AWS DynamoDB
+        await syncToDynamoDB(tenant);
+    }
+    
+    res.status(200).send('Sync complete');
+};
+
+async function syncToCosmos(tenant) {
+    const container = cosmosClient.database('TenantDirectory').container('Tenants');
+    await container.items.upsert({
+        id: tenant.id,
+        tenantId: tenant.id,
+        cellUrl: tenant.cellUrl,
+        cloud: tenant.cloud,
+        region: tenant.region,
+        updatedAt: tenant.updatedAt,
+        _partition: tenant.id  // Cosmos DB partition key
+    });
+}
+
+async function syncToDynamoDB(tenant) {
+    await dynamoDB.put({
+        TableName: 'Tenants',
+        Item: {
+            TenantId: tenant.id,
+            CellUrl: tenant.cellUrl,
+            Cloud: tenant.cloud,
+            Region: tenant.region,
+            UpdatedAt: tenant.updatedAt
+        }
+    }).promise();
+}
+</code></pre>
+
+            <h4>3. AWS DynamoDB Streams → Sync to Cosmos & Spanner</h4>
+            <pre><code>// AWS Lambda (Python) - Listen to DynamoDB Streams
+import boto3
+import json
+from azure.cosmos import CosmosClient
+from google.cloud import spanner
+
+dynamodb = boto3.resource('dynamodb')
+cosmos_client = CosmosClient(COSMOS_ENDPOINT, COSMOS_KEY)
+spanner_client = spanner.Client()
+
+def lambda_handler(event, context):
+    for record in event['Records']:
+        if record['eventName'] in ['INSERT', 'MODIFY']:
+            tenant = record['dynamodb']['NewImage']
+            
+            tenant_data = {
+                'id': tenant['TenantId']['S'],
+                'cellUrl': tenant['CellUrl']['S'],
+                'cloud': tenant['Cloud']['S'],
+                'region': tenant['Region']['S'],
+                'updatedAt': tenant['UpdatedAt']['S']
+            }
+            
+            # Sync to Azure Cosmos DB
+            sync_to_cosmos(tenant_data)
+            
+            # Sync to GCP Cloud Spanner
+            sync_to_spanner(tenant_data)
+    
+    return {'statusCode': 200, 'body': 'Sync complete'}
+
+def sync_to_cosmos(tenant):
+    container = cosmos_client.get_database_client('TenantDirectory').get_container_client('Tenants')
+    container.upsert_item({
+        'id': tenant['id'],
+        'tenantId': tenant['id'],
+        'cellUrl': tenant['cellUrl'],
+        'cloud': tenant['cloud'],
+        'region': tenant['region'],
+        'updatedAt': tenant['updatedAt']
+    })
+
+def sync_to_spanner(tenant):
+    instance = spanner_client.instance('tenant-directory')
+    database = instance.database('tenant-db')
+    
+    with database.batch() as batch:
+        batch.insert_or_update(
+            table='Tenants',
+            columns=['TenantId', 'CellUrl', 'Cloud', 'Region', 'UpdatedAt'],
+            values=[(
+                tenant['id'],
+                tenant['cellUrl'],
+                tenant['cloud'],
+                tenant['region'],
+                tenant['updatedAt']
+            )]
+        )
+</code></pre>
+
+            <h3>Sync Strategy Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Latency</th>
+                        <th>Complexity</th>
+                        <th>Cost</th>
+                        <th>Reliability</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Event-Driven CDC (Recommended)</strong></td>
+                        <td>5-15 seconds</td>
+                        <td>Medium</td>
+                        <td>Low (serverless)</td>
+                        <td>High (native change feeds)</td>
+                        <td>Production workloads requiring near real-time sync</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scheduled Batch Sync</strong></td>
+                        <td>1-5 minutes</td>
+                        <td>Low</td>
+                        <td>Very Low</td>
+                        <td>Medium (depends on cron reliability)</td>
+                        <td>Non-critical workloads, dev/test environments</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom Sync Service</strong></td>
+                        <td>2-10 seconds</td>
+                        <td>High</td>
+                        <td>Medium (dedicated VMs/containers)</td>
+                        <td>Very High (custom retry logic)</td>
+                        <td>Complex sync logic, conflict resolution required</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dual-Write Pattern</strong></td>
+                        <td>< 1 second</td>
+                        <td>Low</td>
+                        <td>Low</td>
+                        <td>Low (risk of inconsistency on failure)</td>
+                        <td>NOT RECOMMENDED for critical data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Conflict Resolution Strategy</h3>
+            <div class="callout callout-danger">
+                <h3>⚠️ Handling Simultaneous Updates Across Clouds</h3>
+                <p><strong>Problem:</strong> Tenant updates occur simultaneously in two clouds before sync completes</p>
+                <p><strong>Example Conflict:</strong></p>
+                <ul>
+                    <li>T=0: Tenant ABC is in Azure Cell 001</li>
+                    <li>T=1: Azure control plane moves tenant to Azure Cell 002 (Cosmos DB updated)</li>
+                    <li>T=2: GCP control plane moves tenant to GCP Cell 003 (Spanner updated) - before Azure change synced</li>
+                    <li>T=3: Both changes propagate → conflict!</li>
+                </ul>
+                
+                <h4>Resolution Strategy: Last-Write-Wins with Vector Clocks</h4>
+                <pre><code>// Tenant Record with Version Vector
+{
+    "tenantId": "abc123",
+    "cellUrl": "https://azure-cell-002.com",
+    "cloud": "azure",
+    "region": "eastus",
+    "version": {
+        "azure": 5,    // 5 updates from Azure control plane
+        "gcp": 2,      // 2 updates from GCP control plane
+        "aws": 1       // 1 update from AWS control plane
+    },
+    "updatedAt": "2025-11-04T10:30:00Z",
+    "updatedBy": "azure-control-plane"
+}
+
+// Conflict Resolution Logic
+function resolveConflict(existingRecord, incomingRecord) {
+    // Compare version vectors
+    if (incomingRecord.version.totalUpdates() > existingRecord.version.totalUpdates()) {
+        return incomingRecord;  // Newer wins
+    } else if (incomingRecord.updatedAt > existingRecord.updatedAt) {
+        return incomingRecord;  // Timestamp-based tie-breaker
+    } else {
+        return existingRecord;  // Keep existing
+    }
+}
+</code></pre>
+
+                <h4>Alternative: Single Source of Truth with Advisory Locks</h4>
+                <p><strong>Best Practice:</strong> Designate one database as the "primary" for tenant updates:</p>
+                <ul>
+                    <li><strong>Azure Cosmos DB = Primary:</strong> All tenant CREATE/UPDATE/DELETE operations go through Azure first</li>
+                    <li><strong>GCP Spanner = Read Replica:</strong> Receives updates from Azure via change feed</li>
+                    <li><strong>AWS DynamoDB = Read Replica:</strong> Receives updates from Azure via change feed</li>
+                </ul>
+                <p><strong>Trade-off:</strong> Azure becomes single point of failure for tenant updates (but control plane lookups still work from all clouds)</p>
+            </div>
+
+            <h3>Monitoring Sync Health</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Threshold</th>
+                        <th>Alert</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sync Lag (Cosmos → Spanner)</td>
+                        <td>> 30 seconds</td>
+                        <td>Warning</td>
+                        <td>Check Azure Functions health, network connectivity</td>
+                    </tr>
+                    <tr>
+                        <td>Sync Lag (Cosmos → DynamoDB)</td>
+                        <td>> 30 seconds</td>
+                        <td>Warning</td>
+                        <td>Check AWS Lambda throttling, VPC routing</td>
+                    </tr>
+                    <tr>
+                        <td>Conflict Rate</td>
+                        <td>> 1%</td>
+                        <td>Critical</td>
+                        <td>Review conflict resolution logic, consider primary/replica model</td>
+                    </tr>
+                    <tr>
+                        <td>Failed Sync Operations</td>
+                        <td>> 5 in 5 minutes</td>
+                        <td>Critical</td>
+                        <td>Check database credentials, API quotas, network firewall rules</td>
+                    </tr>
+                    <tr>
+                        <td>Data Inconsistency Count</td>
+                        <td>> 0</td>
+                        <td>Critical</td>
+                        <td>Run reconciliation job, validate sync handlers</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Cost Optimization for Sync</h3>
+            <ul>
+                <li><strong>Cosmos DB Change Feed:</strong> Free (included in throughput), but watch RU consumption for lease management</li>
+                <li><strong>Cloud Spanner Change Streams:</strong> $0.10 per GB processed (can add up with high update volume)</li>
+                <li><strong>DynamoDB Streams:</strong> $0.02 per 100K read requests (very cost-effective)</li>
+                <li><strong>Cross-cloud data transfer:</strong> $0.12-0.23 per GB (Cosmos→Spanner, Cosmos→DynamoDB, Spanner→DynamoDB)</li>
+                <li><strong>Serverless compute:</strong> Azure Functions/Cloud Functions/Lambda - negligible for low-volume tenant updates</li>
+            </ul>
+            <p><strong>Estimated Monthly Cost (1,000 tenant updates/day):</strong> $50-150 for all sync operations across three clouds</p>
+        </section>
+
+        <div class="metadata">
+            <strong>Document Information</strong><br>
+            Date: November 4, 2025<br>
+            Architecture: Multi-Control-Plane Stamps Pattern<br>
+            Version: 1.0<br>
+            Classification: Technical Implementation Guide<br>
+            <br>
+            <strong>Authors:</strong> Azure Stamps Pattern Team<br>
+            <strong>Primary Contact:</strong> Scott Nichols (scott.nichols@microsoft.com)
+        </div>
+    </div>
+</body>
+</html>
